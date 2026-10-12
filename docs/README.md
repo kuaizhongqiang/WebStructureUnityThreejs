@@ -25,7 +25,12 @@
 | **`DECISIONS.md`** | **决策记录（唯一决策权威）**：DEC-01~DEC-33，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。**只增不改** | v1 生效 |
 | `OPEN-QUESTIONS.md` | 第一轮问题清单（32 题）**原文保留**，答案已全部固化到 `DECISIONS.md` | v1 已关闭 |
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
-| `OPEN-QUESTIONS-R3.md` | **第三轮问题清单（10 题待答）**：执行条件（编辑器时段）、答案间冲突（DEC-38 ↔ R-1）、门禁载体与阈值、设计草案确认 | 待回答 |
+| `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |
+| **`PAGE-WORKLIST.md`** | **页面工作清单**：按两个参考工程实测盘点的全部页面（6 组 / 11 个任务页 / 通用组件）+ 里程碑 + 照什么不照什么 | 待审 |
+| `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、29 个页面排版稿入口 | 待审 |
+| `ui-mockups/pages/*.html` | **29 个页面的静态排版稿**（A 组 10 · B 组 5 · C 组 11 · D 组 3），逐页审核用 | 待审 |
+| `ui-mockups/style.css` | 样式唯一依赖：全部设计令牌 + 组件样式（类名即组件名，可复制进 `web/`） | — |
+| `ui-mockups/src/*.mjs` | 排版稿生成器（改完重新执行 `node docs/ui-mockups/src/render.mjs`） | — |
 
 ### 设计草案 `design/`
 
