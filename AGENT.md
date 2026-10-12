@@ -40,7 +40,7 @@
 - 仓库：`F:\Project\WebStructureUnityThreejs`（**双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌 Plastic 工作区，见 DEC-60）。
 - `docs/requirement/raw/raw-requirement.md`：原始需求，唯一权威来源。
 - `docs/`：需求分析 + 8 篇调研（`research/01~08`）+ 三轮问答 + **决策记录 `DECISIONS.md`（已定事项的唯一权威，现 72 条：DEC-01 ~ DEC-72）** + 4 篇设计草案（`design/01~04`）；页面清单见 `docs/PAGE-WORKLIST.md`，索引见 `docs/README.md`。
-- `docs/ui-mockups/`：29 页静态排版稿 + `index.html`（**元件规范成果页**）+ `style.css`（唯一样式依赖，含深/浅两套主题与框体令牌 §20）。
+- `docs/ui-mockups/`：29 页静态排版稿 + `index.html`（**元件规范成果页**）+ 样式三份（**DEC-74**）：`tokens.css`（令牌，381 行）/ `components.css`（`.ui-*` 组件，产品用这两份）/ `mockup-shell.css`（**仅评审用**的外壳：`.board` / `.spec-*` / `.note`），`style.css` 只剩 14 行聚合入口（排版稿的 `<link>` 指向它）。
 - `web/`：Web 侧工程（Vite 8 + TypeScript **5.9.3** + Vue 3 + 裸 three 0.186）。已落地并验证：`src/contracts`（双端契约）、`src/stores`（会话单一真源）、`src/viewer`（裸 three 封装）、`src/unity`（桥协议骨架）、`src/platform`（移动端 / 微信策略）、`src/router` + 两页。`npm run typecheck / test / build / smoke` 均通过。
 - `NewStructureUnity/`：Unity 工程（**2022.3.53f1c1** + URP 14.0.11）。已有程序集分层（`WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode`）、契约枚举 `Assets/Scripts/Contracts/EnumAll.cs`、**WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）、契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始**。分层草案见 `docs/design/03-layout-and-assets.md`。
 - `content/contracts/snapshot.json`：契约校验的**基准快照**（不是真源）。
@@ -88,7 +88,8 @@
 - **⚠️ 壳与业务的边界（硬纪律，DEC-20）**：业务代码（`web/src`、以及将来的业务逻辑）**不许 `import electron` / `window.electron` / `window.require`**，也不许改写 `window.wsu3Shell` —— 由 `tools/check-shell-coupling.mjs` 机械拦截（已进 hook 与 CI）。
   - 需要壳能力（截图、文件、单点登录…）时：**加在 `electron/preload.js` + 主进程 `ipcMain`**，业务侧仍只认 `window.wsu3Shell.*`（DEC-24：只预留接口点，当期不实现）。
   - 反过来：`electron/` 里不许写业务逻辑，壳只负责"起本机服务 + 开窗口 + 守安全边界"，且必须加载 `web/dist` 这一份**同一产物**（不是另做壳内页面、不是 Unity 单机版）。
-- **框体样式受令牌约束**：Web 端的描边 / 圆角 / 浮起 / 交互态**不得写零散字面值**，一律走 `docs/ui-mockups/style.css` 的令牌：中性描边 `0.5px solid var(--border-1|2|3|4)`（α 值随主题反转）、圆角只用 `--radius-xs|sm|md|lg|xl|panel`（6 级、按角色选档）、浮层用 `border: 0` + `var(--elev-*)`、交互态用 `var(--inter-*)`。规则出处：只读参考 `D:\dsh\deepseek-harness` 的 `docs/web-styling.md` 与 `docs/ui-radius.md`，我们的取舍写在 `style.css` §20.7。
+- **框体样式受令牌约束**：Web 端的描边 / 圆角 / 浮起 / 交互态**不得写零散字面值**，一律走 `docs/ui-mockups/tokens.css` + `components.css` 的令牌：中性描边 `0.5px solid var(--border-1|2|3|4)`（α 值随主题反转）、圆角只用 `--radius-xs|sm|md|lg|xl|panel`（6 级、按角色选档）、浮层用 `border: 0` + `var(--elev-*)`、交互态用 `var(--inter-*)`。规则出处：只读参考 `D:\dsh\deepseek-harness` 的 `docs/web-styling.md` 与 `docs/ui-radius.md`，我们的取舍写在 `components.css` §20.7。
+  - **产品只许 import `tokens.css` + `components.css`**，**禁止** import `mockup-shell.css`（DEC-74 约束 1：评审外壳不得进产品）；`tokens.css` 必须在前（令牌先于组件）。
 - **⚠️ Web 样式必须集中在样式成果页里体现（硬纪律）**：任何 Web 端样式（设计令牌、组件类名、状态变体）**都必须在 `docs/ui-mockups/index.html`（样式清单成果页）里有对应展示**。
   - 新增或修改样式时，**同一批改动里必须**在 `docs/ui-mockups/src/style-spec.mjs` 补上示例条目，然后重新生成成果页；**只写在 CSS 里、成果页看不到的样式，视为未完成**。
   - 两套主题（深色 / 亮色）都算"必须展现"的范围：改令牌后要确认成果页与页面在**两种主题**下都正常。

@@ -117,7 +117,8 @@ git push -u origin feat/xxx    # 3 推分支
 ## 5 两条最容易踩的纪律
 
 - **双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区。**涉及 Unity 侧的改动，两个渠道都必须提交**（git 按路径显式 `add`，永不 `-A`；Plastic 用 `cm add --recursive` + `cm ci --all` 并复核）。只提交一侧会造成两边历史分叉。细节见 `AGENT.md` §4。
-- **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级、浮层 elevation、交互叠加层、键盘焦点环）见 `docs/ui-mockups/style.css` §20。
+- **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级、浮层 elevation、交互叠加层、键盘焦点环）见 `docs/ui-mockups/components.css` §20。
+- **样式只有一份**（DEC-74）：`tokens.css`（令牌）+ `components.css`（组件）= **产品要用的**；`mockup-shell.css` 是评审外壳，产品不得 import；`style.css` 只是排版稿的聚合入口。
 - **壳与业务的边界**：业务代码（`web/src`）**零 `import electron`**（DEC-20）。壳能力只通过 `window.wsu3Shell` 只读快照暴露，实现在 `electron/preload.js`；这条由 `tools/check-shell-coupling.mjs` 机械保证（已进 hook 与 CI）。
 
 ## 6 许可

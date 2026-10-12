@@ -1,0 +1,129 @@
+/* ============================================================================
+ * 评审外壳（mockup-shell.css）
+ *
+ * 只服务排版稿：1920×1080 缩放画布、样式清单页的展示卡片、演示标注、主题切换控件。**产品不得 import 本文件**（DEC-74 约束 1）。
+ *
+ * ⚠️ 本文件是 `docs/DECISIONS.md` **DEC-74** 拆出来的三份之一：
+ *    tokens.css        —— 设计令牌（颜色 / 字号 / 间距 / 圆角 / 描边 / elevation / 交互 / 焦点环）
+ *    components.css    —— `.ui-*` 组件样式（**产品要用**）
+ *    mockup-shell.css  —— **仅评审用**的外壳（.board / .spec-* / .note …，产品不得 import）
+ *    聚合入口           —— `style.css`（排版稿的 <link> 指向它，内部 @import 三份）
+ * 分工原则：令牌只写变量；组件只消费令牌；评审外壳不许出现在产品里。
+ * ========================================================================== */
+
+
+/* ------------------------------------------------- 2. 展示外壳（仅供审核用） */
+.board-wrap {
+  width: calc(1920px * var(--board-scale));
+  height: calc(1080px * var(--board-scale));
+  margin: 24px auto;
+}
+.board {
+  width: 1920px; height: 1080px;
+  transform: scale(var(--board-scale));
+  transform-origin: top left;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-1);
+  display: flex; flex-direction: column;
+}
+.board-nav {
+  width: calc(1920px * var(--board-scale));
+  margin: 0 auto 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; color: var(--text-2);
+}
+.board-nav a { color: var(--accent-2); text-decoration: none; }
+.board-nav a:hover { text-decoration: underline; }
+
+.board__body { flex: 1; position: relative; overflow: hidden; }
+
+/* ---- 页面背景图 ----
+   来源：F:\Project\ElectricalandElectronicVirtualMuseum_v2.0_2026\ModelAssets\LightBake\Preview_1.png
+   已按用户要求把 **RGB 通道 × 0.5** 烘焙进图片本身（原图 3840×2160 / 63MB → 1920×1080 / 123KB）。
+   换图：替换 assets/bg-room-dark.jpg 即可（保持同名）。
+   想再压暗：调 --board-bg-extra-dim（0 = 不再压暗，1 = 全黑）。 */
+.board__bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('assets/bg-room-dark.jpg');
+  background-size: cover; background-position: center;
+}
+.board__bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: rgba(5, 8, 12, var(--board-bg-extra-dim, 0));
+}
+.board > *:not(.board__bg) { position: relative; z-index: 1; }
+
+/* 演示用标注：说明这块是哪个组件 */
+.note {
+  position: absolute; left: 24px; bottom: 18px; z-index: 60;
+  font-size: var(--fs-12); color: var(--text-3);
+}
+.note b { color: var(--text-2); font-weight: 600; }
+
+/* --------------------------------------------------- 15. 样式清单展示页 */
+.spec-page { max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
+.spec-head h1 { font-size: 24px; font-weight: 700; }
+.spec-head .sub { font-size: 13px; color: var(--text-2); margin-top: 6px; }
+.spec-section-title {
+  font-size: 16px; font-weight: 600; margin: 32px 0 14px; padding-left: 10px;
+  border-left: 4px solid var(--accent);
+}
+.spec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.spec-item { background: var(--bg-2); border: 0.5px solid var(--line-1); border-radius: var(--r-2); overflow: hidden; }
+.spec-item__stage {
+  padding: 24px; min-height: 130px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+  background: #0d1220;
+}
+.spec-item__meta { padding: 10px 14px; border-top: 0.5px solid var(--line-1); }
+.spec-item__name { font-size: 13px; font-weight: 600; }
+.spec-item__desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.spec-item__cls { font-size: 11px; color: var(--accent-2); margin-top: 4px; font-family: Consolas, monospace; }
+.spec-tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+.spec-token { border-radius: var(--r-2); overflow: hidden; border: 0.5px solid var(--line-1); background: var(--bg-2); }
+.spec-token__swatch { height: 56px; }
+.spec-token__label { padding: 8px 10px; font-size: 11px; color: var(--text-2); }
+.spec-token__label b { display: block; color: var(--text-1); font-size: 12px; }
+.spec-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.spec-page-link {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 14px;
+  background: var(--glass-panel); border: 0.5px solid var(--line-1); border-radius: var(--r-2);
+  color: var(--text-1); text-decoration: none; font-size: 13px;
+}
+.spec-page-link:hover { border-color: var(--accent); background: var(--bg-3); }
+.spec-page-link span { font-size: 11px; color: var(--text-3); }
+.demo-frame {
+  position: relative; height: 250px; overflow: hidden;
+  border: 1px dashed var(--line-2); border-radius: var(--r-3); background: var(--bg-1);
+}
+.demo-frame__tag {
+  position: absolute; left: 10px; top: 8px; z-index: 5;
+  font-size: var(--fs-11); color: var(--text-3);
+}
+
+/* 背景图上再覆一层"空气感"的面纱（默认全透明，各主题自行给值） */
+.board__bg::after { background: var(--board-veil); }
+
+/* 规格页的表头/卡片也走玻璃 */
+.spec-page { background: transparent; }
+.spec-item__stage { background: rgba(9, 13, 20, 0.55); }
+
+/* 主题切换（仅排版稿的外壳，不属于产品界面） */
+.theme-switch { display: flex; align-items: center; gap: 8px; }
+.theme-switch a {
+  padding: 3px 10px; border-radius: var(--r-pill);
+  border: 0.5px solid var(--line-2); color: var(--text-2); text-decoration: none; font-size: 12px;
+}
+.theme-switch a:hover { border-color: var(--accent); color: var(--text-1); }
+
+/* ① 让 body 内部的高 z 元素（模态框）能盖过浮卡 */
+.board > .board__body { z-index: auto; }
+/* 外壳里的顶栏 = 浮卡 + 钉在左上角 */
+.board > .ui-titlebar {
+  position: absolute;
+  top: var(--shell-top-y);
+  left: var(--shell-top-x);
+  right: auto;
+  z-index: 40;
+  max-width: min(var(--shell-card-max-w), calc(100% - var(--shell-top-x) * 2));
+}

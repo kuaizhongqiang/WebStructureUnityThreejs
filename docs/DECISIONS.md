@@ -499,7 +499,8 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 - **混合（C）的落法**：
   - 外层容器（titlebar 浮卡、站点线、状态条、面板栅格）= 流式 + 断点；
   - 三维视口 = 容器决定宽高，内部按视口比例渲染（将来的 Three 相机 `aspect` 与 Unity CanvasScaler 各自处理）；
-  - 站点线在窄屏走 `--narrow` 变体（横向滚动 + 首尾渐隐，见 `style.css` §16.1）。
+  - 站点线在窄屏走 `--narrow` 变体（横向滚动 + 首尾渐隐，见 `components.css` §16.1）。
+- **已执行（2026-10-12，PR #2）**：拆分落地 —— `tokens.css` 381 行 / `components.css` 1041 行 / `mockup-shell.css` 129 行 / `style.css` 14 行聚合；462 条规则按**选择器**分类，规则文本总量守恒（71876 字符前后一致），拆分前后渲染**逐像素差异 0**。产品侧约束见 AGENT.md §4。
 
 
 
