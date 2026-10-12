@@ -17,7 +17,7 @@
 
 ## 2 结果
 
-**构建成功**：`result=Succeeded`，**0 errors / 2 warnings**（warnings 来自 URP shader fallback 提示，非阻断）。
+**构建成功**：`result=Succeeded`，**0 errors / 2 warnings**。⚠️ 这 2 条 warning 的正文**未逐条确认**（首次失败那次的日志里可见 URP shader fallback 类提示，推测同类，非阻断）—— 下次构建请把 `LogWarningFormat` 的正文一并留档。
 
 | 指标 | 值 |
 |---|---|

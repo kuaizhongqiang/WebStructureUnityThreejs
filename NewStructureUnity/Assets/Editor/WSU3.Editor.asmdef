@@ -1,0 +1,20 @@
+{
+  "name": "WSU3.Editor",
+  "rootNamespace": "WSU3.Editor",
+  "references": [
+    "WSU3.Core",
+    "WSU3.Contracts",
+    "WSU3.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
