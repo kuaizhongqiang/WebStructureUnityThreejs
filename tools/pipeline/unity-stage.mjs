@@ -6,6 +6,10 @@
  *   node tools/pipeline/unity-stage.mjs --from <Unity 构建输出目录> --key <任务键> --task-type <n>
  *   node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl-baseline --key training --task-type 5
  *
+ * 可选：
+ *   --extra <目录>   一并搬走构建目录之外的产物（Addressed 内容常在 ServerData/WebGL），复制到暂存产物**根**下
+ *   --bridge         声明该构建**实现了协议桥**（会调 __WSU3_BRIDGE__.onReady）。壳冒烟据此决定"是否要求握手成功"
+ *
  * 行为：
  *   ① 校验源目录**形状正确**（缺 wasm/data 之类直接失败，不搬半份进去）；
  *   ② 复制到 `unity/builds/<key>/`（同名先清空，避免上一版残留文件骗过校验）；
@@ -32,12 +36,14 @@ const REQUIRED = [
 ]
 
 function parseArgs(argv) {
-  const args = { key: '', from: '', taskType: null, force: false }
+  const args = { key: '', from: '', taskType: null, force: false, bridge: false, extra: [] }
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
     if (token === '--from') args.from = argv[++i]
     else if (token === '--key') args.key = argv[++i]
     else if (token === '--task-type') args.taskType = Number(argv[++i])
+    else if (token === '--extra') args.extra.push(argv[++i])
+    else if (token === '--bridge') args.bridge = true
     else if (token === '--force') args.force = true
     else if (token === '--help' || token === '-h') args.help = true
   }
@@ -49,6 +55,8 @@ const HELP = `用法：node tools/pipeline/unity-stage.mjs --from <目录> --key
   --from        Unity 构建输出目录（含 index.html 与 Build/）
   --key         任务键，例如 training / line-connection（默认取目录名）
   --task-type   TaskType 数值（见 docs/design/05 §3.2；清单里的权威字段）
+  --extra <目录> 构建目录之外的产物（Addressables 内容常在 ServerData/WebGL），复制到暂存产物根下
+  --bridge      声明该构建实现了协议桥（会调 __WSU3_BRIDGE__.onReady）；壳冒烟据此决定是否要求握手
   --force       源目录形状校验失败也照搬（慎用，仅用于排查）
 `
 
@@ -113,6 +121,26 @@ async function main() {
   await mkdir(target, { recursive: true })
   await cp(source, target, { recursive: true })
 
+  // Addressables 的内容默认落在工程根的 ServerData/<目标平台>/，**不在构建目录里** ——
+  // 不显式带上，运行时就是"模型加载不出来"，而且构建日志一切正常，很难查。
+  for (const extra of args.extra) {
+    const extraDir = resolve(repoRoot, extra)
+    if (!existsSync(extraDir)) {
+      console.error(`--extra 目录不存在：${extraDir}`)
+      process.exitCode = 1
+      return
+    }
+    await cp(extraDir, target, { recursive: true })
+  }
+  const serverData = join(repoRoot, 'NewStructureUnity', 'ServerData')
+  if (existsSync(serverData) && args.extra.length === 0) {
+    console.warn(
+      `\n⚠️ 发现 ${relative(repoRoot, serverData)} —— Addressables 的远端内容默认就放这里，**不在构建目录内**。\n` +
+        '   若该构建用到了 Addressables，请加 --extra 一并搬走（或用 --extra NewStructureUnity/ServerData/WebGL），\n' +
+        '   否则运行时表现为"资源加载失败"，而构建日志完全正常。详见 docs/design/06 §3③。\n',
+    )
+  }
+
   // —— ③ 逐文件算指纹
   const staged = []
   let totalBytes = 0
@@ -130,6 +158,10 @@ async function main() {
     source: relative(repoRoot, source).split('\\').join('/'),
     entry: 'index.html',
     loader: staged.map((f) => f.path).find((p) => /\.loader\.js$/.test(basename(p))) ?? null,
+    /** 是否声明实现了协议桥（DEC-07）。壳冒烟据此决定"是否要求握手成功" */
+    bridge: Boolean(args.bridge),
+    /** 构建目录之外一并搬走的目录（相对仓库根），便于复查 */
+    extras: args.extra,
     files: staged,
     fileCount: staged.length,
     totalBytes,
@@ -147,6 +179,7 @@ async function main() {
   console.log(`  源：    ${relative(repoRoot, source)}`)
   console.log(`  暂存：  unity/builds/${key}（${staged.length} 个文件，${mb} MB）`)
   console.log(`  loader：${entry.loader ?? '（未识别，需人工确认）'}`)
+  console.log(`  协议桥：${entry.bridge ? '已声明实现（壳冒烟将要求握手成功）' : '未声明（壳冒烟只验"画面挂上"，日志会写明未握手）'}`)
   console.log(`  清单：  unity/builds/manifest.json（共 ${manifest.builds.length} 个构建）`)
   console.log('\n提醒：unity/builds/ 不进 git（DEC-57）；打包用 node tools/pipeline/pack.mjs。')
 }
