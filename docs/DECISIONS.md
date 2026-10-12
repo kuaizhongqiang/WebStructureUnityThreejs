@@ -396,3 +396,15 @@
 | 契约校验脚本的比对对象与触发时机 | 需要用户确认 | 第三轮问题 |
 | 移动端（微信内置）的实际内核版本与降级策略 | 需要实测 | 第三轮问题 |
 | 数据模型（DEC-04"全量"）的字段清单 | 尚未起草 | 第三轮问题 |
+
+## 13 已执行结果（累计，事实记录）
+
+| 日期 | 事项 | 结果 | 依据 |
+|---|---|---|---|
+| 2026-10-12 | `.gitignore` + `.gitattributes` | 已创建；`Library/`、`.plastic/`、`node_modules/`、`dist/`、测试产物均已排除 | DEC-25 / DEC-34 |
+| 2026-10-12 | `web/` 骨架 + 依赖 | 已安装并验证：`typecheck` ✅ / `test` ✅（6 用例）/ `build` ✅（vite 8.3.4，three 随页面懒加载 635KB） | DEC-15 / DEC-30 / DEC-33 |
+| 2026-10-12 | 三维渲染冒烟 | `npm run smoke` **12 项断言全通过**（含确定性"非白屏"判定）；**当场抓到并修复一个真实缺陷**（跨 TaskType 导航不切换技术栈 / Unity→Three 切回不重建画布） | DEC-27 / DEC-50 |
+| 2026-10-12 | **git 提交**（DEC-60 渠道①） | `c0a7b0f`（94 文件，首次纳入 docs+web+Unity 脚手架）；`1fd7614`（Unity 编辑器升级 URP 资产到 version 11）。工作区干净 | DEC-56 / DEC-28 |
+| 2026-10-12 | **Plastic 提交**（DEC-60 渠道②） | 纳管 `Assets/Scenes`、`Assets/Settings`、`Packages`、`ProjectSettings`、`ignore.conf`；**`cs:1 → cs:2`**（`/main@NewStructureUnity@tj_kuaiprojcet@cloud.cn`）；私有文件 0 | DEC-60 |
+| 待执行 | WebGL 基线实测 / Addressables / Unity MCP / Unity 目录与 asmdef | **被"编辑器正在运行"阻塞**，待用户给空闲时段（DEC-59） | DEC-44 / DEC-45 / DEC-46 / DEC-47 |
+| 待执行 | ESLint + Prettier | 已批准未安装（下一批） | DEC-52 / DEC-62 |
