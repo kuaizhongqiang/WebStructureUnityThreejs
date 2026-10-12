@@ -1,7 +1,11 @@
 # AGENT.md
 
-本文件是本仓库的 AI 协作入口说明，供在本项目中工作的 AI Agent（以及人）快速对齐上下文。
-内容全部来自 `docs/requirement/raw/raw-requirement.md`（原始需求，唯一权威来源），未做需求外的推断。
+本文件是本仓库的 **AI 协作入口说明**，供在本项目中工作的 AI Agent（以及人）快速对齐上下文。
+
+- `README.md` 是**给人看的总览**（仓库结构 / 怎么跑 / 当前状态）；
+- 本文件是**约定与纪律的权威**，两者分工不重叠；
+- 第 1、2 节来自 `docs/requirement/raw/raw-requirement.md`（原始需求，唯一权威来源），未做需求外的推断；
+- 第 3 节只写**已核实的仓库事实**，第 4 节是**必须遵守的工作约定**，第 5 节是**仍未闭合的项**。
 
 ---
 
@@ -12,7 +16,7 @@
 - 可参考的既有工程（只读参考，不是本项目代码基线）：
   - `F:\Project\MCV_Module_0928`
   - `F:\Project\MCV_Module`
-- 交付形态：**默认 Web 端**，另有 **Electron 应用壳（app 壳）分支**。
+- 交付形态：**默认 Web 端**，另有 **Electron 应用壳（app 壳）**（与 Web 工程同仓，`electron/` 子目录，见 DEC-20 / DEC-32）。
 
 ## 2. 不可动摇的架构约束
 
@@ -35,10 +39,15 @@
 
 - 仓库：`F:\Project\WebStructureUnityThreejs`（**双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌 Plastic 工作区，见 DEC-60）。
 - `docs/requirement/raw/raw-requirement.md`：原始需求，唯一权威来源。
-- `docs/`：需求分析、调研、两轮问答、**决策记录 `DECISIONS.md`（已定事项的唯一权威）**。索引见 `docs/README.md`。
-- `NewStructureUnity/`：Unity 工程（Unity 2022.3.53f1c1 + URP 14.0.11，含 Assets / Packages / ProjectSettings），业务代码尚为零（`Assets/Scripts` 未建）；目录与程序集分层草案见 `docs/design/03-layout-and-assets.md`。
-- `web/`：Web 侧工程（Vite + TypeScript 5.9.3 + Vue 3 + 裸 three），骨架已落地并验证（typecheck / 单测 / 构建 / 三维渲染冒烟均通过）。
-- 参考工程（只读）：`F:\Project\MCV_Module_0928`、`F:\Project\MCV_Module`、`F:\Project\SensorSimulationTrainingSoftware_v1.0_2026`。
+- `docs/`：需求分析 + 8 篇调研（`research/01~08`）+ 三轮问答 + **决策记录 `DECISIONS.md`（已定事项的唯一权威，现 72 条：DEC-01 ~ DEC-72）** + 4 篇设计草案（`design/01~04`）；页面清单见 `docs/PAGE-WORKLIST.md`，索引见 `docs/README.md`。
+- `docs/ui-mockups/`：29 页静态排版稿 + `index.html`（**元件规范成果页**）+ `style.css`（唯一样式依赖，含深/浅两套主题与框体令牌 §20）。
+- `web/`：Web 侧工程（Vite 8 + TypeScript **5.9.3** + Vue 3 + 裸 three 0.186）。已落地并验证：`src/contracts`（双端契约）、`src/stores`（会话单一真源）、`src/viewer`（裸 three 封装）、`src/unity`（桥协议骨架）、`src/platform`（移动端 / 微信策略）、`src/router` + 两页。`npm run typecheck / test / build / smoke` 均通过。
+- `NewStructureUnity/`：Unity 工程（**2022.3.53f1c1** + URP 14.0.11）。已有程序集分层（`WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode`）、契约枚举 `Assets/Scripts/Contracts/EnumAll.cs`、**WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）、契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始**。分层草案见 `docs/design/03-layout-and-assets.md`。
+- `content/contracts/snapshot.json`：契约校验的**基准快照**（不是真源）。
+- `tools/` + `.github/workflows/gate.yml`：**提交门禁与合并门禁**（契约一致性、大文件阈值、类型检查、单测、构建、渲染冒烟）。
+- WebGL 基线已实测（空场景：**8.40 MiB / 18 文件 / 188.9 秒**，Brotli），见 `docs/research/08-webgl-baseline.md`。
+- 参考工程（只读）：`F:\Project\MCV_Module_0928`、`F:\Project\MCV_Module`、`F:\Project\SensorSimulationTrainingSoftware_v1.0_2026`；样式参考（只读）：`D:\dsh\deepseek-harness`。
+- **尚未开始**：Electron 壳（`electron/` 目录未建）、Unity 业务逻辑、内容资源与真实场景。
 
 > 注：需求要点已全部提炼至本文第 1、2 节；原始文件保持原样，不要改写它。
 
@@ -60,6 +69,13 @@
   - `.plastic/` 是工作区本地元数据，**永不入库**（DEC-34）。
   - 每次改动应可独立验收：一个可验收的改动一次提交（DEC-28）。
 - **文档**：新增设计文档放在 `docs/` 下，与 `docs/requirement/raw/` 的原始需求分开放置；文档索引见 `docs/README.md`。
+- **README 与仓库现状同步**：`README.md` 是给人看的总览（仓库结构 / 怎么跑 / 当前状态）。**改动目录结构、命令、脚本或"当前状态"时，同一批改动里必须更新它**，不要让它落后于实际。
+- **⚠️ 提交门禁必须通过（硬纪律）**：本仓库有自动化门禁，**门禁不过不得提交**。
+  - 本地 pre-commit hook：由 `tools/install-hooks.ps1` 一次性安装到 `.git/hooks/`（hook 本体不入库）；它会跑契约一致性与大文件检查。
+  - 手动复核：`node tools/check-contracts.mjs`（**TS ↔ 快照 ↔ C# 三方逐值比对**）、`node tools/check-large-files.mjs`（10 MB 阈值，见 DEC-65）。
+  - 合并门禁：`.github/workflows/gate.yml`（CI）额外跑类型检查、单测、构建与三维渲染冒烟。
+  - 契约三处必须同批修改：`web/src/contracts/*`（TS）、`content/contracts/snapshot.json`（基准快照）、`NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs`（C#）—— 只改一侧门禁会直接拦下（DEC-10 / DEC-67 / DEC-68）。
+- **框体样式受令牌约束**：Web 端的描边 / 圆角 / 浮起 / 交互态**不得写零散字面值**，一律走 `docs/ui-mockups/style.css` 的令牌：中性描边 `0.5px solid var(--border-1|2|3|4)`（α 值随主题反转）、圆角只用 `--radius-xs|sm|md|lg|xl|panel`（6 级、按角色选档）、浮层用 `border: 0` + `var(--elev-*)`、交互态用 `var(--inter-*)`。规则出处：只读参考 `D:\dsh\deepseek-harness` 的 `docs/web-styling.md` 与 `docs/ui-radius.md`，我们的取舍写在 `style.css` §20.7。
 - **⚠️ Web 样式必须集中在样式成果页里体现（硬纪律）**：任何 Web 端样式（设计令牌、组件类名、状态变体）**都必须在 `docs/ui-mockups/index.html`（样式清单成果页）里有对应展示**。
   - 新增或修改样式时，**同一批改动里必须**在 `docs/ui-mockups/src/style-spec.mjs` 补上示例条目，然后重新生成成果页；**只写在 CSS 里、成果页看不到的样式，视为未完成**。
   - 两套主题（深色 / 亮色）都算"必须展现"的范围：改令牌后要确认成果页与页面在**两种主题**下都正常。
@@ -67,7 +83,7 @@
 
 ## 5. 待澄清项（不要默认已解决）
 
-> 下列各项已编号化并**已回答**：答案固化在 `docs/DECISIONS.md`（**已定事项的唯一权威记录**，只增不改，现含两轮共 62 条决策）；两轮的原始问答见 `docs/OPEN-QUESTIONS.md`（第一轮）与 `docs/OPEN-QUESTIONS-R2.md`（第二轮），第三轮待答见 `docs/OPEN-QUESTIONS-R3.md`。本节只保留原始提法，不重复维护答案。
+> 下列各项已编号化并**已回答**：答案固化在 `docs/DECISIONS.md`（**已定事项的唯一权威记录**，只增不改，现含**三轮共 72 条**决策：DEC-01 ~ DEC-72（第一轮 §1~§9、第二轮 §10~§13、第三轮 §14~§15）；三轮的原始问答分别见 `docs/OPEN-QUESTIONS.md`、`docs/OPEN-QUESTIONS-R2.md`、`docs/OPEN-QUESTIONS-R3.md`，**均已关闭**。本节只保留原始提法，不重复维护答案。
 > **未列入 `docs/DECISIONS.md` 的事项仍属未决**，按 §4 的"歧义处理"执行。当前明确未决：**运行环境最终形态**（DEC-05 / DEC-35，先按"服务器可控"实现）。
 
 - 复杂 / 简单三维交互的**判定标准**是什么？
