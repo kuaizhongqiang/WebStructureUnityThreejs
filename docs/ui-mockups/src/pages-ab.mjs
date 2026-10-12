@@ -127,8 +127,11 @@ export const pagesAB = [
     statusbar: '[ 加载中 ] 正在准备实验环境',
     statusRight: '请勿关闭页面',
     body: `
-      <div class="ui-center" style="height:100%;gap:22px">
+      <!-- 加载环单独居中；文字与进度整体压到下部（2026-10-12 审核意见） -->
+      <div class="ui-center" style="height:100%">
         <div class="ui-loading-ring"></div>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:56px;display:flex;flex-direction:column;align-items:center;gap:14px">
         <div class="ui-h2">正在加载实验环境…</div>
         <div style="width:620px">
           <div class="ui-progress ui-progress--lg"><div class="ui-progress__bar" style="width:64%"></div></div>
@@ -137,9 +140,9 @@ export const pagesAB = [
             <span class="ui-small" style="color:var(--accent-2)">64%</span>
           </div>
         </div>
-        <div class="ui-muted ui-small" style="margin-top:6px">首次加载较慢；后续进入同一实验会命中缓存</div>
-        <div class="note">A3 · <b>加载过渡页</b> · 环形进度 + 条形进度 + 阶段文案</div>
-      </div>`,
+        <div class="ui-muted ui-small">首次加载较慢；后续进入同一实验会命中缓存</div>
+      </div>
+      <div class="note">A3 · <b>加载过渡页</b> · 环形进度居中 + 阶段文案与条形进度在下部</div>`,
   },
 
   // ------------------------------------------------------------------ A4
@@ -554,7 +557,7 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
         <div class="ui-panel" style="width:560px">
           <div class="ui-panel__head">正在切换到「仿真实验」</div>
           <div class="ui-panel__body ui-col" style="gap:16px">
-            <div class="ui-row"><div class="ui-loading-ring" style="width:34px;height:34px;border-width:3px"></div><span>加载 Unity WebGL 运行时与分包资源…</span></div>
+            <div class="ui-row"><div class="ui-loading-ring ui-loading-ring--sm"></div><span>加载 Unity WebGL 运行时与分包资源…</span></div>
             <div>
               <div class="ui-progress"><div class="ui-progress__bar" style="width:42%"></div></div>
               <div class="ui-row" style="justify-content:space-between;margin-top:8px">

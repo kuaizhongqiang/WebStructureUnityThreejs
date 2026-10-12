@@ -369,10 +369,18 @@ body {
 .ui-progress__bar { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
 .ui-progress--lg { height: 14px; }
 .ui-loading-ring {
-  width: 56px; height: 56px; border-radius: 50%;
-  border: 4px solid rgba(59, 130, 246, 0.18); border-top-color: var(--accent);
+  /* 尺寸走组件局部变量：要整体放大/缩小只改这两个值，不用动页面
+     （2026-10-12 负责人要求"从样式入手放大一倍"：56 → 112，边框 4 → 8） */
+  --loading-ring: 112px;
+  --loading-ring-bw: 8px;
+  width: var(--loading-ring); height: var(--loading-ring);
+  border-radius: 50%;
+  border: var(--loading-ring-bw) solid var(--accent-weak);   /* 轨道用主色 α，不再硬编码蓝 */
+  border-top-color: var(--accent);
   animation: ui-spin 0.9s linear infinite;
 }
+/* 小号：与文字同排（如 B3"加载 Unity WebGL 运行时…"那一行） */
+.ui-loading-ring--sm { --loading-ring: 34px; --loading-ring-bw: 3px; }
 @keyframes ui-spin { to { transform: rotate(360deg); } }
 
 /* 徽章 / 标签 */

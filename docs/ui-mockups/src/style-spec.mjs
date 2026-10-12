@@ -129,10 +129,10 @@ export const styleSpecSections = [
         html: '<div class="ui-progress" style="width:220px"><div class="ui-progress__bar" style="width:64%"></div></div>',
       },
       {
-        name: '加载环',
-        desc: '等待状态；不可无反馈地空白等待',
-        cls: '.ui-loading-ring',
-        html: '<div class="ui-loading-ring" style="width:40px;height:40px;border-width:3px"></div>',
+        name: '加载环（默认 + 行内小号）',
+        desc: '等待状态；不可无反馈地空白等待。默认 112px（2026-10-12 从 56px 放大一倍）；与文字同排用 --sm（34px）。尺寸由组件局部变量 --loading-ring / --loading-ring-bw 控制，要整体缩放只改这两个值',
+        cls: '.ui-loading-ring / .ui-loading-ring--sm',
+        html: '<div class="ui-row" style="gap:28px"><div class="ui-loading-ring"></div><div class="ui-loading-ring ui-loading-ring--sm"></div></div>',
       },
       {
         name: '步骤条',
