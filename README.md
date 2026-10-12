@@ -106,6 +106,24 @@ npm run dist                  # 打包 → release/WSU3-Shell-<version>-portable
 "能打开"这件事有可读证据。窗口外观（Windows 隐藏原生标题栏 + 系统浮层按钮 + 主题同步）见
 [`electron/README.md`](./electron/README.md)。
 
+### Unity 产物与打包流水线
+
+**Unity 由人手动构建，但"进不进包"由流水线决定、校验、并写进清单**（DEC-79，细则见
+[`docs/design/05-unity-packaging-pipeline.md`](./docs/design/05-unity-packaging-pipeline.md)）。
+
+```bash
+# ① Unity 编辑器里构建（菜单 WSU3/Build/WebGL Baseline，构建前必须关编辑器）
+# ② 暂存 + 校验（产物进 unity/builds/，不进 git；逐文件 sha256 写进清单）
+node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl-baseline --key training --task-type 5
+# ③ 一键打包（校验 → web build → 发布清单 release-manifest.json → exe）
+node tools/pipeline/pack.mjs
+```
+
+- 没有真 Unity 时也能验流水线：`node tools/pipeline/make-stub-unity.mjs --key training --task-type 5 --stage`。
+- 发布清单 `web/dist/release-manifest.json` 会随包发布，写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与服务端约定。
+- **Unity 缺席不影响 Web 侧打包，但界面上会明确写"Unity 产物未包含"**（Unity 类任务不再假装能进）。
+- `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
+
 细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
 
 ### 提交门禁

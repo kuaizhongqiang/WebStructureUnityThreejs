@@ -27,6 +27,10 @@
       {
         "from": "../web/dist",
         "to": "web"
+      },
+      {
+        "from": "../unity/builds",
+        "to": "unity"
       }
     ],
     "win": {

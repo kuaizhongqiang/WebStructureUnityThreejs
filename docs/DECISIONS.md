@@ -504,6 +504,24 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 
 
 
+## 第五轮追加（2026-10-12）
+
+| 编号 | 决定 | 选项来源 | 是否偏离建议 | 状态 |
+|---|---|---|---|---|
+| DEC-79 | **Unity 产物必须进打包流水线，且"有没有"必须是可查询的事实**：Unity 仍由人手动构建（DEC-59），产物暂存到 `unity/builds/<key>/`（不进 git，DEC-57），由 `tools/pipeline/` 校验并生成清单，打包时产出 `release-manifest.json`；Web 侧据清单决定"挂载 Unity"还是"明确显示产物未就位" | 第五轮追加 | 否 | 生效 |
+
+### DEC-79 Unity 产物与打包流水线
+
+- **问题**（负责人 2026-10-12 指出）：打包出的壳里**没有 Unity 产物**，而页面对此毫无察觉 —— 这是"最终一定不对"的状态。
+- **决定**：
+  1. **三段式**：Unity 人工构建 → 暂存（`unity-stage.mjs`，逐文件算 sha256）→ 打包（`pack.mjs`：校验 → web build → 发布清单 → exe）；
+  2. **落点唯一**：`unity/builds/<key>/`（`<key>` 对应 TaskType，见 `docs/design/05` §3.2）；早期 `.gitignore` 预留的 `web/public/unity-build/` 保留忽略规则但**不再使用**；
+  3. **发布清单**：`web/dist/release-manifest.json`（随包发布）写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与**服务端约定**（MIME、预压缩、缓存）—— 把 DEC-22 的"MIME/压缩/缓存清单"落成产物本身；
+  4. **Unity 缺席是允许的，但必须明说**：`unity-verify.mjs` 在没有暂存产物时输出"未包含"而**不失败**；页面显示"Unity 产物未包含在本次发布里"并给出暂存命令；**禁止**再出现"页面假设有 Unity → 卡住/白屏"这种中间态。
+- **为什么 Unity 仍要人工**：WebGL 构建需 IL2CPP + 编辑器授权（DEC-44 记录约 189s），且构建前必须关编辑器（DEC-59）。CI 只跑 `unity-verify`，**不构建 Unity**。
+- **已执行（2026-10-12，PR #4）**：`tools/pipeline/{unity-stage,unity-verify,make-stub-unity,pack}.mjs`；`electron/server.js` 新增 `/unity/**` 路由（独立根目录，`/unity` 下缺文件一律 404，不回退成 HTML）与 COOP/COEP 开关 `WSU3_COOP_COEP`；`electron/package.json` 把 `../unity/builds` 打进 `resources/unity`；`web/src/unity/UnityLoader.ts`（注入 loader → `createUnityInstance` → 交桥握手 → 退出 `Quit()`，超时 25s、重试 1 次）+ `stores/runtime.ts` 落地；壳冒烟新增"Unity 页"取证。
+- **验证**：用**桩构建**（`make-stub-unity.mjs`，文件形状与真产物一致，并会走一遍握手）跑通全链 —— 打包版报告 `unityManifest.included=true`、`unityPage.mode="mounted"`（画布已建 + 桥已握手）、`consoleErrors=[]`。**真 Unity 产物接入后不需要改代码**，只是把桩目录换成真目录。
+
 | 未闭合 | 原因 | 去向 |
 |---|---|---|
 | 微信内置浏览器的**真机实测**结果 | 需要真机 | 待设备可用 |

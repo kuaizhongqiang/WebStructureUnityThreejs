@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+/**
+ * 生成一个**形状正确的 Unity WebGL 桩构建**（不是真 Unity 产物）。
+ *
+ * 用途：Unity 构建要人工做（DEC-59：构建前必须关编辑器），所以在它就位之前，
+ * 我们无法验证"流水线 + 服务器 + 加载器 + 桥"这一整条链路。这个桩让链路**今天就能被测**：
+ *   · 文件形状与真产物一致（index.html / Build/*.loader.js / *.framework.js / *.wasm / *.data）；
+ *   · `createUnityInstance` 的行为与官方 loader 同形（返回实例、上报进度、可 Quit）；
+ *   · 启动时会调 `window.__WSU3_BRIDGE__.onReady('1')` —— 正好把 DEC-07 的握手也走一遍。
+ *
+ * 用法：node tools/pipeline/make-stub-unity.mjs --key training --task-type 5
+ *       （生成到 NewStructureUnity/Builds/stub-webgl，再按 design/05 用 unity-stage 暂存）
+ *       node tools/pipeline/make-stub-unity.mjs --key training --task-type 5 --stage   # 直接暂存
+ */
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)))
+
+const args = { key: 'training', taskType: 5, stage: false, out: '' }
+const argv = process.argv.slice(2)
+for (let i = 0; i < argv.length; i += 1) {
+  if (argv[i] === '--key') args.key = argv[++i]
+  else if (argv[i] === '--task-type') args.taskType = Number(argv[++i])
+  else if (argv[i] === '--out') args.out = argv[++i]
+  else if (argv[i] === '--stage') args.stage = true
+}
+
+const outDir = resolve(repoRoot, args.out || join('NewStructureUnity', 'Builds', `stub-${args.key}`))
+const buildName = `stub-${args.key}`
+
+/**
+ * 桩 loader：与官方 `createUnityInstance(canvas, config, onProgress)` 同形。
+ * 它做四件事，正好覆盖我们要验的行为：
+ *   ① 画一块可见的画布（证明"挂载后画面区不是空白"）；
+ *   ② 上报进度（DEC-12：加载必须有进度）；
+ *   ③ 调桥的 onReady 完成握手（DEC-07：版本不匹配要报错）；
+ *   ④ 提供 SendMessage / Quit（DEC-12：退出必须显式销毁）。
+ */
+const loader = `// 桩 loader（由 tools/pipeline/make-stub-unity.mjs 生成，不是真 Unity 产物）
+var createUnityInstance = function (canvas, config, onProgress) {
+  return new Promise(function (resolve, reject) {
+    var ctx = canvas.getContext('2d')
+    var steps = 0
+    var timer = setInterval(function () {
+      steps += 1
+      if (onProgress) onProgress(steps / 4)
+      if (steps >= 4) {
+        clearInterval(timer)
+        if (ctx) {
+          ctx.fillStyle = '#0e141d'
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+          ctx.fillStyle = '#7ef0d0'
+          ctx.font = '16px sans-serif'
+          ctx.fillText('STUB UNITY WEBGL', 20, 40)
+          ctx.fillStyle = '#93a4b8'
+          ctx.font = '12px sans-serif'
+          ctx.fillText('build: ' + config.dataUrl, 20, 68)
+        }
+        var instance = {
+          SendMessage: function (object, method, payload) {
+            window.__WSU3_STUB_CALLS__ = (window.__WSU3_STUB_CALLS__ || [])
+            window.__WSU3_STUB_CALLS__.push({ object: object, method: method, payload: payload })
+          },
+          Quit: function () {
+            window.__WSU3_STUB_QUIT__ = true
+            return Promise.resolve()
+          },
+        }
+        // ③ 走一遍握手：真 Unity 是"场景起来之后"才调 onReady，宿主此时才 attach 完桥，
+        //    所以这里也延后一拍调（否则桥还没挂上，等于跳过了握手这一环）。
+        setTimeout(function () {
+          try {
+            if (window.__WSU3_BRIDGE__ && window.__WSU3_BRIDGE__.onReady) {
+              window.__WSU3_BRIDGE__.onReady(String(config.protocolVersion || 1))
+            }
+          } catch (error) {
+            console.error('[stub unity] 握手失败：', error)
+          }
+        }, 200)
+        resolve(instance)
+      }
+    }, 60)
+  })
+}
+window.createUnityInstance = createUnityInstance
+`
+
+const framework = `// 桩 framework（占位；真产物是被压缩的 WebAssembly 运行时胶水）
+window.__WSU3_STUB_FRAMEWORK__ = true
+`
+
+const indexHtml = `<!DOCTYPE html>
+<html lang="zh-CN">
+  <head><meta charset="utf-8" /><title>${buildName}</title></head>
+  <body>
+    <p>桩构建：真 Unity 产物由 Unity 编辑器构建后替换本目录（见 docs/design/05）。</p>
+  </body>
+</html>
+`
+
+async function main() {
+  const buildDir = join(outDir, 'Build')
+  await mkdir(buildDir, { recursive: true })
+
+  await writeFile(join(outDir, 'index.html'), indexHtml, 'utf8')
+  await writeFile(join(buildDir, `${buildName}.loader.js`), loader, 'utf8')
+  await writeFile(join(buildDir, `${buildName}.framework.js`), framework, 'utf8')
+  // 最小合法 wasm 模块（8 字节魔数+版本）：让"MIME 必须是 application/wasm"这条也能被验到
+  await writeFile(join(buildDir, `${buildName}.wasm`), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]))
+  await writeFile(
+    join(buildDir, `${buildName}.data`),
+    Buffer.from(`stub data for ${args.key}\n`, 'utf8'),
+  )
+
+  console.log(`已生成桩构建：${outDir}`)
+  console.log(`  loader：Build/${buildName}.loader.js`)
+
+  if (args.stage) {
+    const { spawnSync } = await import('node:child_process')
+    const result = spawnSync(
+      process.execPath,
+      [
+        join(repoRoot, 'tools', 'pipeline', 'unity-stage.mjs'),
+        '--from',
+        outDir,
+        '--key',
+        args.key,
+        '--task-type',
+        String(args.taskType),
+      ],
+      { stdio: 'inherit' },
+    )
+    if (result.status !== 0) process.exitCode = result.status ?? 1
+  } else {
+    console.log(`下一步：node tools/pipeline/unity-stage.mjs --from ${outDir} --key ${args.key} --task-type ${args.taskType}`)
+  }
+}
+
+await main()

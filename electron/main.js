@@ -16,6 +16,7 @@
  *   WSU3_WEB_ROOT=<dir> npm start    # 指向别的 Web 产物目录
  */
 const { app, BrowserWindow, dialog, ipcMain, nativeTheme, shell } = require('electron')
+const { existsSync, readFileSync } = require('node:fs')
 const { join, resolve } = require('node:path')
 const { startStaticServer } = require('./server')
 
@@ -41,12 +42,43 @@ const WEB_ROOT = resolve(
     (app.isPackaged ? join(process.resourcesPath, 'web') : join(__dirname, '..', 'web', 'dist')),
 )
 
+/**
+ * Unity 产物是**另一个根目录**（DEC-23：与内容/代码物理分开；见 docs/design/05）。
+ *
+ * 这样分开的三个好处：① 将来改成按需下载或换 CDN，只换这一个根；② Unity 缺席时不影响 Web 侧；
+ * ③ 打包时不必把几百 MB 复制进 web/dist 再复制一次。
+ * 挂在 URL 的 `/unity/` 前缀下（server.js 的路由）。
+ */
+const UNITY_ROOT = resolve(
+  process.env.WSU3_UNITY_ROOT ||
+    (app.isPackaged ? join(process.resourcesPath, 'unity') : join(__dirname, '..', 'unity', 'builds')),
+)
+
+/** Unity 清单：告诉我们"这次包里到底有没有 Unity"，用于启动日志与冒烟判定。 */
+function readUnityManifest() {
+  try {
+    const file = join(UNITY_ROOT, 'manifest.json')
+    if (!existsSync(file)) return { included: false, builds: [], reason: '本机没有 Unity 暂存产物' }
+    const parsed = JSON.parse(readFileSync(file, 'utf8'))
+    const builds = Array.isArray(parsed.builds) ? parsed.builds : []
+    return {
+      included: builds.length > 0,
+      builds: builds.map((b) => ({ key: b.key, taskType: b.taskType, totalBytes: b.totalBytes })),
+      reason: builds.length > 0 ? `已包含 ${builds.length} 个 Unity 构建` : '清单为空',
+    }
+  } catch (error) {
+    return { included: false, builds: [], reason: `清单读取失败：${String(error)}` }
+  }
+}
+
 /** 窗口底色与标题栏符号色随主题走，避免"亮色页面 + 深色原生按钮"。 */
 const THEME_CHROME = {
   dark: { background: '#05070a', symbol: '#f9fafb' },
   light: { background: '#eef2f7', symbol: '#16212e' },
 }
 let currentTheme = 'dark'
+/** Unity 清单缓存（启动时读一次，供日志与冒烟判定用） */
+let unityManifest = null
 
 /** @type {{ url: string, root: string, close: () => Promise<void> } | null} */
 let serverInfo = null
@@ -175,6 +207,39 @@ async function waitForMount(budgetMs = 8000) {
   }
 }
 
+/**
+ * 冒烟第二段：打开一个 **Unity 类任务页**（TaskType.Training = 5）。
+ *
+ * 这一段的重点不是"能不能跑 Unity"，而是**"包里到底有没有 Unity"必须是个明确事实**：
+ *   · 清单里有构建 → 画布出现 + 状态条显示"已握手"（证明 DEC-07 的握手真的走了）；
+ *   · 清单里没有构建 → 页面必须出现"Unity 产物未包含"这段明确文案。
+ * 两种都算通过，**第三种（既没挂上也没说明）算失败** —— 那正是"壳里没有 Unity 却看不出来"的旧毛病。
+ */
+async function smokeUnity() {
+  try {
+    await win.webContents.executeJavaScript(`location.hash = '#/task/5'`)
+    await new Promise((done) => setTimeout(done, 3500))
+    const state = await win.webContents.executeJavaScript(`(() => {
+      const text = document.body.innerText
+      return {
+        hasCanvas: Boolean(document.querySelector('.app-viewport canvas')),
+        handshake: text.includes('已握手'),
+        absent: text.includes('Unity 产物未包含'),
+        badge: (document.querySelector('.ui-panel__right .ui-badge') || {}).textContent || '',
+      }
+    })()`)
+    const mounted = state.hasCanvas && state.handshake
+    const mode = mounted ? 'mounted' : state.absent ? 'absent' : 'unclear'
+    log(
+      `Unity 页：canvas=${state.hasCanvas} 握手=${state.handshake} 明确报告未包含=${state.absent} → ${mode}`,
+    )
+    return { ok: mounted || state.absent, mode, ...state }
+  } catch (error) {
+    log('Unity 页取证失败：', String(error))
+    return { ok: false, mode: 'error' }
+  }
+}
+
 async function afterLoad() {
   if (!SMOKE) {
     log('页面已加载')
@@ -199,7 +264,14 @@ async function afterLoad() {
       }
     })()`)
 
-    const ok = report.mounted && report.shell.isDesktop && consoleErrors.length === 0
+    // 第二段取证：真的开一个 Unity 类任务页（TaskType.Training = 5）
+    const unityReport = await smokeUnity()
+
+    const ok =
+      report.mounted &&
+      report.shell.isDesktop &&
+      consoleErrors.length === 0 &&
+      unityReport.ok
 
     // 打包后的 Windows GUI 程序**不带控制台**，stdout 会被丢掉 —— 所以同时落一份报告文件，
     // 让"能打开"这件事有可读、可留档的证据。
@@ -213,6 +285,8 @@ async function afterLoad() {
       packaged: app.isPackaged,
       webRoot: serverInfo ? serverInfo.root : null,
       captionHeight: CAPTION_HEIGHT,
+      unityManifest,
+      unityPage: unityReport,
       consoleErrors,
       ...report,
       at: new Date().toISOString(),
@@ -254,7 +328,14 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(async () => {
     try {
-      serverInfo = await startStaticServer({ root: WEB_ROOT })
+      unityManifest = readUnityManifest()
+      serverInfo = await startStaticServer({
+        root: WEB_ROOT,
+        // Unity 目录可能为空（还没构建）：此时不给根目录，`/unity/**` 一律 404，
+        // 页面据发布清单显示"产物未就位" —— 而不是把一个 HTML 当 wasm 去实例化。
+        unityRoot: unityManifest.included ? UNITY_ROOT : null,
+        coopCoep: process.env.WSU3_COOP_COEP === '1',
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       if (SMOKE) {
@@ -269,6 +350,13 @@ if (!app.requestSingleInstanceLock()) {
     log(`Web 产物目录：${serverInfo.root}`)
     log(`本机静态服务：${serverInfo.url}`)
     log(`标题栏浮层高度：${CAPTION_HEIGHT}px（页面会用 --shell-caption-h 让位）`)
+    log(`Unity 产物：${unityManifest.included ? '' : '未包含 —— '}${unityManifest.reason}`)
+    if (unityManifest.included) {
+      log(`Unity 目录：${UNITY_ROOT} → ${serverInfo.url}unity/`)
+      for (const build of unityManifest.builds) {
+        log(`  · ${build.key}（taskType=${build.taskType}，${(build.totalBytes / 1024 / 1024).toFixed(1)} MB）`)
+      }
+    }
     registerShellIpc()
     createWindow()
 

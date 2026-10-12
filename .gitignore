@@ -61,7 +61,15 @@ pnpm-lock.yaml
 web/tools/smoke/artifacts/
 docs/ui-mockups/shots/
 
-# ---------- Web 产物落点（Unity WebGL 构建输出，体积大且可再生） ----------
+# ---------- Unity 产物暂存区（DEC-57/79：大资产不进 git） ----------
+# 正式落点：unity/builds/<key>/（由 tools/pipeline/unity-stage.mjs 搬入，打包时进 resources/unity）。
+# 注意：上面的 `[Bb]uilds/` 规则会把整个 unity/builds/ 也忽略掉，所以这里要**重新纳入目录本身**，
+# 再只放行那份说明文件 —— 否则新克隆的仓库里没有这个目录，electron-builder 的 extraResources 会直接报错。
+!unity/builds/
+unity/builds/*
+!unity/builds/README.md
+
+# ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/
 /web/public/unity-build-*/
 
@@ -83,4 +91,6 @@ desktop.ini
 nul
 
 # 打包产物（exe 可达上百 MB，绝不入库；见 DEC-77）
+# 注意用通配：pack.mjs 支持 --out release-xxx 换输出目录（上一次的 exe 被占用时），那些也要忽略
 electron/release/
+electron/release-*/
