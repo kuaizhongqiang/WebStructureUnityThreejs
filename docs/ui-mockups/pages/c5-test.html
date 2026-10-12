@@ -8,6 +8,7 @@
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -21,20 +22,72 @@
         </div>
       </header>
   <div class="board__body">
-<nav class="ui-tabs">
-        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab ui-tab--active">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+<div class="todo-mark">题目样式待重做（TODO.md T2）</div>
+      <nav class="ui-route">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">3</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">4</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
       </nav>
-      <div style="position:absolute;inset:0;padding:18px 24px;display:flex;gap:18px">
+      <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
         <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">小测验<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js</span></span></div>
           <div class="ui-panel__body ui-question">
@@ -63,22 +116,10 @@
           </div>
         </div>
       </div>
-      <div class="ui-corner ui-corner--rt">
-        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
-      </div>
-      <div class="ui-corner ui-corner--lb">
-        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
-      </div>
-      <div class="note" style="z-index:60">C5 · <b>小测验</b> · 题干 + 选项 + 答题卡（控件详见 D2）</div>
+      <div class="note">C5 · <b>小测验</b> · <b>题目样式已列入重做</b>（审核意见：丑）；结构与站点线已更新，请只评审结构与导航</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">

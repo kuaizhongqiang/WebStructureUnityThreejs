@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>C3 C3 实验仪器（Equipment） — 页面排版稿</title>
+<title>C3 C3 实验仪器（Equipment）— 已按审核意见调整 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -21,28 +22,96 @@
         </div>
       </header>
   <div class="board__body">
-<nav class="ui-tabs">
-        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--active ui-tab--done">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+<nav class="ui-route">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg ui-route__seg--done"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">3</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">4</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
       </nav>
-      <div style="position:absolute;inset:0;padding:18px 24px;display:flex;gap:16px">
-        <div class="ui-panel" style="width:300px">
-          <div class="ui-panel__head">仪器清单</div>
-          <div class="ui-panel__body ui-list ui-panel__body--flush" style="padding:12px">
-            <div class="ui-list__item ui-list__item--active"><span class="ui-list__idx">1</span><span class="ui-list__thumb"></span><span>数字万用表</span></div>
-            <div class="ui-list__item"><span class="ui-list__idx">2</span><span class="ui-list__thumb"></span><span>直流稳压电源</span></div>
-            <div class="ui-list__item"><span class="ui-list__idx">3</span><span class="ui-list__thumb"></span><span>温度传感器</span></div>
-            <div class="ui-list__item"><span class="ui-list__idx">4</span><span class="ui-list__thumb"></span><span>加热台</span></div>
-            <div class="ui-list__item"><span class="ui-list__idx">5</span><span class="ui-list__thumb"></span><span>连接线（红/黑）</span></div>
+      <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
+        <div class="ui-panel" style="width:330px">
+          <div class="ui-panel__head">仪器清单<span class="ui-panel__right"><span class="ui-badge">5 件</span></span></div>
+          <div class="ui-panel__body ui-panel__body--flush" style="padding:14px">
+            <div class="ui-iconlist">
+              <div class="ui-iconitem ui-iconitem--active">
+                <span class="ui-iconitem__icon">📊</span>
+                <span><span class="ui-iconitem__name">数字万用表</span><br><span class="ui-iconitem__sub">测量电压 / 电阻</span></span>
+              </div>
+              <div class="ui-iconitem">
+                <span class="ui-iconitem__icon">🔌</span>
+                <span><span class="ui-iconitem__name">直流稳压电源</span><br><span class="ui-iconitem__sub">0~30V 可调</span></span>
+              </div>
+              <div class="ui-iconitem">
+                <span class="ui-iconitem__icon">🌡️</span>
+                <span><span class="ui-iconitem__name">温度传感器</span><br><span class="ui-iconitem__sub">被测对象</span></span>
+              </div>
+              <div class="ui-iconitem">
+                <span class="ui-iconitem__icon">♨️</span>
+                <span><span class="ui-iconitem__name">加热台</span><br><span class="ui-iconitem__sub">提供温度变化</span></span>
+              </div>
+              <div class="ui-iconitem">
+                <span class="ui-iconitem__icon">➰</span>
+                <span><span class="ui-iconitem__name">连接线</span><br><span class="ui-iconitem__sub">红 / 黑各一</span></span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="ui-panel" style="flex:1">
@@ -65,37 +134,32 @@
             </div>
           </div>
         </div>
-        <div class="ui-panel" style="width:330px">
+        <div class="ui-panel" style="width:400px">
           <div class="ui-panel__head">仪器说明</div>
-          <div class="ui-panel__body ui-col" style="gap:10px">
-            <div style="height:120px;border-radius:8px;background:var(--grid);background-color:var(--bg-0);border:1px solid var(--line-1)"></div>
-            <div class="ui-h2" style="font-size:var(--fs-14)">数字万用表</div>
-            <div class="ui-muted ui-small" style="line-height:1.8">可测直流电压 / 交流电压 / 电阻 / 电流；本实验用于测量传感器输出电压。</div>
-            <div class="ui-row" style="gap:8px"><span class="ui-badge">量程 2V/20V</span><span class="ui-badge">精度 0.5%</span></div>
+          <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:16px">
+            <div style="height:180px;border-radius:8px;background:var(--grid);background-color:var(--bg-0);border:1px solid var(--line-1)"></div>
+            <div style="font-size:var(--fs-18);font-weight:600">数字万用表</div>
+            <div class="ui-article" style="font-size:var(--fs-14)">
+              可测量直流电压、交流电压、电阻与电流。本实验用于测量传感器的输出电压，
+              注意量程应选择略大于被测值的档位，以减小相对误差。
+            </div>
+            <div class="ui-row" style="gap:8px;flex-wrap:wrap">
+              <span class="ui-badge">量程 2V / 20V</span>
+              <span class="ui-badge">精度 0.5%</span>
+              <span class="ui-badge">输入阻抗 10MΩ</span>
+            </div>
           </div>
         </div>
       </div>
-      <div class="ui-corner ui-corner--rt">
-        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
-      </div>
-      <div class="ui-corner ui-corner--lb">
-        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
-      </div>
-      <div class="note" style="z-index:60">C3 · <b>实验仪器</b> · 左清单 + 中三维可交互 + 右图文（参考工程里这一页是最佳样板，MCV 已完整接线）</div>
+      <div class="note">C3 · <b>实验仪器（已调整）</b> · 列表改为<b>图标优先</b>（46px 图标 + 名称 16px）；右栏说明字号从 12px 提到 14/18px</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>C3 · C3 实验仪器（Equipment） · 归属 UI · TaskType.Equipment</span>
+  <span>C3 · C3 实验仪器（Equipment）— 已按审核意见调整 · 归属 UI · TaskType.Equipment</span>
 </div>
 </body>
 </html>

@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A9 常驻 · 沉睡 / 唤醒遮罩 — 页面排版稿</title>
+<title>A9 常驻 · 功能条伸缩两态（原「休眠」） — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -22,25 +23,97 @@
       </header>
   <div class="board__body">
 
-      <div class="ui-sleepmask" style="position:absolute;inset:0">
-        <div style="font-size:40px;opacity:.5">◍</div>
-        <div class="ui-h2">已进入休眠</div>
-        <div class="ui-muted ui-small">超过 3 分钟无操作，已暂停三维渲染以节省性能</div>
-        <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill" style="margin-top:10px">点击任意处继续</button>
+      <div style="padding:24px 32px;display:flex;flex-direction:column;gap:20px">
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>
+            <b>休眠不是遮罩。</b>无操作达到阈值后，把<b>可伸缩的功能条自动收起</b>（只留把手），并暂停三维渲染；
+            鼠标移动 / 点击把手即恢复。<b>标题栏与右上返回按钮永不收起</b>，始终给用户出口。
+          </span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div>
+            <div class="ui-h2" style="margin-bottom:10px">① 展开态（默认）</div>
+            <div class="demo-frame">
+              <div style="position:absolute;top:0;left:0;right:0">
+                <nav class="ui-route" style="padding:12px 16px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">实验仪器</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">3</span><span class="ui-route__label">仿真实验</span></div>
+          <span class="ui-route__seg"></span>
+          <div class="ui-route__stop"><span class="ui-route__dot">4</span><span class="ui-route__label">小测验</span></div>
+        </nav>
+              </div>
+              <div class="ui-bar__handle" style="margin-top:6px"></div>
+              <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+              <div class="ui-tips-float" style="right:14px;bottom:14px;width:280px">
+                <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span></span></div>
+                <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">调节旋钮使读数稳定</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="ui-h2" style="margin-bottom:10px">② 收起态（无操作 N 分钟后）</div>
+            <div class="demo-frame">
+              <div class="ui-bar--collapsed" style="position:absolute;top:0;left:0;right:0"><nav class="ui-route" style="padding:12px 16px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">实验仪器</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">3</span><span class="ui-route__label">仿真实验</span></div>
+          <span class="ui-route__seg"></span>
+          <div class="ui-route__stop"><span class="ui-route__dot">4</span><span class="ui-route__label">小测验</span></div>
+        </nav></div>
+              <div class="ui-bar__handle" style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:6"></div>
+              <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+              <div class="ui-center ui-muted ui-small" style="position:absolute;inset:0;justify-content:center">三维渲染已暂停（省电）<br>移动鼠标或点击上方把手即可恢复</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">哪些条可伸缩</div>
+          <div class="ui-panel">
+            <div class="ui-panel__body ui-col" style="gap:8px">
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">任务站点线（页签栏）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">提示浮窗（可单独最小化为一行）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">三维页的悬浮工具条</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--err">永不收起</span><span class="ui-small">标题栏 + 右上返回按钮（用户出口）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--err">永不收起</span><span class="ui-small">模态框（有未确认的操作时）</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-row" style="gap:16px">
+          <span class="ui-small ui-muted">把手形态</span>
+          <span style="width:120px;display:flex;flex-direction:column;align-items:center;gap:2px"><span class="ui-bar__handle"></span></span>
+          <span class="ui-small ui-muted">收起后条高为 0，仅保留 4px 把手；悬停把手变主色</span>
+          <span class="ui-bar-toggle">▴ 展开功能条</span>
+        </div>
       </div>
-      <div class="note" style="z-index:70">A9 · <b>沉睡遮罩</b> · 无操作 N 分钟后暂停渲染（对应参考工程 SleepTipsPanel）</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>A9 · 常驻 · 沉睡 / 唤醒遮罩 · 归属 常驻</span>
+  <span>A9 · 常驻 · 功能条伸缩两态（原「休眠」） · 归属 常驻</span>
 </div>
 </body>
 </html>

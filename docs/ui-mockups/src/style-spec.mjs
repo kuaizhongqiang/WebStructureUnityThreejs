@@ -256,6 +256,136 @@ export const styleSpecSections = [
   },
 ]
 
+export const styleSpecSectionsRound2 = [
+  {
+    title: '八、本轮修订：新增与替换的组件（依 2026-10-12 审核意见）',
+    items: [
+      {
+        name: '站点线导航（替代页签栏）',
+        desc: '一个 TaskType 一个"站"，站与站之间用连线连接；已完成站打勾、当前站实心带光晕',
+        cls: '.ui-route / .ui-route__stop / .ui-route__seg',
+        html: `<nav class="ui-route" style="padding:12px 14px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">2</span><span class="ui-route__label">仪器</span></div>
+          <span class="ui-route__seg"></span>
+          <div class="ui-route__stop"><span class="ui-route__dot">3</span><span class="ui-route__label">原理</span></div>
+        </nav>`,
+      },
+      {
+        name: '站点 · 未开放态',
+        desc: '内容未启用（active:false）时半透明且不可点',
+        cls: '.ui-route__stop--locked',
+        html: `<nav class="ui-route" style="padding:12px 14px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--locked"><span class="ui-route__dot">2</span><span class="ui-route__label">电路连接</span></div>
+        </nav>`,
+      },
+      {
+        name: '提示浮窗（展开）',
+        desc: '右下角浮窗，替代原"底部固定提示栏"；步骤提示在上、操作提示在下',
+        cls: '.ui-tips-float',
+        html: `<div class="ui-tips-float" style="position:static;width:300px">
+          <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span><span class="ui-tips-float__icon">✕</span></span></div>
+          <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">接到 V+ 端子</span></div>
+          <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先断电</span></div>
+        </div>`,
+      },
+      {
+        name: '提示浮窗（最小化为一行）',
+        desc: '点 ▾ 收起；再点展开',
+        cls: '.ui-tips-float--mini',
+        html: `<div class="ui-tips-float ui-tips-float--mini" style="position:static">
+          <span class="ui-tips__tag ui-tips__tag--step">步骤</span><span class="ui-tips__text">接到 V+ 端子</span><span class="ui-tips-float__icon">▴</span>
+        </div>`,
+      },
+      {
+        name: '提示浮窗（淡出态）',
+        desc: '步骤完成后自动降到半透明，鼠标移入恢复',
+        cls: '.ui-tips-float--ghost',
+        html: `<div class="ui-tips-float ui-tips-float--ghost" style="position:static;width:260px">
+          <div class="ui-tips-float__head"><span>上一步已完成</span></div>
+          <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">接到 V+ 端子</span></div>
+        </div>`,
+      },
+      {
+        name: '功能条收起态 + 把手',
+        desc: '无操作后自动收起（高 0，只剩 4px 把手）；<b>不是遮罩</b>，标题栏与返回按钮永不收起',
+        cls: '.ui-bar--collapsed / .ui-bar__handle / .ui-bar-toggle',
+        html: `<div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:240px">
+          <span class="ui-bar__handle"></span>
+          <span class="ui-bar-toggle">▴ 展开功能条</span>
+          <span class="ui-small ui-muted">收起态：条高 0 + 把手</span>
+        </div>`,
+      },
+      {
+        name: '右上返回按钮',
+        desc: '返回固定为右上第一个按钮，用主色语义，与其它按钮区分',
+        cls: '.ui-iconbtn--back',
+        html: '<button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>',
+      },
+      {
+        name: '右上按钮组',
+        desc: '返回 + 全屏 + 画质 + 帮助；替代原"角落 fab"',
+        cls: '.ui-topright / .ui-iconbtn',
+        html: `<div style="display:flex;gap:8px;align-items:center">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">?</button>
+        </div>`,
+      },
+      {
+        name: '视频播放器',
+        desc: '实验原理页主体：大播放键 + 进度条 + 时间 + 音量/全屏',
+        cls: '.ui-player / __stage / __ctrl / __track',
+        html: `<div class="ui-player" style="width:300px;height:170px">
+          <div class="ui-player__stage"><div class="ui-player__play" style="width:48px;height:48px;font-size:18px">▶</div></div>
+          <div class="ui-player__ctrl" style="height:38px;gap:8px;padding:0 10px">
+            <span class="ui-player__btn" style="font-size:12px">▶</span>
+            <div class="ui-player__track"><div class="ui-player__progress"></div></div>
+            <span class="ui-player__time" style="font-size:10px">01:18</span>
+          </div>
+        </div>`,
+      },
+      {
+        name: '播放列表',
+        desc: '原理页可有多段视频；当前段高亮',
+        cls: '.ui-playlist / __item / __thumb',
+        html: `<div class="ui-playlist" style="width:260px">
+          <div class="ui-playlist__item ui-playlist__item--active"><span class="ui-playlist__thumb" style="width:56px;height:32px">▶</span><span><span class="ui-playlist__name">1 · 测温原理</span></span></div>
+          <div class="ui-playlist__item"><span class="ui-playlist__thumb" style="width:56px;height:32px">▶</span><span><span class="ui-playlist__name">2 · 电路模型</span></span></div>
+        </div>`,
+      },
+      {
+        name: 'AI 思考气泡',
+        desc: '三点跳动 + "正在做什么"的步骤说明，避免发出去没反应',
+        cls: '.ui-ai__thinking / .ui-ai__steps',
+        html: `<div class="ui-ai__msg ui-ai__msg--ai" style="position:static">
+          <div class="ui-ai__thinking"><i></i><i></i><i></i></div>
+          <div class="ui-ai__steps"><span class="ui-ai__step--done">✓ 已读取当前步骤</span><span>… 正在核对量程规则</span></div>
+        </div>`,
+      },
+      {
+        name: '图标优先的列表项',
+        desc: '仪器列表：46px 大图标为主视觉，名称 16px、副标题 11px',
+        cls: '.ui-iconitem / __icon / __name / __sub',
+        html: `<div class="ui-iconitem ui-iconitem--active" style="width:230px">
+          <span class="ui-iconitem__icon">📊</span>
+          <span><span class="ui-iconitem__name">数字万用表</span><br><span class="ui-iconitem__sub">测量电压 / 电阻</span></span>
+        </div>`,
+      },
+      {
+        name: '正文排版',
+        desc: '页内成段文字统一走这个类（16px / 行高 1.95），替代原来 12px 的小字',
+        cls: '.ui-article',
+        html: '<div class="ui-article" style="width:280px">本实验以温度传感器为对象，理解测温原理与温度—电压的对应关系。</div>',
+      },
+    ],
+  },
+]
+
 export const pageIndexGroups = [
   {
     title: 'A 组 · 启动与导航（10）',

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url'
 import { pagesAB } from './pages-ab.mjs'
 import { pagesC } from './pages-c.mjs'
 import { pagesD } from './pages-d.mjs'
-import { styleSpecSections, pageIndexGroups } from './style-spec.mjs'
+import { styleSpecSections, styleSpecSectionsRound2, pageIndexGroups } from './style-spec.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -61,12 +61,13 @@ function page(spec) {
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 ${TITLEBAR(crumb, right)}
   <div class="board__body">
 ${body.trimEnd()}
 ${overlay.trimEnd()}
   </div>
-${STATUSBAR(statusbar, statusRight)}
+${statusbar === false ? '' : STATUSBAR(statusbar, statusRight)}
 </div></div>
 
 <div class="board-nav">
@@ -170,7 +171,7 @@ ${[
     </div>
   </div>
 
-${styleSpecSections
+${[...styleSpecSections, ...styleSpecSectionsRound2]
   .map(
     (section) => `
   <div class="spec-section-title">${section.title}</div>
@@ -180,7 +181,7 @@ ${section.items.map(specItem).join('')}
   )
   .join('')}
 
-  <div class="spec-section-title">八、页面排版稿索引（共 ${allPages.length} 页，逐页审核用）</div>
+  <div class="spec-section-title">九、页面排版稿索引（共 ${allPages.length} 页，逐页审核用）</div>
 ${pageIndexGroups
   .map(
     (group) => `
@@ -195,7 +196,7 @@ ${group.pages
   )
   .join('')}
 
-  <div class="spec-section-title">九、说明</div>
+  <div class="spec-section-title">十、说明</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>

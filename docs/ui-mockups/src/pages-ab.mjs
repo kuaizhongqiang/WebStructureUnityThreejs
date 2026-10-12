@@ -1,5 +1,30 @@
-/** A 组（启动与导航）+ B 组（项目内主页面）排版稿。 */
-import { tabs, tips, viewport, corners, company } from './parts.mjs'
+/**
+ * A 组（启动与导航）+ B 组（项目内主页面）排版稿。
+ *
+ * 第二轮修订（2026-10-12）依据审核意见：
+ *   - A9 休眠改为"功能条伸缩两态"，不再是遮罩
+ *   - A10 增加 AI 思考气泡
+ *   - B1/B3 用站点线导航 + 去掉底部固定栏 + 提示改浮窗 + 返回在右上
+ *   - B2 站点线导航（替代页签栏）
+ *   - B4 右上按钮组（替代角落 fab）
+ *   - B5 提示改浮窗
+ *   - A5 菜单页待重做（见 TODO.md T1，本文件仍为旧版并带 TODO 标记）
+ */
+import { route, tipsFloat, topRight, company } from './parts.mjs'
+
+const RIGHT = '<span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>'
+const CRUMB = '目录 / <b>温度传感器特性测量</b>'
+
+/** 演示用的小号站点线（4 站，适配演示框宽度）。 */
+const MINI_ROUTE = `<nav class="ui-route" style="padding:12px 16px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">实验仪器</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">3</span><span class="ui-route__label">仿真实验</span></div>
+          <span class="ui-route__seg"></span>
+          <div class="ui-route__stop"><span class="ui-route__dot">4</span><span class="ui-route__label">小测验</span></div>
+        </nav>`
 
 export const pagesAB = [
   // ------------------------------------------------------------------ A1
@@ -25,7 +50,7 @@ export const pagesAB = [
           <span class="ui-badge">纯静态 · 无后端（DEC-21）</span>
         </div>
         <div class="ui-muted" style="position:absolute;left:0;right:0;bottom:28px;text-align:center;font-size:11px">© 2026 虚拟仿真教学平台 · 首次进入会弹画质设置</div>
-        <div class="note">A1 · <b>欢迎/开始页</b> · 居中主视觉 + 主次双按钮 + 底部版权</div>
+        <div class="note">A1 · <b>欢迎/开始页</b> · 居中主视觉 + 主次双按钮</div>
       </div>`,
   },
 
@@ -72,7 +97,7 @@ export const pagesAB = [
           </div>
         </div>
       </div>
-      <div class="note">A2 · <b>登录页</b> · 左品牌区 + 右表单，游客入口并列主按钮</div>`,
+      <div class="note">A2 · <b>登录页</b> · 左品牌区 + 右表单</div>`,
   },
 
   // ------------------------------------------------------------------ A3
@@ -97,7 +122,7 @@ export const pagesAB = [
           </div>
         </div>
         <div class="ui-muted ui-small" style="margin-top:6px">首次加载较慢；后续进入同一实验会命中缓存</div>
-        <div class="note">A3 · <b>加载过渡页</b> · 环形进度 + 条形进度 + 阶段文案（对应参考工程 LoadingPanel）</div>
+        <div class="note">A3 · <b>加载过渡页</b> · 环形进度 + 条形进度 + 阶段文案</div>
       </div>`,
   },
 
@@ -137,11 +162,11 @@ export const pagesAB = [
           <button class="ui-btn ui-btn--primary">确定并进入</button>
           <button class="ui-btn ui-btn--ghost">使用推荐值</button>
         </div>
-        <div class="note">A4 · <b>画质设置</b> · 三档卡片 + 硬件提示（对应参考工程 RenderQualityPanel）</div>
+        <div class="note">A4 · <b>画质设置</b> · 三档卡片 + 硬件提示</div>
       </div>`,
   },
 
-  // ------------------------------------------------------------------ A5
+  // ------------------------------------------------------------------ A5（待重做）
   {
     id: 'A5',
     file: 'a5-menu.html',
@@ -149,6 +174,7 @@ export const pagesAB = [
     state: 'Menu',
     crumb: '目录',
     body: `
+      <div class="todo-mark">待重做（TODO.md T1 · 手写动感版）</div>
       <div style="padding:22px 32px;height:100%;display:flex;flex-direction:column;gap:16px">
         <div class="ui-row">
           <div class="ui-h2">实验项目</div>
@@ -158,14 +184,7 @@ export const pagesAB = [
           <select class="ui-select" style="width:170px"><option>全部</option><option>未开始</option><option>已完成</option></select>
           <button class="ui-btn ui-btn--sm">去漫游</button>
           <button class="ui-btn ui-btn--sm">我的成绩</button>
-          <button class="ui-btn ui-btn--sm ui-btn--danger">退出</button>
         </div>
-
-        <div class="ui-alert ui-alert--info">
-          <span class="ui-alert__icon">i</span>
-          <span>点项目进入实验；每个项目包含 11 个任务页签，其中 4 个为 Unity 承载的复杂三维（DEC-06）。</span>
-        </div>
-
         <div class="ui-tile-grid" style="grid-template-columns:repeat(5,1fr);overflow:auto;flex:1">
 ${Array.from({ length: 10 })
   .map(
@@ -177,19 +196,16 @@ ${Array.from({ length: 10 })
   )
   .join('\n')}
         </div>
-
-        <div class="ui-row" style="gap:20px">
-          <span class="ui-small ui-muted">总体进度</span>
-          <div class="ui-progress" style="width:420px"><div class="ui-progress__bar" style="width:27%"></div></div>
-          <span class="ui-small" style="color:var(--accent-2)">27%</span>
-          <div class="ui-grow"></div>
-          <span class="ui-small ui-muted">最近一次：项目 03 · 小测验 · 88 分</span>
+        <div class="ui-alert ui-alert--warn">
+          <span class="ui-alert__icon">!</span>
+          <span>本页为第一轮遗留样式，已列入重做（审核意见：太丑、要更动感、需手写）。<b>请只评审其它页面</b>。</span>
         </div>
       </div>
-      <div class="note">A5 · <b>菜单 / 项目列表</b> · 工具条（搜索/筛选/漫游/成绩/退出）+ 卡片网格 + 进度概览</div>`,
+      <div class="note">A5 · <b>菜单页（待重做）</b> · 保留旧样式仅为占位，不作为评审对象</div>`,
+    statusbar: false,
   },
 
-  // ------------------------------------------------------------------ A6
+  // ------------------------------------------------- A6 漫游（Unity，暂不细化）
   {
     id: 'A6',
     file: 'a6-roaming.html',
@@ -198,31 +214,25 @@ ${Array.from({ length: 10 })
     crumb: '漫游 / 实验楼一层',
     body: `
       <div style="position:absolute;inset:0">
-${viewport('Unity WebGL', '漫游场景')}
-        <!-- 底部操作提示（3 条淡入淡出，对应参考工程 RoamingBottomPanel） -->
-        <div style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center">
-          <div class="ui-toast" style="position:static;transform:none">W / A / S / D 移动 · 鼠标右键拖拽转视角</div>
-          <div class="ui-toast" style="position:static;transform:none;opacity:.75">对准设备后点击左键，查看该实验项目的介绍</div>
-          <div class="ui-toast" style="position:static;transform:none;opacity:.5">按 ESC 打开目录，可切换到其它实验</div>
+        <div class="ui-viewport" style="position:absolute;inset:0">
+          <div class="ui-viewport__hint">Unity WebGL · 漫游场景</div>
+          <div class="ui-viewport__center">三维画布区域（Unity 侧 UI 暂不设计）</div>
         </div>
-
-        <!-- 点选物体后的信息浮窗（对应 RoamingContentShowPanel） -->
-        <div class="ui-panel" style="position:absolute;right:36px;top:130px;width:400px">
+        ${topRight('<button class="ui-iconbtn">◎ 复位</button>')}
+        <div style="position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div class="ui-toast" style="position:static;transform:none">W / A / S / D 移动 · 右键拖拽转视角 · 对准设备点击进入该项目</div>
+        </div>
+        <div class="ui-panel" style="position:absolute;right:18px;bottom:96px;width:380px">
           <div class="ui-panel__head">设备信息<span class="ui-panel__right"><span class="ui-badge ui-badge--info">可进入</span></span></div>
           <div class="ui-panel__body ui-col">
             <div style="font-size:var(--fs-16);font-weight:600">实验台 03 · 温度传感器</div>
-            <div class="ui-muted ui-small">该设备对应教学项目：温度传感器特性测量（11 个任务页签）</div>
-            <div class="ui-row" style="gap:8px">
-              <span class="ui-badge">进度 3 / 11</span>
-              <span class="ui-badge ui-badge--warn">推荐先看「任务目的」</span>
-            </div>
+            <div class="ui-muted ui-small">对应教学项目：温度传感器特性测量</div>
             <button class="ui-btn ui-btn--primary ui-btn--block">进入该项目</button>
           </div>
         </div>
-
-        <div class="ui-fab" style="position:absolute;left:36px;top:130px"><span class="ui-fab__icon">◎</span>复位</div>
       </div>
-      <div class="note">A6 · <b>漫游大场景</b> · 三维主视图 + 底部操作提示 + 点选信息浮窗（参考工程的漫游链路是断的，此处为本项目自研）</div>`,
+      <div class="note">A6 · <b>漫游大场景</b> · 仅确认"返回/复位在右上 + 提示为浮窗"这套新规范，三维侧 UI 暂不细化</div>`,
+    statusbar: false,
   },
 
   // ------------------------------------------------------------------ A7
@@ -276,13 +286,13 @@ ${viewport('Unity WebGL', '漫游场景')}
             <header class="ui-titlebar" style="border-bottom:none;height:64px">
               <div class="ui-titlebar__logo" style="width:34px;height:34px;font-size:14px">仿</div>
               <div class="ui-titlebar__names"><div class="ui-titlebar__cn" style="font-size:15px">温度传感器特性测量</div></div>
-              <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><span class="ui-fab" style="width:34px;height:34px"><span class="ui-fab__icon">☰</span></span></div>
+              <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><button class="ui-iconbtn ui-iconbtn--icon">☰</button></div>
             </header>
           </div>
         </div>
         <div class="ui-alert ui-alert--info">
           <span class="ui-alert__icon">i</span>
-          <span>规范：高 84px（窄屏 64px）；左 LOGO 44px + 中英双行；右侧依次为 面包屑 → 进度 → 画质 → 用户。</span>
+          <span>规范：高 84px（窄屏 64px）；左 LOGO + 中英双行；右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>标题栏永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>`,
   },
@@ -319,49 +329,108 @@ ${viewport('Unity WebGL', '漫游场景')}
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
           <span class="ui-alert__icon">i</span>
-          <span>规范：宽 520px；标题 54px；正文 24px 内边距；底部右对齐双按钮（次按钮在左、主按钮在右）；遮罩 rgba(5,8,12,.72)。共 4 类语义：返回 / 退出 / 跳转 / 提交。</span>
+          <span>规范：宽 520px；标题 54px；正文 24px 内边距；底部右对齐双按钮（次按钮在左、主按钮在右）。4 类语义：返回 / 退出 / 跳转 / 提交。</span>
         </div>
-      </div>`,
-    overlay: `
-      <div class="ui-mask" style="background:transparent;align-items:flex-start;justify-content:flex-end;padding:16px 24px;z-index:20">
-        <span class="ui-badge ui-badge--warn">真实使用时遮罩会覆盖整个内容区</span>
       </div>`,
   },
 
-  // ------------------------------------------------------------------ A9
+  // ------------------------------------------- A9 功能条伸缩（替换原"遮罩休眠"）
   {
     id: 'A9',
     file: 'a9-sleep.html',
-    title: '常驻 · 沉睡 / 唤醒遮罩',
+    title: '常驻 · 功能条伸缩两态（原「休眠」）',
     state: '常驻',
     crumb: '组件规范',
     right: '',
     body: `
-      <div class="ui-sleepmask" style="position:absolute;inset:0">
-        <div style="font-size:40px;opacity:.5">◍</div>
-        <div class="ui-h2">已进入休眠</div>
-        <div class="ui-muted ui-small">超过 3 分钟无操作，已暂停三维渲染以节省性能</div>
-        <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill" style="margin-top:10px">点击任意处继续</button>
-      </div>
-      <div class="note" style="z-index:70">A9 · <b>沉睡遮罩</b> · 无操作 N 分钟后暂停渲染（对应参考工程 SleepTipsPanel）</div>`,
+      <div style="padding:24px 32px;display:flex;flex-direction:column;gap:20px">
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>
+            <b>休眠不是遮罩。</b>无操作达到阈值后，把<b>可伸缩的功能条自动收起</b>（只留把手），并暂停三维渲染；
+            鼠标移动 / 点击把手即恢复。<b>标题栏与右上返回按钮永不收起</b>，始终给用户出口。
+          </span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div>
+            <div class="ui-h2" style="margin-bottom:10px">① 展开态（默认）</div>
+            <div class="demo-frame">
+              <div style="position:absolute;top:0;left:0;right:0">
+                ${MINI_ROUTE}
+              </div>
+              <div class="ui-bar__handle" style="margin-top:6px"></div>
+              ${topRight('')}
+              <div class="ui-tips-float" style="right:14px;bottom:14px;width:280px">
+                <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span></span></div>
+                <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">调节旋钮使读数稳定</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="ui-h2" style="margin-bottom:10px">② 收起态（无操作 N 分钟后）</div>
+            <div class="demo-frame">
+              <div class="ui-bar--collapsed" style="position:absolute;top:0;left:0;right:0">${MINI_ROUTE}</div>
+              <div class="ui-bar__handle" style="position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:6"></div>
+              ${topRight('')}
+              <div class="ui-center ui-muted ui-small" style="position:absolute;inset:0;justify-content:center">三维渲染已暂停（省电）<br>移动鼠标或点击上方把手即可恢复</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">哪些条可伸缩</div>
+          <div class="ui-panel">
+            <div class="ui-panel__body ui-col" style="gap:8px">
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">任务站点线（页签栏）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">提示浮窗（可单独最小化为一行）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--info">可收起</span><span class="ui-small">三维页的悬浮工具条</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--err">永不收起</span><span class="ui-small">标题栏 + 右上返回按钮（用户出口）</span></div>
+              <div class="ui-row"><span class="ui-badge ui-badge--err">永不收起</span><span class="ui-small">模态框（有未确认的操作时）</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-row" style="gap:16px">
+          <span class="ui-small ui-muted">把手形态</span>
+          <span style="width:120px;display:flex;flex-direction:column;align-items:center;gap:2px"><span class="ui-bar__handle"></span></span>
+          <span class="ui-small ui-muted">收起后条高为 0，仅保留 4px 把手；悬停把手变主色</span>
+          <span class="ui-bar-toggle">▴ 展开功能条</span>
+        </div>
+      </div>`,
+    statusbar: false,
   },
 
   // ------------------------------------------------------------------ A10
   {
     id: 'A10',
     file: 'a10-ai.html',
-    title: '常驻 · AI 助理浮窗',
+    title: '常驻 · AI 助理浮窗（含思考气泡）',
     state: '常驻（可开关）',
     crumb: '实验 / 仿真实验',
     body: `
       <div style="position:absolute;inset:0">
-${viewport('Unity WebGL', '仿真实验')}
+        <div class="ui-viewport" style="position:absolute;inset:0">
+          <div class="ui-viewport__hint">Unity WebGL · 仿真实验</div>
+          <div class="ui-viewport__center">三维画布区域（Unity 侧 UI 暂不设计）</div>
+        </div>
+        ${topRight('')}
         <div class="ui-ai">
           <div class="ui-ai__head">AI 实验助理<span class="ui-grow"></span><span class="ui-badge">实验内容问答</span></div>
           <div class="ui-ai__body">
-            <div class="ui-ai__msg ui-ai__msg--ai">当前步骤是「调节旋钮使读数稳定」。需要我解释一下这个参数的含义吗？</div>
             <div class="ui-ai__msg ui-ai__msg--me">刚才那步为什么判我错了？</div>
-            <div class="ui-ai__msg ui-ai__msg--ai">你把量程档位放在了电阻档，而本步要求测电压——档位与测量对象不匹配，所以不通过。</div>
+
+            <!-- 思考气泡：三点跳动 + 过程说明 -->
+            <div class="ui-ai__msg ui-ai__msg--ai" style="min-width:200px">
+              <div class="ui-ai__thinking"><i></i><i></i><i></i></div>
+              <div class="ui-ai__steps" style="margin-top:8px">
+                <span class="ui-ai__step--done">✓ 已读取当前步骤：调节旋钮</span>
+                <span class="ui-ai__step--done">✓ 已读取你的操作：旋钮停在电阻档</span>
+                <span>… 正在核对量程规则</span>
+              </div>
+            </div>
+
+            <div class="ui-ai__msg ui-ai__msg--ai">你把量程档位放在了电阻档，而本步要求测电压 —— 档位与测量对象不匹配，所以不通过。</div>
           </div>
           <div class="ui-ai__foot">
             <input class="ui-input" placeholder="描述你的问题…">
@@ -369,8 +438,9 @@ ${viewport('Unity WebGL', '仿真实验')}
             <button class="ui-btn ui-btn--primary ui-btn--sm">发送</button>
           </div>
         </div>
-      </div>
-      <div class="note">A10 · <b>AI 助理浮窗</b> · 右下角 380px 宽；本期只做界面与预留入口（DEC-43），不实现真实问答</div>`,
+        <div class="note">A10 · <b>AI 浮窗</b> · 新增<b>思考气泡</b>（三点跳动 + 正在做什么），避免"发出去没反应"的空白等待</div>
+      </div>`,
+    statusbar: false,
   },
 
   // ------------------------------------------------------------------ B1
@@ -379,11 +449,13 @@ ${viewport('Unity WebGL', '仿真实验')}
     file: 'b1-content-shell.html',
     title: '项目内容页壳（区域划分）',
     state: 'UI',
-    crumb: '目录 / <b>温度传感器特性测量</b>',
-    right: '<span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>',
-    body: `${tabs('Equipment', ['Purpose'])}
-      <div style="position:absolute;inset:0;padding:18px 24px">
-        <div style="border:1px dashed var(--line-2);border-radius:12px;height:100%;display:flex;align-items:center;justify-content:center;position:relative">
+    crumb: CRUMB,
+    right: RIGHT,
+    statusbar: false,
+    body: `${route('Equipment', ['Purpose'])}
+      <div style="position:absolute;inset:0">
+        ${topRight('')}
+        <div style="position:absolute;left:24px;right:24px;top:24px;bottom:24px;border:1px dashed var(--line-2);border-radius:12px;display:flex;align-items:center;justify-content:center">
           <div class="ui-col" style="align-items:center;gap:10px">
             <div class="ui-h2">任务页插槽</div>
             <div class="ui-muted ui-small">此区域由当前 TaskType 对应的页面填充（见 C1~C11）</div>
@@ -392,65 +464,62 @@ ${viewport('Unity WebGL', '仿真实验')}
               <span class="ui-badge ui-badge--info">Unity 页：挂载 WebGL 实例</span>
             </div>
           </div>
-          ${corners()}
-          ${company()}
-          <div style="position:absolute;left:18px;bottom:18px;right:18px">
-${tips('本步：选择实验仪器', '点击左侧列表中的仪器名称，可在中间三维区域查看该仪器', true)}
-          </div>
         </div>
+        ${company()}
+        ${tipsFloat('选择实验仪器', '点击左侧列表中的仪器，可在中间三维区域查看')}
       </div>
-      <div class="note">B1 · <b>项目内容页壳</b> · 顶部标题栏 + 页签栏 + 任务页插槽 + 角落按钮 + 底部提示栏</div>`,
+      <div class="note">B1 · <b>内容页壳</b> · 站点线导航（不是 tab）+ 右上按钮组（返回在这里）+ 提示浮窗 + <b>无底部固定栏</b></div>`,
   },
 
   // ------------------------------------------------------------------ B2
   {
     id: 'B2',
     file: 'b2-task-tabs.html',
-    title: '任务页签栏（11 个 TaskType）',
+    title: '任务站点线（11 个 TaskType）',
     state: 'UI',
     crumb: '组件规范',
     right: '',
+    statusbar: false,
     body: `
-      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:26px">
+      <div style="padding:24px 32px;display:flex;flex-direction:column;gap:24px">
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">完整形态（11 个页签，含技术栈标记）</div>
+          <div class="ui-h2" style="margin-bottom:10px">完整形态（11 站，含技术栈标记）</div>
           <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-${tabs('Training', ['Purpose', 'Equipment', 'Principle'])}
+${route('Training', ['Purpose', 'Equipment', 'Principle'])}
           </div>
         </div>
+
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">状态说明</div>
+          <div class="ui-h2" style="margin-bottom:10px">四种站点状态</div>
           <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <nav class="ui-tabs">
-              <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab ui-tab--active">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab ui-tab--disabled">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+            <nav class="ui-route" style="padding:16px 24px 10px">
+              <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+              <span class="ui-route__seg ui-route__seg--done"></span>
+              <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">2</span><span class="ui-route__label">实验仪器</span></div>
+              <span class="ui-route__seg"></span>
+              <div class="ui-route__stop"><span class="ui-route__dot">3</span><span class="ui-route__label">实验原理</span></div>
+              <span class="ui-route__seg"></span>
+              <div class="ui-route__stop ui-route__stop--locked"><span class="ui-route__dot">4</span><span class="ui-route__label">电路连接（未开放）</span></div>
             </nav>
           </div>
-          <div class="ui-row" style="margin-top:12px;gap:16px">
-            <span class="ui-small"><span class="ui-badge ui-badge--ok">✓</span> 已完成（页签右侧打勾）</span>
-            <span class="ui-small"><span class="ui-badge ui-badge--info">高亮</span> 当前页（顶部 2px 主色条）</span>
-            <span class="ui-small"><span class="ui-badge">灰</span> 未开始</span>
-            <span class="ui-small"><span class="ui-badge ui-badge--warn">灰+禁止</span> 内容未开放（active:false）</span>
+          <div class="ui-row" style="margin-top:12px;gap:16px;flex-wrap:wrap">
+            <span class="ui-small"><span class="ui-badge ui-badge--ok">✓</span> 已完成</span>
+            <span class="ui-small"><span class="ui-badge ui-badge--info">实心+光晕</span> 当前站</span>
+            <span class="ui-small"><span class="ui-badge">空心</span> 未开始</span>
+            <span class="ui-small"><span class="ui-badge ui-badge--warn">半透明</span> 未开放（active:false）</span>
           </div>
         </div>
+
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">窄屏形态（移动端，横向滚动 + 两端渐隐）</div>
-          <div style="width:900px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden;display:flex;align-items:center">
-            <span class="ui-muted" style="padding:0 10px">‹</span>
-            <nav class="ui-tabs" style="border-bottom:none">
-              <div class="ui-tab ui-tab--done">任务目的</div>
-              <div class="ui-tab ui-tab--active">实验仪器</div>
-              <div class="ui-tab">实验原理</div>
-              <div class="ui-tab ui-tab--disabled">电路连接</div>
-            </nav>
-            <span class="ui-muted" style="padding:0 10px">›</span>
+          <div class="ui-h2" style="margin-bottom:10px">窄屏（移动端：横向滚动，只显示当前站附近）</div>
+          <div style="width:880px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
+${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
           </div>
         </div>
+
         <div class="ui-alert ui-alert--warn">
           <span class="ui-alert__icon">!</span>
-          <span>页签顺序即 <b>TaskType 枚举序号</b>（DEC-09 只许往后追加）；页签是<b>技术栈分流开关</b>（DEC-06），标记必须与实际承载一致。</span>
+          <span>站点顺序即 <b>TaskType 枚举序号</b>（DEC-09 只许往后追加）；站点是<b>技术栈分流开关</b>（DEC-06），标记必须与实际承载一致。</span>
         </div>
       </div>`,
   },
@@ -461,8 +530,9 @@ ${tabs('Training', ['Purpose', 'Equipment', 'Principle'])}
     file: 'b3-loading-assets.html',
     title: '任务切换 · 资产加载遮罩',
     state: 'UI',
-    crumb: '目录 / <b>温度传感器特性测量</b>',
-    body: `${tabs('Training', ['Purpose']) }
+    crumb: CRUMB,
+    statusbar: false,
+    body: `${route('Training', ['Purpose']) }
       <div style="position:absolute;inset:0;background:var(--bg-1)"></div>
       <div class="ui-mask" style="z-index:50">
         <div class="ui-panel" style="width:560px">
@@ -476,52 +546,60 @@ ${tabs('Training', ['Purpose', 'Equipment', 'Principle'])}
                 <span class="ui-small" style="color:var(--accent-2)">42%</span>
               </div>
             </div>
-            <div class="ui-muted ui-small">该页由 Unity 承载（DEC-06），首次进入需下载分包；同一会话内再进入会走缓存。</div>
+            <div class="ui-muted ui-small">该站由 Unity 承载（DEC-06），首次进入需下载分包；同一会话内再进入会走缓存。</div>
             <button class="ui-btn ui-btn--sm" style="align-self:flex-start">取消并返回</button>
           </div>
         </div>
       </div>
-      <div class="note" style="z-index:60">B3 · <b>资产加载遮罩</b> · 对应参考工程 LoadingAssetsPanel；「可取消」是必需项</div>`,
+      <div class="note" style="z-index:60">B3 · <b>资产加载遮罩</b> · 这里是真遮罩（阻塞式，且必须可取消），与 A9 的"功能条伸缩"不是一回事</div>`,
   },
 
   // ------------------------------------------------------------------ B4
   {
     id: 'B4',
     file: 'b4-corner-bar.html',
-    title: '角落操作条（右上 / 左下）',
+    title: '右上按钮组（含返回）',
     state: 'UI / Roaming',
     crumb: '组件规范',
     right: '',
+    statusbar: false,
     body: `
-      <div style="padding:26px 32px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
-        <div class="ui-panel">
-          <div class="ui-panel__head">右上功能组（内容页）</div>
-          <div class="ui-panel__body ui-row" style="justify-content:center;padding:34px 0">
-            <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-            <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-            <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
-            <div class="ui-fab"><span class="ui-fab__icon">?</span>帮助</div>
+      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:24px">
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">内容页（返回固定在第一个）</div>
+          <div class="demo-frame" style="height:150px">
+            <div style="position:absolute;left:0;right:0;top:0">${MINI_ROUTE}</div>
+            ${topRight('')}
+            <div class="ui-center ui-muted ui-small" style="position:absolute;inset:0;justify-content:center">三维 / 内容区域</div>
           </div>
         </div>
-        <div class="ui-panel">
-          <div class="ui-panel__head">左下功能组（项目内 / 漫游）</div>
-          <div class="ui-panel__body ui-row" style="justify-content:center;padding:34px 0">
-            <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
-            <div class="ui-fab"><span class="ui-fab__icon">◎</span>复位视角</div>
-          </div>
-        </div>
-        <div class="ui-panel" style="grid-column:1 / -1">
-          <div class="ui-panel__head">规范</div>
-          <div class="ui-panel__body">
-            <div class="ui-row" style="gap:26px;flex-wrap:wrap">
-              <span class="ui-small"><b>尺寸</b> 56×56 圆角 8px</span>
-              <span class="ui-small"><b>图标</b> 16px + 文字 11px 竖排</span>
-              <span class="ui-small"><b>右上定位</b> right 28px / top 100px</span>
-              <span class="ui-small"><b>左下定位</b> left 28px / bottom 44px</span>
-              <span class="ui-small"><b>底色</b> rgba(22,32,46,.92) + 1px 描边</span>
-              <span class="ui-small"><b>悬停</b> 描边变主色</span>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="ui-panel">
+            <div class="ui-panel__head">按钮清单</div>
+            <div class="ui-panel__body ui-col" style="gap:10px">
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button><span class="ui-small ui-muted">主入口，永远第一个、永远可见</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">⛶</button><span class="ui-small ui-muted">全屏</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">◐</button><span class="ui-small ui-muted">画质</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">?</button><span class="ui-small ui-muted">帮助</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">☰</button><span class="ui-small ui-muted">窄屏时收进菜单抽屉</span></div>
             </div>
           </div>
+          <div class="ui-panel">
+            <div class="ui-panel__head">规范</div>
+            <div class="ui-panel__body ui-col" style="gap:8px">
+              <span class="ui-small"><b>位置</b> 右上 right 18px / top 14px</span>
+              <span class="ui-small"><b>高度</b> 34px；图标按钮 34×34</span>
+              <span class="ui-small"><b>底色</b> rgba(22,32,46,.92) + 1px 描边</span>
+              <span class="ui-small"><b>返回</b> 用主色语义（蓝底蓝字），与其它按钮区分</span>
+              <span class="ui-small"><b>不再使用</b> 角落 fab 与左下菜单按钮（第一轮方案作废）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>返回是"离开当前页面"的唯一入口，必须在<b>标题栏下方的右上角</b>，不随功能条收起（见 A9）。</span>
         </div>
       </div>`,
   },
@@ -530,38 +608,54 @@ ${tabs('Training', ['Purpose', 'Equipment', 'Principle'])}
   {
     id: 'B5',
     file: 'b5-tips.html',
-    title: '步骤提示 + 操作提示栏',
+    title: '提示浮窗（步骤 / 操作）',
     state: 'UI（Principle / LineConnection / Training）',
     crumb: '组件规范',
     right: '',
+    statusbar: false,
     body: `
-      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:22px">
-        <div class="ui-h2">标准形态（带示意图）</div>
-${tips('把红色表笔接到 U1 的 V+ 端子', '注意量程档位：先把旋钮转到直流电压档，再插入表笔', true)}
-
-        <div class="ui-h2">无示意图（纯文字步骤）</div>
-${tips('选择「任务目的」页签开始了解本实验', '可随时通过右上角「目录」返回项目列表', false)}
-
-        <div class="ui-h2">步骤进度条（同一栏内）</div>
-        <div class="ui-panel">
-          <div class="ui-panel__body">
-            <div class="ui-steps">
-              <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>接通电源</div>
-              <span class="ui-step__line"></span>
-              <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>选择量程</div>
-              <span class="ui-step__line"></span>
-              <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>连接表笔</div>
-              <span class="ui-step__line"></span>
-              <div class="ui-step"><span class="ui-step__dot">4</span>读取数值</div>
-              <span class="ui-step__line"></span>
-              <div class="ui-step"><span class="ui-step__dot">5</span>记录数据</div>
+      <div style="padding:26px 32px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">① 展开态（默认）</div>
+          <div class="demo-frame">
+            <div class="ui-tips-float" style="right:14px;bottom:14px;width:330px">
+              <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span><span class="ui-tips-float__icon">✕</span></span></div>
+              <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 V+ 端子</span></div>
+              <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先确认电源已断电；接好后系统自动检测回路</span></div>
+              <div class="ui-tips__img" style="width:100%;height:84px"></div>
             </div>
           </div>
         </div>
-
-        <div class="ui-alert ui-alert--info">
-          <span class="ui-alert__icon">i</span>
-          <span>规范：提示栏贴底（内容区左右 18px、下 18px）；两块信息固定顺序 —— <b>步骤提示</b>（蓝）在上、<b>操作提示</b>（青）在下；示意图 168×96。</span>
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">② 收起态（点 ▾ 最小化为一行）</div>
+          <div class="demo-frame">
+            <div class="ui-tips-float ui-tips-float--mini" style="right:14px;bottom:14px">
+              <span class="ui-tips__tag ui-tips__tag--step">步骤</span>
+              <span class="ui-tips__text">把红色表笔接到 V+ 端子</span>
+              <span class="ui-tips-float__icon">▴</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">③ 半透明态（步骤完成后自动淡出）</div>
+          <div class="demo-frame">
+            <div class="ui-tips-float ui-tips-float--ghost" style="right:14px;bottom:14px;width:300px">
+              <div class="ui-tips-float__head"><span>上一步已完成</span></div>
+              <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 V+ 端子</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">规范</div>
+          <div class="ui-panel">
+            <div class="ui-panel__body ui-col" style="gap:8px">
+              <span class="ui-small"><b>位置</b> 右下角 18px；避让右上按钮组</span>
+              <span class="ui-small"><b>宽度</b> 展开 372px / 最小化自适应</span>
+              <span class="ui-small"><b>顺序</b> 步骤提示（蓝）在上，操作提示（青）在下</span>
+              <span class="ui-small"><b>不遮挡</b> 悬浮工具条与关键三维区域</span>
+              <span class="ui-small"><b>已废弃</b> 第一轮的"底部固定提示栏"</span>
+            </div>
+          </div>
         </div>
       </div>`,
   },

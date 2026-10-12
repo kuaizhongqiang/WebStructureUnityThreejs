@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>B4 角落操作条（右上 / 左下） — 页面排版稿</title>
+<title>B4 右上按钮组（含返回） — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -22,49 +23,66 @@
       </header>
   <div class="board__body">
 
-      <div style="padding:26px 32px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
-        <div class="ui-panel">
-          <div class="ui-panel__head">右上功能组（内容页）</div>
-          <div class="ui-panel__body ui-row" style="justify-content:center;padding:34px 0">
-            <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-            <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-            <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
-            <div class="ui-fab"><span class="ui-fab__icon">?</span>帮助</div>
+      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:24px">
+        <div>
+          <div class="ui-h2" style="margin-bottom:10px">内容页（返回固定在第一个）</div>
+          <div class="demo-frame" style="height:150px">
+            <div style="position:absolute;left:0;right:0;top:0"><nav class="ui-route" style="padding:12px 16px 8px">
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">实验仪器</span></div>
+          <span class="ui-route__seg ui-route__seg--done"></span>
+          <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">3</span><span class="ui-route__label">仿真实验</span></div>
+          <span class="ui-route__seg"></span>
+          <div class="ui-route__stop"><span class="ui-route__dot">4</span><span class="ui-route__label">小测验</span></div>
+        </nav></div>
+            <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+            <div class="ui-center ui-muted ui-small" style="position:absolute;inset:0;justify-content:center">三维 / 内容区域</div>
           </div>
         </div>
-        <div class="ui-panel">
-          <div class="ui-panel__head">左下功能组（项目内 / 漫游）</div>
-          <div class="ui-panel__body ui-row" style="justify-content:center;padding:34px 0">
-            <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
-            <div class="ui-fab"><span class="ui-fab__icon">◎</span>复位视角</div>
-          </div>
-        </div>
-        <div class="ui-panel" style="grid-column:1 / -1">
-          <div class="ui-panel__head">规范</div>
-          <div class="ui-panel__body">
-            <div class="ui-row" style="gap:26px;flex-wrap:wrap">
-              <span class="ui-small"><b>尺寸</b> 56×56 圆角 8px</span>
-              <span class="ui-small"><b>图标</b> 16px + 文字 11px 竖排</span>
-              <span class="ui-small"><b>右上定位</b> right 28px / top 100px</span>
-              <span class="ui-small"><b>左下定位</b> left 28px / bottom 44px</span>
-              <span class="ui-small"><b>底色</b> rgba(22,32,46,.92) + 1px 描边</span>
-              <span class="ui-small"><b>悬停</b> 描边变主色</span>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="ui-panel">
+            <div class="ui-panel__head">按钮清单</div>
+            <div class="ui-panel__body ui-col" style="gap:10px">
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button><span class="ui-small ui-muted">主入口，永远第一个、永远可见</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">⛶</button><span class="ui-small ui-muted">全屏</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">◐</button><span class="ui-small ui-muted">画质</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">?</button><span class="ui-small ui-muted">帮助</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">☰</button><span class="ui-small ui-muted">窄屏时收进菜单抽屉</span></div>
             </div>
           </div>
+          <div class="ui-panel">
+            <div class="ui-panel__head">规范</div>
+            <div class="ui-panel__body ui-col" style="gap:8px">
+              <span class="ui-small"><b>位置</b> 右上 right 18px / top 14px</span>
+              <span class="ui-small"><b>高度</b> 34px；图标按钮 34×34</span>
+              <span class="ui-small"><b>底色</b> rgba(22,32,46,.92) + 1px 描边</span>
+              <span class="ui-small"><b>返回</b> 用主色语义（蓝底蓝字），与其它按钮区分</span>
+              <span class="ui-small"><b>不再使用</b> 角落 fab 与左下菜单按钮（第一轮方案作废）</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>返回是"离开当前页面"的唯一入口，必须在<b>标题栏下方的右上角</b>，不随功能条收起（见 A9）。</span>
         </div>
       </div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>B4 · 角落操作条（右上 / 左下） · 归属 UI / Roaming</span>
+  <span>B4 · 右上按钮组（含返回） · 归属 UI / Roaming</span>
 </div>
 </body>
 </html>

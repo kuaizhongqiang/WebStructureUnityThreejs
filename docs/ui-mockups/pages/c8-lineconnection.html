@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>C8 C8 电路连接（LineConnection） — 页面排版稿</title>
+<title>C8 C8 电路连接（LineConnection）· Unity 侧暂不设计 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -50,14 +51,6 @@
             <button class="ui-btn ui-btn--sm">红表笔</button>
             <button class="ui-btn ui-btn--sm ui-btn--primary">黑表笔</button>
             <button class="ui-btn ui-btn--sm">撤销上一根</button>
-            <button class="ui-btn ui-btn--sm">清空</button>
-          </div>
-          <div style="position:absolute;left:18px;top:18px" class="ui-panel">
-            <div class="ui-panel__body ui-col" style="gap:8px;padding:12px">
-              <span class="ui-small ui-muted">引线标注</span>
-              <span class="ui-lead"><span class="ui-lead__dot"></span>V+ 端子<span class="ui-lead__line"></span></span>
-              <span class="ui-lead"><span class="ui-lead__dot"></span>GND 端子<span class="ui-lead__line"></span></span>
-            </div>
           </div>
         </div>
         <div class="ui-layout-3d__side">
@@ -67,16 +60,14 @@
               <div class="ui-steps" style="flex-direction:column;align-items:flex-start;gap:10px">
                 <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>红表笔 → V+</div>
                 <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>黑表笔 → GND</div>
-                <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>电源正极 → 传感器 VCC</div>
-                <div class="ui-step"><span class="ui-step__dot">4</span>加热台连线</div>
-                <div class="ui-step"><span class="ui-step__dot">5</span>检查回路</div>
+                <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>电源正极 → VCC</div>
               </div>
             </div>
           </div>
           <div style="position:absolute;left:12px;right:12px;bottom:12px">
 <div class="ui-tips">
         <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 V+ 端子</span></div>
-        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先确认电源已断电再接线；接好后系统会自动检测回路</span></div>
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先确认电源已断电</span></div>
       </div>
           </div>
         </div>
@@ -89,7 +80,7 @@
       <div class="ui-corner ui-corner--lb">
         <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
       </div>
-      <div class="note" style="z-index:60">C8 · <b>电路连接</b> · Unity 全屏画布 + 悬浮工具条 + 引线标注 + 右侧进度 + 底部提示</div>
+      <div class="note">C8 · <b>Unity 侧</b> · UI 暂不设计（审核意见），本页仍是第一轮样式，不作为评审对象</div>
 
   </div>
 
@@ -101,7 +92,7 @@
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>C8 · C8 电路连接（LineConnection） · 归属 UI · TaskType.LineConnection</span>
+  <span>C8 · C8 电路连接（LineConnection）· Unity 侧暂不设计 · 归属 UI · TaskType.LineConnection</span>
 </div>
 </body>
 </html>

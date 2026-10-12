@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A10 常驻 · AI 助理浮窗 — 页面排版稿</title>
+<title>A10 常驻 · AI 助理浮窗（含思考气泡） — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -23,22 +24,33 @@
   <div class="board__body">
 
       <div style="position:absolute;inset:0">
-<div class="ui-viewport" style="position:absolute;inset:0">
+        <div class="ui-viewport" style="position:absolute;inset:0">
           <div class="ui-viewport__hint">Unity WebGL · 仿真实验</div>
-          <div class="ui-viewport__tools">
-            <div class="ui-viewport__tool">⟳</div>
-            <div class="ui-viewport__tool">⤢</div>
-            <div class="ui-viewport__tool">⛶</div>
-            <div class="ui-viewport__tool">⌖</div>
-          </div>
-          <div class="ui-viewport__center">三维画布区域 —— 由 Unity WebGL 承载，本稿只表示占位与叠层 UI 的位置</div>
+          <div class="ui-viewport__center">三维画布区域（Unity 侧 UI 暂不设计）</div>
+        </div>
+        <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
         </div>
         <div class="ui-ai">
           <div class="ui-ai__head">AI 实验助理<span class="ui-grow"></span><span class="ui-badge">实验内容问答</span></div>
           <div class="ui-ai__body">
-            <div class="ui-ai__msg ui-ai__msg--ai">当前步骤是「调节旋钮使读数稳定」。需要我解释一下这个参数的含义吗？</div>
             <div class="ui-ai__msg ui-ai__msg--me">刚才那步为什么判我错了？</div>
-            <div class="ui-ai__msg ui-ai__msg--ai">你把量程档位放在了电阻档，而本步要求测电压——档位与测量对象不匹配，所以不通过。</div>
+
+            <!-- 思考气泡：三点跳动 + 过程说明 -->
+            <div class="ui-ai__msg ui-ai__msg--ai" style="min-width:200px">
+              <div class="ui-ai__thinking"><i></i><i></i><i></i></div>
+              <div class="ui-ai__steps" style="margin-top:8px">
+                <span class="ui-ai__step--done">✓ 已读取当前步骤：调节旋钮</span>
+                <span class="ui-ai__step--done">✓ 已读取你的操作：旋钮停在电阻档</span>
+                <span>… 正在核对量程规则</span>
+              </div>
+            </div>
+
+            <div class="ui-ai__msg ui-ai__msg--ai">你把量程档位放在了电阻档，而本步要求测电压 —— 档位与测量对象不匹配，所以不通过。</div>
           </div>
           <div class="ui-ai__foot">
             <input class="ui-input" placeholder="描述你的问题…">
@@ -46,20 +58,16 @@
             <button class="ui-btn ui-btn--primary ui-btn--sm">发送</button>
           </div>
         </div>
+        <div class="note">A10 · <b>AI 浮窗</b> · 新增<b>思考气泡</b>（三点跳动 + 正在做什么），避免"发出去没反应"的空白等待</div>
       </div>
-      <div class="note">A10 · <b>AI 助理浮窗</b> · 右下角 380px 宽；本期只做界面与预留入口（DEC-43），不实现真实问答</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>A10 · 常驻 · AI 助理浮窗 · 归属 常驻（可开关）</span>
+  <span>A10 · 常驻 · AI 助理浮窗（含思考气泡） · 归属 常驻（可开关）</span>
 </div>
 </body>
 </html>

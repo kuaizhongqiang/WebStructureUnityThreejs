@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>C2 C2 任务目的（Purpose） — 页面排版稿</title>
+<title>C2 C2 任务目的（Purpose）— 已按审核意见简化 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -21,22 +22,73 @@
         </div>
       </header>
   <div class="board__body">
-<nav class="ui-tabs">
-        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--active ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+<nav class="ui-route">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">2</span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">3</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">4</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
       </nav>
-      <div style="position:absolute;inset:0;padding:18px 24px;display:flex;gap:18px">
-        <div class="ui-panel" style="flex:1.35">
-          <div class="ui-panel__head">设备三维展示<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js</span></span></div>
+      <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          
+        </div>
+      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:20px">
+        <div class="ui-panel" style="flex:1.5">
+          <div class="ui-panel__head">设备展示<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js · 循环动画</span></span></div>
           <div class="ui-panel__body ui-panel__body--flush" style="position:relative;height:100%">
 <div class="ui-viewport" style="position:absolute;inset:0">
           <div class="ui-viewport__hint">Three.js · ObjectShowElement</div>
@@ -50,50 +102,28 @@
         </div>
           </div>
         </div>
-        <div class="ui-panel" style="flex:1;display:flex;flex-direction:column">
+        <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">实验目的</div>
-          <div class="ui-panel__body ui-col" style="gap:12px;overflow:auto">
-            <div class="ui-card">
-              <div class="ui-h2" style="font-size:var(--fs-14)">1 · 掌握测量原理</div>
-              <div class="ui-muted ui-small" style="margin-top:6px;line-height:1.8">理解热电阻/热电偶的测温原理与温度—电压对应关系。</div>
+          <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:18px">
+            <!-- 内容字段只有一段文字：不加卡片、不加图标、不加二级标题 -->
+            <div class="ui-article">
+              本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，
+              并掌握万用表的正确使用方法与数据记录规范。
             </div>
-            <div class="ui-card">
-              <div class="ui-h2" style="font-size:var(--fs-14)">2 · 熟悉实验步骤</div>
-              <div class="ui-muted ui-small" style="margin-top:6px;line-height:1.8">能独立完成接线、量程选择、读数与记录。</div>
-            </div>
-            <div class="ui-card">
-              <div class="ui-h2" style="font-size:var(--fs-14)">3 · 会判断异常</div>
-              <div class="ui-muted ui-small" style="margin-top:6px;line-height:1.8">能识别掉线、量程不匹配等常见错误。</div>
-            </div>
-            <div style="height:120px;border-radius:8px;background:var(--grid);background-color:var(--bg-0);border:1px solid var(--line-1)"></div>
-          </div>
-          <div class="ui-row" style="padding:12px 16px;border-top:1px solid var(--line-1);justify-content:space-between">
-            <span class="ui-muted ui-small">图文可上下滚动</span>
-            <button class="ui-btn ui-btn--sm ui-btn--primary">跳过，去下一个</button>
+            <div class="ui-grow"></div>
+            <button class="ui-btn ui-btn--primary ui-btn--block">下一步：实验仪器</button>
           </div>
         </div>
       </div>
-      <div class="ui-corner ui-corner--rt">
-        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
-      </div>
-      <div class="ui-corner ui-corner--lb">
-        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
-      </div>
-      <div class="note" style="z-index:60">C2 · <b>任务目的</b> · 左三维展示 + 右图文 + 跳过按钮（对应参考工程 Task_PurposePanel）</div>
+      <div class="note">C2 · <b>任务目的（已简化）</b> · 左三维 + 右一段文字 + 一个前进按钮，去掉了原来的卡片堆叠</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>C2 · C2 任务目的（Purpose） · 归属 UI · TaskType.Purpose</span>
+  <span>C2 · C2 任务目的（Purpose）— 已按审核意见简化 · 归属 UI · TaskType.Purpose</span>
 </div>
 </body>
 </html>

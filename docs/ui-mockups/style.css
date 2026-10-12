@@ -114,6 +114,22 @@ body {
 
 .board__body { flex: 1; position: relative; overflow: hidden; }
 
+/* ---- 页面背景图 ----
+   来源：F:\Project\ElectricalandElectronicVirtualMuseum_v2.0_2026\ModelAssets\LightBake\Preview_1.png
+   已按用户要求把 **RGB 通道 × 0.5** 烘焙进图片本身（原图 3840×2160 / 63MB → 1920×1080 / 123KB）。
+   换图：替换 assets/bg-room-dark.jpg 即可（保持同名）。
+   想再压暗：调 --board-bg-extra-dim（0 = 不再压暗，1 = 全黑）。 */
+.board__bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('assets/bg-room-dark.jpg');
+  background-size: cover; background-position: center;
+}
+.board__bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: rgba(5, 8, 12, var(--board-bg-extra-dim, 0));
+}
+.board > *:not(.board__bg) { position: relative; z-index: 1; }
+
 /* 演示用标注：说明这块是哪个组件 */
 .note {
   position: absolute; left: 24px; bottom: 18px; z-index: 60;
@@ -539,3 +555,206 @@ body {
 }
 .spec-page-link:hover { border-color: var(--accent); background: var(--bg-3); }
 .spec-page-link span { font-size: 11px; color: var(--text-3); }
+
+/* ============================================================================
+ * 16. 第二轮修订新增/替换的组件（依据 2026-10-12 的排版审核意见）
+ *   - 站点线导航：替代页签栏（"点线连接"概念）
+ *   - 浮窗式提示：替代底部固定提示栏
+ *   - 功能条伸缩两态：替代"遮罩式休眠"
+ *   - 右上方按钮组（含返回）
+ *   - 视频播放器 + 播放列表
+ *   - AI 思考气泡
+ *   - 图标优先的仪器列表
+ * ========================================================================== */
+
+/* ------------------------------------------------ 16.1 站点线导航（任务页签） */
+.ui-route {
+  display: flex; align-items: flex-start;
+  padding: 18px 40px 12px;
+  background: #121a25; border-bottom: 1px solid var(--line-1);
+}
+.ui-route__stop {
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  flex: none; cursor: pointer; position: relative;
+}
+.ui-route__dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-11); color: var(--text-3);
+  background: var(--bg-2); border: 2px solid var(--line-2);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.ui-route__label { font-size: var(--fs-12); color: var(--text-3); white-space: nowrap; }
+.ui-route__stack { font-size: 9px; padding: 0 4px; border-radius: 3px; border: 1px solid currentColor; }
+.ui-route__seg {
+  flex: 1; height: 2px; margin: 13px 2px 0; background: var(--line-2); border-radius: 2px;
+}
+.ui-route__stop:hover .ui-route__dot { border-color: var(--accent); color: var(--text-1); }
+.ui-route__stop--done .ui-route__dot { background: var(--ok); border-color: var(--ok); color: #04220f; }
+.ui-route__seg--done { background: var(--ok); }
+.ui-route__stop--done .ui-route__label { color: var(--text-2); }
+.ui-route__stop--current .ui-route__dot {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.16);
+}
+.ui-route__stop--current .ui-route__label { color: #fff; font-weight: 600; }
+.ui-route__stop--locked .ui-route__dot { opacity: 0.4; }
+.ui-route__stop--locked .ui-route__label { opacity: 0.4; }
+.ui-route__stop--locked { cursor: not-allowed; }
+/* 窄屏：横向滚动 + 首尾渐隐 */
+.ui-route--narrow { overflow-x: auto; padding: 14px 24px 10px; }
+
+/* ------------------------------------------------ 16.2 浮窗式提示（替代底部栏） */
+.ui-tips-float {
+  position: absolute; right: 18px; bottom: 18px; width: 372px; z-index: 42;
+  background: rgba(14, 20, 29, 0.96); border: 1px solid var(--line-2);
+  border-radius: var(--r-3); box-shadow: var(--sh-2);
+  display: flex; flex-direction: column; gap: 10px; padding: 12px 14px;
+}
+.ui-tips-float__head {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-11); color: var(--text-3);
+}
+.ui-tips-float__actions { margin-left: auto; display: flex; gap: var(--sp-2); }
+.ui-tips-float__icon { cursor: pointer; color: var(--text-3); }
+.ui-tips-float__icon:hover { color: var(--text-1); }
+.ui-tips-float--mini {
+  width: auto; padding: 8px 12px; flex-direction: row; align-items: center; gap: var(--sp-2);
+}
+.ui-tips-float--ghost { opacity: 0.55; }
+
+/* ------------------------------------------------ 16.3 功能条伸缩（两态） */
+/* 可伸缩的条：加 .ui-bar--collapsed 即为收起态（只剩把手） */
+.ui-bar { transition: height 0.22s ease, padding 0.22s ease, opacity 0.22s ease; }
+.ui-bar--collapsed {
+  height: 0 !important; min-height: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important;
+  opacity: 0; overflow: hidden; border-width: 0 !important;
+}
+.ui-bar__handle {
+  width: 34px; height: 4px; border-radius: 2px;
+  background: var(--line-2); margin: 6px auto;
+}
+.ui-bar__handle:hover { background: var(--accent); }
+.ui-bar-toggle {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 26px; padding: 0 10px; border-radius: var(--r-1);
+  background: rgba(22, 32, 46, 0.92); border: 1px solid var(--line-2);
+  color: var(--text-2); font-size: var(--fs-11); cursor: pointer;
+}
+.ui-bar-toggle:hover { border-color: var(--accent); color: var(--text-1); }
+.demo-frame {
+  position: relative; height: 250px; overflow: hidden;
+  border: 1px dashed var(--line-2); border-radius: var(--r-3); background: var(--bg-1);
+}
+.demo-frame__tag {
+  position: absolute; left: 10px; top: 8px; z-index: 5;
+  font-size: var(--fs-11); color: var(--text-3);
+}
+
+/* ------------------------------------------------ 16.4 右上方按钮组（含返回） */
+.ui-topright {
+  position: absolute; right: 18px; top: 14px; z-index: 40;
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+.ui-iconbtn {
+  height: 34px; padding: 0 13px; display: inline-flex; align-items: center; gap: 6px;
+  border-radius: var(--r-2); background: rgba(22, 32, 46, 0.92);
+  border: 1px solid var(--line-2); color: var(--text-2);
+  font-size: var(--fs-12); cursor: pointer;
+}
+.ui-iconbtn:hover { border-color: var(--accent); color: #fff; }
+.ui-iconbtn--back { border-color: rgba(59, 130, 246, 0.55); color: #cfe0ff; background: rgba(59, 130, 246, 0.14); }
+.ui-iconbtn--icon { width: 34px; padding: 0; justify-content: center; }
+
+/* ------------------------------------------------ 16.5 视频播放器 + 播放列表 */
+.ui-player {
+  position: relative; display: flex; flex-direction: column; height: 100%;
+  background: #05080c; border: 1px solid var(--line-1); border-radius: var(--r-3); overflow: hidden;
+}
+.ui-player__stage {
+  flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+  background: var(--grid); background-color: #05080c;
+}
+.ui-player__play {
+  width: 78px; height: 78px; border-radius: 50%;
+  background: rgba(59, 130, 246, 0.92); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); cursor: pointer;
+}
+.ui-player__badge {
+  position: absolute; left: 14px; top: 12px; display: flex; gap: var(--sp-2);
+}
+.ui-player__ctrl {
+  height: 58px; flex: none; display: flex; align-items: center; gap: 14px;
+  padding: 0 16px; background: rgba(11, 15, 22, 0.94); border-top: 1px solid var(--line-1);
+}
+.ui-player__btn { font-size: var(--fs-16); color: var(--text-2); cursor: pointer; }
+.ui-player__btn:hover { color: #fff; }
+.ui-player__track { flex: 1; height: 4px; border-radius: 2px; background: #22303f; position: relative; cursor: pointer; }
+.ui-player__progress { position: absolute; left: 0; top: 0; bottom: 0; width: 38%; border-radius: 2px; background: var(--accent); }
+.ui-player__progress::after {
+  content: ""; position: absolute; right: -6px; top: -4px; width: 12px; height: 12px;
+  border-radius: 50%; background: #fff;
+}
+.ui-player__time { font-size: var(--fs-12); color: var(--text-3); font-family: Consolas, monospace; }
+.ui-playlist { display: flex; flex-direction: column; gap: var(--sp-2); }
+.ui-playlist__item {
+  display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2);
+  border-radius: var(--r-2); cursor: pointer; border: 1px solid transparent;
+}
+.ui-playlist__item:hover { background: var(--bg-hover); }
+.ui-playlist__item--active { background: var(--accent-weak); border-color: rgba(59, 130, 246, 0.5); }
+.ui-playlist__thumb {
+  width: 92px; height: 52px; border-radius: var(--r-1); flex: none;
+  background: var(--grid); background-color: #0d121a; border: 1px solid var(--line-1);
+  display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: var(--fs-12);
+}
+.ui-playlist__name { font-size: var(--fs-13); }
+.ui-playlist__meta { font-size: var(--fs-11); color: var(--text-3); }
+
+/* ------------------------------------------------ 16.6 AI 思考气泡 */
+.ui-ai__thinking { display: flex; align-items: center; gap: 4px; height: 14px; }
+.ui-ai__thinking i {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); display: block;
+  animation: ui-think 1.2s infinite ease-in-out;
+}
+.ui-ai__thinking i:nth-child(2) { animation-delay: 0.18s; }
+.ui-ai__thinking i:nth-child(3) { animation-delay: 0.36s; }
+@keyframes ui-think {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+.ui-ai__steps { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-11); color: var(--text-3); }
+.ui-ai__step--done { color: var(--ok); }
+
+/* ------------------------------------------------ 16.7 图标优先的仪器列表 */
+.ui-iconlist { display: flex; flex-direction: column; gap: 10px; }
+.ui-iconitem {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: 10px 12px; border-radius: var(--r-2);
+  background: var(--bg-3); border: 1px solid var(--line-1); cursor: pointer;
+}
+.ui-iconitem:hover { background: var(--bg-hover); border-color: var(--line-2); }
+.ui-iconitem--active { border-color: var(--accent); background: var(--accent-weak); box-shadow: var(--glow-accent); }
+.ui-iconitem__icon {
+  width: 46px; height: 46px; flex: none; border-radius: var(--r-2);
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+  background: #0f1620; border: 1px solid var(--line-2);
+}
+.ui-iconitem--active .ui-iconitem__icon { border-color: var(--accent); background: rgba(59, 130, 246, 0.18); }
+.ui-iconitem__name { font-size: var(--fs-16); font-weight: 600; }
+.ui-iconitem__sub { font-size: var(--fs-11); color: var(--text-3); }
+
+/* ------------------------------------------------ 16.8 正文排版（右栏说明） */
+.ui-article { font-size: var(--fs-16); line-height: 1.95; color: var(--text-2); }
+.ui-article h3 { font-size: var(--fs-18); color: var(--text-1); margin: 0 0 10px; }
+.ui-article p { margin: 0 0 12px; }
+.ui-article b { color: var(--text-1); }
+
+/* TODO 占位：暂用旧样式，待专门重做 */
+.todo-mark {
+  position: absolute; right: 18px; top: 14px; z-index: 45;
+  padding: 3px 10px; border-radius: var(--r-1);
+  background: var(--warn-weak); border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #ffd28a; font-size: var(--fs-11);
+}

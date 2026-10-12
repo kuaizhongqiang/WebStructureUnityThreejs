@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>B2 任务页签栏（11 个 TaskType） — 页面排版稿</title>
+<title>B2 任务站点线（11 个 TaskType） — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
 
       <header class="ui-titlebar">
         <div class="ui-titlebar__logo">仿</div>
@@ -22,72 +23,167 @@
       </header>
   <div class="board__body">
 
-      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:26px">
+      <div style="padding:24px 32px;display:flex;flex-direction:column;gap:24px">
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">完整形态（11 个页签，含技术栈标记）</div>
+          <div class="ui-h2" style="margin-bottom:10px">完整形态（11 站，含技术栈标记）</div>
           <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-<nav class="ui-tabs">
-        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab ui-tab--active">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+<nav class="ui-route">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg ui-route__seg--done"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg ui-route__seg--done"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
       </nav>
           </div>
         </div>
+
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">状态说明</div>
+          <div class="ui-h2" style="margin-bottom:10px">四种站点状态</div>
           <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <nav class="ui-tabs">
-              <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab ui-tab--active">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-              <div class="ui-tab ui-tab--disabled">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+            <nav class="ui-route" style="padding:16px 24px 10px">
+              <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+              <span class="ui-route__seg ui-route__seg--done"></span>
+              <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">2</span><span class="ui-route__label">实验仪器</span></div>
+              <span class="ui-route__seg"></span>
+              <div class="ui-route__stop"><span class="ui-route__dot">3</span><span class="ui-route__label">实验原理</span></div>
+              <span class="ui-route__seg"></span>
+              <div class="ui-route__stop ui-route__stop--locked"><span class="ui-route__dot">4</span><span class="ui-route__label">电路连接（未开放）</span></div>
             </nav>
           </div>
-          <div class="ui-row" style="margin-top:12px;gap:16px">
-            <span class="ui-small"><span class="ui-badge ui-badge--ok">✓</span> 已完成（页签右侧打勾）</span>
-            <span class="ui-small"><span class="ui-badge ui-badge--info">高亮</span> 当前页（顶部 2px 主色条）</span>
-            <span class="ui-small"><span class="ui-badge">灰</span> 未开始</span>
-            <span class="ui-small"><span class="ui-badge ui-badge--warn">灰+禁止</span> 内容未开放（active:false）</span>
+          <div class="ui-row" style="margin-top:12px;gap:16px;flex-wrap:wrap">
+            <span class="ui-small"><span class="ui-badge ui-badge--ok">✓</span> 已完成</span>
+            <span class="ui-small"><span class="ui-badge ui-badge--info">实心+光晕</span> 当前站</span>
+            <span class="ui-small"><span class="ui-badge">空心</span> 未开始</span>
+            <span class="ui-small"><span class="ui-badge ui-badge--warn">半透明</span> 未开放（active:false）</span>
           </div>
         </div>
+
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">窄屏形态（移动端，横向滚动 + 两端渐隐）</div>
-          <div style="width:900px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden;display:flex;align-items:center">
-            <span class="ui-muted" style="padding:0 10px">‹</span>
-            <nav class="ui-tabs" style="border-bottom:none">
-              <div class="ui-tab ui-tab--done">任务目的</div>
-              <div class="ui-tab ui-tab--active">实验仪器</div>
-              <div class="ui-tab">实验原理</div>
-              <div class="ui-tab ui-tab--disabled">电路连接</div>
-            </nav>
-            <span class="ui-muted" style="padding:0 10px">›</span>
+          <div class="ui-h2" style="margin-bottom:10px">窄屏（移动端：横向滚动，只显示当前站附近）</div>
+          <div style="width:880px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
+<nav class="ui-route ui-route--narrow">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg ui-route__seg--done"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot">✓</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">4</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+      </nav>
           </div>
         </div>
+
         <div class="ui-alert ui-alert--warn">
           <span class="ui-alert__icon">!</span>
-          <span>页签顺序即 <b>TaskType 枚举序号</b>（DEC-09 只许往后追加）；页签是<b>技术栈分流开关</b>（DEC-06），标记必须与实际承载一致。</span>
+          <span>站点顺序即 <b>TaskType 枚举序号</b>（DEC-09 只许往后追加）；站点是<b>技术栈分流开关</b>（DEC-06），标记必须与实际承载一致。</span>
         </div>
       </div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>B2 · 任务页签栏（11 个 TaskType） · 归属 UI</span>
+  <span>B2 · 任务站点线（11 个 TaskType） · 归属 UI</span>
 </div>
 </body>
 </html>
