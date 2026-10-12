@@ -1,0 +1,141 @@
+:root {
+  color-scheme: dark;
+  --bg: #12151b;
+  --panel: #1a1f28;
+  --border: #2f3646;
+  --text: #dfe5f0;
+  --muted: #93a0b6;
+  --accent: #4c7dff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Microsoft YaHei', 'PingFang SC', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.brand {
+  font-weight: 600;
+}
+
+.status {
+  display: flex;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-item {
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.app-main {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+}
+
+.app-footer {
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.panel {
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.hint {
+  margin: 6px 0 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.chip {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+}
+
+.chip.active {
+  border-color: var(--accent);
+  background: #1d2740;
+  color: #cfe0ff;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-three {
+  background: #123524;
+  color: #7ee2a8;
+}
+
+.badge-unity {
+  background: #2c2440;
+  color: #b79bff;
+}
+
+code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: #232935;
+}

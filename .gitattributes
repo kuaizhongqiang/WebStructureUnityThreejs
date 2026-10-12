@@ -1,0 +1,30 @@
+# 统一换行，避免 Windows 上反复出现 "LF will be replaced by CRLF" 噪音
+* text=auto eol=lf
+
+# Unity 的 YAML 资产 / 元数据：交给 Unity 自己维护，git 不要做行尾转换（否则易产生无意义 diff）
+*.unity -text
+*.prefab -text
+*.asset -text
+*.meta -text
+*.mat -text
+*.controller -text
+*.anim -text
+
+# 二进制资产：明确标记（同时也提示"不要 diff"）
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.psd binary
+*.tga binary
+*.fbx binary
+*.glb binary
+*.gltf binary
+*.mp4 binary
+*.wav binary
+*.mp3 binary
+*.dll binary
+*.so binary
+*.a binary
+*.wasm binary
+*.br binary
+*.gz binary

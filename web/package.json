@@ -1,0 +1,32 @@
+{
+  "name": "wsu3-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WebStructureUnityThreejs - Web side (Vue 3 + Three.js shell). Decisions: docs/DECISIONS.md DEC-15.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:only": "vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "smoke": "node tools/render-smoke.mjs"
+  },
+  "dependencies": {
+    "pinia": "^4.0.3",
+    "three": "^0.186.1",
+    "vue": "^3.5.43",
+    "vue-router": "^5.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "playwright": "^1.64.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3",
+    "vue-tsc": "^3.3.13"
+  }
+}

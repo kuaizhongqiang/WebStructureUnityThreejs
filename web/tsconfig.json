@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    // "node" is only needed for vite.config.ts; keeping a single tsconfig avoids
+    // the project-references dance for a scaffold of this size.
+    "types": ["vite/client", "node"],
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+
+    "jsx": "preserve",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts", "vitest.config.ts"]
+}
