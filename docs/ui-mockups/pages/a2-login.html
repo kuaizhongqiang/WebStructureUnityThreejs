@@ -40,7 +40,10 @@
   <div class="board__body">
 
       <div style="display:flex;height:100%">
-        <div style="flex:1;position:relative;background:var(--grid);background-color:var(--bg-0);border-right:1px solid var(--line-1)">
+        <!-- 左：三维展示区。产品里是 Three.js 画布（DEC-06：简单三维 → Three.js）；
+             排版稿按全站惯例用 --grid 作三维空间底，并挂视口标识，避免被误认成背景底纹。 -->
+        <div style="flex:1;position:relative;background:var(--grid);background-color:var(--bg-0);border-right:var(--hairline) solid var(--line-1)">
+          <span class="ui-viewport__hint">Three.js · 三维展示区（设备旋转）</span>
           <div style="position:absolute;left:56px;bottom:56px;max-width:520px">
             <div class="ui-h2">欢迎使用虚拟仿真教学平台</div>
             <div class="ui-muted ui-small" style="margin-top:8px;line-height:1.8">登录后可保存学习进度与考核成绩；本期也可以游客身份直接体验全部实验。</div>
@@ -59,7 +62,20 @@
           </div>
           <div class="ui-field">
             <div class="ui-field__label">身份</div>
-            <select class="ui-select"><option>学生</option><option>教师</option><option>管理员</option></select>
+            <!-- 自定义下拉：原生 <select> 的展开列表由浏览器绘制、无法套样式，所以改用触发器 + .ui-menu 浮层 -->
+            <div class="ui-selectbox">
+              <button class="ui-selectbox__trigger" type="button" aria-haspopup="listbox" aria-expanded="true">
+                <span>学生</span><span class="ui-selectbox__chev">▾</span>
+              </button>
+              <div class="ui-menu ui-selectbox__pop" role="listbox" aria-label="选择身份">
+                <div class="ui-menu__group">选择身份</div>
+                <div class="ui-menu__item ui-menu__item--current" role="option" aria-selected="true">学生</div>
+                <div class="ui-menu__item" role="option">教师</div>
+                <div class="ui-menu__item" role="option">管理员</div>
+                <div class="ui-menu__sep"></div>
+                <div class="ui-menu__item ui-menu__item--disabled" role="option" aria-disabled="true">其他（暂不支持）</div>
+              </div>
+            </div>
             <div class="ui-field__hint">对应数据模型的 userType（未知 / 学生 / 教师 / 管理员）</div>
           </div>
           <div class="ui-row" style="justify-content:space-between">
@@ -74,7 +90,7 @@
           </div>
         </div>
       </div>
-      <div class="note">A2 · <b>登录页</b> · 左品牌区 + 右表单</div>
+      <div class="note">A2 · <b>登录页</b> · 左三维展示区 + 右表单；身份下拉为<b>展开态</b>演示（浮层会盖住下方内容，真实下拉就是这样）</div>
 
   </div>
 

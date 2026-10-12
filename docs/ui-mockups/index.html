@@ -409,8 +409,8 @@
       <div class="spec-item">
         <div class="spec-item__stage"><select class="ui-select" style="width:180px"><option>学生</option><option>教师</option></select></div>
         <div class="spec-item__meta">
-          <div class="spec-item__name">下拉选择</div>
-          <div class="spec-item__desc">身份、筛选、排序</div>
+          <div class="spec-item__name">下拉选择（原生兜底）</div>
+          <div class="spec-item__desc">仅用于"不需要自定义样式"的简单场景：原生 <select> 的展开列表由浏览器绘制，套不上我们的样式，所以有视觉要求的下拉一律用下面两个（触发器 + 浮层）</div>
           <div class="spec-item__cls">.ui-select</div>
         </div>
       </div>
@@ -460,6 +460,32 @@
           <div class="spec-item__name">徽章 / 标签</div>
           <div class="spec-item__desc">状态与分类标记</div>
           <div class="spec-item__cls">.ui-badge--ok/info/warn/err/gold</div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div style="width:260px;display:flex;flex-direction:column;gap:14px">
+          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button"><span>学生</span><span class="ui-selectbox__chev">▾</span></button></div>
+          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button" aria-expanded="true"><span>管理员</span><span class="ui-selectbox__chev">▾</span></button></div>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">下拉触发器（闭合态）</div>
+          <div class="spec-item__desc">与输入框同高同圆角；展开时箭头旋转 180° 并转主色。原生 <select> 的展开列表由浏览器绘制、无法套样式，所以下拉一律用"触发器 + .ui-menu 浮层"</div>
+          <div class="spec-item__cls">.ui-selectbox__trigger / .ui-selectbox__chev</div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div class="ui-menu" style="width:260px;position:static">
+          <div class="ui-menu__group">选择身份</div>
+          <div class="ui-menu__item ui-menu__item--current">学生</div>
+          <div class="ui-menu__item">教师</div>
+          <div class="ui-menu__item">管理员</div>
+          <div class="ui-menu__sep"></div>
+          <div class="ui-menu__item ui-menu__item--disabled">其他（暂不支持）</div>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">下拉浮层（展开态）</div>
+          <div class="spec-item__desc">外层圆角 16 + 4px 内边距 + 项圆角 12（同心）；选中项 = 与 hover 同值的底色 + 尾部 ✓；禁用项只降透明度。浮层可被"更多菜单 / 右键菜单"复用</div>
+          <div class="spec-item__cls">.ui-menu / .ui-menu__item（--current / --disabled）/ __group / __sep</div>
         </div>
       </div>
   </div>
@@ -908,7 +934,7 @@
     <a class="spec-page-link" href="pages/d3-feedback.html">D3 答题对错反馈<span>含解析</span></a>
   </div>
 
-  <div class="spec-section-title">十、说明</div>
+  <div class="spec-section-title">十一、说明</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>

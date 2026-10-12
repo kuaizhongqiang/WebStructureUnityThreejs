@@ -1375,3 +1375,61 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 
 /* ---- 若站点线仍嫌紧，最直接的办法是缩卡：调小 --shell-card-max-w（例如 420px，
    同时去掉英文副标题或把三个状态徽章挪到状态条），左预留可同步降到 ~480px。---- */
+
+/* ============================================================================
+ * 22. 下拉与浮层菜单（2026-10-12 逐页排版调整 · A2）
+ *
+ * 起因：A2 的"身份"下拉展开后**没有任何样式**（原生 <select> 的展开列表由浏览器绘制，改不了）。
+ * 所以这里补一套可实现的**自定义下拉**：触发器 .ui-selectbox__trigger + 浮层 .ui-menu。
+ *
+ * 为什么浮层单独叫 .ui-menu 而不是 .ui-selectbox__pop：它不止服务下拉 ——
+ * 后续的"更多菜单 / 右键菜单 / 画质选择"都用同一个浮层（参考 dsh 的做法：
+ * 菜单是唯一的跨组件通道，材质与圆角统一在主题里定）。
+ *
+ * 数值依据 dsh `docs/ui-radius.md:71`：标准菜单 = 外层 R16 + 4px 内边距 + 项 R12；
+ * 浮起材质按 §20.2 规则：border: 0 + --elev-* 阴影（阴影第一层就是发丝）。
+ * ========================================================================== */
+
+/* ---- 触发器（闭合态）：与 .ui-input 同高同圆角，只多一个箭头 ---- */
+.ui-selectbox { position: relative; }
+.ui-selectbox__trigger {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  width: 100%; height: 40px; padding: 0 var(--sp-3);
+  background: var(--glass-input); border: var(--hairline) solid var(--check-border);
+  border-radius: var(--radius-md);
+  color: var(--text-1); font-size: var(--fs-14); font-family: inherit; text-align: left; cursor: pointer;
+}
+.ui-selectbox__trigger:hover { border-color: var(--accent); }
+.ui-selectbox__trigger[aria-expanded="true"] { border-color: var(--accent); }
+.ui-selectbox__chev { flex: none; color: var(--text-3); font-size: var(--fs-12); transition: transform 0.15s; }
+.ui-selectbox__trigger[aria-expanded="true"] .ui-selectbox__chev { color: var(--accent); transform: rotate(180deg); }
+
+/* ---- 浮层菜单 ---- */
+.ui-menu {
+  min-width: 100%;
+  padding: var(--sp-1);                 /* 4px：与项圆角构成同心（外 16 − 4 = 内 12） */
+  background: var(--glass-strong);
+  border: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elev-prominent);
+  display: flex; flex-direction: column;
+  max-height: 320px; overflow-y: auto;
+}
+.ui-menu__group { padding: 6px 10px 2px; font-size: var(--fs-11); color: var(--text-3); }
+.ui-menu__sep { height: var(--hairline); background: var(--line-1); margin: var(--sp-1) 6px; }
+.ui-menu__item {
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: 34px; padding: 0 10px; border-radius: var(--radius-md);
+  font-size: var(--fs-14); color: var(--text-1); cursor: pointer; white-space: nowrap;
+}
+.ui-menu__item:hover { background: var(--inter-hover); }
+.ui-menu__item:active { background: var(--inter-active); }
+/* 选中：底色与 hover 同值 + 尾部 ✓（dsh Menu 的做法，不再另造一套选中色） */
+.ui-menu__item--current { background: var(--inter-hover); }
+.ui-menu__item--current::after { content: "✓"; margin-left: auto; color: var(--accent); font-size: var(--fs-12); }
+/* 不可选：只降透明度、不换色、不改尺寸 */
+.ui-menu__item--disabled { color: var(--text-3); opacity: 0.5; cursor: not-allowed; }
+.ui-menu__item--disabled:hover, .ui-menu__item--disabled:active { background: transparent; }
+
+/* ---- 排版稿里把浮层钉在字段下方；产品里由浮层定位逻辑给出坐标 ---- */
+.ui-selectbox__pop { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 50; }

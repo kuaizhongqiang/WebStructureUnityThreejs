@@ -359,7 +359,7 @@ ${group.pages
   )
   .join('')}
 
-  <div class="spec-section-title">十、说明</div>
+  <div class="spec-section-title">十一、说明</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>
