@@ -17,10 +17,12 @@ node tools/check-shell-coupling.mjs
 echo "[gate] 3/4 双端契约一致性（TS <-> 快照 <-> C#）"
 node tools/check-contracts.mjs
 
-echo "[gate] 4/4 Web 侧类型检查与单测"
+echo "[gate] 4/4 Web 侧类型检查、代码规范与单测"
 if [ -d web/node_modules ]; then
   cd web
   npm run typecheck
+  npm run lint
+  npm run format:check
   npm test
 else
   echo "[gate] 跳过：web/node_modules 不存在（先在该目录执行 npm install）"

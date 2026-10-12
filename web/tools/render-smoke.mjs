@@ -138,8 +138,8 @@ try {
     if (message.type() === 'error') pageErrors.push(message.text())
   })
 
-  // ---------- 1. Three.js 任务页（TaskType.Purpose = 1 → Three 栈）----------
-  await page.goto(`${base}/#/task/1`, { waitUntil: 'load' })
+  // ---------- 1. Three.js 任务页（TaskType.Equipment = 2 → Three 栈 + 三维视口）----------
+  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
   await page.waitForSelector('canvas', { timeout: 20000 })
   await page.waitForTimeout(1500) // 让渲染循环跑几帧
 
@@ -159,7 +159,11 @@ try {
     }
   })
 
-  check(three.canvasWidth > 0 && three.canvasHeight > 0, 'Three 页：画布尺寸 > 0', `${three.canvasWidth}x${three.canvasHeight}`)
+  check(
+    three.canvasWidth > 0 && three.canvasHeight > 0,
+    'Three 页：画布尺寸 > 0',
+    `${three.canvasWidth}x${three.canvasHeight}`,
+  )
   check(three.hasViewer, 'Three 页：Viewer 已挂载', three.hasViewer ? '' : 'window.__WSU3_VIEWER__ 不存在')
   check(three.frame > 3, 'Three 页：渲染循环在跑', `frame=${three.frame}`)
   check(three.calls > 0, 'Three 页：有 draw call', `calls=${three.calls}`)
@@ -197,11 +201,15 @@ try {
   })
 
   check(!unity.hasCanvas, 'Unity 页：未创建 three 画布（不越权渲染）')
-  check(unity.bodyText.includes('Unity WebGL'), 'Unity 页：显示 Unity 占位提示', unity.bodyText.replace(/\s+/g, ' ').slice(0, 80))
+  check(
+    unity.bodyText.includes('Unity WebGL'),
+    'Unity 页：显示 Unity 占位提示',
+    unity.bodyText.replace(/\s+/g, ' ').slice(0, 80),
+  )
   await page.screenshot({ path: resolve(artifactsDir, 'task-unity-placeholder.png'), fullPage: false })
 
   // ---------- 3. 回到 Three 页（覆盖 Unity → Three 的重建路径）----------
-  await page.goto(`${base}/#/task/1`, { waitUntil: 'load' })
+  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
   await page.waitForSelector('canvas', { timeout: 20000 })
   await page.waitForTimeout(1200)
   const back = await page.evaluate(() => {
@@ -212,14 +220,68 @@ try {
       calls: viewer && viewer.renderStats ? viewer.renderStats.calls : -1,
     }
   })
-  check(back.hasViewer && back.frame > 3 && back.calls > 0, 'Unity → Three 切回：画布重建且渲染恢复', `frame=${back.frame} calls=${back.calls}`)
+  check(
+    back.hasViewer && back.frame > 3 && back.calls > 0,
+    'Unity → Three 切回：画布重建且渲染恢复',
+    `frame=${back.frame} calls=${back.calls}`,
+  )
 
-  // ---------- 4. 首页 ----------
-  await page.goto(`${base}/#/`, { waitUntil: 'load' })
+  // ---------- 4. 欢迎页（A1）：主视觉 + 外壳浮卡 + 设计系统令牌真的加载了 ----------
+  await page.goto(`${base}/#/start`, { waitUntil: 'load' })
   await page.waitForTimeout(400)
-  const home = await page.evaluate(() => document.body.innerText)
-  check(home.includes('电路连接') && home.includes('Three.js') && home.includes('Unity'), '首页：任务清单与技术栈标注齐全')
-  await page.screenshot({ path: resolve(artifactsDir, 'home.png'), fullPage: false })
+  const home = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement)
+    return {
+      text: document.body.innerText,
+      radiusPanel: style.getPropertyValue('--radius-panel').trim(),
+      border3: style.getPropertyValue('--border-3').trim(),
+      caption: style.getPropertyValue('--shell-caption-h').trim(),
+      theme: document.documentElement.getAttribute('data-theme') ?? '',
+      hasCard: Boolean(document.querySelector('.ui-titlebar.ui-titlebar--float')),
+    }
+  })
+  check(
+    home.text.includes('虚拟仿真教学平台') && home.text.includes('开始实验'),
+    '欢迎页：主视觉与主按钮存在',
+  )
+  check(home.hasCard, '外壳：浮卡（.ui-titlebar--float）已渲染')
+  check(
+    home.radiusPanel === '28px' && home.border3.length > 0,
+    '设计系统已生效（@ds/tokens.css 已加载）',
+    `radius-panel=${home.radiusPanel} border-3=${home.border3}`,
+  )
+  check(
+    home.caption === '0px',
+    '浏览器下桌面壳标题栏高度为 0（不影响布局）',
+    `--shell-caption-h=${home.caption}`,
+  )
+  check(home.theme === 'dark' || home.theme === 'light', '主题属性已设置', home.theme)
+  await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
+
+  // ---------- 5. 站点线：11 站、契约标签、技术栈标注 ----------
+  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
+  await page.waitForTimeout(600)
+  const route = await page.evaluate(() => {
+    const stops = [...document.querySelectorAll('.ui-route__stop')]
+    return {
+      count: stops.length,
+      labels: stops.map((el) => el.querySelector('.ui-route__label')?.textContent?.trim() ?? ''),
+      stacks: [...document.querySelectorAll('.ui-route__stack')].map((el) => el.textContent?.trim() ?? ''),
+    }
+  })
+  check(route.count === 11, '站点线：11 站（由契约 TASK_TYPES 驱动）', `count=${route.count}`)
+  check(
+    route.labels.includes('电路连接') && route.labels.includes('考核'),
+    '站点线：标签逐字来自契约',
+    route.labels.join('/'),
+  )
+  check(route.stacks.includes('Unity') && route.stacks.includes('Three'), '站点线：技术栈标注齐全（DEC-06）')
+
+  // ---------- 6. 骨架自检页（原两个演示页的合并版）----------
+  await page.goto(`${base}/#/debug`, { waitUntil: 'load' })
+  await page.waitForTimeout(500)
+  const debugText = await page.evaluate(() => document.body.innerText)
+  check(debugText.includes('真源读数') || debugText.includes('骨架自检'), '骨架自检页（/#/debug）可访问')
 
   check(pageErrors.length === 0, '全程无 JS 异常 / console.error', pageErrors.slice(0, 3).join(' | '))
 } finally {
