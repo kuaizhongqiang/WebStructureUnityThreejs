@@ -62,6 +62,7 @@
   --fs-22: 22px;
   --fs-28: 28px;
   --fs-40: 40px;
+  --fs-84: 84px;   /* 欢迎/开始页主标题（H1），按审核意见放大到 28 的约 3 倍 */
 
   /* 间距 */
   --sp-1: 4px;
@@ -556,7 +557,7 @@ body {
 .ui-grow { flex: 1; }
 .ui-muted { color: var(--text-3); }
 .ui-small { font-size: var(--fs-12); }
-.ui-h1 { font-size: var(--fs-28); font-weight: 700; }
+.ui-h1 { font-size: var(--fs-84); font-weight: 700; line-height: 1.12; letter-spacing: 2px; }
 .ui-h2 { font-size: var(--fs-18); font-weight: 600; }
 .ui-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 
@@ -1289,3 +1290,67 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
  *   ① 禁用态：dsh 用 opacity .4 淡化；你上一轮明确要求"禁用要更明显"，所以保留"虚线框 + 锁图标"。
  *   ② 站线圆点描边保留 2px：它是"环"而非分隔线，与 dsh 允许保留宽度的 spinner 轨道同类。
  */
+
+/* ============================================================================
+ * 21. 外壳改版：顶栏 → 右上角浮卡（2026-10-12 逐页排版调整，从 A1 开始）
+ *
+ * 负责人要求：顶栏**不再横贯全宽**，改为右上角浮卡，距上/右边距各 50px，**宽度随内容自适应**。
+ *
+ * 连带影响（一次处理干净，否则逐页看时会到处发现"撞车"）：
+ *   ① 顶栏脱离文档流 ⇒ `.board__body` 从 960px 变成 **1044px**（多出的 84px 全给内容）；
+ *   ② `.board__body` 的 z-index 必须放回 auto —— 否则 body 内的模态框（z 50）
+ *      会被浮卡（z 40，同级兄弟）压住，弹窗会被顶栏盖住；
+ *   ③ 页面右上按钮组、旧角落 fab、toast 都要重新避让；
+ *   ④ 横贯型的站点线条右端要给浮卡让位（浮卡宽度随内容变，见 --shell-reserve-top-right）。
+ * ========================================================================== */
+:root {
+  --shell-top-y: 50px;                  /* 浮卡距画布上边 */
+  --shell-top-x: 50px;                  /* 浮卡距画布右边；右下角主操作按钮也用这个值对齐 */
+  --shell-bar-h: 70px;                  /* 浮卡高度（供其它元素避让；浏览器实测 70px） */
+  --statusbar-h: 36px;                  /* 状态条高度：页面内元素要"对齐画布边"时用它抵消 */
+  /* 横贯条右端预留：**实测最宽浮卡 767px**（长面包屑 + 3 个状态徽章）+ 右边距 50px + 安全余量。
+     注意：这个值是"避让"而非"美观"，站点线因此会比之前紧凑（连接段变短）——
+     若嫌挤，可改用"限制面包屑宽度 + 省略号"（见 §21 末尾说明）后把本值降到 ~560px。 */
+  --shell-reserve-top-right: 900px;
+}
+
+/* ① 让 body 内部的高 z 元素（模态框）能盖过浮卡 */
+.board > .board__body { z-index: auto; }
+
+/* ② 浮卡本体：宽度随内容、圆角与浮起材质都走令牌。
+      单独抽成 .ui-titlebar--float，是为了让成果页 / A7 组件规范页能在静态容器里展示同一形态。 */
+.ui-titlebar--float {
+  height: auto;
+  width: max-content;
+  max-width: 100%;
+  padding: 12px 18px;
+  border: 0;                                  /* 浮起材质：边由 elevation 的第一层发丝承担 */
+  border-radius: var(--radius-xl);
+  background: var(--glass-bar);
+  box-shadow: var(--elev-panel);
+}
+/* 外壳里的顶栏 = 浮卡 + 钉在右上角 */
+.board > .ui-titlebar {
+  position: absolute;
+  top: var(--shell-top-y);
+  right: var(--shell-top-x);
+  z-index: 40;
+  max-width: calc(100% - var(--shell-top-x) * 2);
+}
+.board > .ui-titlebar .ui-titlebar__en { letter-spacing: 0.8px; }   /* 浮卡里英文副标题收紧一点，别把卡撑太宽 */
+
+/* ③ 页面右上按钮组：改到浮卡正下方，右边缘与浮卡对齐 */
+.ui-topright { top: calc(var(--shell-top-y) + var(--shell-bar-h) + 8px); right: var(--shell-top-x); }
+/* 旧角落 fab（C8~C11 遗留页）与轻提示避让 */
+.ui-corner--rt { top: calc(var(--shell-top-y) + var(--shell-bar-h) + 74px); }
+.ui-toast { top: 28px; }
+
+/* ④ 横贯条让位 */
+.ui-route { padding-right: var(--shell-reserve-top-right); }
+.ui-route--narrow { padding-right: 24px; }   /* 窄屏变体保持紧凑 */
+
+/* ---- 若嫌站点线因此变挤，有两条"不动设计"的办法（任选一条即可把预留降到 ~560px）----
+   ① 限制面包屑宽度：
+      .ui-titlebar__crumb { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+   ② 把三个状态徽章（进度 / 画质 / 用户）从浮卡挪到桌面状态条：浮卡只留"LOGO + 名称 + 面包屑"。
+   两者都会让最宽浮卡从 767px 降到 ~560px。当前**没做**，等负责人在页面上看过再定。 */

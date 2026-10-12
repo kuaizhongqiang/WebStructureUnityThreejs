@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A7 常驻 · 顶部标题栏（3 种形态） — 页面排版稿</title>
+<title>A7 常驻 · 外壳浮卡（右上角 · 3 种内容形态） — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 <script>
   (function () {
@@ -26,7 +26,7 @@
 <div class="board-wrap"><div class="board">
   <div class="board__bg"></div>
 
-      <header class="ui-titlebar">
+      <header class="ui-titlebar ui-titlebar--float">
         <div class="ui-titlebar__logo">仿</div>
         <div class="ui-titlebar__names">
           <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -42,8 +42,8 @@
       <div style="padding:26px 32px;display:flex;flex-direction:column;gap:26px">
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 1 · 内容页（项目内）</div>
-          <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
                 <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -60,8 +60,8 @@
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 2 · 漫游页</div>
-          <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
                 <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -77,8 +77,8 @@
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 3 · 窄屏折叠（移动端 / 小窗口）</div>
-          <div style="width:760px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none;height:64px">
+          <div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float" style="padding:8px 12px">
               <div class="ui-titlebar__logo" style="width:34px;height:34px;font-size:14px">仿</div>
               <div class="ui-titlebar__names"><div class="ui-titlebar__cn" style="font-size:15px">温度传感器特性测量</div></div>
               <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><button class="ui-iconbtn ui-iconbtn--icon">☰</button></div>
@@ -87,7 +87,7 @@
         </div>
         <div class="ui-alert ui-alert--info">
           <span class="ui-alert__icon">i</span>
-          <span>规范：高 84px（窄屏 64px）；左 LOGO + 中英双行；右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>标题栏永不收起</b>（保证返回入口常驻）。</span>
+          <span>规范：<b>钉在画布右上角，距上 / 右各 50px，宽度随内容自适应</b>（<code>width: max-content</code>），高约 68px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>A7 · 常驻 · 顶部标题栏（3 种形态） · 归属 常驻</span>
+  <span>A7 · 常驻 · 外壳浮卡（右上角 · 3 种内容形态） · 归属 常驻</span>
   <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
 </div>
 </body>

@@ -26,7 +26,7 @@
 <div class="board-wrap"><div class="board">
   <div class="board__bg"></div>
 
-      <header class="ui-titlebar">
+      <header class="ui-titlebar ui-titlebar--float">
         <div class="ui-titlebar__logo">仿</div>
         <div class="ui-titlebar__names">
           <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -41,19 +41,19 @@
 
       <div class="ui-center" style="height:100%">
         <div class="ui-titlebar__logo" style="width:96px;height:96px;font-size:40px;border-radius:20px">仿</div>
-        <div class="ui-h1" style="margin-top:26px">虚拟仿真教学平台</div>
-        <div class="ui-muted" style="letter-spacing:3px;font-size:12px;margin-top:8px">VIRTUAL SIMULATION TEACHING PLATFORM</div>
-        <div style="margin-top:12px;font-size:14px;color:var(--text-2)">教学实验 · 虚拟仿真 · 分步操作训练</div>
-        <div class="ui-row" style="margin-top:40px;gap:16px">
-          <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill">开始实验</button>
-          <button class="ui-btn ui-btn--lg ui-btn--pill ui-btn--ghost">操作说明</button>
-        </div>
-        <div class="ui-row" style="margin-top:30px">
+        <div class="ui-h1" style="margin-top:30px">虚拟仿真教学平台</div>
+        <div class="ui-muted" style="letter-spacing:3px;font-size:12px;margin-top:12px">VIRTUAL SIMULATION TEACHING PLATFORM</div>
+        <div style="margin-top:16px;font-size:14px;color:var(--text-2)">教学实验 · 虚拟仿真 · 分步操作训练</div>
+        <div class="ui-row" style="margin-top:34px">
           <span class="ui-badge ui-badge--info">游客可直接进入（DEC-04）</span>
           <span class="ui-badge">纯静态 · 无后端（DEC-21）</span>
         </div>
+        <!-- 主操作移到右下角：与右上角浮卡共用 50px 边距，形成对角呼应；"操作说明"按钮按要求移除。
+             bottom 要减掉状态条高度，否则只是"距内容区 50px"，叠上 36px 状态条后离画布底会有 86px。 -->
+        <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill"
+                style="position:absolute;right:var(--shell-top-x);bottom:calc(var(--shell-top-x) - var(--statusbar-h))">开始实验</button>
         <div class="ui-muted" style="position:absolute;left:0;right:0;bottom:28px;text-align:center;font-size:11px">© 2026 虚拟仿真教学平台 · 首次进入会弹画质设置</div>
-        <div class="note">A1 · <b>欢迎/开始页</b> · 居中主视觉 + 主次双按钮</div>
+        <div class="note">A1 · <b>欢迎 / 开始页</b> · 居中主视觉 + 右下主按钮（已移除"操作说明"）</div>
       </div>
 
   </div>

@@ -252,6 +252,7 @@
   <div class="spec-section-title">四、设计令牌 · 字号 / 间距 / 圆角</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:10px">
+      <div style="font-size:84px;line-height:1.12;font-weight:700;letter-spacing:2px">84 欢迎页主标题</div>
       <div style="font-size:40px">40 大标题</div>
       <div style="font-size:28px">28 页面主标题</div>
       <div style="font-size:22px">22 区块标题</div>
@@ -616,6 +617,26 @@
   <div class="spec-grid">
 
       <div class="spec-item">
+        <div class="spec-item__stage"><div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:14px;display:flex;justify-content:flex-end">
+          <header class="ui-titlebar ui-titlebar--float">
+            <div class="ui-titlebar__logo">仿</div>
+            <div class="ui-titlebar__names">
+              <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+              <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+            </div>
+            <div class="ui-titlebar__right">
+              <span class="ui-titlebar__crumb">目录 / <b>温度传感器特性测量</b></span>
+              <span class="ui-badge ui-badge--ok">已完成 3 / 11</span>
+            </div>
+          </header>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">外壳浮卡（替代横贯全宽的顶栏）</div>
+          <div class="spec-item__desc">钉在画布右上角，距上 / 右各 50px，宽度随内容自适应（max-content）；浮起材质走 elevation，不再画中性 border。顶栏脱离文档流后，内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px</div>
+          <div class="spec-item__cls">.ui-titlebar.ui-titlebar--float</div>
+        </div>
+      </div>
+      <div class="spec-item">
         <div class="spec-item__stage"><nav class="ui-route" style="padding:12px 14px 8px">
           <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">目的</span></div>
           <span class="ui-route__seg ui-route__seg--done"></span>
@@ -853,7 +874,7 @@
     <a class="spec-page-link" href="pages/a4-quality.html">A4 画质 / 首次设置<span>Start</span></a>
     <a class="spec-page-link" href="pages/a5-menu.html">A5 菜单 / 项目列表页<span>Menu</span></a>
     <a class="spec-page-link" href="pages/a6-roaming.html">A6 漫游大场景页<span>Roaming</span></a>
-    <a class="spec-page-link" href="pages/a7-titlebar.html">A7 顶部标题栏（3 形态）<span>常驻</span></a>
+    <a class="spec-page-link" href="pages/a7-titlebar.html">A7 外壳浮卡（右上角 · 3 形态）<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a8-dialog.html">A8 通用模态框（4 类）<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a9-sleep.html">A9 沉睡 / 唤醒遮罩<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a10-ai.html">A10 AI 助理浮窗<span>常驻</span></a>

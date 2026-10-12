@@ -38,19 +38,19 @@ export const pagesAB = [
     body: `
       <div class="ui-center" style="height:100%">
         <div class="ui-titlebar__logo" style="width:96px;height:96px;font-size:40px;border-radius:20px">仿</div>
-        <div class="ui-h1" style="margin-top:26px">虚拟仿真教学平台</div>
-        <div class="ui-muted" style="letter-spacing:3px;font-size:12px;margin-top:8px">VIRTUAL SIMULATION TEACHING PLATFORM</div>
-        <div style="margin-top:12px;font-size:14px;color:var(--text-2)">教学实验 · 虚拟仿真 · 分步操作训练</div>
-        <div class="ui-row" style="margin-top:40px;gap:16px">
-          <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill">开始实验</button>
-          <button class="ui-btn ui-btn--lg ui-btn--pill ui-btn--ghost">操作说明</button>
-        </div>
-        <div class="ui-row" style="margin-top:30px">
+        <div class="ui-h1" style="margin-top:30px">虚拟仿真教学平台</div>
+        <div class="ui-muted" style="letter-spacing:3px;font-size:12px;margin-top:12px">VIRTUAL SIMULATION TEACHING PLATFORM</div>
+        <div style="margin-top:16px;font-size:14px;color:var(--text-2)">教学实验 · 虚拟仿真 · 分步操作训练</div>
+        <div class="ui-row" style="margin-top:34px">
           <span class="ui-badge ui-badge--info">游客可直接进入（DEC-04）</span>
           <span class="ui-badge">纯静态 · 无后端（DEC-21）</span>
         </div>
+        <!-- 主操作移到右下角：与右上角浮卡共用 50px 边距，形成对角呼应；"操作说明"按钮按要求移除。
+             bottom 要减掉状态条高度，否则只是"距内容区 50px"，叠上 36px 状态条后离画布底会有 86px。 -->
+        <button class="ui-btn ui-btn--primary ui-btn--lg ui-btn--pill"
+                style="position:absolute;right:var(--shell-top-x);bottom:calc(var(--shell-top-x) - var(--statusbar-h))">开始实验</button>
         <div class="ui-muted" style="position:absolute;left:0;right:0;bottom:28px;text-align:center;font-size:11px">© 2026 虚拟仿真教学平台 · 首次进入会弹画质设置</div>
-        <div class="note">A1 · <b>欢迎/开始页</b> · 居中主视觉 + 主次双按钮</div>
+        <div class="note">A1 · <b>欢迎 / 开始页</b> · 居中主视觉 + 右下主按钮（已移除"操作说明"）</div>
       </div>`,
   },
 
@@ -239,7 +239,7 @@ ${Array.from({ length: 10 })
   {
     id: 'A7',
     file: 'a7-titlebar.html',
-    title: '常驻 · 顶部标题栏（3 种形态）',
+    title: '常驻 · 外壳浮卡（右上角 · 3 种内容形态）',
     state: '常驻',
     crumb: '组件规范',
     right: '',
@@ -247,8 +247,8 @@ ${Array.from({ length: 10 })
       <div style="padding:26px 32px;display:flex;flex-direction:column;gap:26px">
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 1 · 内容页（项目内）</div>
-          <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
                 <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -265,8 +265,8 @@ ${Array.from({ length: 10 })
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 2 · 漫游页</div>
-          <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
                 <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -282,8 +282,8 @@ ${Array.from({ length: 10 })
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 3 · 窄屏折叠（移动端 / 小窗口）</div>
-          <div style="width:760px;border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
-            <header class="ui-titlebar" style="border-bottom:none;height:64px">
+          <div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+            <header class="ui-titlebar ui-titlebar--float" style="padding:8px 12px">
               <div class="ui-titlebar__logo" style="width:34px;height:34px;font-size:14px">仿</div>
               <div class="ui-titlebar__names"><div class="ui-titlebar__cn" style="font-size:15px">温度传感器特性测量</div></div>
               <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><button class="ui-iconbtn ui-iconbtn--icon">☰</button></div>
@@ -292,7 +292,7 @@ ${Array.from({ length: 10 })
         </div>
         <div class="ui-alert ui-alert--info">
           <span class="ui-alert__icon">i</span>
-          <span>规范：高 84px（窄屏 64px）；左 LOGO + 中英双行；右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>标题栏永不收起</b>（保证返回入口常驻）。</span>
+          <span>规范：<b>钉在画布右上角，距上 / 右各 50px，宽度随内容自适应</b>（<code>width: max-content</code>），高约 68px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>`,
   },

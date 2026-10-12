@@ -44,7 +44,7 @@ const THEME_SCRIPT = `<script>
 const THEME_SWITCH = `<span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>`
 
 const TITLEBAR = (crumb, right) => `
-      <header class="ui-titlebar">
+      <header class="ui-titlebar ui-titlebar--float">
         <div class="ui-titlebar__logo">仿</div>
         <div class="ui-titlebar__names">
           <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
@@ -234,6 +234,7 @@ ${GLASS_TOKENS.map(([name, value]) => token({ name, value })).join('')}
   <div class="spec-section-title">四、设计令牌 · 字号 / 间距 / 圆角</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:10px">
+      <div style="font-size:84px;line-height:1.12;font-weight:700;letter-spacing:2px">84 欢迎页主标题</div>
       <div style="font-size:40px">40 大标题</div>
       <div style="font-size:28px">28 页面主标题</div>
       <div style="font-size:22px">22 区块标题</div>
