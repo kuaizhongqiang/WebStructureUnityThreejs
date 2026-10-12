@@ -27,8 +27,7 @@ const IS_WINDOWS = process.platform === 'win32'
 /**
  * Windows 上隐藏原生标题栏后，系统仍会画一条"标题栏浮层"（最小化/最大化/关闭）。
  * 这条浮层**由系统托管**：拖动、双击最大化、贴边都由它处理 —— 页面**不需要**写 `app-region`，
- * 只要把这条带子**留空**即可（做法参考只读仓库 dsh 的 desktop 壳：
- * `titleBarStyle: 'hidden'` + `titleBarOverlay`）。
+ * 只要把这条带子**留空**即可（`titleBarStyle: 'hidden'` + `titleBarOverlay`）。
  *
  * 留位方式：壳把高度通过 `window.wsu3Shell.captionHeight` 告诉页面，页面写到
  * `--shell-caption-h` 上（见 web/src/shell/bridge.ts），布局自动让出这条带子。

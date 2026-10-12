@@ -5,7 +5,7 @@
  * （见 `@ds/tokens.css`；排版稿的页面也是同一套机制）。
  *
  * 除了切页面，还要**同时通知桌面壳**：原生标题栏按钮与系统配色由 `nativeTheme` 决定，
- * 不同步就会出现"亮色页面 + 深色原生按钮"的割裂（做法参考只读仓库 dsh 的 desktop 壳）。
+ * 不同步就会出现"亮色页面 + 深色原生按钮"的割裂。
  */
 import { ref } from 'vue'
 import { applyShellChrome, type ShellTheme } from './bridge'

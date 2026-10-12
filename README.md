@@ -11,19 +11,20 @@
 | 路径 | 内容 |
 |---|---|
 | `docs/requirement/raw/raw-requirement.md` | **原始需求，唯一权威来源**（只读，不得改写） |
-| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 72 条（DEC-01 ~ DEC-72，三轮问答的结论），**只增不改** |
-| `docs/OPEN-QUESTIONS*.md` | 三轮问答清单（第一轮 32 题 / 第二轮 28 题 / 第三轮 10 题）原文保留，答案已固化进 `DECISIONS.md` |
+| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 79 条（DEC-01 ~ DEC-79，五轮问答的结论），**只增不改** |
+| `docs/OPEN-QUESTIONS*.md` | 前四轮问答清单原文保留（第一轮 32 题 / 第二轮 28 题 / 第三轮 10 题），答案已固化进 `DECISIONS.md`；第四、五轮以追加条目形式直接落在 `DECISIONS.md` |
 | `docs/requirement/requirement-analysis.md` | 需求分析：原始需求条目化（R-1~R-8）、红线、需求→交付物映射、缺口闭合表 |
-| `docs/research/01~08` | 技术调研：Unity 线、Web/Three.js 线、集成交付、参考工程、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测** |
-| `docs/design/01~04` | 设计草案：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型 |
+| `docs/research/01~08` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测** |
+| `docs/design/01~07` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
-| `docs/ui-mockups/` | **静态排版稿与样式清单**：29 页排版稿 + `index.html`（元件规范成果页）+ `style.css`（唯一样式依赖） |
+| `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用），`style.css` 是聚合入口 |
 | `docs/README.md` | 文档总索引与写作约定 |
-| `web/` | **Web 前端工程**：Vite + TypeScript 5.9.3 + Vue 3 + 裸 three |
-| `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器，加载 `web/dist`（DEC-20 / DEC-32） |
+| `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
+| `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
+| `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
 | `content/` | 内容与契约：`contracts/snapshot.json` 为契约校验的**基准快照** |
-| `tools/` | 提交门禁：契约一致性、大文件阈值、pre-commit hook |
+| `tools/` | 门禁与流水线：契约一致性 / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存、校验、打包） |
 | `.github/workflows/gate.yml` | 合并门禁（CI） |
 
 ## 2 架构红线（不可违背）
@@ -39,14 +40,16 @@
 
 | 部分 | 状态 |
 |---|---|
-| 文档与决策 | 三轮问答**全部关闭**，**72 条决策生效**；需求分析 v1 定稿 |
-| Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略、路由与两页 |
-| Web 验收 | ✅ `typecheck` / 单测 / 构建通过；**三维渲染冒烟**用真实 Chromium 做 12 项断言（含"画布非纯色"的像素判定） |
+| 文档与决策 | 五轮问答**全部关闭**，**79 条决策生效**；需求分析 v1 定稿；设计文档 7 篇 |
+| Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
+| Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动，article 与 list 端到端）/ 骨架自检页；样式只走设计系统令牌；**ESLint + Prettier** 已进 hook 与 CI |
+| Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟 20 项**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |
 | Unity 工程 | 程序集分层（Contracts / Core / Runtime / Editor / Tests.EditMode）+ 契约枚举 + **WebGL 基线构建工具** + 契约冻结单测；业务逻辑尚未开始 |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
-| 排版稿 | 29 页静态排版稿 + 元件规范成果页，深/浅两套主题 |
-| 门禁 | pre-commit hook + CI（契约、大文件、类型检查、单测、构建、渲染冒烟） |
-| Electron 壳 | ✅ 骨架已落地并**冒烟通过**（本机服务加载 `web/dist`、预加载桥 `window.wsu3Shell` 生效、0 控制台错误）；打包分发未做 |
+| Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
+| 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
+| 门禁 | pre-commit hook + CI（契约、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
+| Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON |
 
 ## 4 怎么跑
 
@@ -158,9 +161,10 @@ git push -u origin feat/xxx    # 3 推分支
 ## 5 两条最容易踩的纪律
 
 - **双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区。**涉及 Unity 侧的改动，两个渠道都必须提交**（git 按路径显式 `add`，永不 `-A`；Plastic 用 `cm add --recursive` + `cm ci --all` 并复核）。只提交一侧会造成两边历史分叉。细节见 `AGENT.md` §4。
-- **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级、浮层 elevation、交互叠加层、键盘焦点环）见 `docs/ui-mockups/components.css` §20。
+- **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版）的权威描述见 [`docs/design/07-frame-style-rules.md`](./docs/design/07-frame-style-rules.md)，落地在 `tokens.css` + `components.css` §20。
 - **样式只有一份**（DEC-74）：`tokens.css`（令牌）+ `components.css`（组件）= **产品要用的**；`mockup-shell.css` 是评审外壳，产品不得 import；`style.css` 只是排版稿的聚合入口。
 - **壳与业务的边界**：业务代码（`web/src`）**零 `import electron`**（DEC-20）。壳能力只通过 `window.wsu3Shell` 只读快照暴露，实现在 `electron/preload.js`；这条由 `tools/check-shell-coupling.mjs` 机械保证（已进 hook 与 CI）。
+- **文档里不写外部引用**：`docs/`、`README.md`、`AGENT.md` 与代码注释**不得**出现外部仓库名或本机绝对路径；需要遵循的规则要**摘录进 `docs/`**（如框体规则 → `docs/design/07`、Unity 构建注意 → `docs/design/06`），再引用我们自己的文档。理由见 `AGENT.md` §4。
 
 ## 6 许可
 

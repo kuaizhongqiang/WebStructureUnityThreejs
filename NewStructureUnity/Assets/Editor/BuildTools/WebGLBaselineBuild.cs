@@ -8,7 +8,7 @@ using UnityEngine;
 
 // ⚠️ 本文件所在的目录叫 BuildTools 而不是 Build：
 // NewStructureUnity/ignore.conf 里 Build/build/Builds/builds 都是"任意深度匹配"，
-// 任何名为 Build 的目录会被 Plastic SCM 静默排除（参考工程踩过这个坑）。
+// 任何名为 Build 的目录会被 Plastic SCM 静默排除（本项目早期实测确认过）。
 // 同理 Builds/ 是构建产物目录，两个版本控制系统都已忽略。
 
 namespace WSU3.Editor.BuildTools

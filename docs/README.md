@@ -26,7 +26,7 @@
 | `OPEN-QUESTIONS.md` | 第一轮问题清单（32 题）**原文保留**，答案已全部固化到 `DECISIONS.md` | v1 已关闭 |
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
 | `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |
-| **`PAGE-WORKLIST.md`** | **页面工作清单**：按两个参考工程实测盘点的全部页面（6 组 / 11 个任务页 / 通用组件）+ 里程碑 + 照什么不照什么 | 待审 |
+| **`PAGE-WORKLIST.md`** | **页面工作清单**：按既有同类软件实测盘点的全部页面（6 组 / 11 个任务页 / 通用组件）+ 里程碑 + 照什么不照什么 | 待审 |
 | `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、**第九节框体令牌（圆角 6 级 / 0.5px 描边阶梯 / elevation / 交互叠加层 / 焦点环）**、29 个页面入口 | 待审 |
 | `ui-mockups/pages/*.html` | **29 个页面的静态排版稿**（A 组 10 · B 组 5 · C 组 11 · D 组 3），逐页审核用 | 待审 |
 | `ui-mockups/tokens.css` | **令牌层（产品用）**：颜色 / 字号 / 间距 / 圆角 / 描边 α 阶梯 / elevation / 交互叠加层 / 焦点环 / 毛玻璃 / 亮色方案 | — |
@@ -46,6 +46,7 @@
 | `design/04-data-model.md` | **数据模型草案**：内容数据（项目/任务/步骤/题目）与本地数据（进度/成绩/设置），含字段表与示例 JSON | 草案待确认 |
 | `design/05-unity-packaging-pipeline.md` | **Unity 产物与打包流水线**：三段式（人工构建 → 暂存校验 → 打包）、`unity/builds/<key>/` 落点、`release-manifest.json` 发布清单、服务端 MIME/压缩/缓存清单、明确未做项 | **已实现**（DEC-79） |
 | `design/06-unity-manual-build-checklist.md` | **Unity 手动构建检查清单**：本仓 WebGL 设置实值（Brotli / 无回退 / 无多线程 / 开数据缓存）及其对服务器的要求、中文 TMP 字形与 StreamingAssets 红线、构建后三个必查、桥未落地时的预期表现 | 照做即可 |
+| `design/07-frame-style-rules.md` | **框体样式规则（本项目自持）**：描边 α 阶梯 + 0.5px 发丝、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版、明确不做的五项 | **生效**（落地在 `ui-mockups` 的 tokens/components） |
 
 ### 门禁与工具（不在 `docs/` 下，但归属关系记录在此）
 
@@ -66,9 +67,9 @@
 | `research/01-unity-line.md` | Unity 线：工程现状、交付形态四方案、**WebGL 限制清单**、Unity↔Web 通信机制、三维资产管线 |
 | `research/02-web-threejs-line.md` | Web 线：技术栈选型、依赖版本探测、Three.js 工程要点、**浏览器基线风险**、服务器 MIME/压缩/缓存清单 |
 | `research/03-integration-and-delivery.md` | 集成与交付：Unity 模块挂载方式、通信协议草案、**单一真源归属**、Electron 壳、风险清单 |
-| `research/04-reference-project-mcv.md` | 参考工程 `MCV_Module` 系列：`SceneState`/`TaskType` 确切定义与证据、架构模式、**必须继承 / 必须避开**清单 |
+| `research/04-reference-project-mcv.md` | 既有同类工程调研（只读）：`SceneState`/`TaskType` 确切定义与证据、架构模式、**必须继承 / 必须避开**清单 |
 | `research/05-dependency-plan.md` | 依赖清单与拉取方案：环境实测、Unity/Web 两侧候选依赖、执行与验收标准 |
-| `research/06-scale-baseline.md` | **规模基线**：参照工程 `SensorSimulationTrainingSoftware` 的实测规模，与 **×3 容量预算** |
+| `research/06-scale-baseline.md` | **规模基线**：既有同类软件的实测规模，与 **×3 容量预算** |
 | `research/07-web-scaffold.md` | **Web 工程落地记录**：已装依赖与版本、验收输出、**TS 7 与 vue-tsc 不兼容的坑**、未完成项 |
 | `research/08-webgl-baseline.md` | **WebGL 基线实测**：空场景构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）+ 逐文件占用，是资源预算与"包体是首要敌人"的实测依据 |
 
@@ -78,5 +79,6 @@
 
 1. 本目录内的文档**不得新增需求**；一切需求以 `requirement/raw/` 为准。
 2. `★` 一律表示**建议默认值**，不是已决定项；**已决定项只写在 `DECISIONS.md`**（并标注决策编号）。
-3. 事实必须可追溯：涉及参考工程或本仓库现状的结论要带路径（可行时带行号）。
+3. 事实必须可追溯：结论要带**仓库内**路径（可行时带行号）。**不得**写本机绝对路径或外部仓库/工程路径；
+   需要遵循外部规则时，把**规则本身摘录进 `docs/`** 再引用我们自己的文档（见 `AGENT.md` §4「文档里禁止出现外部引用」）。
 4. `DECISIONS.md` **只增不改**；推翻旧决策要新增条目并注明取代关系。

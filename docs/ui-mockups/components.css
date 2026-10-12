@@ -67,7 +67,7 @@
   background: #1a222d; border-color: var(--line-1); color: var(--text-3); cursor: not-allowed;
 }
 
-/* 角落功能按钮（参考工程 RightUpPanel / LeftBottomPanel 的位置语义） */
+/* 角落功能按钮（右上 / 左下的位置语义） */
 .ui-corner { position: absolute; z-index: 40; display: flex; flex-direction: column; gap: var(--sp-2); }
 .ui-corner--rt { right: 28px; top: 100px; }
 .ui-corner--lb { left: 28px; bottom: 44px; }
@@ -253,7 +253,7 @@
 .ui-alert--warn { border-color: rgba(245, 158, 11, 0.45); background: var(--warn-weak); color: #ffe0ab; }
 .ui-alert--err { border-color: rgba(239, 68, 68, 0.45); background: var(--err-weak); color: #ffc0c0; }
 
-/* 步骤提示（参考工程 TipsPanel：步骤提示 + 操作提示双缓冲） */
+/* 步骤提示（步骤提示 + 操作提示双缓冲） */
 .ui-tips {
   background: rgba(14, 20, 29, 0.94); border: 0.5px solid var(--line-2);
   border-radius: var(--r-3); padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3);
@@ -824,12 +824,10 @@
 .ui-disabled-hint { font-size: var(--fs-11); color: var(--text-3); }
 
 /* ============================================================================
- * 20. 框体统一升级（2026-10-12 第五轮 / 参考 deepseek-harness）
+ * 20. 框体统一升级（2026-10-12 第五轮）
  *
- * 参考物：`D:\dsh\deepseek-harness`（只读，未改动）。它的样式权威在两份文档：
- *   docs/web-styling.md      —— 归属与组件铁律（0.5px 发丝描边、浮层 border:0 + elevation …）
- *   docs/ui-radius.md        —— 圆角标准（6 级刻度 + 角色映射 + 嵌套公式）
- * 我们照搬的是**它的规则**，不是它的数值：
+ * **规则权威：`docs/design/07-frame-style-rules.md`**（本节是它的落地；改规则先改那份文档）。
+ * 五条要点：
  *   ① 中性描边只有一种写法：`0.5px solid var(--border-N)`（已在 §1/§18 落成 α 阶梯）
  *   ② 圆角只有 6 级，按**角色**选档，禁止 10/14/18/24 这类游离值
  *   ③ 浮起 = `border: 0` + `box-shadow: var(--elev-*)`，阴影第一层就是那道 0.5px 发丝
@@ -847,9 +845,9 @@
 /* 独立内容卡 = 20（卡片、网格条目、步骤提示）；提示条按"消息块"给 16 */
 .ui-card, .ui-tile, .ui-tips { border-radius: var(--radius-xl); }
 .ui-alert, .ui-iconitem, .ui-question__analysis, .ui-tips__img { border-radius: var(--radius-lg); }
-/* 大控件（高 64 的大按钮）按 dsh 的"大控件"档给 16，不进 20 */
+/* 大控件（高 64 的大按钮）按"大控件"档给 16，不进 20 */
 .ui-btn--lg { border-radius: var(--radius-lg); }
-/* 缩略图 = 8（dsh 对 40px 文件图标用 R10，我们收敛到刻度内） */
+/* 缩略图 = 8（收进 6 级刻度内，不另起一档） */
 .ui-list__thumb, .ui-tile__thumb, .ui-playlist__thumb { border-radius: var(--radius-sm); }
 /* 徽章 / 标签 = 8（比原来的 4 更"软"，但不做药丸，避免全站变胶囊） */
 .ui-badge { border-radius: var(--radius-sm); }
@@ -857,7 +855,7 @@
 /* 微件：站线/页签上的堆叠小标（9~11px 字体）用最小档 */
 .ui-route__stack { border-radius: var(--radius-xs); }
 .ui-tab__stack { border-radius: var(--radius-xs); }
-/* 边到边对接的容器不圆角（dsh：贴边面用 R0，由外层裁剪） */
+/* 边到边对接的容器不圆角（贴边面由外层裁剪） */
 .ui-layout-3d__side .ui-panel { border-radius: 0; }
 
 /* ------------------------------------------------ 20.2 浮起材质：border:0 + elevation */
@@ -867,7 +865,7 @@
 .ui-viewport__hint, .ui-viewport__tool { border: 0; box-shadow: var(--elev-panel); }
 
 /* ------------------------------------------------ 20.3 交互态统一为"叠加层" */
-/* 规则：hover/按压只叠一层半透明，不换底色、不改圆角尺寸（dsh web-styling.md:23 / ui-radius.md:48） */
+/* 规则：hover/按压只叠一层半透明，不换底色、不改圆角尺寸（见 docs/design/07 §4） */
 .ui-btn:hover { background: var(--inter-hover); border-color: var(--line-2); }
 .ui-btn:active { background: var(--inter-active); transform: none; }
 .ui-btn--ghost:hover { background: var(--inter-hover); }
@@ -879,7 +877,7 @@
 /* 焦点环：键盘可见、鼠标不可见 */
 :focus-visible { outline: var(--ring-width) solid var(--ring-color); outline-offset: var(--ring-offset); }
 html[data-input-modality="pointer"] :focus-visible:not(:read-write) { --ring-color: transparent; outline-color: transparent; }
-/* 输入类不画环，改为描边变色（dsh 的 Input 做法） */
+/* 输入类不画环，改为描边变色（见 docs/design/07 §5） */
 .ui-input:focus, .ui-select:focus, .ui-dialog__body:focus { outline: none; box-shadow: none; border-color: var(--accent); }
 /* 规范展示用：静态页面里把焦点环"定格"出来（产品里靠 :focus-visible） */
 .is-focus-ring { outline: var(--ring-width) solid var(--ring-color); outline-offset: var(--ring-offset); }
@@ -989,10 +987,10 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
  * 所以这里补一套可实现的**自定义下拉**：触发器 .ui-selectbox__trigger + 浮层 .ui-menu。
  *
  * 为什么浮层单独叫 .ui-menu 而不是 .ui-selectbox__pop：它不止服务下拉 ——
- * 后续的"更多菜单 / 右键菜单 / 画质选择"都用同一个浮层（参考 dsh 的做法：
- * 菜单是唯一的跨组件通道，材质与圆角统一在主题里定）。
+ * 后续的"更多菜单 / 右键菜单 / 画质选择"都用同一个浮层：
+ * 菜单是唯一的跨组件通道，材质与圆角统一在主题里定。
  *
- * 数值依据 dsh `docs/ui-radius.md:71`：标准菜单 = 外层 R16 + 4px 内边距 + 项 R12；
+ * 数值：标准菜单 = 外层 R16 + 4px 内边距 + 项 R12（见 docs/design/07 §2）；
  * 浮起材质按 §20.2 规则：border: 0 + --elev-* 阴影（阴影第一层就是发丝）。
  * ========================================================================== */
 
@@ -1030,7 +1028,7 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 }
 .ui-menu__item:hover { background: var(--inter-hover); }
 .ui-menu__item:active { background: var(--inter-active); }
-/* 选中：底色与 hover 同值 + 尾部 ✓（dsh Menu 的做法，不再另造一套选中色） */
+/* 选中：底色与 hover 同值 + 尾部 ✓（不再另造一套选中色） */
 .ui-menu__item--current { background: var(--inter-hover); }
 .ui-menu__item--current::after { content: "✓"; margin-left: auto; color: var(--accent); font-size: var(--fs-12); }
 /* 不可选：只降透明度、不换色、不改尺寸 */

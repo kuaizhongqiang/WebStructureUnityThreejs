@@ -12,7 +12,7 @@
       var t = m ? m[1] : localStorage.getItem('wsu3.theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     } catch (e) { /* file:// 下取不到也没关系 */ }
-    // 输入模态：鼠标不画焦点环，键盘导航才画（参考 dsh 的 focus.css:18-21）。
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
     var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
     set('pointer');
     addEventListener('pointerdown', function () { set('pointer'); }, true);
@@ -90,7 +90,7 @@
       <div class="ui-corner ui-corner--lb">
         <div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg></span>菜单</div>
       </div>
-      <div class="note" style="z-index:60">D1 · <b>成绩结算</b> · 左侧明细 + 右侧总成绩与时间（对应参考工程 ResultSummitPanel 的 11 项字段）</div>
+      <div class="note" style="z-index:60">D1 · <b>成绩结算</b> · 左侧明细 + 右侧总成绩与时间（共 11 项字段）</div>
 
   </div>
 

@@ -1,8 +1,8 @@
 /**
  * SceneState —— 双端共享契约（Web 侧）。
  *
- * 契约来源（只读参考，勿改）：
- *   F:\Project\MCV_Module\packages\com.mcv.core\Runtime\Models\EnumAll.cs:137-152
+ * 契约来源（**双端同批维护**）：本仓 C# 侧 `NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs`。
+ * 两侧各自手写，靠 `tools/check-contracts.mjs` 与基准快照三方比对（DEC-10 / DEC-67）。
  *
  * 纪律（docs/DECISIONS.md DEC-09）：
  *   - 只许**往后追加**，不得插值、改序、改名；
