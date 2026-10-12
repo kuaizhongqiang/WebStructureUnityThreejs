@@ -50,7 +50,10 @@
 - **改动范围**：只做被要求的事，不顺手重构无关文件；Unity 侧的 `Library/`、`Temp/`、`Logs/`、`UserSettings/`、`obj/` 等生成目录不纳入改动与评审。
 - **提交（双渠道，缺一不可）**：本仓库是**双版本控制**——外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区（`docs/DECISIONS.md` DEC-60）。**涉及 Unity 侧的改动，两个渠道都必须提交**：
   1. **git**：按路径**显式** `git add <路径>`，**永不**用 `git add -A` / `git add .`（生成目录虽已在 `.gitignore` 排除，但显式添加是纪律）；
-  2. **Plastic**：在 `NewStructureUnity/` 工作区用 `cm` 提交（工作区：`NewStructureUnity@tj_kuaiprojcet@cloud.cn`，分支 `/main`）。
+  2. **Plastic**：在 `NewStructureUnity/` 工作区里，按下面两步走（工作区：`NewStructureUnity@tj_kuaiprojcet@cloud.cn`，分支 `/main`）：
+     - `cm add --recursive Assets Packages ProjectSettings ignore.conf` —— 新文件必须**显式递归添加**（实测：不加 `--recursive` 只加了目录本身，子目录仍是"私有"）；
+     - `cm ci --all -c="..."` —— **必须用 `--all`**。实测 `cm ci .` 只提交了部分改动（新增项进了变更集，但已修改的设置文件仍留在"已更改"里），会造成两渠道不一致。
+     - 提交后用 `cm status --all` 复核：**输出只剩工作区标题行**才算干净。
   只提交一侧会造成两边历史分叉，后续无法合并。允许**部分资产在两个渠道各保留一份**。
   - 提交信息说明“改了什么、为什么”，不要把需求原文以外的猜测当结论。
   - **大尺寸资产**（模型、贴图、视频）本阶段**不进 git**，另做处理；提交时若发现大文件，**先问用户**（DEC-57）。
