@@ -58,6 +58,15 @@
 - **歧义处理**：需求极简，凡本文件未覆盖的设计决策（目录结构、通信方式、SceneState/TaskType 的具体字段、Unity 与 Three.js 的边界判定标准等），先向用户确认，不要自行拍板并当作既定事实写进代码或文档。
 - **参考工程**：查阅 `F:\Project\MCV_Module_0928`、`F:\Project\MCV_Module` 时视为只读；只提取 SceneState / TaskType 等既有约定，不在其中做修改。
 - **改动范围**：只做被要求的事，不顺手重构无关文件；Unity 侧的 `Library/`、`Temp/`、`Logs/`、`UserSettings/`、`obj/` 等生成目录不纳入改动与评审。
+- **⚠️ 提交必须走 PR + merge（硬纪律，DEC-78，2026-10-12 起）**：`main` **不再接受直接提交**，包括纯文档改动。
+  - 固定流程：
+    1. `git checkout -b <type>/<slug>`（如 `feat/product-scaffold`、`docs/pr-flow`）；
+    2. 在分支上提交（本地 pre-commit hook 会先跑一遍门禁）；
+    3. `git push -u origin <branch>`；
+    4. 开 PR（`base = main`），**等 CI 门禁**（`.github/workflows/gate.yml`）通过 —— 它比本地 hook 多跑类型检查、单测、构建与真浏览器渲染冒烟；
+    5. merge（推荐 **squash**，一个 PR 一个可验收改动，与 DEC-28 一致），然后 `git checkout main && git pull` 并删掉分支。
+  - **不允许**为了省事把文档改动直接推到 `main`；CI 未通过不得 merge。
+  - **Plastic 侧没有 PR 概念**：Unity 侧改动**仍然要**在 Plastic 提交（见下一条），git 侧走 PR —— 双渠道纪律不变，只是 git 侧的落点在 PR 里。
 - **提交（双渠道，缺一不可）**：本仓库是**双版本控制**——外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区（`docs/DECISIONS.md` DEC-60）。**涉及 Unity 侧的改动，两个渠道都必须提交**：
   1. **git**：按路径**显式** `git add <路径>`，**永不**用 `git add -A` / `git add .`（生成目录虽已在 `.gitignore` 排除，但显式添加是纪律）；
   2. **Plastic**：在 `NewStructureUnity/` 工作区里，按下面两步走（工作区：`NewStructureUnity@tj_kuaiprojcet@cloud.cn`，分支 `/main`）：
