@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace WSU3.Contracts
 {
-    /// <summary>页面级导航状态机。契约来源：MCV_Module EnumAll.cs:137-152。</summary>
+    /// <summary>页面级导航状态机。与 Web 侧 web/src/contracts/scene-state.ts 逐值一致（门禁 tools/check-contracts.mjs 三方比对）。</summary>
     public enum SceneState
     {
         [InspectorName("初始化")]
@@ -31,7 +31,7 @@ namespace WSU3.Contracts
     /// <summary>
     /// 业务任务类型，同时是三维技术栈的分流开关（DEC-06）：
     /// Three.js = None/Purpose/Equipment/Principle/Test/Info/Exam；Unity = LineConnection/Training/Structure/Inspection。
-    /// 契约来源：MCV_Module EnumAll.cs:389-415。
+    /// 与 Web 侧 web/src/contracts/task-type.ts 逐值一致（门禁 tools/check-contracts.mjs 三方比对）。
     /// </summary>
     public enum TaskType
     {

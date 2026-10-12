@@ -12,7 +12,7 @@
       var t = m ? m[1] : localStorage.getItem('wsu3.theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     } catch (e) { /* file:// 下取不到也没关系 */ }
-    // 输入模态：鼠标不画焦点环，键盘导航才画（参考 dsh 的 focus.css:18-21）。
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
     var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
     set('pointer');
     addEventListener('pointerdown', function () { set('pointer'); }, true);
@@ -661,7 +661,7 @@
         <div class="spec-item__stage"><div class="ui-company" style="position:static"><span class="ui-company__logo">示</span>示范教育科技有限公司</div></div>
         <div class="spec-item__meta">
           <div class="spec-item__name">版权 / LOGO 块</div>
-          <div class="spec-item__desc">左上常驻（对应参考工程 CompanyPanel）</div>
+          <div class="spec-item__desc">左上常驻（公司 / 版权信息位）</div>
           <div class="spec-item__cls">.ui-company</div>
         </div>
       </div>
@@ -839,10 +839,10 @@
       </div>
   </div>
 
-  <div class="spec-section-title">九、框体令牌（2026-10-12 统一升级，参考 deepseek-harness）</div>
+  <div class="spec-section-title">九、框体令牌（2026-10-12 统一升级）</div>
   <div class="ui-small ui-muted" style="margin-bottom:10px">
-    参考物：只读仓库 <code>D:dshdeepseek-harness</code>，其样式权威是 <code>docs/web-styling.md</code> 与 <code>docs/ui-radius.md</code>。
-    我们照搬它的<b>规则</b>：中性描边一律 0.5px 发丝、圆角只有 6 级且按角色选档、浮层 <code>border:0</code> + <code>--elev-*</code> 阴影（阴影第一层就是那道发丝）、
+    规则权威：<code>docs/design/07-frame-style-rules.md</code>（本节是它的展示）。
+    五条要点：中性描边一律 0.5px 发丝、圆角只有 6 级且按角色选档、浮层 <code>border:0</code> + <code>--elev-*</code> 阴影（阴影第一层就是那道发丝）、
     hover/按压/选中只叠一层半透明、键盘焦点环 2px 且鼠标点不出环。
   </div>
   <div class="spec-grid">
@@ -1191,7 +1191,7 @@
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>
-      <div>· 页面结构来自 <b>docs/PAGE-WORKLIST.md</b>（按两个参考工程实测盘点），不是凭空设计。</div>
+      <div>· 页面结构来自 <b>docs/PAGE-WORKLIST.md</b>（按既有同类软件实测盘点），不是凭空设计。</div>
       <div>· 技术栈标记（Three.js / Unity）按 <b>DEC-06</b> 标注。</div>
       <div>· bar 与 panel 的底统一为<b>带色毛玻璃</b>；毛玻璃效果需要 .board__bg 的真实背景图才看得出来。</div>
       <div>· 背景图：<code>assets/bg-room-dark.jpg</code>（原图 RGB×0.5 烘焙，3840×2160/63MB → 1920×1080/123KB）。</div>

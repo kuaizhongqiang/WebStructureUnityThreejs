@@ -12,7 +12,7 @@
       var t = m ? m[1] : localStorage.getItem('wsu3.theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     } catch (e) { /* file:// 下取不到也没关系 */ }
-    // 输入模态：鼠标不画焦点环，键盘导航才画（参考 dsh 的 focus.css:18-21）。
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
     var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
     set('pointer');
     addEventListener('pointerdown', function () { set('pointer'); }, true);
@@ -56,7 +56,7 @@
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
           <span class="u<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>-alert__icon">i</span>
-          <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>（对应参考工程的 Question_RightICO / Question_WrongICO）；得分变化用金色徽章展示。</span>
+          <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>；得分变化用金色徽章展示。</span>
         </div>
       </div>
 

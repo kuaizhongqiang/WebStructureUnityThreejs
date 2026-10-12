@@ -56,7 +56,7 @@ export const pagesD = [
         </div>
       </div>
       ${corners()}
-      <div class="note" style="z-index:60">D1 · <b>成绩结算</b> · 左侧明细 + 右侧总成绩与时间（对应参考工程 ResultSummitPanel 的 11 项字段）</div>`,
+      <div class="note" style="z-index:60">D1 · <b>成绩结算</b> · 左侧明细 + 右侧总成绩与时间（共 11 项字段）</div>`,
   },
 
   // ------------------------------------------------------ D2 题目控件规格
@@ -141,7 +141,7 @@ export const pagesD = [
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
           <span class="u${icon('info', 14)}-alert__icon">i</span>
-          <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>（对应参考工程的 Question_RightICO / Question_WrongICO）；得分变化用金色徽章展示。</span>
+          <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>；得分变化用金色徽章展示。</span>
         </div>
       </div>`,
   },

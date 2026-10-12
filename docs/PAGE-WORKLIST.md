@@ -118,8 +118,8 @@
 
 | 素材 | 说明 |
 |---|---|
-| `F:\Project\SensorSimulationTrainingSoftware_v1.0_2026\docs\传感器项目横向拓展字典.pdf`（1.18 MB） | **最可能含界面设计图/项目结构图**，尚未读。需要我用视觉模型/Pdf 工具提取的话说一声 |
-| `SensorSimulationTrainingSoftware_v1.0_2026\Assets\Scenes\Preview\Preview_UI.unity` | 把**全部 22 个面板摆在一起**的预览场景 —— 想看"参考产品长什么样"最直接的办法是打开这个场景截图 |
+| 同类产品的《横向拓展字典》PDF（1.18 MB，未入库） | **最可能含界面设计图/项目结构图**，尚未读。需要我用视觉模型 / PDF 工具提取的话说一声 |
+| 同类产品的 UI 预览场景（把**全部 22 个面板摆在一起**） | 想看"参考产品长什么样"最直接的办法是打开该场景截图 |
 | 各页 UI 贴图 | `Assets/Sprites/ICO/*.png`（BG/ContentBase/QuestionBg 等）、`Assets/Sprites/AB/*.png`（仪器图标） |
 
 ## 5 范围边界（本清单不做的事）

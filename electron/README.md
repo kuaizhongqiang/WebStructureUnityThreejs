@@ -62,9 +62,9 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 `preload.js` 只暴露常量、版本号、`captionHeight` 与 `setTheme`（后者用于把主题同步给原生窗口，2026-10-12 加入），
 **没有业务能力**（DEC-24：预留接口点，当期不实现）。将来接既有系统（单点登录、成绩上传、本机授权）时：方法加在 `preload.js` + 主进程 `ipcMain`，业务侧仍只认 `window.wsu3Shell.*`。
 
-## 窗口外观：按 dsh 的桌面壳做法（2026-10-12 追加）
+## 窗口外观（2026-10-12 追加）
 
-参考只读仓库 `D:\dsh\deepseek-harness` 的 `apps/desktop`（Electron）。它的做法里，**我们只取了最省、最稳的一条**：
+窗口外观只做了**最省、最稳的一条**，其余一律不碰：
 
 > **Windows 上 `titleBarStyle: 'hidden'` + `titleBarOverlay`** —— 隐藏原生标题栏，只保留系统画的浮层按钮。
 > **拖动窗口、双击最大化、贴边**这些由**系统**负责（`electron#32341` 那类 app-region 坑都不必碰），
@@ -75,8 +75,8 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
   页面启动时写到根元素的 `--shell-caption-h`（见 `web/src/shell/bridge.ts`）。
   **浏览器里这个值是 0**，所以同一份页面在浏览器与壳里都成立 —— 这是"壳不污染业务"的关键。
 - 主题同步：页面切亮/暗时调 `window.wsu3Shell.setTheme()`，主进程据此设 `nativeTheme.themeSource`、
-  窗口底色和浮层按钮的 `symbolColor`。**不同步就会出现"亮色页面 + 深色原生按钮"**（dsh 也专门处理了这件事）。
-- 我们**没有**照搬的：macOS 的 `hiddenInset` + vibrancy（侧栏毛玻璃）、Windows 的 `backgroundMaterial: 'acrylic'`、
+  窗口底色和浮层按钮的 `symbolColor`。**不同步就会出现"亮色页面 + 深色原生按钮"**。
+- **没有做**的：macOS 的 `hiddenInset` + vibrancy（侧栏毛玻璃）、Windows 的 `backgroundMaterial: 'acrylic'`、
   自绘窗口控制按钮。理由：本阶段只交付 Windows 单平台，且这三项都要求"整窗透明或自绘"，会与页面布局耦合。
 
 ## 打包（DEC-77）

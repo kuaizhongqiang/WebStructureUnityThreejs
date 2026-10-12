@@ -39,8 +39,8 @@
 .board__body { flex: 1; position: relative; overflow: hidden; }
 
 /* ---- 页面背景图 ----
-   来源：F:\Project\ElectricalandElectronicVirtualMuseum_v2.0_2026\ModelAssets\LightBake\Preview_1.png
-   已按用户要求把 **RGB 通道 × 0.5** 烘焙进图片本身（原图 3840×2160 / 63MB → 1920×1080 / 123KB）。
+   来源：合作方提供的展馆烘焙预览图（原图 3840×2160 / 63MB，不入库）。
+   已按要求把 **RGB 通道 × 0.5** 烘焙进图片本身（输出 1920×1080 / 123KB）。
    换图：替换 assets/bg-room-dark.jpg 即可（保持同名）。
    想再压暗：调 --board-bg-extra-dim（0 = 不再压暗，1 = 全黑）。 */
 .board__bg {
@@ -126,4 +126,4 @@
   right: auto;
   z-index: 40;
   max-width: min(var(--shell-card-max-w), calc(100% - var(--shell-top-x) * 2));
-}
+}

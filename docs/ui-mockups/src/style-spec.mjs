@@ -306,7 +306,7 @@ export const styleSpecSections = [
       },
       {
         name: '版权 / LOGO 块',
-        desc: '左上常驻（对应参考工程 CompanyPanel）',
+        desc: '左上常驻（公司 / 版权信息位）',
         cls: '.ui-company',
         html: '<div class="ui-company" style="position:static"><span class="ui-company__logo">示</span>示范教育科技有限公司</div>',
       },

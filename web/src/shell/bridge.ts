@@ -8,8 +8,8 @@
  * 目前壳提供两件事：
  *   · `captionHeight` —— 桌面壳标题栏占的高度，产品要把它留出来（否则内容会被原生窗口按钮压住）；
  *   · `setTheme(theme)` —— 把产品主题同步给**原生**窗口（标题栏按钮与系统配色）：
- *     这是 dsh（只读参考 D:\dsh\deepseek-harness）的做法：渲染器把主题交给主进程去设 nativeTheme，
- *     原生部分才和页面同色；否则亮色页面配深色标题栏会很割裂。
+ *     渲染器把主题交给主进程去设 `nativeTheme`，原生部分才和页面同色；
+ *     否则会出现"亮色页面 + 深色原生按钮"的割裂。
  */
 
 export type ShellTheme = 'dark' | 'light'
