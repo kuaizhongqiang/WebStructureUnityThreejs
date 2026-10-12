@@ -274,9 +274,9 @@ export const styleSpecSectionsRound2 = [
     items: [
       {
         name: '外壳浮卡（替代横贯全宽的顶栏）',
-        desc: '钉在画布右上角，距上 / 右各 50px，宽度随内容自适应（max-content）；浮起材质走 elevation，不再画中性 border。顶栏脱离文档流后，内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px',
+        desc: '钉在画布左上角，距上 / 左各 50px，宽度随内容自适应（max-content，上限 --shell-card-max-w: 560px，超长内容省略号）；浮起材质走 elevation，不再画中性 border。顶栏脱离文档流后，内容区多出 84px 高度；站点线左端留 620px、右端留 268px',
         cls: '.ui-titlebar.ui-titlebar--float',
-        html: `<div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:14px;display:flex;justify-content:flex-end">
+        html: `<div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:14px;display:flex;justify-content:flex-start">
           <header class="ui-titlebar ui-titlebar--float">
             <div class="ui-titlebar__logo">仿</div>
             <div class="ui-titlebar__names">
@@ -426,7 +426,7 @@ export const pageIndexGroups = [
       { id: 'A4', file: 'a4-quality.html', title: '画质 / 首次设置', note: 'Start' },
       { id: 'A5', file: 'a5-menu.html', title: '菜单 / 项目列表页', note: 'Menu' },
       { id: 'A6', file: 'a6-roaming.html', title: '漫游大场景页', note: 'Roaming' },
-      { id: 'A7', file: 'a7-titlebar.html', title: '外壳浮卡（右上角 · 3 形态）', note: '常驻' },
+      { id: 'A7', file: 'a7-titlebar.html', title: '外壳浮卡（左上角 · 3 形态）', note: '常驻' },
       { id: 'A8', file: 'a8-dialog.html', title: '通用模态框（4 类）', note: '常驻' },
       { id: 'A9', file: 'a9-sleep.html', title: '沉睡 / 唤醒遮罩', note: '常驻' },
       { id: 'A10', file: 'a10-ai.html', title: 'AI 助理浮窗', note: '常驻' },

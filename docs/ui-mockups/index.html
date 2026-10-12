@@ -252,7 +252,7 @@
   <div class="spec-section-title">四、设计令牌 · 字号 / 间距 / 圆角</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:10px">
-      <div style="font-size:84px;line-height:1.12;font-weight:700;letter-spacing:2px">84 欢迎页主标题</div>
+      <div class="ui-h1">84 欢迎页主标题（带投影）</div>
       <div style="font-size:40px">40 大标题</div>
       <div style="font-size:28px">28 页面主标题</div>
       <div style="font-size:22px">22 区块标题</div>
@@ -269,7 +269,7 @@
     </div>
     <div class="spec-item__meta">
       <div class="spec-item__name">字号与间距阶梯</div>
-      <div class="spec-item__desc">字号 --fs-11 ~ --fs-40；间距 --sp-1 ~ --sp-7；圆角 --radius-xs ~ --radius-panel（详见第九节）</div>
+      <div class="spec-item__desc">字号 --fs-11 ~ --fs-84（84 = 欢迎页主标题，带 <code>--h1-shadow</code> 投影）；间距 --sp-1 ~ --sp-7；圆角 --radius-xs ~ --radius-panel（详见第九节）</div>
       <div class="spec-item__cls">:root { --fs-* / --sp-* / --radius-* }</div>
     </div>
   </div>
@@ -617,7 +617,7 @@
   <div class="spec-grid">
 
       <div class="spec-item">
-        <div class="spec-item__stage"><div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:14px;display:flex;justify-content:flex-end">
+        <div class="spec-item__stage"><div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:14px;display:flex;justify-content:flex-start">
           <header class="ui-titlebar ui-titlebar--float">
             <div class="ui-titlebar__logo">仿</div>
             <div class="ui-titlebar__names">
@@ -632,7 +632,7 @@
         </div></div>
         <div class="spec-item__meta">
           <div class="spec-item__name">外壳浮卡（替代横贯全宽的顶栏）</div>
-          <div class="spec-item__desc">钉在画布右上角，距上 / 右各 50px，宽度随内容自适应（max-content）；浮起材质走 elevation，不再画中性 border。顶栏脱离文档流后，内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px</div>
+          <div class="spec-item__desc">钉在画布左上角，距上 / 左各 50px，宽度随内容自适应（max-content，上限 --shell-card-max-w: 560px，超长内容省略号）；浮起材质走 elevation，不再画中性 border。顶栏脱离文档流后，内容区多出 84px 高度；站点线左端留 620px、右端留 268px</div>
           <div class="spec-item__cls">.ui-titlebar.ui-titlebar--float</div>
         </div>
       </div>
@@ -874,7 +874,7 @@
     <a class="spec-page-link" href="pages/a4-quality.html">A4 画质 / 首次设置<span>Start</span></a>
     <a class="spec-page-link" href="pages/a5-menu.html">A5 菜单 / 项目列表页<span>Menu</span></a>
     <a class="spec-page-link" href="pages/a6-roaming.html">A6 漫游大场景页<span>Roaming</span></a>
-    <a class="spec-page-link" href="pages/a7-titlebar.html">A7 外壳浮卡（右上角 · 3 形态）<span>常驻</span></a>
+    <a class="spec-page-link" href="pages/a7-titlebar.html">A7 外壳浮卡（左上角 · 3 形态）<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a8-dialog.html">A8 通用模态框（4 类）<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a9-sleep.html">A9 沉睡 / 唤醒遮罩<span>常驻</span></a>
     <a class="spec-page-link" href="pages/a10-ai.html">A10 AI 助理浮窗<span>常驻</span></a>

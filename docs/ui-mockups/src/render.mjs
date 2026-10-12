@@ -234,7 +234,7 @@ ${GLASS_TOKENS.map(([name, value]) => token({ name, value })).join('')}
   <div class="spec-section-title">四、设计令牌 · 字号 / 间距 / 圆角</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:10px">
-      <div style="font-size:84px;line-height:1.12;font-weight:700;letter-spacing:2px">84 欢迎页主标题</div>
+      <div class="ui-h1">84 欢迎页主标题（带投影）</div>
       <div style="font-size:40px">40 大标题</div>
       <div style="font-size:28px">28 页面主标题</div>
       <div style="font-size:22px">22 区块标题</div>
@@ -251,7 +251,7 @@ ${GLASS_TOKENS.map(([name, value]) => token({ name, value })).join('')}
     </div>
     <div class="spec-item__meta">
       <div class="spec-item__name">字号与间距阶梯</div>
-      <div class="spec-item__desc">字号 --fs-11 ~ --fs-40；间距 --sp-1 ~ --sp-7；圆角 --radius-xs ~ --radius-panel（详见第九节）</div>
+      <div class="spec-item__desc">字号 --fs-11 ~ --fs-84（84 = 欢迎页主标题，带 <code>--h1-shadow</code> 投影）；间距 --sp-1 ~ --sp-7；圆角 --radius-xs ~ --radius-panel（详见第九节）</div>
       <div class="spec-item__cls">:root { --fs-* / --sp-* / --radius-* }</div>
     </div>
   </div>

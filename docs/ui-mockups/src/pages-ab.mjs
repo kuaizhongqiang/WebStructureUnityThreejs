@@ -247,7 +247,7 @@ ${Array.from({ length: 10 })
       <div style="padding:26px 32px;display:flex;flex-direction:column;gap:26px">
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 1 · 内容页（项目内）</div>
-          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-start">
             <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
@@ -265,7 +265,7 @@ ${Array.from({ length: 10 })
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 2 · 漫游页</div>
-          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+          <div style="border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-start">
             <header class="ui-titlebar ui-titlebar--float">
               <div class="ui-titlebar__logo">仿</div>
               <div class="ui-titlebar__names">
@@ -282,7 +282,7 @@ ${Array.from({ length: 10 })
         </div>
         <div>
           <div class="ui-h2" style="margin-bottom:10px">形态 3 · 窄屏折叠（移动端 / 小窗口）</div>
-          <div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-end">
+          <div style="width:560px;border:1px dashed var(--line-2);border-radius:var(--radius-md);padding:16px;display:flex;justify-content:flex-start">
             <header class="ui-titlebar ui-titlebar--float" style="padding:8px 12px">
               <div class="ui-titlebar__logo" style="width:34px;height:34px;font-size:14px">仿</div>
               <div class="ui-titlebar__names"><div class="ui-titlebar__cn" style="font-size:15px">温度传感器特性测量</div></div>
@@ -292,7 +292,7 @@ ${Array.from({ length: 10 })
         </div>
         <div class="ui-alert ui-alert--info">
           <span class="ui-alert__icon">i</span>
-          <span>规范：<b>钉在画布右上角，距上 / 右各 50px，宽度随内容自适应</b>（<code>width: max-content</code>），高约 68px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；页面右上按钮组改到浮卡正下方、右边缘同为 50px。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
+          <span>规范：<b>钉在画布左上角，距上 / 左各 50px，宽度随内容自适应</b>（<code>width: max-content</code>，上限 <code>--shell-card-max-w: 560px</code>，超长内容走省略号），高约 70px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；站点线左端要为浮卡留 620px、右端留 268px（给页面右上按钮组）。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>`,
   },
