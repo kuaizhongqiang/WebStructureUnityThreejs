@@ -81,3 +81,6 @@ desktop.ini
 *.log
 *.stackdump
 nul
+
+# 打包产物（exe 可达上百 MB，绝不入库；见 DEC-77）
+electron/release/

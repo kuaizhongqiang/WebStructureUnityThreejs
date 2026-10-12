@@ -55,12 +55,30 @@
 ```bash
 cd web
 npm install
-npm run dev        # 开发服务器
-npm run typecheck  # vue-tsc --noEmit
-npm test           # vitest（契约快照测试）
-npm run smoke      # 三维渲染冒烟：真实 Chromium 12 项断言
-npm run build      # 类型检查 + 生产构建 → dist/
+npm run dev           # 开发服务器
+npm run typecheck     # vue-tsc --noEmit
+npm run lint          # ESLint（DEC-52）
+npm run format        # Prettier 写入（format:check 用于门禁）
+npm test              # vitest（契约快照测试）
+npm run smoke         # 真浏览器冒烟：20 项断言（三维渲染 / 设计系统加载 / 站点线 / 骨架自检）
+npm run build         # 类型检查 + 生产构建 → dist/
 ```
+
+**产品源码结构**（Phase 1 脚手架，DEC-75）：
+
+```
+web/src/
+  components/   AppShell（外壳骨架）· ShellCard（左上浮卡）· RouteBar（站点线）
+  views/        StartView（A1）· MenuView · TaskView（登记表驱动的任务页）· DebugView(/#/debug) · PlaceholderView
+  domain/       registry.ts —— TaskType 表现层登记表（标签/栈仍来自 @/contracts）
+  shell/        bridge.ts（唯一的壳接触面）· theme.ts
+  stores/       session（真源，DEC-08）· progress（本机单 JSON，DEC-54）· content（内容层）
+  styles/       index.css（只 import @ds 的 tokens+components）· product.css（流式布局与断点）
+  contracts/ viewer/ unity/ platform/   —— 沿用骨架阶段（契约 / 裸 three / 桥 / 设备策略）
+```
+
+样式**单一来源**：`@ds` 别名指向 `docs/ui-mockups/`，产品 import `tokens.css` + `components.css`；
+**不得** import `mockup-shell.css`（那是排版稿的评审外壳，见 DEC-74）。
 
 > ⚠️ **TypeScript 固定 5.9.3，不要升到 7.x**：`vue-tsc` 与 TS 7 不兼容（实测直接崩溃），见 DEC-33。
 
@@ -81,7 +99,12 @@ cd web && npm run build       # 壳加载的是构建产物，不是源码
 cd ../electron && npm install
 npm start                     # 开窗口
 npm run smoke                 # 冒烟：不显示窗口，断言 DOM 与预加载桥后退出（可进 CI）
+npm run dist                  # 打包 → release/WSU3-Shell-<version>-portable.exe（双击即用）
 ```
+
+打包版没有控制台，因此 `--smoke` 会把结果写成 JSON（默认与 exe 同目录，或 `WSU3_SMOKE_REPORT=<path>`），
+"能打开"这件事有可读证据。窗口外观（Windows 隐藏原生标题栏 + 系统浮层按钮 + 主题同步）见
+[`electron/README.md`](./electron/README.md)。
 
 细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
 

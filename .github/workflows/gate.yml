@@ -40,6 +40,10 @@ jobs:
         run: npm ci
       - name: 类型检查
         run: npm run typecheck
+      - name: 代码规范（ESLint，DEC-52）
+        run: npm run lint
+      - name: 格式校验（Prettier，DEC-52）
+        run: npm run format:check
       - name: 单元测试（契约快照）
         run: npm test
       - name: 生产构建

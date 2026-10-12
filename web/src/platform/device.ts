@@ -38,9 +38,7 @@ export function buildDeviceProfile(userAgent: string): DeviceProfile {
     isWeChat,
     isMobile,
     qualityProfile: isMobile ? 'low' : 'high',
-    notice: isWeChat
-      ? '检测到微信内置浏览器：三维实验的性能可能受限，建议在电脑浏览器中打开。'
-      : null,
+    notice: isWeChat ? '检测到微信内置浏览器：三维实验的性能可能受限，建议在电脑浏览器中打开。' : null,
   }
 }
 

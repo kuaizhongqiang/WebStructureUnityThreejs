@@ -1,0 +1,232 @@
+/* ============================================================================
+ * 产品自有样式（流式布局层）
+ *
+ * 与设计系统（@ds/tokens.css + @ds/components.css）的分工：
+ *   设计系统 = 组件长什么样（颜色、圆角、描边、状态）；
+ *   本文件   = 组件怎么摆（流式栅格、断点、外壳尺寸），**只消费令牌，不新增色值**。
+ *
+ * 布局体制（DEC-73：混合）：
+ *   · 外壳 / 列表 / 表单 / 题目页 —— 流式自适应（下面这些类）；
+ *   · 三维任务页的**三维视口** —— 按容器比例自适应（.app-viewport），
+ *     内部由 Three 相机 aspect / Unity CanvasScaler 各自处理，页面不写死宽高。
+ *   1920×1080 只是**设计基准尺**：下面的数值都按它量出来，但用 clamp/断点适配，
+ *   **不做**整体 transform: scale（那样手机上正文会小到不可读，违反 DEC-18）。
+ * ========================================================================== */
+
+:root {
+  /* 外壳尺寸（设计基准 1920×1080 上量得） */
+  --shell-gap: 50px; /* 浮卡距画布上/左的边距（基准值） */
+  --shell-card-w: 560px; /* 浮卡宽度上限：站点线要按它留左内边距，所以必须是已知值 */
+  --shell-card-h: 70px; /* 浮卡高度（站点线/内容避让用） */
+  --shell-caption-h: 0px; /* ★ 桌面壳的标题栏高度：浏览器里为 0，
+                                 由 electron 的 preload 提供、启动时写到根元素上（见 shell/bridge.ts） */
+  --shell-statusbar-h: 36px;
+}
+
+/* 紧凑屏：边距与卡片一起收 */
+@media (max-width: 1439px) {
+  :root {
+    --shell-gap: 24px;
+    --shell-card-w: 460px;
+    --shell-card-h: 62px;
+  }
+}
+@media (max-width: 1023px) {
+  :root {
+    --shell-gap: 16px;
+    --shell-card-w: 100%;
+    --shell-card-h: 58px;
+  }
+}
+
+/* ------------------------------------------------ 外壳骨架 */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* 移动端：跟随可用视口高度，避免地址栏遮挡 */
+  overflow: hidden;
+  /* 桌面壳预留标题栏高度；浏览器下为 0，完全不影响 */
+  padding-top: var(--shell-caption-h);
+  background: var(--bg-0);
+  color: var(--text-1);
+}
+
+/* 顶部区域：浮卡在左上“浮”着，站点线从画布顶部开始并给浮卡留位（与排版稿一致） */
+.app-chrome {
+  position: relative;
+  flex: none;
+}
+
+.app-card {
+  position: absolute;
+  top: var(--shell-gap);
+  left: var(--shell-gap);
+  z-index: 40;
+  max-width: var(--shell-card-w);
+}
+
+/* 站点线：左给浮卡、右给页面按钮组，中间自动分配（对应排版稿的 620/268 预留）。
+   注意：**垂直方向不加额外内边距** —— 排版稿里站点线与浮卡是"左右错开"而不是"上下分开"，
+   站点线的圆点行本来就在浮卡上沿之上，加了 top 留白会让顶部重新出现一条浪费的空带。 */
+.app-chrome .ui-route {
+  padding-left: calc(var(--shell-card-w) + var(--shell-gap) * 2);
+  padding-right: var(--shell-gap);
+}
+
+/* 窄屏：浮卡回到文档流，站点线不再让位（否则两边把中间挤没） */
+@media (max-width: 1023px) {
+  .app-chrome {
+    display: flex;
+    flex-direction: column;
+  }
+  .app-card {
+    position: static;
+    margin: var(--shell-gap) var(--shell-gap) 0;
+  }
+  .app-chrome .ui-route {
+    padding-left: var(--shell-gap);
+    padding-right: var(--shell-gap);
+    padding-top: var(--shell-gap);
+  }
+}
+
+/* 页面按钮组（返回目录 / 全屏 / 画质 / 帮助）：桌面贴右上，窄屏贴内容顶部 */
+.app-topright {
+  position: absolute;
+  top: var(--shell-gap);
+  right: var(--shell-gap);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+@media (max-width: 1023px) {
+  .app-topright {
+    position: static;
+    margin: 0 var(--shell-gap);
+  }
+}
+
+/* ------------------------------------------------ 页面主体 */
+.app-main {
+  position: relative;
+  flex: 1;
+  min-height: 0; /* 关键：让内部的 flex/scroll 子项真正能收缩 */
+  overflow: hidden;
+}
+
+.app-statusbar {
+  flex: none;
+  height: var(--shell-statusbar-h);
+}
+
+/* 面板流式栅格：主内容 + 固定侧栏（对应排版稿里 purpose/info 的 380px 右栏） */
+.app-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+  gap: var(--sp-4);
+  height: 100%;
+  min-height: 0;
+}
+@media (max-width: 1279px) {
+  .app-split {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(0, auto);
+    overflow-y: auto;
+  }
+}
+/* 任务页：站点线 + 内容（内容再细分栏） */
+.app-task {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  height: 100%;
+  min-height: 0;
+  padding: var(--sp-4) var(--shell-gap);
+}
+@media (max-width: 1023px) {
+  .app-task {
+    padding: var(--sp-3) var(--shell-gap);
+  }
+}
+
+/* ------------------------------------------------ 三维视口：按容器比例自适应
+   页面**不给**宽高，只给"必须占满剩余空间"；相机 aspect / CanvasScaler 在内部处理。 */
+.app-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background: var(--grid);
+  background-color: var(--bg-0);
+}
+.app-viewport > canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ------------------------------------------------ 首页（A1）*/
+.app-hero {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+}
+.app-hero__logo {
+  width: clamp(64px, 6vw, 96px);
+  height: clamp(64px, 6vw, 96px);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(26px, 2.6vw, 40px);
+  background: var(--glass-card);
+  border: var(--hairline) solid var(--glass-border);
+  color: var(--text-2);
+}
+.app-hero__actions {
+  position: absolute;
+  right: var(--shell-gap);
+  bottom: var(--shell-gap);
+}
+/* 窄屏：按钮回文档流居中（否则会压在版权行上） */
+@media (max-width: 767px) {
+  .app-hero__actions {
+    position: static;
+    margin-top: var(--sp-5);
+  }
+}
+
+/* 状态条（复用设计系统的 .ui-statusbar 结构，这里只补产品侧的定位） */
+.app-statusbar .ui-statusbar {
+  height: 100%;
+}
+
+/* 工具类 */
+.app-muted {
+  color: var(--text-3);
+}
+.app-grow {
+  flex: 1;
+  min-height: 0;
+}
+.app-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  min-height: 0;
+}
+.app-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}

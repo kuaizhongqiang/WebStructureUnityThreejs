@@ -1,0 +1,12 @@
+/**
+ * 产品样式入口。
+ *
+ * 纪律（DEC-74）：产品**只**引用设计系统的 `tokens.css` + `components.css`；
+ * `mockup-shell.css` 是排版稿的评审外壳（1920×1080 缩放画布、成果页展示卡片），
+ * **不得** import —— 它一旦进产品，演示用的定位/缩放会污染真实布局。
+ *
+ * 顺序：令牌 → 组件 → 产品自有（断点与流式布局放最后，允许覆盖组件默认值）。
+ */
+@import '@ds/tokens.css';
+@import '@ds/components.css';
+@import './product.css';

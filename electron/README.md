@@ -54,6 +54,38 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 
 `preload.js` 里只暴露常量与版本号，**没有任何功能**（DEC-24：预留接口点，当期不实现）。将来接既有系统（单点登录、成绩上传、本机授权）时：方法加在 `preload.js` + 主进程 `ipcMain`，业务侧仍只认 `window.wsu3Shell.*`。
 
+## 窗口外观：按 dsh 的桌面壳做法（2026-10-12 追加）
+
+参考只读仓库 `D:\dsh\deepseek-harness` 的 `apps/desktop`（Electron）。它的做法里，**我们只取了最省、最稳的一条**：
+
+> **Windows 上 `titleBarStyle: 'hidden'` + `titleBarOverlay`** —— 隐藏原生标题栏，只保留系统画的浮层按钮。
+> **拖动窗口、双击最大化、贴边**这些由**系统**负责（`electron#32341` 那类 app-region 坑都不必碰），
+> 页面**只需要把这条带子留空**。
+
+- 高度写死在两处，必须一致：`main.js` 的 `CAPTION_HEIGHT` 与 `preload.js` 的同名常量（Windows 40px，其它平台 0）。
+- 页面怎么知道要留位：壳把高度放进只读快照 `window.wsu3Shell.captionHeight`，
+  页面启动时写到根元素的 `--shell-caption-h`（见 `web/src/shell/bridge.ts`）。
+  **浏览器里这个值是 0**，所以同一份页面在浏览器与壳里都成立 —— 这是"壳不污染业务"的关键。
+- 主题同步：页面切亮/暗时调 `window.wsu3Shell.setTheme()`，主进程据此设 `nativeTheme.themeSource`、
+  窗口底色和浮层按钮的 `symbolColor`。**不同步就会出现"亮色页面 + 深色原生按钮"**（dsh 也专门处理了这件事）。
+- 我们**没有**照搬的：macOS 的 `hiddenInset` + vibrancy（侧栏毛玻璃）、Windows 的 `backgroundMaterial: 'acrylic'`、
+  自绘窗口控制按钮。理由：本阶段只交付 Windows 单平台，且这三项都要求"整窗透明或自绘"，会与页面布局耦合。
+
+## 打包（DEC-77）
+
+```bash
+cd web && npm run build          # 产物先就绪
+cd ../electron && npm run dist   # → release/WSU3-Shell-<version>-portable.exe（单文件，双击即用）
+```
+
+- 用的是 **electron-builder 的 `portable` 目标**：单个自解压 exe，不需要安装、不写注册表。
+- Web 产物通过 `build.extraResources` 打进 `resources/web`；
+  主进程按 `app.isPackaged` 决定读 `resources/web` 还是开发态的 `../web/dist`。
+- **打包版没有控制台**，stdout 会被丢掉 —— 所以 `--smoke` 会同时把结果写一份 JSON
+  （默认与 exe 同目录，可用 `WSU3_SMOKE_REPORT=<path>` 指定）。"能打开"这件事因此**有可读证据**，
+  而不是"看起来没报错"。
+- 图标还没做（用的是 Electron 默认图标），签名用的是 electron-builder 的测试证书 —— 都不是发布态。
+
 ## 还没做（别当成已完成）
 
 - **打包分发**（electron-builder / 安装包 / 图标 / 签名）—— 现在只跑开发态；

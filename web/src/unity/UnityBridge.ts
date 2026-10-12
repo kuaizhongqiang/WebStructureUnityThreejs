@@ -53,9 +53,7 @@ export class UnityBridge {
       onReady: (version: string): void => {
         const incoming = Number(version)
         if (incoming !== BRIDGE_PROTOCOL_VERSION) {
-          throw new BridgeProtocolError(
-            `协议版本不匹配：Unity=${version}，Web=${BRIDGE_PROTOCOL_VERSION}`,
-          )
+          throw new BridgeProtocolError(`协议版本不匹配：Unity=${version}，Web=${BRIDGE_PROTOCOL_VERSION}`)
         }
         this.ready = true
         this.dispatch({ type: 'ready', version: incoming, seq: 0 })
@@ -66,7 +64,12 @@ export class UnityBridge {
       },
       /** Unity 调用：加载进度（0~1）。 */
       onProgress: (progress: string): void => {
-        this.dispatch({ type: 'progress', version: BRIDGE_PROTOCOL_VERSION, seq: 0, payload: Number(progress) })
+        this.dispatch({
+          type: 'progress',
+          version: BRIDGE_PROTOCOL_VERSION,
+          seq: 0,
+          payload: Number(progress),
+        })
       },
     }
   }

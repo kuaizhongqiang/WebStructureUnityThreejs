@@ -3,12 +3,38 @@
   "version": "0.0.0",
   "private": true,
   "description": "虚拟仿真教学平台 · 应用壳（DEC-20：同仓 electron/ 子目录，装本地 Web 产物；业务代码零 import electron）",
+  "author": "WebStructureUnityThreejs",
+  "license": "UNLICENSED",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "smoke": "electron . --smoke"
+    "smoke": "electron . --smoke",
+    "dist": "electron-builder --win portable --publish never",
+    "dist:dir": "electron-builder --win --dir --publish never"
   },
   "devDependencies": {
-    "electron": "^40.0.0"
+    "electron": "^40.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "cn.edu.demo.wsu3",
+    "productName": "虚拟仿真教学平台",
+    "directories": {
+      "output": "release"
+    },
+    "files": ["main.js", "preload.js", "server.js", "package.json"],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "web"
+      }
+    ],
+    "win": {
+      "target": ["portable"],
+      "artifactName": "WSU3-Shell-${version}-portable.${ext}"
+    },
+    "portable": {
+      "artifactName": "WSU3-Shell-${version}-portable.${ext}"
+    }
   }
 }
