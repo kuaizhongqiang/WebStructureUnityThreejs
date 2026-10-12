@@ -41,10 +41,10 @@ export const styleSpecSections = [
         html: '<button class="ui-btn ui-btn--sm">复位视角</button>',
       },
       {
-        name: '禁用态',
-        desc: '条件不满足；必须给出原因提示',
+        name: '禁用态（重新设计：虚线框）',
+        desc: '条件不满足时用虚线框 + 锁图标；与可用按钮靠形状区分，不只靠明度（详见第六节）',
         cls: '.ui-btn[disabled]',
-        html: '<button class="ui-btn" disabled>提交（未答完）</button>',
+        html: '<button class="ui-btn ui-btn--primary" disabled>提交成绩</button>',
       },
       {
         name: '浮起功能键',
@@ -194,10 +194,22 @@ export const styleSpecSections = [
         html: '<div class="ui-toast" style="position:static;transform:none">已记录第 1 组数据</div>',
       },
       {
-        name: '沉睡遮罩',
-        desc: '长时间无操作时暂停渲染',
-        cls: '.ui-sleepmask',
-        html: '<div style="width:280px;height:120px;border-radius:8px;background:rgba(3,5,8,.94);display:flex;align-items:center;justify-content:center;color:var(--text-2);font-size:12px">已进入休眠 · 点击继续</div>',
+        name: '禁用按钮（重新设计）',
+        desc: '透明底 + 虚线框 + 锁图标；与可用按钮靠"形状"区分，不只靠明度。旁边必须给一行原因说明',
+        cls: '.ui-btn[disabled] / .ui-disabled-hint',
+        html: `<div class="ui-col" style="align-items:flex-start;gap:6px">
+          <button class="ui-btn ui-btn--primary" disabled>提交成绩</button>
+          <span class="ui-disabled-hint">还有 2 个任务未完成，完成后可提交</span>
+        </div>`,
+      },
+      {
+        name: '中文正文排版（两段示例）',
+        desc: '首行缩进 2 字符（text-indent: 2em）；行距 1.9 与段距 0.9em 必须不同，否则段落读不出来；两端对齐、长英文串折行不断词',
+        cls: '.ui-article p / p + p',
+        html: `<div class="ui-article" style="width:520px;text-align:left">
+          <p>本实验以温度传感器为对象。传感器输出的电压随温度升高而线性增大，万用表读数即反映这一变化。测量前应确认量程档位与被测物理量一致。</p>
+          <p>若量程选择过大，相对误差会被放大；若过小，则读数可能溢出。一般应选择略大于被测值的档位，并等待读数稳定后再记录。这一段用于验证段间距，注意它与上一段之间的距离明显小于行距。</p>
+        </div>`,
       },
     ],
   },

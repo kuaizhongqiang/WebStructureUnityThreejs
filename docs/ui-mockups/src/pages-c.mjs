@@ -47,19 +47,18 @@ export const pagesC = [
     body: `${route('Purpose', ['Purpose'])}
       ${topRight('')}
       <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:20px">
-        <div class="ui-panel" style="flex:1.5">
+        <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">设备展示<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js · 循环动画</span></span></div>
           <div class="ui-panel__body ui-panel__body--flush" style="position:relative;height:100%">
 ${viewport('Three.js', 'ObjectShowElement')}
           </div>
         </div>
-        <div class="ui-panel" style="flex:1">
+        <div class="ui-panel" style="width:380px">
           <div class="ui-panel__head">实验目的</div>
           <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:18px">
             <!-- 内容字段只有一段文字：不加卡片、不加图标、不加二级标题 -->
             <div class="ui-article">
-              本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，
-              并掌握万用表的正确使用方法与数据记录规范。
+              <p>本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，并掌握万用表的正确使用方法与数据记录规范。</p>
             </div>
             <div class="ui-grow"></div>
             <button class="ui-btn ui-btn--primary ui-btn--block">下一步：实验仪器</button>
@@ -122,7 +121,6 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
         <div class="ui-panel" style="width:400px">
           <div class="ui-panel__head">仪器说明</div>
           <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:16px">
-            <div style="height:180px;border-radius:8px;background:var(--grid);background-color:var(--bg-0);border:1px solid var(--line-1)"></div>
             <div style="font-size:var(--fs-18);font-weight:600">数字万用表</div>
             <div class="ui-article" style="font-size:var(--fs-14)">
               可测量直流电压、交流电压、电阻与电流。本实验用于测量传感器的输出电压，
@@ -254,8 +252,8 @@ ${viewport('Three.js', '整机 / 场景模型')}
           <div class="ui-panel__head">简介</div>
           <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:16px">
             <div class="ui-article">
-              本实验以温度传感器为对象，覆盖「认识仪器 → 理解原理 → 接线 → 仿真操作 → 测验考核」的完整链路。
-              建议按站点线顺序逐项完成，最后在「考核」中检验掌握程度。预计用时 45 分钟。
+              <p>本实验以温度传感器为对象，覆盖「认识仪器 → 理解原理 → 接线 → 仿真操作 → 测验考核」的完整链路。建议按站点线顺序逐项完成，最后在「考核」中检验掌握程度。</p>
+              <p>实验前请先确认仪器完好、连线无破损；测量时注意量程档位与被测物理量一致。若读数长时间不稳定，请检查接线是否松动，并确认加热台温度已稳定后再记录数据。</p>
             </div>
             <div class="ui-row" style="gap:8px;flex-wrap:wrap">
               <span class="ui-badge">预计 45 分钟</span>
