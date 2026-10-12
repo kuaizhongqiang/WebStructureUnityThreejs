@@ -31,6 +31,13 @@ const THEME_SCRIPT = `<script>
       var t = m ? m[1] : localStorage.getItem('wsu3.theme');
       if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
     } catch (e) { /* file:// 下取不到也没关系 */ }
+    // 输入模态：鼠标不画焦点环，键盘导航才画（参考 dsh 的 focus.css:18-21）。
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
   })();
 </script>`
 
@@ -148,8 +155,10 @@ const LIGHT_TOKENS = [
   ['背景 bg-1', '#eef2f7'],
   ['背景 bg-2', '#f8fafc'],
   ['背景 bg-3', '#ffffff'],
-  ['描边 line-1', '#d8e0ea'],
-  ['描边 line-2', '#bcc8d8'],
+  ['描边 l1 α黑 5%', 'rgba(23,43,77,.05)'],
+  ['描边 l2 α黑 10%', 'rgba(23,43,77,.10)'],
+  ['描边 l3 α黑 14%', 'rgba(23,43,77,.14)'],
+  ['描边 l4 α黑 20%（控件框线）', 'rgba(23,43,77,.20)'],
   ['文字 text-1 主', '#16212e'],
   ['文字 text-2 次', '#3f4e60'],
   ['文字 text-3 弱', '#5c6b7d'],
@@ -169,13 +178,13 @@ const GLASS_TOKENS = [
   ['深色 --glass-card（卡片/条目）', 'rgba(29,40,54,.48)'],
   ['深色 --glass-strong（浮层）', 'rgba(20,29,41,.78)'],
   ['深色 --glass-input（控件）', 'rgba(12,18,26,.62)'],
-  ['深色 --glass-border（高光描边）', 'rgba(255,255,255,.10)'],
-  ['亮色 --glass-bar', 'rgba(255,255,255,.66)'],
-  ['亮色 --glass-panel', 'rgba(255,255,255,.62)'],
-  ['亮色 --glass-card', 'rgba(255,255,255,.74)'],
-  ['亮色 --glass-strong', 'rgba(255,255,255,.90)'],
-  ['亮色 --glass-input', 'rgba(255,255,255,.80)'],
-  ['亮色 --glass-border', 'rgba(255,255,255,.85)'],
+  ['深色 --glass-inset（内嵌块）', 'rgba(10,16,24,.50)'],
+  ['亮色 --glass-bar', 'rgba(255,255,255,.52)'],
+  ['亮色 --glass-panel', 'rgba(255,255,255,.44)'],
+  ['亮色 --glass-card', 'rgba(255,255,255,.52)'],
+  ['亮色 --glass-strong（浮层）', 'rgba(255,255,255,.74)'],
+  ['亮色 --glass-input', 'rgba(255,255,255,.62)'],
+  ['亮色 --glass-inset', 'rgba(255,255,255,.40)'],
 ]
 
 const indexHtml = `<!DOCTYPE html>
@@ -234,15 +243,15 @@ ${GLASS_TOKENS.map(([name, value]) => token({ name, value })).join('')}
       <div style="font-size:13px">13 次要正文</div>
       <div style="font-size:11px;color:var(--text-3)">11 辅助说明</div>
       <div class="ui-row" style="margin-top:6px">
-        <span class="ui-badge">间距 4 / 8 / 12 / 16 / 24 / 32</span>
-        <span class="ui-badge">圆角 4 / 8 / 12 / 胶囊</span>
+        <span class="ui-badge">间距 4 / 8 / 12 / 16 / 24 / 32 / 40</span>
+        <span class="ui-badge">圆角 4 / 8 / 12 / 16 / 20 / 28</span>
         <span class="ui-badge">面板 1920×1080 基准</span>
       </div>
     </div>
     <div class="spec-item__meta">
       <div class="spec-item__name">字号与间距阶梯</div>
-      <div class="spec-item__desc">字号 --fs-11 ~ --fs-40；间距 --sp-1 ~ --sp-6；圆角 --r-1 / --r-2 / --r-3 / --r-pill</div>
-      <div class="spec-item__cls">:root { --fs-* / --sp-* / --r-* }</div>
+      <div class="spec-item__desc">字号 --fs-11 ~ --fs-40；间距 --sp-1 ~ --sp-7；圆角 --radius-xs ~ --radius-panel（详见第九节）</div>
+      <div class="spec-item__cls">:root { --fs-* / --sp-* / --radius-* }</div>
     </div>
   </div>
 
@@ -256,7 +265,84 @@ ${section.items.map(specItem).join('')}
   )
   .join('')}
 
-  <div class="spec-section-title">九、页面排版稿索引（共 ${allPages.length} 页，逐页审核用）</div>
+  <div class="spec-section-title">九、框体令牌（2026-10-12 统一升级，参考 deepseek-harness）</div>
+  <div class="ui-small ui-muted" style="margin-bottom:10px">
+    参考物：只读仓库 <code>D:\dsh\deepseek-harness</code>，其样式权威是 <code>docs/web-styling.md</code> 与 <code>docs/ui-radius.md</code>。
+    我们照搬它的<b>规则</b>：中性描边一律 0.5px 发丝、圆角只有 6 级且按角色选档、浮层 <code>border:0</code> + <code>--elev-*</code> 阴影（阴影第一层就是那道发丝）、
+    hover/按压/选中只叠一层半透明、键盘焦点环 2px 且鼠标点不出环。
+  </div>
+  <div class="spec-grid">
+    <div class="spec-item">
+      <div class="spec-item__stage" style="gap:14px;align-items:flex-end">
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-xs)"></div><div class="spec-item__cls">xs 4</div><div class="ui-small ui-muted">字母标</div></div>
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-sm)"></div><div class="spec-item__cls">sm 8</div><div class="ui-small ui-muted">缩略图</div></div>
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-md)"></div><div class="spec-item__cls">md 12</div><div class="ui-small ui-muted">控件</div></div>
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-lg)"></div><div class="spec-item__cls">lg 16</div><div class="ui-small ui-muted">大控件</div></div>
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-xl)"></div><div class="spec-item__cls">xl 20</div><div class="ui-small ui-muted">内容卡</div></div>
+        <div style="text-align:center"><div style="width:52px;height:52px;background:var(--accent-weak);border:0.5px solid var(--accent);border-radius:var(--radius-panel)"></div><div class="spec-item__cls">panel 28</div><div class="ui-small ui-muted">主面板/对话框</div></div>
+      </div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">圆角刻度：只允许这 6 个值</div>
+        <div class="spec-item__desc">按<b>角色</b>选档，不按尺寸：控件 12 / 内容卡 20 / 主面板与对话框 28。禁止 10、14、18、24 这类游离字面值；药丸与正圆保持 999px / 50%。</div>
+        <div class="spec-item__cls">--radius-xs | sm | md | lg | xl | panel</div>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-item__stage" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div style="height:32px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border-2);border-radius:var(--radius-md)" class="ui-small">l2 · 0.5px 分隔线</div>
+        <div style="height:32px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border-3);border-radius:var(--radius-md)" class="ui-small">l3 · 0.5px 面板框</div>
+        <div style="height:32px;display:flex;align-items:center;justify-content:center;border:0.5px solid var(--border-4);border-radius:var(--radius-md)" class="ui-small">l4 · 0.5px 控件框</div>
+        <div style="height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border-4);border-radius:var(--radius-md);opacity:.75" class="ui-small">对照：l4 若用 1px（偏粗，已全站弃用）</div>
+      </div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">描边阶梯：α 值 + 0.5px 发丝</div>
+        <div class="spec-item__desc">深色用 α 白、亮色用 α 黑，所以<b>同一句 border 在两套主题都成立</b>，不必为主题各写一条。1px 只留给虚线提示与语义状态色描边。</div>
+        <div class="spec-item__cls">border: 0.5px solid var(--border-1|2|3|4)</div>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-item__stage" style="background:var(--bg-1);border-radius:var(--radius-xl);gap:16px;padding:26px">
+        <div style="width:88px;height:56px;border-radius:var(--radius-xl);background:var(--glass-strong);box-shadow:var(--elev-panel);display:flex;align-items:center;justify-content:center" class="ui-small">panel</div>
+        <div style="width:88px;height:56px;border-radius:var(--radius-xl);background:var(--glass-strong);box-shadow:var(--elev-prominent);display:flex;align-items:center;justify-content:center" class="ui-small">prominent</div>
+        <div style="width:88px;height:56px;border-radius:var(--radius-xl);background:var(--glass-strong);box-shadow:var(--elev-soft);display:flex;align-items:center;justify-content:center" class="ui-small">soft</div>
+      </div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">浮起材质：border:0 + elevation 阴影</div>
+        <div class="spec-item__desc">弹窗 / 浮窗 / 提示条 / toast / 悬浮工具条都用这一套：<b>不再画中性 border</b> —— 边由阴影第一层 <code>0 0 0 0.5px</code> 承担；颜色可用 <code>--elev-stroke-color</code> 重绑或关掉。</div>
+        <div class="spec-item__cls">box-shadow: var(--elev-panel | prominent | soft)</div>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-item__stage" style="gap:12px">
+        <div style="text-align:center"><div style="width:96px;height:56px;border-radius:var(--radius-md);background:var(--glass-card);border:0.5px solid var(--line-1);display:flex;align-items:center;justify-content:center;position:relative" class="ui-small"><span style="position:absolute;inset:0;border-radius:inherit;background:var(--inter-hover)"></span>hover</div><div class="spec-item__cls">--inter-hover</div></div>
+        <div style="text-align:center"><div style="width:96px;height:56px;border-radius:var(--radius-md);background:var(--glass-card);border:0.5px solid var(--line-1);display:flex;align-items:center;justify-content:center;position:relative" class="ui-small"><span style="position:absolute;inset:0;border-radius:inherit;background:var(--inter-active)"></span>按压</div><div class="spec-item__cls">--inter-active</div></div>
+        <div style="text-align:center"><div style="width:96px;height:56px;border-radius:var(--radius-md);background:var(--glass-card);border:0.5px solid var(--line-1);display:flex;align-items:center;justify-content:center;position:relative" class="ui-small"><span style="position:absolute;inset:0;border-radius:inherit;background:var(--inter-hover-accent)"></span>强调</div><div class="spec-item__cls">--inter-hover-accent</div></div>
+        <div style="text-align:center"><div style="width:96px;height:56px;border-radius:var(--radius-md);background:var(--glass-card);border:0.5px solid var(--line-1);display:flex;align-items:center;justify-content:center;position:relative" class="ui-small"><span style="position:absolute;inset:0;border-radius:inherit;background:var(--inter-hover-danger)"></span>危险</div><div class="spec-item__cls">--inter-hover-danger</div></div>
+      </div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">交互态：只叠一层半透明，不换色</div>
+        <div class="spec-item__desc">hover / 按压 / 选中都在原底上叠一层 α；<b>不改圆角、不改尺寸、不改文字色</b>。这样同一个组件在任何底色（玻璃、实底、图片上）都成立。</div>
+        <div class="spec-item__cls">--inter-hover | active | hover-accent | hover-danger</div>
+      </div>
+    </div>
+
+    <div class="spec-item">
+      <div class="spec-item__stage" style="gap:18px">
+        <button class="ui-btn is-focus-ring">键盘焦点（定格演示）</button>
+        <button class="ui-btn ui-btn--primary is-focus-ring">主按钮</button>
+      </div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">键盘焦点环（产品里是 :focus-visible）</div>
+        <div class="spec-item__desc">2px 环 + 2px 偏移，颜色取主色。<b>鼠标点击不出环，键盘 Tab / 方向键才出</b>（外壳脚本按输入模态切换 <code>data-input-modality</code>）；输入框不画环而是描边变主色。</div>
+        <div class="spec-item__cls">--ring-width / --ring-offset / --ring-color</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec-section-title">十、页面排版稿索引（共 ${allPages.length} 页，逐页审核用）</div>
   <div class="ui-small ui-muted" style="margin-bottom:8px">每页右上角都可切"深色 / 亮色"（<code>?theme=light</code>），同一套页面两种皮肤对照看。</div>
 ${pageIndexGroups
   .map(
