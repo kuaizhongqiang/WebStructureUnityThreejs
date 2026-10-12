@@ -1,3 +1,4 @@
+import { icon } from './icons.mjs'
 /** 样式清单的组件分节 + 页面索引分组。 */
 
 export const styleSpecSections = [
@@ -50,7 +51,7 @@ export const styleSpecSections = [
         name: '浮起功能键',
         desc: '角落常驻操作（右上 / 左下）',
         cls: '.ui-fab',
-        html: '<div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div><div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>',
+        html: '<div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg></span>目录</div><div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></svg></span>全屏</div>',
       },
     ],
   },
@@ -98,11 +99,11 @@ export const styleSpecSections = [
         desc: '图标 + 标题 + 描述（+ 可选的"推荐"徽章）；不用大缩略图。选中态同时点亮图标块',
         cls: '.ui-tile.ui-tile--icon / .ui-tile__icon / .ui-tile__body',
         html: `<div class="ui-tile ui-tile--icon" style="width:250px">
-          <span class="ui-tile__icon">✨</span>
+          <span class="ui-tile__icon">${icon('signal-high', 26)}</span>
           <div class="ui-tile__body"><div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div><div class="ui-tile__desc">独立显卡 · 开启基础阴影</div></div>
         </div>
         <div class="ui-tile ui-tile--icon ui-tile--active" style="width:250px">
-          <span class="ui-tile__icon">💎</span>
+          <span class="ui-tile__icon">${icon('gem', 26)}</span>
           <div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">全特效，首次加载更慢</div></div>
         </div>`,
       },
@@ -111,9 +112,9 @@ export const styleSpecSections = [
         desc: '若干同类卡片要"看成一组的选项"时兜一层框（画质三档）。注意不要给 .ui-tile-grid 加默认框：项目目录把它当可滚动内容用，会框里套框',
         cls: '.ui-tile-grid.ui-tile-grid--boxed',
         html: `<div class="ui-tile-grid ui-tile-grid--boxed" style="grid-template-columns:repeat(3,1fr);width:100%">
-          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">📶</span><div class="ui-tile__body"><div class="ui-tile__name">标清</div><div class="ui-tile__desc">移动端推荐</div></div></div>
-          <div class="ui-tile ui-tile--icon ui-tile--active"><span class="ui-tile__icon">✨</span><div class="ui-tile__body"><div class="ui-tile__name">高清</div><div class="ui-tile__desc">桌面推荐</div></div></div>
-          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">💎</span><div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">高性能显卡</div></div></div>
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">${icon('signal-low', 26)}</span><div class="ui-tile__body"><div class="ui-tile__name">标清</div><div class="ui-tile__desc">移动端推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon ui-tile--active"><span class="ui-tile__icon">${icon('signal-high', 26)}</span><div class="ui-tile__body"><div class="ui-tile__name">高清</div><div class="ui-tile__desc">桌面推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">${icon('gem', 26)}</span><div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">高性能显卡</div></div></div>
         </div>`,
       },
     ],
@@ -137,7 +138,7 @@ export const styleSpecSections = [
         name: '复选框 / 单选',
         desc: '记住我、多选答案',
         cls: '.ui-check',
-        html: '<label class="ui-check ui-check--on"><span class="ui-check__box">✓</span>记住我</label><label class="ui-check"><span class="ui-check__box"></span>未选</label>',
+        html: '<label class="ui-check ui-check--on"><span class="ui-check__box"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>记住我</label><label class="ui-check"><span class="ui-check__box"></span>未选</label>',
       },
       {
         name: '开关',
@@ -161,7 +162,7 @@ export const styleSpecSections = [
         name: '步骤条',
         desc: '横向步骤指示;三态：完成 / 当前 / 未开始',
         cls: '.ui-steps / .ui-step',
-        html: '<div class="ui-steps"><div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>通电</div><span class="ui-step__line"></span><div class="ui-step ui-step--current"><span class="ui-step__dot">2</span>选量程</div></div>',
+        html: '<div class="ui-steps"><div class="ui-step ui-step--done"><span class="ui-step__dot"><svg class="ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>通电</div><span class="ui-step__line"></span><div class="ui-step ui-step--current"><span class="ui-step__dot">2</span>选量程</div></div>',
       },
       {
         name: '徽章 / 标签',
@@ -174,8 +175,8 @@ export const styleSpecSections = [
         desc: '与输入框同高同圆角；展开时箭头旋转 180° 并转主色。原生 <select> 的展开列表由浏览器绘制、无法套样式，所以下拉一律用"触发器 + .ui-menu 浮层"',
         cls: '.ui-selectbox__trigger / .ui-selectbox__chev',
         html: `<div style="width:260px;display:flex;flex-direction:column;gap:14px">
-          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button"><span>学生</span><span class="ui-selectbox__chev">▾</span></button></div>
-          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button" aria-expanded="true"><span>管理员</span><span class="ui-selectbox__chev">▾</span></button></div>
+          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button"><span>学生</span><span class="ui-selectbox__chev">${icon('chevron-down', 14)}</span></button></div>
+          <div class="ui-selectbox"><button class="ui-selectbox__trigger" type="button" aria-expanded="true"><span>管理员</span><span class="ui-selectbox__chev">${icon('chevron-down', 14)}</span></button></div>
         </div>`,
       },
       {
@@ -200,25 +201,25 @@ export const styleSpecSections = [
         name: '信息提示',
         desc: '说明类，蓝色',
         cls: '.ui-alert.ui-alert--info',
-        html: '<div class="ui-alert ui-alert--info" style="width:280px"><span class="ui-alert__icon">i</span><span>本期无后端，成绩保存在本机。</span></div>',
+        html: '<div class="ui-alert ui-alert--info" style="width:280px"><span class="u<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>-alert__icon">i</span><span>本期无后端，成绩保存在本机。</span></div>',
       },
       {
         name: '成功提示',
         desc: '操作通过',
         cls: '.ui-alert.ui-alert--ok',
-        html: '<div class="ui-alert ui-alert--ok" style="width:280px"><span class="ui-alert__icon">✓</span><span>偏差在允许范围内。</span></div>',
+        html: '<div class="ui-alert ui-alert--ok" style="width:280px"><span class="ui-alert__icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span><span>偏差在允许范围内。</span></div>',
       },
       {
         name: '警告提示',
         desc: '有风险但可继续（如移动端性能）',
         cls: '.ui-alert.ui-alert--warn',
-        html: '<div class="ui-alert ui-alert--warn" style="width:280px"><span class="ui-alert__icon">!</span><span>微信内置浏览器性能有限。</span></div>',
+        html: '<div class="ui-alert ui-alert--warn" style="width:280px"><span class="ui-alert__icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg></span><span>微信内置浏览器性能有限。</span></div>',
       },
       {
         name: '错误提示',
         desc: '阻塞或失败',
         cls: '.ui-alert.ui-alert--err',
-        html: '<div class="ui-alert ui-alert--err" style="width:280px"><span class="ui-alert__icon">✕</span><span>三维资源加载失败，请重试。</span></div>',
+        html: '<div class="ui-alert ui-alert--err" style="width:280px"><span class="ui-alert__icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></span><span>三维资源加载失败，请重试。</span></div>',
       },
       {
         name: '步骤/操作提示栏',
@@ -340,7 +341,7 @@ export const styleSpecSectionsRound2 = [
         desc: '一个 TaskType 一个"站"，站与站之间用连线连接；已完成站打勾、当前站实心带光晕',
         cls: '.ui-route / .ui-route__stop / .ui-route__seg',
         html: `<nav class="ui-route" style="padding:12px 14px 8px">
-          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">目的</span></div>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">${icon('check', 15)}</span><span class="ui-route__label">目的</span></div>
           <span class="ui-route__seg ui-route__seg--done"></span>
           <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">2</span><span class="ui-route__label">仪器</span></div>
           <span class="ui-route__seg"></span>
@@ -352,7 +353,7 @@ export const styleSpecSectionsRound2 = [
         desc: '内容未启用（active:false）时半透明且不可点',
         cls: '.ui-route__stop--locked',
         html: `<nav class="ui-route" style="padding:12px 14px 8px">
-          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">目的</span></div>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">${icon('check', 15)}</span><span class="ui-route__label">目的</span></div>
           <span class="ui-route__seg ui-route__seg--done"></span>
           <div class="ui-route__stop ui-route__stop--locked"><span class="ui-route__dot">2</span><span class="ui-route__label">电路连接</span></div>
         </nav>`,
@@ -362,17 +363,17 @@ export const styleSpecSectionsRound2 = [
         desc: '右下角浮窗，替代原"底部固定提示栏"；步骤提示在上、操作提示在下',
         cls: '.ui-tips-float',
         html: `<div class="ui-tips-float" style="position:static;width:300px">
-          <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span><span class="ui-tips-float__icon">✕</span></span></div>
+          <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">${icon('chevron-down', 14)}</span><span class="ui-tips-float__icon">${icon('x', 14)}</span></span></div>
           <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">接到 V+ 端子</span></div>
           <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先断电</span></div>
         </div>`,
       },
       {
         name: '提示浮窗（最小化为一行）',
-        desc: '点 ▾ 收起；再点展开',
+        desc: '点浮窗右上角的收起箭头；再点展开',
         cls: '.ui-tips-float--mini',
         html: `<div class="ui-tips-float ui-tips-float--mini" style="position:static">
-          <span class="ui-tips__tag ui-tips__tag--step">步骤</span><span class="ui-tips__text">接到 V+ 端子</span><span class="ui-tips-float__icon">▴</span>
+          <span class="ui-tips__tag ui-tips__tag--step">步骤</span><span class="ui-tips__text">接到 V+ 端子</span><span class="ui-tips-float__icon">${icon('chevron-up', 14)}</span>
         </div>`,
       },
       {
@@ -390,7 +391,7 @@ export const styleSpecSectionsRound2 = [
         cls: '.ui-bar--collapsed / .ui-bar__handle / .ui-bar-toggle',
         html: `<div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:240px">
           <span class="ui-bar__handle"></span>
-          <span class="ui-bar-toggle">▴ 展开功能条</span>
+          <span class="ui-bar-toggle">${icon('chevron-up', 14)} 展开功能条</span>
           <span class="ui-small ui-muted">收起态：条高 0 + 把手</span>
         </div>`,
       },
@@ -398,17 +399,17 @@ export const styleSpecSectionsRound2 = [
         name: '右上返回按钮',
         desc: '返回固定为右上第一个按钮，用主色语义，与其它按钮区分',
         cls: '.ui-iconbtn--back',
-        html: '<button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>',
+        html: '<button class="ui-iconbtn ui-iconbtn--back"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg> 返回目录</button>',
       },
       {
         name: '右上按钮组',
         desc: '返回 + 全屏 + 画质 + 帮助；替代原"角落 fab"',
         cls: '.ui-topright / .ui-iconbtn',
         html: `<div style="display:flex;gap:8px;align-items:center">
-          <button class="ui-iconbtn ui-iconbtn--back">← 返回</button>
-          <button class="ui-iconbtn ui-iconbtn--icon">⛶</button>
-          <button class="ui-iconbtn ui-iconbtn--icon">◐</button>
-          <button class="ui-iconbtn ui-iconbtn--icon">?</button>
+          <button class="ui-iconbtn ui-iconbtn--back">${icon('arrow-left', 14)} 返回</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">${icon('maximize', 15)}</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">${icon('sliders-horizontal', 15)}</button>
+          <button class="ui-iconbtn ui-iconbtn--icon">${icon('circle-help', 15)}</button>
         </div>`,
       },
       {
@@ -416,9 +417,9 @@ export const styleSpecSectionsRound2 = [
         desc: '实验原理页主体：大播放键 + 进度条 + 时间 + 音量/全屏',
         cls: '.ui-player / __stage / __ctrl / __track',
         html: `<div class="ui-player" style="width:300px;height:170px">
-          <div class="ui-player__stage"><div class="ui-player__play" style="width:48px;height:48px;font-size:18px">▶</div></div>
+          <div class="ui-player__stage"><div class="ui-player__play" style="width:48px;height:48px;font-size:18px">${icon('play', 16)}</div></div>
           <div class="ui-player__ctrl" style="height:38px;gap:8px;padding:0 10px">
-            <span class="ui-player__btn" style="font-size:12px">▶</span>
+            <span class="ui-player__btn" style="font-size:12px">${icon('play', 16)}</span>
             <div class="ui-player__track"><div class="ui-player__progress"></div></div>
             <span class="ui-player__time" style="font-size:10px">01:18</span>
           </div>
@@ -429,8 +430,8 @@ export const styleSpecSectionsRound2 = [
         desc: '原理页可有多段视频；当前段高亮',
         cls: '.ui-playlist / __item / __thumb',
         html: `<div class="ui-playlist" style="width:260px">
-          <div class="ui-playlist__item ui-playlist__item--active"><span class="ui-playlist__thumb" style="width:56px;height:32px">▶</span><span><span class="ui-playlist__name">1 · 测温原理</span></span></div>
-          <div class="ui-playlist__item"><span class="ui-playlist__thumb" style="width:56px;height:32px">▶</span><span><span class="ui-playlist__name">2 · 电路模型</span></span></div>
+          <div class="ui-playlist__item ui-playlist__item--active"><span class="ui-playlist__thumb" style="width:56px;height:32px">${icon('play', 16)}</span><span><span class="ui-playlist__name">1 · 测温原理</span></span></div>
+          <div class="ui-playlist__item"><span class="ui-playlist__thumb" style="width:56px;height:32px">${icon('play', 16)}</span><span><span class="ui-playlist__name">2 · 电路模型</span></span></div>
         </div>`,
       },
       {
@@ -447,7 +448,7 @@ export const styleSpecSectionsRound2 = [
         desc: '仪器列表：46px 大图标为主视觉，名称 16px、副标题 11px',
         cls: '.ui-iconitem / __icon / __name / __sub',
         html: `<div class="ui-iconitem ui-iconitem--active" style="width:230px">
-          <span class="ui-iconitem__icon">📊</span>
+          <span class="ui-iconitem__icon">${icon('gauge', 24)}</span>
           <span><span class="ui-iconitem__name">数字万用表</span><br><span class="ui-iconitem__sub">测量电压 / 电阻</span></span>
         </div>`,
       },

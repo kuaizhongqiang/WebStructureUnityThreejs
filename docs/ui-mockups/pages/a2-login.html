@@ -65,7 +65,7 @@
             <!-- 自定义下拉：原生 <select> 的展开列表由浏览器绘制、无法套样式，所以改用触发器 + .ui-menu 浮层 -->
             <div class="ui-selectbox">
               <button class="ui-selectbox__trigger" type="button" aria-haspopup="listbox" aria-expanded="true">
-                <span>学生</span><span class="ui-selectbox__chev">▾</span>
+                <span>学生</span><span class="ui-selectbox__chev"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
               </button>
               <div class="ui-menu ui-selectbox__pop" role="listbox" aria-label="选择身份">
                 <div class="ui-menu__group">选择身份</div>
@@ -79,13 +79,13 @@
             <div class="ui-field__hint">对应数据模型的 userType（未知 / 学生 / 教师 / 管理员）</div>
           </div>
           <div class="ui-row" style="justify-content:space-between">
-            <label class="ui-check ui-check--on"><span class="ui-check__box">✓</span>记住我</label>
+            <label class="ui-check ui-check--on"><span class="ui-check__box"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>记住我</label>
             <span class="ui-muted ui-small">忘记密码？</span>
           </div>
           <button class="ui-btn ui-btn--primary ui-btn--block">登录</button>
           <button class="ui-btn ui-btn--ghost ui-btn--block">以游客身份进入</button>
           <div class="ui-alert ui-alert--info">
-            <span class="ui-alert__icon">i</span>
+            <span class="u<svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>-alert__icon">i</span>
             <span>本期无后端（DEC-21）：登录仅作界面占位；进度与成绩保存在本机一个 JSON 里（DEC-54）。</span>
           </div>
         </div>

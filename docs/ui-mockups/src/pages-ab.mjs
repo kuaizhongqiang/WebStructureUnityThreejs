@@ -10,6 +10,7 @@
  *   - B5 提示改浮窗
  *   - A5 菜单页待重做（见 TODO.md T1，本文件仍为旧版并带 TODO 标记）
  */
+import { icon } from './icons.mjs'
 import { route, tipsFloat, topRight, company } from './parts.mjs'
 
 const RIGHT = '<span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>'
@@ -17,9 +18,9 @@ const CRUMB = '目录 / <b>温度传感器特性测量</b>'
 
 /** 演示用的小号站点线（4 站，适配演示框宽度）。 */
 const MINI_ROUTE = `<nav class="ui-route" style="padding:12px 16px 8px">
-          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">${icon('check', 15)}</span><span class="ui-route__label">任务目的</span></div>
           <span class="ui-route__seg ui-route__seg--done"></span>
-          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">实验仪器</span></div>
+          <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">${icon('check', 15)}</span><span class="ui-route__label">实验仪器</span></div>
           <span class="ui-route__seg ui-route__seg--done"></span>
           <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">3</span><span class="ui-route__label">仿真实验</span></div>
           <span class="ui-route__seg"></span>
@@ -88,7 +89,7 @@ export const pagesAB = [
             <!-- 自定义下拉：原生 <select> 的展开列表由浏览器绘制、无法套样式，所以改用触发器 + .ui-menu 浮层 -->
             <div class="ui-selectbox">
               <button class="ui-selectbox__trigger" type="button" aria-haspopup="listbox" aria-expanded="true">
-                <span>学生</span><span class="ui-selectbox__chev">▾</span>
+                <span>学生</span><span class="ui-selectbox__chev">${icon('chevron-down', 14)}</span>
               </button>
               <div class="ui-menu ui-selectbox__pop" role="listbox" aria-label="选择身份">
                 <div class="ui-menu__group">选择身份</div>
@@ -102,13 +103,13 @@ export const pagesAB = [
             <div class="ui-field__hint">对应数据模型的 userType（未知 / 学生 / 教师 / 管理员）</div>
           </div>
           <div class="ui-row" style="justify-content:space-between">
-            <label class="ui-check ui-check--on"><span class="ui-check__box">✓</span>记住我</label>
+            <label class="ui-check ui-check--on"><span class="ui-check__box">${icon('check', 12)}</span>记住我</label>
             <span class="ui-muted ui-small">忘记密码？</span>
           </div>
           <button class="ui-btn ui-btn--primary ui-btn--block">登录</button>
           <button class="ui-btn ui-btn--ghost ui-btn--block">以游客身份进入</button>
           <div class="ui-alert ui-alert--info">
-            <span class="ui-alert__icon">i</span>
+            <span class="u${icon('info', 14)}-alert__icon">i</span>
             <span>本期无后端（DEC-21）：登录仅作界面占位；进度与成绩保存在本机一个 JSON 里（DEC-54）。</span>
           </div>
         </div>
@@ -159,21 +160,21 @@ export const pagesAB = [
         <!-- 三个选项卡放在一个承载框里；卡内不再用大缩略图，改为 图标 + 标题 + 描述（+ 推荐徽章） -->
         <div class="ui-tile-grid ui-tile-grid--boxed" style="width:1180px;grid-template-columns:repeat(3,1fr)">
           <div class="ui-tile ui-tile--icon">
-            <span class="ui-tile__icon">📶</span>
+            <span class="ui-tile__icon">${icon('signal-low', 26)}</span>
             <div class="ui-tile__body">
               <div class="ui-tile__name">标清</div>
               <div class="ui-tile__desc">低端集显 / 移动端推荐 · 关闭阴影与后处理</div>
             </div>
           </div>
           <div class="ui-tile ui-tile--icon ui-tile--active">
-            <span class="ui-tile__icon">✨</span>
+            <span class="ui-tile__icon">${icon('signal-high', 26)}</span>
             <div class="ui-tile__body">
               <div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div>
               <div class="ui-tile__desc">独立显卡 / 桌面浏览器 · 开启基础阴影</div>
             </div>
           </div>
           <div class="ui-tile ui-tile--icon">
-            <span class="ui-tile__icon">💎</span>
+            <span class="ui-tile__icon">${icon('gem', 26)}</span>
             <div class="ui-tile__body">
               <div class="ui-tile__name">超清</div>
               <div class="ui-tile__desc">高性能显卡 · 全特效，首次加载更慢</div>
@@ -181,7 +182,7 @@ export const pagesAB = [
           </div>
         </div>
         <div class="ui-alert ui-alert--warn" style="width:1180px">
-          <span class="ui-alert__icon">!</span>
+          <span class="ui-alert__icon">${icon('triangle-alert', 14)}</span>
           <span>检测到当前设备为 <b>移动端浏览器</b>（微信内置）：建议选择「标清」，并优先使用电脑浏览器体验三维实验（DEC-70）。</span>
         </div>
         <div class="ui-row" style="margin-top:6px">
@@ -223,7 +224,7 @@ ${Array.from({ length: 10 })
   .join('\n')}
         </div>
         <div class="ui-alert ui-alert--warn">
-          <span class="ui-alert__icon">!</span>
+          <span class="ui-alert__icon">${icon('triangle-alert', 14)}</span>
           <span>本页为第一轮遗留样式，已列入重做（审核意见：太丑、要更动感、需手写）。<b>请只评审其它页面</b>。</span>
         </div>
       </div>
@@ -312,12 +313,12 @@ ${Array.from({ length: 10 })
             <header class="ui-titlebar ui-titlebar--float" style="padding:8px 12px">
               <div class="ui-titlebar__logo" style="width:34px;height:34px;font-size:14px">仿</div>
               <div class="ui-titlebar__names"><div class="ui-titlebar__cn" style="font-size:15px">温度传感器特性测量</div></div>
-              <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><button class="ui-iconbtn ui-iconbtn--icon">☰</button></div>
+              <div class="ui-titlebar__right"><span class="ui-badge">3 / 11</span><button class="ui-iconbtn ui-iconbtn--icon">${icon('menu', 15)}</button></div>
             </header>
           </div>
         </div>
         <div class="ui-alert ui-alert--info">
-          <span class="ui-alert__icon">i</span>
+          <span class="u${icon('info', 14)}-alert__icon">i</span>
           <span>规范：<b>钉在画布左上角，距上 / 左各 50px，宽度随内容自适应</b>（<code>width: max-content</code>，上限 <code>--shell-card-max-w: 560px</code>，超长内容走省略号），高约 70px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；站点线左端要为浮卡留 620px、右端留 268px（给页面右上按钮组）。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>`,
@@ -354,7 +355,7 @@ ${Array.from({ length: 10 })
           <div class="ui-dialog__foot"><button class="ui-btn">再检查一下</button><button class="ui-btn ui-btn--primary">确认提交</button></div>
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
-          <span class="ui-alert__icon">i</span>
+          <span class="u${icon('info', 14)}-alert__icon">i</span>
           <span>规范：宽 520px；标题 54px；正文 24px 内边距；底部右对齐双按钮（次按钮在左、主按钮在右）。4 类语义：返回 / 退出 / 跳转 / 提交。</span>
         </div>
       </div>`,
@@ -371,7 +372,7 @@ ${Array.from({ length: 10 })
     body: `
       <div style="padding:24px 32px;display:flex;flex-direction:column;gap:20px">
         <div class="ui-alert ui-alert--info">
-          <span class="ui-alert__icon">i</span>
+          <span class="u${icon('info', 14)}-alert__icon">i</span>
           <span>
             <b>休眠不是遮罩。</b>无操作达到阈值后，把<b>可伸缩的功能条自动收起</b>（只留把手），并暂停三维渲染；
             鼠标移动 / 点击把手即恢复。<b>标题栏与右上返回按钮永不收起</b>，始终给用户出口。
@@ -388,7 +389,7 @@ ${Array.from({ length: 10 })
               <div class="ui-bar__handle" style="margin-top:6px"></div>
               ${topRight('')}
               <div class="ui-tips-float" style="right:14px;bottom:14px;width:280px">
-                <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span></span></div>
+                <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">${icon('chevron-down', 14)}</span></span></div>
                 <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">调节旋钮使读数稳定</span></div>
               </div>
             </div>
@@ -421,7 +422,7 @@ ${Array.from({ length: 10 })
           <span class="ui-small ui-muted">把手形态</span>
           <span style="width:120px;display:flex;flex-direction:column;align-items:center;gap:2px"><span class="ui-bar__handle"></span></span>
           <span class="ui-small ui-muted">收起后条高为 0，仅保留 4px 把手；悬停把手变主色</span>
-          <span class="ui-bar-toggle">▴ 展开功能条</span>
+          <span class="ui-bar-toggle">${icon('chevron-up', 14)} 展开功能条</span>
         </div>
       </div>`,
     statusbar: false,
@@ -519,7 +520,7 @@ ${route('Training', ['Purpose', 'Equipment', 'Principle'])}
           <div class="ui-h2" style="margin-bottom:10px">四种站点状态</div>
           <div style="border:1px dashed var(--line-2);border-radius:12px;overflow:hidden">
             <nav class="ui-route" style="padding:16px 24px 10px">
-              <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">✓</span><span class="ui-route__label">任务目的</span></div>
+              <div class="ui-route__stop ui-route__stop--done"><span class="ui-route__dot">${icon('check', 15)}</span><span class="ui-route__label">任务目的</span></div>
               <span class="ui-route__seg ui-route__seg--done"></span>
               <div class="ui-route__stop ui-route__stop--current"><span class="ui-route__dot">2</span><span class="ui-route__label">实验仪器</span></div>
               <span class="ui-route__seg"></span>
@@ -529,7 +530,7 @@ ${route('Training', ['Purpose', 'Equipment', 'Principle'])}
             </nav>
           </div>
           <div class="ui-row" style="margin-top:12px;gap:16px;flex-wrap:wrap">
-            <span class="ui-small"><span class="ui-badge ui-badge--ok">✓</span> 已完成</span>
+            <span class="ui-small"><span class="ui-badge ui-badge--ok">${icon('check', 14)}</span> 已完成</span>
             <span class="ui-small"><span class="ui-badge ui-badge--info">实心+光晕</span> 当前站</span>
             <span class="ui-small"><span class="ui-badge">空心</span> 未开始</span>
             <span class="ui-small"><span class="ui-badge ui-badge--warn">半透明</span> 未开放（active:false）</span>
@@ -544,7 +545,7 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
         </div>
 
         <div class="ui-alert ui-alert--warn">
-          <span class="ui-alert__icon">!</span>
+          <span class="ui-alert__icon">${icon('triangle-alert', 14)}</span>
           <span>站点顺序即 <b>TaskType 枚举序号</b>（DEC-09 只许往后追加）；站点是<b>技术栈分流开关</b>（DEC-06），标记必须与实际承载一致。</span>
         </div>
       </div>`,
@@ -604,11 +605,11 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
           <div class="ui-panel">
             <div class="ui-panel__head">按钮清单</div>
             <div class="ui-panel__body ui-col" style="gap:10px">
-              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button><span class="ui-small ui-muted">主入口，永远第一个、永远可见</span></div>
-              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">⛶</button><span class="ui-small ui-muted">全屏</span></div>
-              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">◐</button><span class="ui-small ui-muted">画质</span></div>
-              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">?</button><span class="ui-small ui-muted">帮助</span></div>
-              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">☰</button><span class="ui-small ui-muted">窄屏时收进菜单抽屉</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--back">${icon('arrow-left', 14)} 返回目录</button><span class="ui-small ui-muted">主入口，永远第一个、永远可见</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">${icon('maximize', 15)}</button><span class="ui-small ui-muted">全屏</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">${icon('sliders-horizontal', 15)}</button><span class="ui-small ui-muted">画质</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">${icon('circle-help', 15)}</button><span class="ui-small ui-muted">帮助</span></div>
+              <div class="ui-row"><button class="ui-iconbtn ui-iconbtn--icon">${icon('menu', 15)}</button><span class="ui-small ui-muted">窄屏时收进菜单抽屉</span></div>
             </div>
           </div>
           <div class="ui-panel">
@@ -624,7 +625,7 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
         </div>
 
         <div class="ui-alert ui-alert--info">
-          <span class="ui-alert__icon">i</span>
+          <span class="u${icon('info', 14)}-alert__icon">i</span>
           <span>返回是"离开当前页面"的唯一入口，必须在<b>标题栏下方的右上角</b>，不随功能条收起（见 A9）。</span>
         </div>
       </div>`,
@@ -645,7 +646,7 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
           <div class="ui-h2" style="margin-bottom:10px">① 展开态（默认）</div>
           <div class="demo-frame">
             <div class="ui-tips-float" style="right:14px;bottom:14px;width:330px">
-              <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span><span class="ui-tips-float__icon">✕</span></span></div>
+              <div class="ui-tips-float__head"><span>当前步骤提示</span><span class="ui-tips-float__actions"><span class="ui-tips-float__icon">${icon('chevron-down', 14)}</span><span class="ui-tips-float__icon">${icon('x', 14)}</span></span></div>
               <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 V+ 端子</span></div>
               <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先确认电源已断电；接好后系统自动检测回路</span></div>
               <div class="ui-tips__img" style="width:100%;height:84px"></div>
@@ -653,12 +654,12 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
           </div>
         </div>
         <div>
-          <div class="ui-h2" style="margin-bottom:10px">② 收起态（点 ▾ 最小化为一行）</div>
+          <div class="ui-h2" style="margin-bottom:10px">② 收起态（点右上角的收起箭头，最小化为一行）</div>
           <div class="demo-frame">
             <div class="ui-tips-float ui-tips-float--mini" style="right:14px;bottom:14px">
               <span class="ui-tips__tag ui-tips__tag--step">步骤</span>
               <span class="ui-tips__text">把红色表笔接到 V+ 端子</span>
-              <span class="ui-tips-float__icon">▴</span>
+              <span class="ui-tips-float__icon">${icon('chevron-up', 14)}</span>
             </div>
           </div>
         </div>

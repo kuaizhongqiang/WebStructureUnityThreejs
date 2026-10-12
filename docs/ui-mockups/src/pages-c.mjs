@@ -9,6 +9,7 @@
  *   - C5 / C7：样式待重做，页面上带 TODO 标记（见 TODO.md T2 / T3）
  *   - C8~C11：Unity 侧，UI 暂不设计（保留第一轮样式，仅作占位）
  */
+import { icon } from './icons.mjs'
 import { route, tipsFloat, topRight, tabs, tips, corners, viewport } from './parts.mjs'
 
 const RIGHT = '<span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>'
@@ -85,23 +86,23 @@ ${viewport('Three.js', 'ObjectShowElement')}
           <div class="ui-panel__body ui-panel__body--flush" style="padding:14px">
             <div class="ui-iconlist">
               <div class="ui-iconitem ui-iconitem--active">
-                <span class="ui-iconitem__icon">📊</span>
+                <span class="ui-iconitem__icon">${icon('gauge', 24)}</span>
                 <span><span class="ui-iconitem__name">数字万用表</span><br><span class="ui-iconitem__sub">测量电压 / 电阻</span></span>
               </div>
               <div class="ui-iconitem">
-                <span class="ui-iconitem__icon">🔌</span>
+                <span class="ui-iconitem__icon">${icon('plug-zap', 24)}</span>
                 <span><span class="ui-iconitem__name">直流稳压电源</span><br><span class="ui-iconitem__sub">0~30V 可调</span></span>
               </div>
               <div class="ui-iconitem">
-                <span class="ui-iconitem__icon">🌡️</span>
+                <span class="ui-iconitem__icon">${icon('thermometer', 24)}</span>
                 <span><span class="ui-iconitem__name">温度传感器</span><br><span class="ui-iconitem__sub">被测对象</span></span>
               </div>
               <div class="ui-iconitem">
-                <span class="ui-iconitem__icon">♨️</span>
+                <span class="ui-iconitem__icon">${icon('flame', 24)}</span>
                 <span><span class="ui-iconitem__name">加热台</span><br><span class="ui-iconitem__sub">提供温度变化</span></span>
               </div>
               <div class="ui-iconitem">
-                <span class="ui-iconitem__icon">➰</span>
+                <span class="ui-iconitem__icon">${icon('cable', 24)}</span>
                 <span><span class="ui-iconitem__name">连接线</span><br><span class="ui-iconitem__sub">红 / 黑各一</span></span>
               </div>
             </div>
@@ -153,15 +154,15 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
           <div class="ui-player">
             <div class="ui-player__stage">
               <div class="ui-player__badge"><span class="ui-badge ui-badge--info">原理讲解</span><span class="ui-badge">03:24</span></div>
-              <div class="ui-player__play">▶</div>
+              <div class="ui-player__play">${icon('play', 16)}</div>
               <div class="ui-muted ui-small" style="position:absolute;bottom:14px">视频区域（真实播放时由 video 元素承载；微信内需点击后播放，DEC-70）</div>
             </div>
             <div class="ui-player__ctrl">
-              <span class="ui-player__btn">▶</span>
+              <span class="ui-player__btn">${icon('play', 16)}</span>
               <div class="ui-player__track"><div class="ui-player__progress"></div></div>
               <span class="ui-player__time">01:18 / 03:24</span>
-              <span class="ui-player__btn">🔊</span>
-              <span class="ui-player__btn">⛶</span>
+              <span class="ui-player__btn">${icon('volume-2', 16)}</span>
+              <span class="ui-player__btn">${icon('maximize', 15)}</span>
             </div>
           </div>
         </div>
@@ -169,15 +170,15 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
           <div class="ui-panel__head">视频列表<span class="ui-panel__right"><span class="ui-badge">3 段</span></span></div>
           <div class="ui-panel__body ui-playlist">
             <div class="ui-playlist__item ui-playlist__item--active">
-              <span class="ui-playlist__thumb">▶</span>
+              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
               <span><span class="ui-playlist__name">1 · 测温原理</span><br><span class="ui-playlist__meta">03:24 · 已看完 0:00</span></span>
             </div>
             <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb">▶</span>
+              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
               <span><span class="ui-playlist__name">2 · 电路模型与接线</span><br><span class="ui-playlist__meta">04:10</span></span>
             </div>
             <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb">▶</span>
+              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
               <span><span class="ui-playlist__name">3 · 误差来源分析</span><br><span class="ui-playlist__meta">02:45</span></span>
             </div>
           </div>
@@ -340,8 +341,8 @@ ${viewport('Unity WebGL', '接线场景 · 正交俯视相机')}
             <div class="ui-panel__head">接线进度<span class="ui-panel__right"><span class="ui-badge ui-badge--info">3 / 6 根</span></span></div>
             <div class="ui-panel__body ui-col" style="gap:10px">
               <div class="ui-steps" style="flex-direction:column;align-items:flex-start;gap:10px">
-                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>红表笔 → V+</div>
-                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>黑表笔 → GND</div>
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">${icon('check', 13)}</span>红表笔 → V+</div>
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">${icon('check', 13)}</span>黑表笔 → GND</div>
                 <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>电源正极 → VCC</div>
               </div>
             </div>
@@ -380,8 +381,8 @@ ${viewport('Unity WebGL', '仿真实训场景 · 自由相机')}
             <div class="ui-panel__head">实验步骤<span class="ui-panel__right"><span class="ui-badge ui-badge--info">4 / 12</span></span></div>
             <div class="ui-panel__body ui-col" style="gap:10px">
               <div class="ui-steps" style="flex-direction:column;align-items:flex-start;gap:10px">
-                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>接通电源</div>
-                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>选择直流电压档</div>
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">${icon('check', 13)}</span>接通电源</div>
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">${icon('check', 13)}</span>选择直流电压档</div>
                 <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>调节旋钮使读数稳定</div>
               </div>
             </div>
@@ -415,7 +416,7 @@ ${viewport('Unity WebGL', '结构剖切 · 正交相机')}
           <div class="ui-panel">
             <div class="ui-panel__head">部件树</div>
             <div class="ui-panel__body ui-col ui-panel__body--flush" style="gap:4px;padding:12px">
-              <div class="ui-list__item">▾ 传感器本体</div>
+              <div class="ui-list__item">${icon('chevron-down', 14)} 传感器本体</div>
               <div class="ui-list__item ui-list__item--active" style="margin-left:18px">感温元件</div>
               <div class="ui-list__item" style="margin-left:18px">接线端子</div>
             </div>
@@ -453,7 +454,7 @@ ${viewport('Unity WebGL', '检测工位 · 第一人称相机')}
           <div class="ui-panel">
             <div class="ui-panel__head">检测项目<span class="ui-panel__right"><span class="ui-badge ui-badge--gold">16 / 24</span></span></div>
             <div class="ui-panel__body ui-col" style="gap:10px">
-              <div class="ui-list__item"><span class="ui-badge ui-badge--ok">✓</span>测量端子通断</div>
+              <div class="ui-list__item"><span class="ui-badge ui-badge--ok">${icon('check', 14)}</span>测量端子通断</div>
               <div class="ui-list__item ui-list__item--active"><span class="ui-badge">2</span>测量感温元件阻值</div>
             </div>
           </div>

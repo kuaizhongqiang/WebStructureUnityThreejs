@@ -1,4 +1,5 @@
 /** D 组：考核与结算 + 题目控件规格。 */
+import { icon } from './icons.mjs'
 import { corners } from './parts.mjs'
 
 export const pagesD = [
@@ -48,7 +49,7 @@ export const pagesD = [
             <button class="ui-btn ui-btn--primary ui-btn--block">提交成绩</button>
             <button class="ui-btn ui-btn--ghost ui-btn--block">返回继续实验</button>
             <div class="ui-alert ui-alert--info">
-              <span class="ui-alert__icon">i</span>
+              <span class="u${icon('info', 14)}-alert__icon">i</span>
               <span>本期无后端：提交后写入本机存档（DEC-54）；接后端时只换存档实现，界面不变。</span>
             </div>
           </div>
@@ -72,7 +73,7 @@ export const pagesD = [
           <div class="ui-row"><span class="ui-badge">单选题</span><span class="ui-badge ui-badge--gold">5 分</span></div>
           <div class="ui-question__stem"><span class="ui-question__index">1.</span>下列哪个档位用于测量直流电压？</div>
           <div class="ui-options">
-            <div class="ui-option ui-option--right"><span class="ui-option__key">A</span>V ⎓（直流电压）<span class="ui-grow"></span>✓</div>
+            <div class="ui-option ui-option--right"><span class="ui-option__key">A</span>V ⎓（直流电压）<span class="ui-grow"></span>${icon('check', 14)}</div>
             <div class="ui-option"><span class="ui-option__key">B</span>Ω（电阻）</div>
           </div>
         </div>
@@ -80,17 +81,17 @@ export const pagesD = [
           <div class="ui-row"><span class="ui-badge">多选题</span><span class="ui-badge ui-badge--gold">8 分</span></div>
           <div class="ui-question__stem"><span class="ui-question__index">2.</span>接线前必须确认的有：</div>
           <div class="ui-options">
-            <div class="ui-option ui-option--picked"><span class="ui-option__key">☑</span>电源已断开</div>
-            <div class="ui-option ui-option--picked"><span class="ui-option__key">☑</span>量程档位正确</div>
-            <div class="ui-option ui-option--wrong"><span class="ui-option__key">☐</span>表笔可以随意插</div>
+            <div class="ui-option ui-option--picked"><span class="ui-option__key">${icon('square-check', 15)}</span>电源已断开</div>
+            <div class="ui-option ui-option--picked"><span class="ui-option__key">${icon('square-check', 15)}</span>量程档位正确</div>
+            <div class="ui-option ui-option--wrong"><span class="ui-option__key">${icon('square', 15)}</span>表笔可以随意插</div>
           </div>
         </div>
         <div class="ui-card ui-question">
           <div class="ui-row"><span class="ui-badge">判断题</span><span class="ui-badge ui-badge--gold">5 分</span></div>
           <div class="ui-question__stem"><span class="ui-question__index">3.</span>量程越大测量越准确。</div>
           <div class="ui-options" style="flex-direction:row">
-            <div class="ui-option ui-option--right" style="flex:1"><span class="ui-option__key">✓</span>正确</div>
-            <div class="ui-option" style="flex:1"><span class="ui-option__key">✕</span>错误</div>
+            <div class="ui-option ui-option--right" style="flex:1"><span class="ui-option__key">${icon('check', 14)}</span>正确</div>
+            <div class="ui-option" style="flex:1"><span class="ui-option__key">${icon('x', 14)}</span>错误</div>
           </div>
           <div class="ui-question__analysis">解析：量程过大将导致相对误差增大，应选择略大于被测值的档位。</div>
         </div>
@@ -125,21 +126,21 @@ export const pagesD = [
     body: `
       <div style="padding:28px 32px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
         <div class="ui-card ui-center" style="gap:14px;padding:34px;border-color:var(--ok)">
-          <div style="width:72px;height:72px;border-radius:50%;background:var(--ok-weak);border:2px solid var(--ok);display:flex;align-items:center;justify-content:center;font-size:34px;color:#8ce6ab">✓</div>
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--ok-weak);border:2px solid var(--ok);display:flex;align-items:center;justify-content:center;font-size:34px;color:#8ce6ab">${icon('check', 14)}</div>
           <div class="ui-h2">回答正确</div>
           <div class="ui-badge ui-badge--gold">+ 5 分</div>
           <div class="ui-muted ui-small" style="max-width:320px">解析：直流电压档用于测量电压，表笔需并联在被测两端。</div>
           <button class="ui-btn ui-btn--primary">下一题</button>
         </div>
         <div class="ui-card ui-center" style="gap:14px;padding:34px;border-color:var(--err)">
-          <div style="width:72px;height:72px;border-radius:50%;background:var(--err-weak);border:2px solid var(--err);display:flex;align-items:center;justify-content:center;font-size:34px;color:#ffb0b0">✕</div>
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--err-weak);border:2px solid var(--err);display:flex;align-items:center;justify-content:center;font-size:34px;color:#ffb0b0">${icon('x', 14)}</div>
           <div class="ui-h2">回答错误</div>
           <div class="ui-badge ui-badge--err">正确答案：B</div>
           <div class="ui-muted ui-small" style="max-width:320px">你选择了 C（电阻档）。测量电压时使用电阻档会造成读数无意义。</div>
           <div class="ui-row"><button class="ui-btn">查看解析</button><button class="ui-btn ui-btn--primary">下一题</button></div>
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
-          <span class="ui-alert__icon">i</span>
+          <span class="u${icon('info', 14)}-alert__icon">i</span>
           <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>（对应参考工程的 Question_RightICO / Question_WrongICO）；得分变化用金色徽章展示。</span>
         </div>
       </div>`,

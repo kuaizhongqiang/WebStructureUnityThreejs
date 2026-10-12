@@ -1411,6 +1411,49 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
    同时去掉英文副标题或把三个状态徽章挪到状态条），左预留可同步降到 ~480px。---- */
 
 /* ============================================================================
+ * 23. 图标：矢量（Lucide，ISC 许可可商用）
+ *
+ * 为什么必须换掉 emoji：
+ *   ① emoji 是**字体渲染的彩色位图**，同一个字符在 Windows / macOS / 不同浏览器上长得不一样；
+ *   ② 它**不跟随 currentColor** —— 亮色/暗色两套主题下颜色完全不受控（本轮亮色审查里最难缠的一类问题）；
+ *   ③ 无法统一描边粗细，和我们的"发丝描边 + 圆角"语言不搭。
+ *   矢量图标 + `stroke: currentColor` 才能保证：图标永远是文字色、任意主题都清晰。
+ *
+ * 数据来源：`src/icons.mjs`（由 `src/fetch-icons.mjs` 从 lucide-static 内联生成，版本 1.55.0）
+ * 许可原文：`assets/icons/LICENSE-lucide.txt`
+ * 产品端（web/）**不要**复用这份内联数据，改用 npm 包在构建期 tree-shake。
+ * ========================================================================== */
+.ico { display: inline-block; flex: none; vertical-align: -0.15em; }
+
+/* ---- 伪元素里的图标：无法内联 SVG，改用 mask ----
+   mask 只取 alpha 通道，所以 SVG 里 stroke 写 black 就够（还省掉 # 的 URL 转义）。
+   颜色由 `background-color: currentColor` 决定，因此继承了原来规则里的 color。 */
+.ui-tab--done::after,
+.ui-menu__item--current::after,
+.ui-btn[disabled]::before,
+.ui-btn--disabled::before {
+  content: "";
+  display: inline-block;
+  width: 12px; height: 12px;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+.ui-tab--done::after,
+.ui-menu__item--current::after {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");
+}
+.ui-menu__item--current::after { margin-left: auto; }
+.ui-btn[disabled]::before,
+.ui-btn--disabled::before {
+  width: 13px; height: 13px;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='11' x='3' y='11' rx='2' ry='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='11' x='3' y='11' rx='2' ry='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+}
+
+/* ============================================================================
  * 22. 下拉与浮层菜单（2026-10-12 逐页排版调整 · A2）
  *
  * 起因：A2 的"身份"下拉展开后**没有任何样式**（原生 <select> 的展开列表由浏览器绘制，改不了）。

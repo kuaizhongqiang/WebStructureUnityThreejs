@@ -14,6 +14,7 @@ import { pagesAB } from './pages-ab.mjs'
 import { pagesC } from './pages-c.mjs'
 import { pagesD } from './pages-d.mjs'
 import { styleSpecSections, styleSpecSectionsRound2, pageIndexGroups } from './style-spec.mjs'
+import { icon, ICON_VERSION } from './icons.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '..')
@@ -42,6 +43,37 @@ const THEME_SCRIPT = `<script>
 </script>`
 
 const THEME_SWITCH = `<span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>`
+
+/** 成果页"图标"一节：本项目实际用到的图标 + 用途（改 icons 后这里也要跟着补）。 */
+const ICON_USAGE = [
+  ['menu', '目录 / 菜单抽屉'],
+  ['arrow-left', '返回目录'],
+  ['x', '关闭 / 收起浮窗'],
+  ['maximize', '全屏'],
+  ['sliders-horizontal', '画质设置'],
+  ['circle-help', '帮助'],
+  ['check', '已完成 / 选中 / 步骤完成'],
+  ['lock', '禁用按钮（虚线框左侧）'],
+  ['info', '信息提示'],
+  ['triangle-alert', '警告提示'],
+  ['chevron-down', '展开 / 下拉箭头'],
+  ['chevron-up', '收起 / 展开功能条'],
+  ['rotate-cw', '复位视角'],
+  ['expand', '自适应画面'],
+  ['crosshair', '定位 / 对焦'],
+  ['play', '播放'],
+  ['volume-2', '音量'],
+  ['gauge', '数字万用表'],
+  ['plug-zap', '直流稳压电源'],
+  ['thermometer', '温度传感器'],
+  ['flame', '加热台'],
+  ['cable', '连接线'],
+  ['signal-low', '画质 · 标清'],
+  ['signal-high', '画质 · 高清'],
+  ['gem', '画质 · 超清'],
+  ['square', '答题 · 未选'],
+  ['square-check', '答题 · 已选'],
+]
 
 const TITLEBAR = (crumb, right) => `
       <header class="ui-titlebar ui-titlebar--float">
@@ -359,7 +391,27 @@ ${group.pages
   )
   .join('')}
 
-  <div class="spec-section-title">十一、说明</div>
+  <div class="spec-section-title">十一、图标（Lucide 矢量，ISC 许可可商用）</div>
+  <div class="ui-small ui-muted" style="margin-bottom:10px">
+    <b>不许用 emoji</b>：emoji 是字体渲染的彩色位图，跨系统长得不一样，而且<b>不跟随 currentColor</b>（亮/暗两套主题下颜色不受控）。
+    图标一律用 <code>src/icons.mjs</code> 的 <code>icon(name, size)</code>，渲染成 <code>stroke: currentColor</code> 的 SVG，因此永远等于文字色。
+    数据由 <code>src/fetch-icons.mjs</code> 从 <code>lucide-static@${ICON_VERSION}</code> 内联生成（零外部请求、可离线打开）；许可原文 <code>assets/icons/LICENSE-lucide.txt</code>。
+    新增图标：把名字加进 <code>fetch-icons.mjs</code> 的 ICONS 数组，再执行 <code>node src/fetch-icons.mjs</code>。
+  </div>
+  <div class="spec-grid">
+${ICON_USAGE.map(
+  ([name, usage]) => `    <div class="spec-item">
+      <div class="spec-item__stage" style="min-height:52px">${icon(name, 24)}</div>
+      <div class="spec-item__meta">
+        <div class="spec-item__name">${name}</div>
+        <div class="spec-item__desc">${usage}</div>
+        <div class="spec-item__cls">icon('${name}', 24)</div>
+      </div>
+    </div>`,
+).join('\n')}
+  </div>
+
+  <div class="spec-section-title">十二、说明</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>

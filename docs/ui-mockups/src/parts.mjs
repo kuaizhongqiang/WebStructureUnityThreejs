@@ -6,7 +6,10 @@
  *   - tips()  → tipsFloat()     浮窗式提示，替代底部固定提示栏
  *   - corners() → topRight()    右上按钮组（含返回），替代角落 fab
  * 旧函数保留，仅供尚未重做的页面（C8~C11 Unity 侧）使用。
+ *
+ * 图标：一律用 `icons.mjs` 的 icon()（矢量，Lucide，跟随 currentColor），**不要再用 emoji 或 ✓✕← 这类字形**。
  */
+ import { icon } from './icons.mjs'
 
 export const TASK_TABS = [
   ['None', '空类型', 'three'],
@@ -38,7 +41,7 @@ ${TASK_TABS.map(([key, label, stack], index) => {
   if (key === active) cls.push('ui-route__stop--current')
   else if (done.includes(key)) cls.push('ui-route__stop--done')
   if (locked.includes(key)) cls.push('ui-route__stop--locked')
-  const inner = done.includes(key) && key !== active ? '✓' : String(index + 1)
+  const inner = done.includes(key) && key !== active ? icon('check', 14) : String(index + 1)
   return `${seg}<div class="${cls.join(' ')}">
           <span class="ui-route__dot">${inner}</span>
           <span class="ui-route__label">${label}</span>
@@ -55,13 +58,13 @@ export function tipsFloat(stepText, opText, options = {}) {
     return `<div class="ui-tips-float ui-tips-float--mini">
           <span class="ui-tips__tag ui-tips__tag--step">步骤</span>
           <span class="ui-tips__text">${stepText}</span>
-          <span class="ui-tips-float__icon">▴</span>
+          <span class="ui-tips-float__icon">${icon('chevron-up', 14)}</span>
         </div>`
   }
   return `<div class="ui-tips-float${ghost ? ' ui-tips-float--ghost' : ''}">
           <div class="ui-tips-float__head">
             <span>当前步骤提示</span>
-            <span class="ui-tips-float__actions"><span class="ui-tips-float__icon">▾</span><span class="ui-tips-float__icon">✕</span></span>
+            <span class="ui-tips-float__actions"><span class="ui-tips-float__icon">${icon('chevron-down', 14)}</span><span class="ui-tips-float__icon">${icon('x', 14)}</span></span>
           </div>
           <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">${stepText}</span></div>
           <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">${opText}</span></div>
@@ -72,10 +75,10 @@ export function tipsFloat(stepText, opText, options = {}) {
 /** 右上按钮组：返回固定在第一个。 */
 export function topRight(extra = '') {
   return `<div class="ui-topright">
-          <button class="ui-iconbtn ui-iconbtn--back">← 返回目录</button>
-          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">⛶</button>
-          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">◐</button>
-          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">?</button>
+          <button class="ui-iconbtn ui-iconbtn--back">${icon('arrow-left', 14)} 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">${icon('maximize', 14)}</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">${icon('sliders-horizontal', 14)}</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">${icon('circle-help', 14)}</button>
           ${extra}
         </div>`
 }
@@ -85,10 +88,10 @@ export function viewport(stack, label) {
   return `<div class="ui-viewport" style="position:absolute;inset:0">
           <div class="ui-viewport__hint">${stack} · ${label}</div>
           <div class="ui-viewport__tools">
-            <div class="ui-viewport__tool">⟳</div>
-            <div class="ui-viewport__tool">⤢</div>
-            <div class="ui-viewport__tool">⛶</div>
-            <div class="ui-viewport__tool">⌖</div>
+            <div class="ui-viewport__tool">${icon('rotate-cw', 16)}</div>
+            <div class="ui-viewport__tool">${icon('expand', 16)}</div>
+            <div class="ui-viewport__tool">${icon('maximize', 16)}</div>
+            <div class="ui-viewport__tool">${icon('crosshair', 16)}</div>
           </div>
           <div class="ui-viewport__center">三维画布区域 —— 由 ${stack} 承载，本稿只表示占位与叠层 UI 的位置</div>
         </div>`
@@ -116,12 +119,12 @@ export function tips(stepText, opText, withImage = true) {
 
 export function corners() {
   return `<div class="ui-corner ui-corner--rt">
-        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
-        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
-        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
+        <div class="ui-fab"><span class="ui-fab__icon">${icon('menu', 18)}</span>目录</div>
+        <div class="ui-fab"><span class="ui-fab__icon">${icon('maximize', 18)}</span>全屏</div>
+        <div class="ui-fab"><span class="ui-fab__icon">${icon('sliders-horizontal', 18)}</span>画质</div>
       </div>
       <div class="ui-corner ui-corner--lb">
-        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
+        <div class="ui-fab"><span class="ui-fab__icon">${icon('arrow-left', 18)}</span>菜单</div>
       </div>`
 }
 
