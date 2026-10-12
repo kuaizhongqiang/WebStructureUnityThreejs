@@ -123,8 +123,8 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
           <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:16px">
             <div style="font-size:var(--fs-18);font-weight:600">数字万用表</div>
             <div class="ui-article" style="font-size:var(--fs-14)">
-              可测量直流电压、交流电压、电阻与电流。本实验用于测量传感器的输出电压，
-              注意量程应选择略大于被测值的档位，以减小相对误差。
+              <p>可测量直流电压、交流电压、电阻与电流。本实验用于测量传感器的输出电压，注意量程应选择略大于被测值的档位，以减小相对误差。</p>
+              <p>表笔接入前请先确认档位与插孔位置：测电压用 VΩ 插孔并联接入，测电流用 mA 插孔串联接入，接错会烧毁保险丝。</p>
             </div>
             <div class="ui-row" style="gap:8px;flex-wrap:wrap">
               <span class="ui-badge">量程 2V / 20V</span>
@@ -242,13 +242,13 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
     body: `${route('Info')}
       ${topRight('')}
       <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:20px">
-        <div class="ui-panel" style="flex:1.4">
+        <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">三维模型<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js · 可旋转</span></span></div>
           <div class="ui-panel__body ui-panel__body--flush" style="position:relative;height:100%">
 ${viewport('Three.js', '整机 / 场景模型')}
           </div>
         </div>
-        <div class="ui-panel" style="flex:1">
+        <div class="ui-panel" style="width:380px">
           <div class="ui-panel__head">简介</div>
           <div class="ui-panel__body" style="display:flex;flex-direction:column;gap:16px">
             <div class="ui-article">

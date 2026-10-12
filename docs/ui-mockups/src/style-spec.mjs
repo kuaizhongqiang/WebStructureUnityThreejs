@@ -185,7 +185,7 @@ export const styleSpecSections = [
         name: '模态框',
         desc: '4 类语义：返回 / 退出 / 跳转 / 提交',
         cls: '.ui-dialog',
-        html: '<div class="ui-dialog" style="width:300px"><div class="ui-dialog__title" style="height:40px;font-size:14px">返回目录？</div><div class="ui-dialog__body" style="padding:14px;font-size:12px">当前实训尚未完成。</div><div class="ui-dialog__foot" style="padding:10px 14px"><button class="ui-btn ui-btn--sm">继续</button><button class="ui-btn ui-btn--primary ui-btn--sm">返回</button></div></div>',
+        html: '<div class="ui-dialog" style="width:300px"><div class="ui-dialog__title" style="height:40px;font-size:14px">返回目录？</div><div class="ui-dialog__body" style="padding:14px;font-size:12px"><p>当前实训尚未完成（进度 3 / 11），返回后进度会保留在本机。</p><p>已提交的任务不受影响。</p></div><div class="ui-dialog__foot" style="padding:10px 14px"><button class="ui-btn ui-btn--sm">继续</button><button class="ui-btn ui-btn--primary ui-btn--sm">返回</button></div></div>',
       },
       {
         name: '轻提示（Toast）',
