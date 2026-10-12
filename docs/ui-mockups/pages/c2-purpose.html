@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>C2 C2 任务目的（Purpose）— 已按审核意见简化 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+  })();
+</script>
 </head>
 <body>
 <div class="board-wrap"><div class="board">
@@ -124,6 +133,7 @@
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
   <span>C2 · C2 任务目的（Purpose）— 已按审核意见简化 · 归属 UI · TaskType.Purpose</span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
 </div>
 </body>
 </html>

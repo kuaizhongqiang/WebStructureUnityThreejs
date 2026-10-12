@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>C9 C9 仿真实验（Training）· Unity 侧暂不设计 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+  })();
+</script>
 </head>
 <body>
 <div class="board-wrap"><div class="board">
@@ -90,13 +99,14 @@
 
       <footer class="ui-statusbar">
         <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+        <span class="ui-statusbar__right">v0.2 · 排版稿 · docs/ui-mockups</span>
       </footer>
 </div></div>
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
   <span>C9 · C9 仿真实验（Training）· Unity 侧暂不设计 · 归属 UI · TaskType.Training</span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
 </div>
 </body>
 </html>

@@ -174,7 +174,7 @@ body {
   height: 40px; padding: 0 22px;
   display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
   border: 1px solid var(--line-2); border-radius: var(--r-2);
-  background: var(--bg-3); color: var(--text-1);
+  background: var(--glass-card); color: var(--text-1);
   font-size: var(--fs-14); font-family: inherit; cursor: pointer;
   transition: background 0.15s, border-color 0.15s, transform 0.05s;
 }
@@ -220,7 +220,7 @@ body {
 .ui-tab:hover { color: var(--text-1); background: var(--bg-2); }
 .ui-tab--active {
   color: #fff; font-weight: 600;
-  background: var(--bg-2); border-color: var(--line-2);
+  background: var(--glass-panel); border-color: var(--line-2);
   box-shadow: inset 0 2px 0 var(--accent);
 }
 .ui-tab--done::after { content: "✓"; color: var(--ok); font-size: var(--fs-12); }
@@ -234,7 +234,7 @@ body {
 
 /* --------------------------------------------------------------- 7. 面板/卡片 */
 .ui-panel {
-  background: var(--bg-2); border: 1px solid var(--line-1);
+  background: var(--glass-panel); border: 1px solid var(--line-1);
   border-radius: var(--r-3); overflow: hidden; display: flex; flex-direction: column;
 }
 .ui-panel__head {
@@ -250,7 +250,7 @@ body {
 .ui-panel__body--flush { padding: 0; }
 
 .ui-card {
-  background: var(--bg-3); border: 1px solid var(--line-1);
+  background: var(--glass-card); border: 1px solid var(--line-1);
   border-radius: var(--r-2); padding: var(--sp-4);
 }
 
@@ -259,7 +259,7 @@ body {
 .ui-list__item {
   display: flex; align-items: center; gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
-  background: var(--bg-3); border: 1px solid var(--line-1); border-radius: var(--r-2);
+  background: var(--glass-card); border: 1px solid var(--line-1); border-radius: var(--r-2);
   font-size: var(--fs-14); cursor: pointer;
 }
 .ui-list__item:hover { background: var(--bg-hover); border-color: var(--line-2); }
@@ -279,7 +279,7 @@ body {
 /* 网格卡片式条目（项目选择、仪器选择） */
 .ui-tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-3); }
 .ui-tile {
-  background: var(--bg-3); border: 1px solid var(--line-1); border-radius: var(--r-2);
+  background: var(--glass-card); border: 1px solid var(--line-1); border-radius: var(--r-2);
   padding: var(--sp-3); cursor: pointer; display: flex; flex-direction: column; gap: var(--sp-2);
 }
 .ui-tile:hover { border-color: var(--accent); background: var(--bg-hover); }
@@ -341,7 +341,7 @@ body {
 .ui-alert {
   display: flex; gap: var(--sp-3); align-items: flex-start;
   padding: var(--sp-3) var(--sp-4); border-radius: var(--r-2);
-  background: var(--bg-3); border: 1px solid var(--line-2); font-size: var(--fs-13);
+  background: var(--glass-card); border: 1px solid var(--line-2); font-size: var(--fs-13);
 }
 .ui-alert__icon { flex: none; font-size: var(--fs-14); }
 .ui-alert--info { border-color: rgba(59, 130, 246, 0.45); background: var(--accent-weak); color: #cfe0ff; }
@@ -449,7 +449,7 @@ body {
 .ui-option {
   display: flex; align-items: center; gap: var(--sp-3);
   padding: var(--sp-3) var(--sp-4); border-radius: var(--r-2);
-  background: var(--bg-3); border: 1px solid var(--line-1); cursor: pointer; font-size: var(--fs-14);
+  background: var(--glass-card); border: 1px solid var(--line-1); cursor: pointer; font-size: var(--fs-14);
 }
 .ui-option:hover { border-color: var(--line-2); }
 .ui-option--picked { border-color: var(--accent); background: var(--accent-weak); }
@@ -490,7 +490,7 @@ body {
 }
 .ui-ai {
   position: absolute; right: 28px; bottom: 44px; width: 380px; z-index: 45;
-  background: var(--bg-2); border: 1px solid var(--line-2); border-radius: var(--r-3); box-shadow: var(--sh-2);
+  background: var(--glass-panel); border: 1px solid var(--line-2); border-radius: var(--r-3); box-shadow: var(--sh-2);
   display: flex; flex-direction: column; overflow: hidden;
 }
 .ui-ai__head { height: 44px; display: flex; align-items: center; gap: var(--sp-2); padding: 0 var(--sp-4); border-bottom: 1px solid var(--line-1); font-size: var(--fs-13); font-weight: 600; }
@@ -550,7 +550,7 @@ body {
 .spec-pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
 .spec-page-link {
   display: flex; flex-direction: column; gap: 2px; padding: 10px 14px;
-  background: var(--bg-2); border: 1px solid var(--line-1); border-radius: var(--r-2);
+  background: var(--glass-panel); border: 1px solid var(--line-1); border-radius: var(--r-2);
   color: var(--text-1); text-decoration: none; font-size: 13px;
 }
 .spec-page-link:hover { border-color: var(--accent); background: var(--bg-3); }
@@ -581,7 +581,7 @@ body {
   width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: var(--fs-11); color: var(--text-3);
-  background: var(--bg-2); border: 2px solid var(--line-2);
+  background: var(--glass-panel); border: 2px solid var(--line-2);
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .ui-route__label { font-size: var(--fs-12); color: var(--text-3); white-space: nowrap; }
@@ -732,7 +732,7 @@ body {
 .ui-iconitem {
   display: flex; align-items: center; gap: var(--sp-3);
   padding: 10px 12px; border-radius: var(--r-2);
-  background: var(--bg-3); border: 1px solid var(--line-1); cursor: pointer;
+  background: var(--glass-card); border: 1px solid var(--line-1); cursor: pointer;
 }
 .ui-iconitem:hover { background: var(--bg-hover); border-color: var(--line-2); }
 .ui-iconitem--active { border-color: var(--accent); background: var(--accent-weak); box-shadow: var(--glow-accent); }
@@ -758,3 +758,159 @@ body {
   background: var(--warn-weak); border: 1px solid rgba(245, 158, 11, 0.5);
   color: #ffd28a; font-size: var(--fs-11);
 }
+
+/* ============================================================================
+ * 17. 毛玻璃（glassmorphism）：bar 与 panel 的统一底（2026-10-12 第三轮意见）
+ *
+ * 规则：底 = **半透明有色** + backdrop-filter 模糊 + 极浅高光描边。
+ * 说明：效果依赖 .board__bg 的真实背景图；纯色底上毛玻璃几乎看不出来。
+ * 注意：本节的 background 覆盖只针对"没有修饰类"的元素（bar/浮层/控件）。
+ *       panel / card / 条目 / 选项 的底色已在原处改成 var(--glass-*)，
+ *       以免这里的后置规则压掉 --active / --picked 等修饰态。
+ * ========================================================================== */
+:root {
+  --glass-bar: rgba(19, 27, 39, 0.60);
+  --glass-panel: rgba(22, 32, 46, 0.55);
+  --glass-card: rgba(29, 40, 54, 0.48);
+  --glass-strong: rgba(20, 29, 41, 0.78);
+  --glass-input: rgba(12, 18, 26, 0.62);
+  --glass-inset: rgba(10, 16, 24, 0.50);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-blur: 16px;
+  --glass-sat: 145%;
+  --track: rgba(255, 255, 255, 0.10);
+  --board-veil: rgba(5, 8, 12, 0);
+}
+
+/* 统一挂模糊（含 bar / 面板 / 浮层 / 卡片 / 条目 / 控件 / 规格页卡片） */
+.ui-titlebar, .ui-statusbar, .ui-route, .ui-tabs,
+.ui-panel, .ui-card, .ui-dialog, .ui-ai, .ui-tips-float, .ui-toast,
+.ui-list__item, .ui-tile, .ui-iconitem, .ui-option, .ui-alert, .ui-btn,
+.ui-iconbtn, .ui-fab, .ui-floatbar, .ui-meter, .ui-question__analysis,
+.ui-player__ctrl, .spec-item, .spec-token, .spec-page-link, .ui-sleepmask, .ui-sleepmask-inner {
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+
+/* ---- bar（横向铺满的条） ---- */
+.ui-titlebar {
+  background: var(--glass-bar);
+  border-bottom: 1px solid var(--glass-border);
+}
+.ui-statusbar { background: var(--glass-bar); border-top: 1px solid var(--glass-border); }
+.ui-route { background: var(--glass-bar); border-bottom: 1px solid var(--glass-border); }
+.ui-tabs { background: var(--glass-bar); border-bottom: 1px solid var(--glass-border); }
+
+/* ---- 浮层：要压住下方内容，用更强的玻璃 ---- */
+.ui-dialog, .ui-ai { background: var(--glass-strong); border-color: var(--glass-border); }
+.ui-tips-float { background: var(--glass-strong); border-color: var(--glass-border); }
+.ui-toast { background: var(--glass-strong); border-color: var(--glass-border); }
+.ui-floatbar { background: var(--glass-strong); border-color: var(--glass-border); }
+.ui-iconbtn, .ui-fab { background: var(--glass-bar); border-color: var(--glass-border); }
+.ui-tips__img, .ui-tile__thumb, .ui-list__thumb { background-color: var(--glass-inset); }
+
+/* ---- 控件与内嵌块 ---- */
+.ui-input, .ui-select { background: var(--glass-input); border-color: var(--glass-border); }
+.ui-check__box { background: var(--glass-input); border-color: var(--glass-border); }
+.ui-meter { background: var(--glass-input); border-color: var(--glass-border); }
+.ui-question__analysis { background: var(--glass-input); }
+.ui-player__ctrl { background: var(--glass-strong); }
+.ui-iconitem__icon { background: var(--glass-inset); }
+.ui-list__idx { background: var(--glass-inset); }
+.ui-progress { background: var(--track); }
+.ui-switch { background: var(--track); }
+.ui-switch::after { background: rgba(255, 255, 255, 0.75); }
+.ui-switch--on::after { background: #fff; }
+
+/* 背景图上再覆一层"空气感"的面纱（默认全透明，各主题自行给值） */
+.board__bg::after { background: var(--board-veil); }
+
+/* 规格页的表头/卡片也走玻璃 */
+.spec-page { background: transparent; }
+.spec-item__stage { background: rgba(9, 13, 20, 0.55); }
+
+/* 主题切换（仅排版稿的外壳，不属于产品界面） */
+.theme-switch { display: flex; align-items: center; gap: 8px; }
+.theme-switch a {
+  padding: 3px 10px; border-radius: var(--r-pill);
+  border: 1px solid var(--line-2); color: var(--text-2); text-decoration: none; font-size: 12px;
+}
+.theme-switch a:hover { border-color: var(--accent); color: var(--text-1); }
+
+/* ============================================================================
+ * 18. 亮色方案（data-theme="light"）
+ *   只覆盖令牌 + 少数必须单独处理的表面；组件结构完全不变。
+ *   用法：给 <html> 加 data-theme="light"（排版稿外壳右侧有"深色 / 亮色"切换）。
+ * ========================================================================== */
+[data-theme="light"] {
+  /* 背景层级：浅灰蓝 */
+  --bg-0: #cfd8e3;
+  --bg-1: #eef2f7;
+  --bg-2: #f8fafc;
+  --bg-3: #ffffff;
+  --bg-hover: #e9eff7;
+
+  --line-1: #d8e0ea;
+  --line-2: #bcc8d8;
+
+  /* 亮色下的次级/弱文字比深色更需要压实：玻璃底偏亮，太浅的灰会读不清
+     （2026-10-12 复查意见：右上角与底部小字对比度偏低）
+     当前取值在白玻璃(#f2f5f9)上的对比度：text-2 ≈ 7.7:1，text-3 ≈ 5.0:1，均达 AA。 */
+  --text-1: #16212e;
+  --text-2: #3f4e60;
+  --text-3: #5c6b7d;
+
+  --accent: #1f6feb;
+  --accent-weak: rgba(31, 111, 235, 0.14);
+  --accent-2: #0e8fa8;
+  --ok: #15803d;
+  --ok-weak: rgba(21, 128, 61, 0.14);
+  --warn: #b45309;
+  --warn-weak: rgba(180, 83, 9, 0.14);
+  --err: #b91c1c;
+  --err-weak: rgba(185, 28, 28, 0.14);
+  --gold: #a16207;
+  --three: #15803d;
+  --unity: #6d28d9;
+
+  /* 毛玻璃：亮色下用白色半透明 */
+  --glass-bar: rgba(255, 255, 255, 0.66);
+  --glass-panel: rgba(255, 255, 255, 0.62);
+  --glass-card: rgba(255, 255, 255, 0.74);
+  --glass-strong: rgba(255, 255, 255, 0.90);
+  --glass-input: rgba(255, 255, 255, 0.80);
+  --glass-inset: rgba(255, 255, 255, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --track: rgba(16, 32, 56, 0.10);
+  /* 亮色下把深色照片"抬亮"，避免暗底配亮玻璃产生脏灰 */
+  --board-veil: rgba(238, 242, 247, 0.55);
+
+  --sh-1: 0 1px 3px rgba(23, 43, 77, 0.08);
+  --sh-2: 0 8px 26px rgba(23, 43, 77, 0.12);
+  --sh-3: 0 18px 50px rgba(23, 43, 77, 0.18);
+
+  --grid: repeating-linear-gradient(0deg, rgba(120, 140, 165, 0.45) 0 1px, transparent 1px 40px),
+          repeating-linear-gradient(90deg, rgba(120, 140, 165, 0.45) 0 1px, transparent 1px 40px);
+}
+
+[data-theme="light"] body { background: #dde5ee; }
+[data-theme="light"] .board { background: var(--bg-1); }
+[data-theme="light"] .ui-mask { background: rgba(226, 233, 241, 0.70); }
+[data-theme="light"] .ui-mask .ui-dialog { border-color: rgba(23, 43, 77, 0.10); }
+[data-theme="light"] .ui-viewport { border-color: rgba(23, 43, 77, 0.12); }
+[data-theme="light"] .ui-meter__value { color: #0b7d6b; }
+[data-theme="light"] .ui-player { background: #0b1018; }          /* 视频区保持深色 */
+[data-theme="light"] .ui-player__ctrl { background: rgba(11, 16, 24, 0.82); color: #dfe7f2; }
+[data-theme="light"] .ui-player__time { color: #9fb0c6; }
+[data-theme="light"] .ui-sleepmask { background: rgba(238, 242, 247, 0.92); color: var(--text-1); }
+[data-theme="light"] .spec-item__stage { background: rgba(255, 255, 255, 0.5); }
+[data-theme="light"] .ui-statusbar { color: var(--text-2); }
+[data-theme="light"] .ui-titlebar { background: var(--glass-bar); }
+[data-theme="light"] .ui-btn--primary { color: #fff; }
+[data-theme="light"] .ui-alert--info { color: #123a75; }
+[data-theme="light"] .ui-alert--ok { color: #10492a; }
+[data-theme="light"] .ui-alert--warn { color: #6b3c05; }
+[data-theme="light"] .ui-alert--err { color: #7a1414; }
+[data-theme="light"] .ui-option--right { color: #10492a; }
+[data-theme="light"] .ui-option--wrong { color: #7a1414; }
+[data-theme="light"] .todo-mark { color: #7a4b06; }

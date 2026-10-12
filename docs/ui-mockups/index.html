@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>样式清单 — 虚拟仿真教学平台</title>
 <link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+  })();
+</script>
 </head>
 <body>
 <div class="spec-page">
@@ -13,90 +22,226 @@
     <div class="sub">
       对应 <b>docs/PAGE-WORKLIST.md</b> 的页面清单。类名即组件名，可直接复制进 Web 工程复用；
       整套样式只依赖 <b>style.css</b>（改令牌即换肤）。基准画布 1920×1080。
+      <br>bar 与 panel 的底统一为<b>带色毛玻璃</b>（第 17 节）；<b>亮色方案</b>见第 18 节与右上角的"深色 / 亮色"切换。
+    </div>
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+      <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
+      <span class="ui-small ui-muted">切主题只改 &lt;html data-theme&gt;，组件结构不变</span>
     </div>
   </div>
 
-  <div class="spec-section-title">一、设计令牌 · 颜色</div>
+  <div class="spec-section-title">一、设计令牌 · 颜色（深色）</div>
   <div class="spec-tokens">
 
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#0b0f16;"></div>
-        <div class="spec-token__label"><b>bg-0 三维视口底</b>#0b0f16</div>
+        <div class="spec-token__label"><b>背景 bg-0（三维视口底）</b>#0b0f16</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#111823;"></div>
-        <div class="spec-token__label"><b>bg-1 页面底</b>#111823</div>
+        <div class="spec-token__label"><b>背景 bg-1（页面底）</b>#111823</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#16202e;"></div>
-        <div class="spec-token__label"><b>bg-2 面板底</b>#16202e</div>
+        <div class="spec-token__label"><b>背景 bg-2（面板底）</b>#16202e</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#1d2836;"></div>
-        <div class="spec-token__label"><b>bg-3 浮起块</b>#1d2836</div>
+        <div class="spec-token__label"><b>背景 bg-3（浮起块）</b>#1d2836</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#243040;"></div>
-        <div class="spec-token__label"><b>line-1 描边</b>#243040</div>
+        <div class="spec-token__label"><b>描边 line-1</b>#243040</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#33445a;"></div>
-        <div class="spec-token__label"><b>line-2 强描边</b>#33445a</div>
+        <div class="spec-token__label"><b>描边 line-2</b>#33445a</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#e9eff7;"></div>
-        <div class="spec-token__label"><b>text-1 主文字</b>#e9eff7</div>
+        <div class="spec-token__label"><b>文字 text-1 主</b>#e9eff7</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#a4b4c8;"></div>
-        <div class="spec-token__label"><b>text-2 次文字</b>#a4b4c8</div>
+        <div class="spec-token__label"><b>文字 text-2 次</b>#a4b4c8</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#6d7f95;"></div>
-        <div class="spec-token__label"><b>text-3 弱文字</b>#6d7f95</div>
+        <div class="spec-token__label"><b>文字 text-3 弱</b>#6d7f95</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#3b82f6;"></div>
-        <div class="spec-token__label"><b>accent 主色</b>#3b82f6</div>
+        <div class="spec-token__label"><b>主色 accent</b>#3b82f6</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#22d3ee;"></div>
-        <div class="spec-token__label"><b>accent-2 科技青</b>#22d3ee</div>
+        <div class="spec-token__label"><b>科技青 accent-2</b>#22d3ee</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#22c55e;"></div>
-        <div class="spec-token__label"><b>ok 成功</b>#22c55e</div>
+        <div class="spec-token__label"><b>成功 ok</b>#22c55e</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#f59e0b;"></div>
-        <div class="spec-token__label"><b>warn 警告</b>#f59e0b</div>
+        <div class="spec-token__label"><b>警告 warn</b>#f59e0b</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#ef4444;"></div>
-        <div class="spec-token__label"><b>err 错误</b>#ef4444</div>
+        <div class="spec-token__label"><b>错误 err</b>#ef4444</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#fbbf24;"></div>
-        <div class="spec-token__label"><b>gold 得分</b>#fbbf24</div>
+        <div class="spec-token__label"><b>得分 gold</b>#fbbf24</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#7ee2a8;"></div>
-        <div class="spec-token__label"><b>three 归属标记</b>#7ee2a8</div>
+        <div class="spec-token__label"><b>Three 标记</b>#7ee2a8</div>
       </div>
       <div class="spec-token">
         <div class="spec-token__swatch" style="background:#b79bff;"></div>
-        <div class="spec-token__label"><b>unity 归属标记</b>#b79bff</div>
+        <div class="spec-token__label"><b>Unity 标记</b>#b79bff</div>
       </div>
   </div>
 
-  <div class="spec-section-title">二、设计令牌 · 字号 / 间距 / 圆角</div>
+  <div class="spec-section-title">二、设计令牌 · 颜色（亮色方案）</div>
+  <div class="spec-tokens">
+
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#cfd8e3;"></div>
+        <div class="spec-token__label"><b>背景 bg-0</b>#cfd8e3</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#eef2f7;"></div>
+        <div class="spec-token__label"><b>背景 bg-1</b>#eef2f7</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#f8fafc;"></div>
+        <div class="spec-token__label"><b>背景 bg-2</b>#f8fafc</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#ffffff;"></div>
+        <div class="spec-token__label"><b>背景 bg-3</b>#ffffff</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#d8e0ea;"></div>
+        <div class="spec-token__label"><b>描边 line-1</b>#d8e0ea</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#bcc8d8;"></div>
+        <div class="spec-token__label"><b>描边 line-2</b>#bcc8d8</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#16212e;"></div>
+        <div class="spec-token__label"><b>文字 text-1 主</b>#16212e</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#3f4e60;"></div>
+        <div class="spec-token__label"><b>文字 text-2 次</b>#3f4e60</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#5c6b7d;"></div>
+        <div class="spec-token__label"><b>文字 text-3 弱</b>#5c6b7d</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#1f6feb;"></div>
+        <div class="spec-token__label"><b>主色 accent</b>#1f6feb</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#0e8fa8;"></div>
+        <div class="spec-token__label"><b>科技青 accent-2</b>#0e8fa8</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#15803d;"></div>
+        <div class="spec-token__label"><b>成功 ok</b>#15803d</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#b45309;"></div>
+        <div class="spec-token__label"><b>警告 warn</b>#b45309</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#b91c1c;"></div>
+        <div class="spec-token__label"><b>错误 err</b>#b91c1c</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#a16207;"></div>
+        <div class="spec-token__label"><b>得分 gold</b>#a16207</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#15803d;"></div>
+        <div class="spec-token__label"><b>Three 标记</b>#15803d</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:#6d28d9;"></div>
+        <div class="spec-token__label"><b>Unity 标记</b>#6d28d9</div>
+      </div>
+  </div>
+  <div class="ui-small ui-muted" style="margin-top:8px">亮色下同时把 --board-veil 设为 rgba(238,242,247,.55)，给深色背景图覆一层浅色雾，避免"暗底 + 亮玻璃"发脏。</div>
+
+  <div class="spec-section-title">三、毛玻璃令牌（bar / panel 统一底）</div>
+  <div class="spec-tokens">
+
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(19,27,39,.60);"></div>
+        <div class="spec-token__label"><b>深色 --glass-bar（标题栏/状态条）</b>rgba(19,27,39,.60)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(22,32,46,.55);"></div>
+        <div class="spec-token__label"><b>深色 --glass-panel（面板）</b>rgba(22,32,46,.55)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(29,40,54,.48);"></div>
+        <div class="spec-token__label"><b>深色 --glass-card（卡片/条目）</b>rgba(29,40,54,.48)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(20,29,41,.78);"></div>
+        <div class="spec-token__label"><b>深色 --glass-strong（浮层）</b>rgba(20,29,41,.78)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(12,18,26,.62);"></div>
+        <div class="spec-token__label"><b>深色 --glass-input（控件）</b>rgba(12,18,26,.62)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.10);"></div>
+        <div class="spec-token__label"><b>深色 --glass-border（高光描边）</b>rgba(255,255,255,.10)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.66);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-bar</b>rgba(255,255,255,.66)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.62);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-panel</b>rgba(255,255,255,.62)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.74);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-card</b>rgba(255,255,255,.74)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.90);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-strong</b>rgba(255,255,255,.90)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.80);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-input</b>rgba(255,255,255,.80)</div>
+      </div>
+      <div class="spec-token">
+        <div class="spec-token__swatch" style="background:rgba(255,255,255,.85);"></div>
+        <div class="spec-token__label"><b>亮色 --glass-border</b>rgba(255,255,255,.85)</div>
+      </div>
+  </div>
+  <div class="ui-small ui-muted" style="margin-top:8px">
+    统一用法：<code>background: var(--glass-*); -webkit-backdrop-filter: blur(16px) saturate(145%); backdrop-filter: …</code>
+    —— 模糊强度 <code>--glass-blur</code>、饱和度 <code>--glass-sat</code> 可整体调。
+  </div>
+
+  <div class="spec-section-title">四、设计令牌 · 字号 / 间距 / 圆角</div>
   <div class="spec-item">
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:10px">
       <div style="font-size:40px">40 大标题</div>
       <div style="font-size:28px">28 页面主标题</div>
       <div style="font-size:22px">22 区块标题</div>
       <div style="font-size:18px">18 面板标题</div>
-      <div style="font-size:16px">16 题干</div>
+      <div style="font-size:16px">16 题干 / 正文</div>
       <div style="font-size:14px">14 正文</div>
       <div style="font-size:13px">13 次要正文</div>
       <div style="font-size:11px;color:var(--text-3)">11 辅助说明</div>
@@ -592,6 +737,7 @@
   </div>
 
   <div class="spec-section-title">九、页面排版稿索引（共 29 页，逐页审核用）</div>
+  <div class="ui-small ui-muted" style="margin-bottom:8px">每页右上角都可切"深色 / 亮色"（<code>?theme=light</code>），同一套页面两种皮肤对照看。</div>
 
   <div class="ui-h2" style="margin:14px 0 10px">A 组 · 启动与导航（10）</div>
   <div class="spec-pages">
@@ -640,13 +786,16 @@
     <div class="spec-item__stage" style="flex-direction:column;align-items:flex-start;gap:8px;font-size:13px;line-height:1.9">
       <div>· 三维区域用<b>网格底纹</b>表示"这里是画布/视口"，不是真实渲染效果。</div>
       <div>· 页面结构来自 <b>docs/PAGE-WORKLIST.md</b>（按两个参考工程实测盘点），不是凭空设计。</div>
-      <div>· 技术栈标记（Three.js / Unity）按 <b>DEC-06</b> 标注，是审排版时要一并确认的信息。</div>
-      <div>· 令牌集中在 <code>style.css</code> 顶部：要换浅色皮肤只改那一节。</div>
+      <div>· 技术栈标记（Three.js / Unity）按 <b>DEC-06</b> 标注。</div>
+      <div>· bar 与 panel 的底统一为<b>带色毛玻璃</b>；毛玻璃效果需要 .board__bg 的真实背景图才看得出来。</div>
+      <div>· 背景图：<code>assets/bg-room-dark.jpg</code>（原图 RGB×0.5 烘焙，3840×2160/63MB → 1920×1080/123KB）。</div>
+      <div>· 亮色方案在 <code>style.css</code> 第 18 节；深色令牌在第 1 节、毛玻璃令牌在第 3 节上方。</div>
+      <div>· 未完成的（菜单手写版、题目样式、考核样式、Unity 侧 UI）见 <code>TODO.md</code>。</div>
       <div>· 页面是生成物：改 <code>src/pages-*.mjs</code> 后重新执行 <code>node docs/ui-mockups/src/render.mjs</code>。</div>
     </div>
     <div class="spec-item__meta">
       <div class="spec-item__name">审核要点提示</div>
-      <div class="spec-item__desc">排版稿仅供确认布局与信息层级，交互逻辑与真实三维效果不在此范围</div>
+      <div class="spec-item__desc">排版稿仅供确认布局、信息层级与配色；交互逻辑与真实三维效果不在此范围</div>
       <div class="spec-item__cls">docs/ui-mockups/index.html</div>
     </div>
   </div>
