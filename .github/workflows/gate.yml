@@ -22,6 +22,8 @@ jobs:
         run: node tools/check-large-files.mjs --tracked
       - name: 业务代码零 import electron（DEC-20）
         run: node tools/check-shell-coupling.mjs
+      - name: Unity 清单校验（没有暂存产物时明确报告"未包含"，不失败）
+        run: node tools/pipeline/unity-verify.mjs
 
   web:
     name: Web 构建与渲染冒烟

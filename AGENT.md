@@ -92,6 +92,11 @@
   - **产品只许 import `tokens.css` + `components.css`**，**禁止** import `mockup-shell.css`（DEC-74 约束 1：评审外壳不得进产品）；`tokens.css` 必须在前（令牌先于组件）。落地方式：`vite.config.ts` 里的 `@ds` 别名，产品样式入口 `src/styles/index.css` 只有三行 `@import`。
   - 产品**不许再出现第二套色板**：早期骨架的 `src/styles/main.css` 已删除（它自带 `--bg/--panel/--accent`，会覆盖设计系统令牌）。
 - **桌面壳的标题栏留位（DEC-77 连带约定）**：Windows 壳隐藏了原生标题栏，系统浮层按钮占顶部 40px，由页面通过 `--shell-caption-h` 留出（壳经 `window.wsu3Shell.captionHeight` 告知；浏览器里为 0）。**改布局时不要假设顶部有 40px**，也不要硬编码 40。
+- **Unity 产物走流水线，不许"假设有"（DEC-79，细则 `docs/design/05`）**：
+  - 产物**只**放 `unity/builds/<key>/`（不进 git，DEC-57）；搬运用 `tools/pipeline/unity-stage.mjs`，**不要**手工拷进 `web/public/`。
+  - 打包**只**用 `node tools/pipeline/pack.mjs`（它先校验 Unity 暂存区、再构建、再写 `release-manifest.json`，最后 electron-builder）。手工跑 `electron-builder` 会绕过校验与清单。
+  - 页面判断"能不能挂 Unity"**只认发布清单**（`stores/runtime.ts`）。**禁止**写"假设有 Unity、先显示加载中"的代码 —— 缺席时必须显示"产物未包含 + 接入命令"。
+  - 新增 Unity 承载的 TaskType 时：先按 `docs/design/05` §3.2 定 key，再暂存构建；**不需要**改加载器代码。
 - **⚠️ Web 样式必须集中在样式成果页里体现（硬纪律）**：任何 Web 端样式（设计令牌、组件类名、状态变体）**都必须在 `docs/ui-mockups/index.html`（样式清单成果页）里有对应展示**。
   - 新增或修改样式时，**同一批改动里必须**在 `docs/ui-mockups/src/style-spec.mjs` 补上示例条目，然后重新生成成果页；**只写在 CSS 里、成果页看不到的样式，视为未完成**。
   - 两套主题（深色 / 亮色）都算"必须展现"的范围：改令牌后要确认成果页与页面在**两种主题**下都正常。

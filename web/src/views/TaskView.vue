@@ -14,20 +14,24 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Check, ChevronRight, Move3d, Play } from 'lucide-vue-next'
+import { Check, ChevronRight, Move3d, Play, TriangleAlert, LoaderCircle } from 'lucide-vue-next'
 import AppShell from '@/components/AppShell.vue'
 import { TaskType, TASK_TYPES, BRIDGE_PROTOCOL_VERSION, ViewerStack } from '@/contracts'
 import { labelOf, metaOf, stackOf, isUnityTask } from '@/domain/registry'
 import { useSessionStore } from '@/stores/session'
 import { useProgressStore } from '@/stores/progress'
 import { useContentStore } from '@/stores/content'
+import { useRuntimeStore } from '@/stores/runtime'
 import { Viewer } from '@/viewer/Viewer'
+import { UnityBridge } from '@/unity/UnityBridge'
+import { mountUnity, type UnityFailure, type UnityHandle } from '@/unity/UnityLoader'
 
 const route = useRoute()
 const router = useRouter()
 const session = useSessionStore()
 const progress = useProgressStore()
 const content = useContentStore()
+const runtime = useRuntimeStore()
 
 const taskType = computed<TaskType>(() => {
   const raw = Number(route.params.taskType)
@@ -87,6 +91,85 @@ function goTo(next: TaskType): void {
   void router.push({ name: 'task', params: { taskType: String(next) } })
 }
 
+// —— Unity 承载的任务（DEC-12：按需挂载 + 退出必须销毁）
+//
+// 这里的**关键取舍**：清单里没有该 TaskType 的构建时，**不去加载、也不假装在加载** ——
+// 直接显示"产物未就位"并给出接入命令（docs/design/05）。
+// 原因是 Unity 产物是人手动搬进来的，缺席是常态；旧做法"假设有"会表现为卡住/白屏，无从判断。
+const unityContainer = ref<HTMLElement | null>(null)
+const unityPhase = ref<'idle' | 'loading' | 'ready' | 'failed' | 'absent'>('idle')
+const unityProgress = ref(0)
+const unityFailure = ref<UnityFailure | null>(null)
+/** Unity 侧是否已完成协议握手（DEC-07）；显示在状态条上，冒烟也断言它 */
+const bridgeReady = ref(false)
+let unityHandle: UnityHandle | null = null
+/** 已挂载的构建键（响应式：模板要显示它，**不能**直接引用非响应式的 `unityHandle`） */
+const unityKey = ref<string | null>(null)
+const bridge = new UnityBridge()
+
+const unityBuild = computed(() => runtime.unityBuildFor(taskType.value))
+
+async function mountUnityView(): Promise<void> {
+  if (unityHandle) return
+  const build = unityBuild.value
+  if (!build || !unityContainer.value) {
+    unityPhase.value = 'absent'
+    return
+  }
+  unityPhase.value = 'loading'
+  unityProgress.value = 0
+  unityFailure.value = null
+  try {
+    unityHandle = await mountUnity({
+      container: unityContainer.value,
+      build,
+      bridge,
+      onProgress: (value) => {
+        unityProgress.value = value
+      },
+    })
+    unityKey.value = unityHandle.key
+    unityPhase.value = 'ready'
+    // 握手是 Unity 侧主动调 `__WSU3_BRIDGE__.onReady` 完成的（DEC-07）——
+    // 这里轮询几秒把它读出来显示在状态条上，**让"握没握手"变成看得见的事实**
+    // （冒烟也断言这一条，否则"加载完成但协议没通"会被当成成功）。
+    const started = Date.now()
+    const poll = window.setInterval(() => {
+      if (bridge.isReady() === true) {
+        bridgeReady.value = true
+        window.clearInterval(poll)
+      } else if (Date.now() - started > 3000) {
+        window.clearInterval(poll)
+      }
+    }, 200)
+  } catch (cause) {
+    unityHandle = null
+    unityFailure.value = cause as UnityFailure
+    unityPhase.value = 'failed'
+  }
+}
+
+async function unmountUnityView(): Promise<void> {
+  const handle = unityHandle
+  unityHandle = null
+  unityKey.value = null
+  if (handle) await handle.unmount()
+  if (unityPhase.value !== 'absent') unityPhase.value = 'idle'
+}
+
+/** Unity 类任务进页面就尝试挂载（DEC-53：先尝试，失败再给出口，不提前阻拦）。 */
+function syncUnity(): void {
+  if (unity.value) void nextTick(mountUnityView)
+  else void unmountUnityView()
+}
+
+onMounted(() => {
+  void runtime.load().then(syncUnity)
+  syncUnity()
+})
+watch([taskType, () => runtime.unityState], () => void nextTick(syncUnity))
+onBeforeUnmount(() => void unmountUnityView())
+
 const nextTask = computed<TaskType | null>(() => {
   const index = TASK_TYPES.indexOf(taskType.value)
   return index >= 0 && index < TASK_TYPES.length - 1 ? TASK_TYPES[index + 1] : null
@@ -111,7 +194,11 @@ function finish(): void {
     :active-task="taskType"
     actions
     :status-left="`[ ${labelOf(taskType)} ] ${meta.hint}`"
-    :status-right="`桥协议 v${BRIDGE_PROTOCOL_VERSION} · 进度已存本机`"
+    :status-right="
+      unity
+        ? `桥协议 v${BRIDGE_PROTOCOL_VERSION} · ${bridgeReady ? '已握手' : '待握手'}`
+        : `桥协议 v${BRIDGE_PROTOCOL_VERSION} · 进度已存本机`
+    "
     @select-task="goTo"
     @back="back"
   >
@@ -223,12 +310,61 @@ function finish(): void {
         </div>
 
         <div class="ui-panel" style="display: flex; flex-direction: column">
-          <div class="ui-panel__head">三维视口（Unity 占位）</div>
+          <div class="ui-panel__head">
+            三维视口（Unity）
+            <span class="ui-panel__right">
+              <span v-if="unityPhase === 'ready'" class="ui-badge ui-badge--ok">已挂载 · {{ unityKey }}</span>
+              <span v-else-if="unityPhase === 'loading'" class="ui-badge ui-badge--info">
+                <LoaderCircle :size="12" /> 加载中 {{ Math.round(unityProgress * 100) }}%
+              </span>
+              <span v-else-if="unityPhase === 'absent'" class="ui-badge ui-badge--warn">产物未就位</span>
+              <span v-else-if="unityPhase === 'failed'" class="ui-badge ui-badge--err">加载失败</span>
+              <span v-else class="ui-badge">待进入</span>
+            </span>
+          </div>
           <div class="ui-panel__body" style="flex: 1; min-height: 0; padding: 0">
             <div class="app-viewport">
-              <span class="ui-viewport__hint">Unity WebGL · 待接入</span>
-              <div class="ui-viewport__center">
-                同样按容器比例自适应；接入后由 Unity CanvasScaler 在内部处理分辨率
+              <!-- 真 Unity 挂载点：由 UnityLoader 在这里创建 canvas -->
+              <div ref="unityContainer" style="position: absolute; inset: 0"></div>
+
+              <div v-if="unityPhase === 'absent'" class="ui-viewport__center">
+                <TriangleAlert :size="18" style="color: var(--warn-text)" />
+                <div style="color: var(--text-1); font-weight: 600">Unity 产物未包含在本次发布里</div>
+                <div style="max-width: 520px; line-height: 1.8">
+                  这是一个<b>明确状态</b>，不是"加载中卡住"：发布清单（release-manifest.json）里没有该任务的构建。
+                  接入方式见 <code>docs/design/05-unity-packaging-pipeline.md</code>：<br />
+                  <code
+                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key
+                    {{ unityBuild?.key ?? 'training' }} --task-type {{ taskType }}</code
+                  >
+                </div>
+                <div v-if="runtime.unityState === 'unknown'" class="ui-muted" style="font-size: var(--fs-11)">
+                  （当前没读到发布清单 —— dev 直跑属正常；走
+                  <code>tools/pipeline/pack.mjs</code> 打包才会有清单）
+                </div>
+              </div>
+
+              <div v-else-if="unityPhase === 'failed'" class="ui-viewport__center">
+                <TriangleAlert :size="18" style="color: var(--err-text)" />
+                <div style="color: var(--text-1); font-weight: 600">Unity 加载失败</div>
+                <div style="max-width: 520px; line-height: 1.8">
+                  {{ unityFailure?.message ?? '未知原因' }}
+                  <br />（超时 25s、已重试 1 次 —— DEC-71 的落地参数）
+                </div>
+                <div class="ui-row" style="justify-content: center">
+                  <button class="ui-btn ui-btn--sm" @click="unmountUnityView().then(mountUnityView)">
+                    重试
+                  </button>
+                  <button class="ui-btn ui-btn--sm" @click="back()">返回目录</button>
+                </div>
+              </div>
+
+              <div v-else-if="unityPhase === 'loading'" class="ui-viewport__center">
+                <LoaderCircle :size="18" />
+                <div>正在加载 Unity WebGL…{{ Math.round(unityProgress * 100) }}%</div>
+                <div class="ui-muted" style="font-size: var(--fs-11)">
+                  超过 25s 会判定失败并给出出口（DEC-53/DEC-71）
+                </div>
               </div>
             </div>
           </div>

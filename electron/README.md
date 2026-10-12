@@ -42,7 +42,14 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 - 将来若要 `SharedArrayBuffer`（多线程），`file://` 拿不到 COOP/COEP 头；
 - DEC-22 / DEC-55 要求"先本地静态服务器验证"——本机服务器与目标部署形态**一致**，在壳里验过的行为到静态站点上不会变（file:// 会让你验了个假的东西）。
 
-`server.js` 的 MIME 表已为 Unity 预留 `.wasm` / `.data` / `.unityweb`，并支持直接命中预压缩产物（`.br` / `.gz`）。
+`server.js` 的 MIME 表覆盖 Unity 所需的 `.wasm`（必须是 `application/wasm`）与 `.data` / `.unityweb` / `.mem`，
+并支持直接命中预压缩产物（`.br` / `.gz`，附 `Content-Encoding`）。
+
+**Unity 产物是第二个根目录**（URL 前缀 `/unity/**`，打包后在 `resources/unity`），与 Web 产物物理分开 ——
+将来改成按需下载或换 CDN 只换这一个根目录（DEC-23 / DEC-79，细则见
+[`../docs/design/05-unity-packaging-pipeline.md`](../docs/design/05-unity-packaging-pipeline.md)）。
+`/unity/` 下缺文件**一律 404，不回退成 index.html** —— 否则 Unity 的 loader 会把一段 HTML 当 wasm 去实例化，
+报出来的错完全看不出根因。多线程构建需要的 COOP/COEP **默认关闭**，用 `WSU3_COOP_COEP=1` 打开（DEC-13）。
 
 ### 2 为什么业务代码零 `import electron`
 
@@ -52,7 +59,8 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 
 ### 3 对接能力只"预留位置"
 
-`preload.js` 里只暴露常量与版本号，**没有任何功能**（DEC-24：预留接口点，当期不实现）。将来接既有系统（单点登录、成绩上传、本机授权）时：方法加在 `preload.js` + 主进程 `ipcMain`，业务侧仍只认 `window.wsu3Shell.*`。
+`preload.js` 只暴露常量、版本号、`captionHeight` 与 `setTheme`（后者用于把主题同步给原生窗口，2026-10-12 加入），
+**没有业务能力**（DEC-24：预留接口点，当期不实现）。将来接既有系统（单点登录、成绩上传、本机授权）时：方法加在 `preload.js` + 主进程 `ipcMain`，业务侧仍只认 `window.wsu3Shell.*`。
 
 ## 窗口外观：按 dsh 的桌面壳做法（2026-10-12 追加）
 
