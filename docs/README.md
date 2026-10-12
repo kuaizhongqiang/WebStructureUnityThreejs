@@ -48,6 +48,8 @@
 |---|---|---|
 | `tools/check-contracts.mjs` | 双端契约一致性门禁：**TS ↔ 快照 ↔ C#** 三方逐值比对 | DEC-10 / DEC-67 / DEC-68 |
 | `tools/check-large-files.mjs` | 大文件门禁：10MB 阈值、忽略规则、生成目录（`--tracked` 供 CI 用） | DEC-41 / DEC-57 / DEC-65 |
+| `tools/check-shell-coupling.mjs` | **壳耦合门禁**：`web/src` 里出现 `import electron` 等一律拦下 | DEC-20 |
+| `electron/` | **应用壳**：本机静态服务加载 `web/dist`；`npm run smoke` 可冒烟（打包分发未做） | DEC-12 / DEC-20 / DEC-32 |
 | `tools/hooks/pre-commit` + `tools/install-hooks.ps1` | 提交前门禁（hook 本体不入库，由安装脚本复制到 `.git/hooks/`） | DEC-66 |
 | `.github/workflows/gate.yml` | 合并门禁（CI）：契约 + 大文件 + 类型检查 + 单测 + 构建 + 渲染冒烟 | DEC-66 |
 | `content/contracts/snapshot.json` | 契约校验**基准快照**（不是真源） | DEC-67 |

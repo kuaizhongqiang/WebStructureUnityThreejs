@@ -20,6 +20,8 @@ jobs:
         run: node tools/check-contracts.mjs
       - name: 大文件门禁（已跟踪文件，10MB 阈值）
         run: node tools/check-large-files.mjs --tracked
+      - name: 业务代码零 import electron（DEC-20）
+        run: node tools/check-shell-coupling.mjs
 
   web:
     name: Web 构建与渲染冒烟

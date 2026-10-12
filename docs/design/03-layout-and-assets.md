@@ -12,7 +12,7 @@ WebStructureUnityThreejs/
   docs/                 # 需求 / 调研 / 问答 / 决策 / 设计（本目录）
   web/                  # Web 主站（Vite + Vue 3 + 裸 three）已落地
   NewStructureUnity/    # Unity 工程（复杂三维）——同时是 Plastic 工作区
-  electron/             # ★ 待建：应用壳（DEC-20）
+  electron/             # ✅ 已建：应用壳（DEC-20）—— server.js 本机静态服务 / main.js 窗口 / preload.js 预留接口
   content/              # ★ 待建：双端共享的内容数据与资产登记（见 §4/§5）
   tools/                # ★ 待建：跨端脚本（契约校验、大文件拦截、门禁，DEC-41）
 ```

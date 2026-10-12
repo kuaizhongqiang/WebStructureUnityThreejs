@@ -20,6 +20,7 @@
 | `docs/ui-mockups/` | **静态排版稿与样式清单**：29 页排版稿 + `index.html`（元件规范成果页）+ `style.css`（唯一样式依赖） |
 | `docs/README.md` | 文档总索引与写作约定 |
 | `web/` | **Web 前端工程**：Vite + TypeScript 5.9.3 + Vue 3 + 裸 three |
+| `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器，加载 `web/dist`（DEC-20 / DEC-32） |
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
 | `content/` | 内容与契约：`contracts/snapshot.json` 为契约校验的**基准快照** |
 | `tools/` | 提交门禁：契约一致性、大文件阈值、pre-commit hook |
@@ -45,7 +46,7 @@
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | 排版稿 | 29 页静态排版稿 + 元件规范成果页，深/浅两套主题 |
 | 门禁 | pre-commit hook + CI（契约、大文件、类型检查、单测、构建、渲染冒烟） |
-| Electron 壳 | 未开始（方向已定：同仓 `electron/` 子目录 + 装本地 Web 产物，DEC-20 / DEC-32） |
+| Electron 壳 | ✅ 骨架已落地并**冒烟通过**（本机服务加载 `web/dist`、预加载桥 `window.wsu3Shell` 生效、0 控制台错误）；打包分发未做 |
 
 ## 4 怎么跑
 
@@ -73,11 +74,23 @@ node src/render.mjs               # 改过样式或页面生成器后重新生�
 
 右上角可切「深色 / 亮色」，单页也可用 `?theme=light`。
 
+### 应用壳（Electron）
+
+```bash
+cd web && npm run build       # 壳加载的是构建产物，不是源码
+cd ../electron && npm install
+npm start                     # 开窗口
+npm run smoke                 # 冒烟：不显示窗口，断言 DOM 与预加载桥后退出（可进 CI）
+```
+
+细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
+
 ### 提交门禁
 
 ```bash
-node tools/check-contracts.mjs     # 双端契约：TS ↔ 基准快照 ↔ C#
-node tools/check-large-files.mjs   # 大文件阈值 10 MB
+node tools/check-contracts.mjs        # 双端契约：TS ↔ 基准快照 ↔ C#
+node tools/check-large-files.mjs      # 大文件阈值 10 MB
+node tools/check-shell-coupling.mjs   # 业务代码零 import electron（DEC-20）
 powershell -File tools/install-hooks.ps1   # 安装 pre-commit hook（一次性）
 ```
 
@@ -91,6 +104,7 @@ powershell -File tools/install-hooks.ps1   # 安装 pre-commit hook（一次性�
 
 - **双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区。**涉及 Unity 侧的改动，两个渠道都必须提交**（git 按路径显式 `add`，永不 `-A`；Plastic 用 `cm add --recursive` + `cm ci --all` 并复核）。只提交一侧会造成两边历史分叉。细节见 `AGENT.md` §4。
 - **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级、浮层 elevation、交互叠加层、键盘焦点环）见 `docs/ui-mockups/style.css` §20。
+- **壳与业务的边界**：业务代码（`web/src`）**零 `import electron`**（DEC-20）。壳能力只通过 `window.wsu3Shell` 只读快照暴露，实现在 `electron/preload.js`；这条由 `tools/check-shell-coupling.mjs` 机械保证（已进 hook 与 CI）。
 
 ## 6 许可
 

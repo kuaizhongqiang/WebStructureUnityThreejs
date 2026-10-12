@@ -44,7 +44,8 @@
 - `web/`：Web 侧工程（Vite 8 + TypeScript **5.9.3** + Vue 3 + 裸 three 0.186）。已落地并验证：`src/contracts`（双端契约）、`src/stores`（会话单一真源）、`src/viewer`（裸 three 封装）、`src/unity`（桥协议骨架）、`src/platform`（移动端 / 微信策略）、`src/router` + 两页。`npm run typecheck / test / build / smoke` 均通过。
 - `NewStructureUnity/`：Unity 工程（**2022.3.53f1c1** + URP 14.0.11）。已有程序集分层（`WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode`）、契约枚举 `Assets/Scripts/Contracts/EnumAll.cs`、**WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）、契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始**。分层草案见 `docs/design/03-layout-and-assets.md`。
 - `content/contracts/snapshot.json`：契约校验的**基准快照**（不是真源）。
-- `tools/` + `.github/workflows/gate.yml`：**提交门禁与合并门禁**（契约一致性、大文件阈值、类型检查、单测、构建、渲染冒烟）。
+- `electron/`：**应用壳**（DEC-20 / DEC-32 / DEC-12）。已落地：只绑 `127.0.0.1` 的本机静态服务器（`server.js`，MIME 表已为 Unity WebGL 的 `.wasm`/`.data` 预留、支持预压缩产物）、窗口加载**本地 Web 产物** `web/dist`（`main.js`）、只读预加载桥 `preload.js`（DEC-24 的预留接口）。`npm run smoke` 已通过（不显示窗口，断言 DOM 与桥后退出）。**打包分发未做**。取舍见 `electron/README.md`。
+- `tools/` + `.github/workflows/gate.yml`：**提交门禁与合并门禁**（契约一致性、大文件阈值、**壳耦合**、类型检查、单测、构建、渲染冒烟）。
 - WebGL 基线已实测（空场景：**8.40 MiB / 18 文件 / 188.9 秒**，Brotli），见 `docs/research/08-webgl-baseline.md`。
 - 参考工程（只读）：`F:\Project\MCV_Module_0928`、`F:\Project\MCV_Module`、`F:\Project\SensorSimulationTrainingSoftware_v1.0_2026`；样式参考（只读）：`D:\dsh\deepseek-harness`。
 - **尚未开始**：Electron 壳（`electron/` 目录未建）、Unity 业务逻辑、内容资源与真实场景。
@@ -72,9 +73,12 @@
 - **README 与仓库现状同步**：`README.md` 是给人看的总览（仓库结构 / 怎么跑 / 当前状态）。**改动目录结构、命令、脚本或"当前状态"时，同一批改动里必须更新它**，不要让它落后于实际。
 - **⚠️ 提交门禁必须通过（硬纪律）**：本仓库有自动化门禁，**门禁不过不得提交**。
   - 本地 pre-commit hook：由 `tools/install-hooks.ps1` 一次性安装到 `.git/hooks/`（hook 本体不入库）；它会跑契约一致性与大文件检查。
-  - 手动复核：`node tools/check-contracts.mjs`（**TS ↔ 快照 ↔ C# 三方逐值比对**）、`node tools/check-large-files.mjs`（10 MB 阈值，见 DEC-65）。
+  - 手动复核：`node tools/check-contracts.mjs`（**TS ↔ 快照 ↔ C# 三方逐值比对**）、`node tools/check-large-files.mjs`（10 MB 阈值，见 DEC-65）、`node tools/check-shell-coupling.mjs`（业务代码零 `import electron`，见 DEC-20）。
   - 合并门禁：`.github/workflows/gate.yml`（CI）额外跑类型检查、单测、构建与三维渲染冒烟。
   - 契约三处必须同批修改：`web/src/contracts/*`（TS）、`content/contracts/snapshot.json`（基准快照）、`NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs`（C#）—— 只改一侧门禁会直接拦下（DEC-10 / DEC-67 / DEC-68）。
+- **⚠️ 壳与业务的边界（硬纪律，DEC-20）**：业务代码（`web/src`、以及将来的业务逻辑）**不许 `import electron` / `window.electron` / `window.require`**，也不许改写 `window.wsu3Shell` —— 由 `tools/check-shell-coupling.mjs` 机械拦截（已进 hook 与 CI）。
+  - 需要壳能力（截图、文件、单点登录…）时：**加在 `electron/preload.js` + 主进程 `ipcMain`**，业务侧仍只认 `window.wsu3Shell.*`（DEC-24：只预留接口点，当期不实现）。
+  - 反过来：`electron/` 里不许写业务逻辑，壳只负责"起本机服务 + 开窗口 + 守安全边界"，且必须加载 `web/dist` 这一份**同一产物**（不是另做壳内页面、不是 Unity 单机版）。
 - **框体样式受令牌约束**：Web 端的描边 / 圆角 / 浮起 / 交互态**不得写零散字面值**，一律走 `docs/ui-mockups/style.css` 的令牌：中性描边 `0.5px solid var(--border-1|2|3|4)`（α 值随主题反转）、圆角只用 `--radius-xs|sm|md|lg|xl|panel`（6 级、按角色选档）、浮层用 `border: 0` + `var(--elev-*)`、交互态用 `var(--inter-*)`。规则出处：只读参考 `D:\dsh\deepseek-harness` 的 `docs/web-styling.md` 与 `docs/ui-radius.md`，我们的取舍写在 `style.css` §20.7。
 - **⚠️ Web 样式必须集中在样式成果页里体现（硬纪律）**：任何 Web 端样式（设计令牌、组件类名、状态变体）**都必须在 `docs/ui-mockups/index.html`（样式清单成果页）里有对应展示**。
   - 新增或修改样式时，**同一批改动里必须**在 `docs/ui-mockups/src/style-spec.mjs` 补上示例条目，然后重新生成成果页；**只写在 CSS 里、成果页看不到的样式，视为未完成**。

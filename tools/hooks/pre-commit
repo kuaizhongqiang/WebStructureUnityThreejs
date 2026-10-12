@@ -8,13 +8,16 @@ set -e
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-echo "[gate] 1/3 大文件与忽略规则"
+echo "[gate] 1/4 大文件与忽略规则"
 node tools/check-large-files.mjs
 
-echo "[gate] 2/3 双端契约一致性（TS <-> 快照 <-> C#）"
+echo "[gate] 2/4 业务代码零 import electron（DEC-20）"
+node tools/check-shell-coupling.mjs
+
+echo "[gate] 3/4 双端契约一致性（TS <-> 快照 <-> C#）"
 node tools/check-contracts.mjs
 
-echo "[gate] 3/3 Web 侧类型检查与单测"
+echo "[gate] 4/4 Web 侧类型检查与单测"
 if [ -d web/node_modules ]; then
   cd web
   npm run typecheck
