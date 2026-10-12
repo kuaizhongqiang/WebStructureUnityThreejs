@@ -59,6 +59,7 @@ pnpm-lock.yaml
 
 # ---------- 测试产物（截图等，可再生） ----------
 web/tools/smoke/artifacts/
+docs/ui-mockups/shots/
 
 # ---------- Web 产物落点（Unity WebGL 构建输出，体积大且可再生） ----------
 /web/public/unity-build/

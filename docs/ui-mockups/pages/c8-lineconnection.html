@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C8 C8 电路连接（LineConnection） — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">目录 / <b>温度传感器特性测量</b></span>
+          <span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+<nav class="ui-tabs">
+        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab ui-tab--active">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+      </nav>
+      <div class="ui-layout-3d">
+        <div class="ui-layout-3d__view">
+<div class="ui-viewport" style="position:absolute;inset:0">
+          <div class="ui-viewport__hint">Unity WebGL · 接线场景 · 正交俯视相机</div>
+          <div class="ui-viewport__tools">
+            <div class="ui-viewport__tool">⟳</div>
+            <div class="ui-viewport__tool">⤢</div>
+            <div class="ui-viewport__tool">⛶</div>
+            <div class="ui-viewport__tool">⌖</div>
+          </div>
+          <div class="ui-viewport__center">三维画布区域 —— 由 Unity WebGL 承载，本稿只表示占位与叠层 UI 的位置</div>
+        </div>
+          <div class="ui-floatbar">
+            <button class="ui-btn ui-btn--sm">红表笔</button>
+            <button class="ui-btn ui-btn--sm ui-btn--primary">黑表笔</button>
+            <button class="ui-btn ui-btn--sm">撤销上一根</button>
+            <button class="ui-btn ui-btn--sm">清空</button>
+          </div>
+          <div style="position:absolute;left:18px;top:18px" class="ui-panel">
+            <div class="ui-panel__body ui-col" style="gap:8px;padding:12px">
+              <span class="ui-small ui-muted">引线标注</span>
+              <span class="ui-lead"><span class="ui-lead__dot"></span>V+ 端子<span class="ui-lead__line"></span></span>
+              <span class="ui-lead"><span class="ui-lead__dot"></span>GND 端子<span class="ui-lead__line"></span></span>
+            </div>
+          </div>
+        </div>
+        <div class="ui-layout-3d__side">
+          <div class="ui-panel">
+            <div class="ui-panel__head">接线进度<span class="ui-panel__right"><span class="ui-badge ui-badge--info">3 / 6 根</span></span></div>
+            <div class="ui-panel__body ui-col" style="gap:10px">
+              <div class="ui-steps" style="flex-direction:column;align-items:flex-start;gap:10px">
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>红表笔 → V+</div>
+                <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>黑表笔 → GND</div>
+                <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>电源正极 → 传感器 VCC</div>
+                <div class="ui-step"><span class="ui-step__dot">4</span>加热台连线</div>
+                <div class="ui-step"><span class="ui-step__dot">5</span>检查回路</div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:12px;right:12px;bottom:12px">
+<div class="ui-tips">
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 V+ 端子</span></div>
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">先确认电源已断电再接线；接好后系统会自动检测回路</span></div>
+      </div>
+          </div>
+        </div>
+      </div>
+      <div class="ui-corner ui-corner--rt">
+        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
+        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
+        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
+      </div>
+      <div class="ui-corner ui-corner--lb">
+        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
+      </div>
+      <div class="note" style="z-index:60">C8 · <b>电路连接</b> · Unity 全屏画布 + 悬浮工具条 + 引线标注 + 右侧进度 + 底部提示</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>C8 · C8 电路连接（LineConnection） · 归属 UI · TaskType.LineConnection</span>
+</div>
+</body>
+</html>

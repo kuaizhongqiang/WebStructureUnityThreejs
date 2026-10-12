@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A8 常驻 · 通用模态框（4 类） — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">组件规范</span>
+          
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="padding:24px 32px;display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
+        <div class="ui-dialog">
+          <div class="ui-dialog__title">返回目录？</div>
+          <div class="ui-dialog__body">当前实训尚未完成（进度 3 / 11），返回后进度会保留在本机。确定要返回目录吗？</div>
+          <div class="ui-dialog__foot"><button class="ui-btn">继续实验</button><button class="ui-btn ui-btn--primary">返回目录</button></div>
+        </div>
+        <div class="ui-dialog">
+          <div class="ui-dialog__title">退出平台？</div>
+          <div class="ui-dialog__body">退出后未提交的成绩将不会保存。确定退出吗？</div>
+          <div class="ui-dialog__foot"><button class="ui-btn">取消</button><button class="ui-btn ui-btn--danger">退出</button></div>
+        </div>
+        <div class="ui-dialog">
+          <div class="ui-dialog__title">切换到漫游场景</div>
+          <div class="ui-dialog__body">即将离开当前实验场景进入漫游。切换过程需要重新加载三维资源，可能需要十几秒。</div>
+          <div class="ui-dialog__foot"><button class="ui-btn">取消</button><button class="ui-btn ui-btn--primary">前往漫游</button></div>
+        </div>
+        <div class="ui-dialog">
+          <div class="ui-dialog__title">提交成绩</div>
+          <div class="ui-dialog__body">提交后本次成绩将记录到本机存档，不可修改。确认提交？</div>
+          <div class="ui-dialog__foot"><button class="ui-btn">再检查一下</button><button class="ui-btn ui-btn--primary">确认提交</button></div>
+        </div>
+        <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
+          <span class="ui-alert__icon">i</span>
+          <span>规范：宽 520px；标题 54px；正文 24px 内边距；底部右对齐双按钮（次按钮在左、主按钮在右）；遮罩 rgba(5,8,12,.72)。共 4 类语义：返回 / 退出 / 跳转 / 提交。</span>
+        </div>
+      </div>
+
+      <div class="ui-mask" style="background:transparent;align-items:flex-start;justify-content:flex-end;padding:16px 24px;z-index:20">
+        <span class="ui-badge ui-badge--warn">真实使用时遮罩会覆盖整个内容区</span>
+      </div>
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A8 · 常驻 · 通用模态框（4 类） · 归属 常驻</span>
+</div>
+</body>
+</html>

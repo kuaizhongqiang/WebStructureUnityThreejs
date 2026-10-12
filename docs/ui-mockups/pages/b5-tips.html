@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B5 步骤提示 + 操作提示栏 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">组件规范</span>
+          
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="padding:26px 32px;display:flex;flex-direction:column;gap:22px">
+        <div class="ui-h2">标准形态（带示意图）</div>
+<div class="ui-tips">
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">把红色表笔接到 U1 的 V+ 端子</span></div>
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">注意量程档位：先把旋钮转到直流电压档，再插入表笔</span><span class="ui-tips__img"></span></div>
+      </div>
+
+        <div class="ui-h2">无示意图（纯文字步骤）</div>
+<div class="ui-tips">
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--step">步骤提示</span><span class="ui-tips__text">选择「任务目的」页签开始了解本实验</span></div>
+        <div class="ui-tips__row"><span class="ui-tips__tag ui-tips__tag--op">操作提示</span><span class="ui-tips__text">可随时通过右上角「目录」返回项目列表</span></div>
+      </div>
+
+        <div class="ui-h2">步骤进度条（同一栏内）</div>
+        <div class="ui-panel">
+          <div class="ui-panel__body">
+            <div class="ui-steps">
+              <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>接通电源</div>
+              <span class="ui-step__line"></span>
+              <div class="ui-step ui-step--done"><span class="ui-step__dot">✓</span>选择量程</div>
+              <span class="ui-step__line"></span>
+              <div class="ui-step ui-step--current"><span class="ui-step__dot">3</span>连接表笔</div>
+              <span class="ui-step__line"></span>
+              <div class="ui-step"><span class="ui-step__dot">4</span>读取数值</div>
+              <span class="ui-step__line"></span>
+              <div class="ui-step"><span class="ui-step__dot">5</span>记录数据</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>规范：提示栏贴底（内容区左右 18px、下 18px）；两块信息固定顺序 —— <b>步骤提示</b>（蓝）在上、<b>操作提示</b>（青）在下；示意图 168×96。</span>
+        </div>
+      </div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>B5 · 步骤提示 + 操作提示栏 · 归属 UI（Principle / LineConnection / Training）</span>
+</div>
+</body>
+</html>

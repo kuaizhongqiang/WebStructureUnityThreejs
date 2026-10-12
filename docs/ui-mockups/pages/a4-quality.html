@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A4 画质 / 首次设置 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">设置 / 画面质量</span>
+          <span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px">
+        <div class="ui-h2">选择画面质量</div>
+        <div class="ui-muted ui-small">首次进入需要选择一次；之后可在右上「画质」按钮修改</div>
+        <div class="ui-tile-grid" style="width:1180px;grid-template-columns:repeat(3,1fr)">
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">标清</div>
+            <div class="ui-tile__desc">低端集显 / 移动端推荐 · 关闭阴影与后处理</div>
+          </div>
+          <div class="ui-tile ui-tile--active">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div>
+            <div class="ui-tile__desc">独立显卡 / 桌面浏览器 · 开启基础阴影</div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">超清</div>
+            <div class="ui-tile__desc">高性能显卡 · 全特效，首次加载更慢</div>
+          </div>
+        </div>
+        <div class="ui-alert ui-alert--warn" style="width:1180px">
+          <span class="ui-alert__icon">!</span>
+          <span>检测到当前设备为 <b>移动端浏览器</b>（微信内置）：建议选择「标清」，并优先使用电脑浏览器体验三维实验（DEC-70）。</span>
+        </div>
+        <div class="ui-row" style="margin-top:6px">
+          <button class="ui-btn ui-btn--primary">确定并进入</button>
+          <button class="ui-btn ui-btn--ghost">使用推荐值</button>
+        </div>
+        <div class="note">A4 · <b>画质设置</b> · 三档卡片 + 硬件提示（对应参考工程 RenderQualityPanel）</div>
+      </div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A4 · 画质 / 首次设置 · 归属 Start（首启弹窗）</span>
+</div>
+</body>
+</html>

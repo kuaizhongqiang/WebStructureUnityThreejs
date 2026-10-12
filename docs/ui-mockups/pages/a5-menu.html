@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A5 菜单 / 项目列表页 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">目录</span>
+          <span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="padding:22px 32px;height:100%;display:flex;flex-direction:column;gap:16px">
+        <div class="ui-row">
+          <div class="ui-h2">实验项目</div>
+          <span class="ui-badge">共 17 个（示例）</span>
+          <div class="ui-grow"></div>
+          <input class="ui-input" style="width:280px" placeholder="搜索项目名称 / 关键词">
+          <select class="ui-select" style="width:170px"><option>全部</option><option>未开始</option><option>已完成</option></select>
+          <button class="ui-btn ui-btn--sm">去漫游</button>
+          <button class="ui-btn ui-btn--sm">我的成绩</button>
+          <button class="ui-btn ui-btn--sm ui-btn--danger">退出</button>
+        </div>
+
+        <div class="ui-alert ui-alert--info">
+          <span class="ui-alert__icon">i</span>
+          <span>点项目进入实验；每个项目包含 11 个任务页签，其中 4 个为 Unity 承载的复杂三维（DEC-06）。</span>
+        </div>
+
+        <div class="ui-tile-grid" style="grid-template-columns:repeat(5,1fr);overflow:auto;flex:1">
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">01 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge ui-badge--ok">已完成</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">02 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge ui-badge--ok">已完成</span></div>
+          </div>
+          <div class="ui-tile ui-tile--active">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">03 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge ui-badge--ok">已完成</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">04 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">05 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">06 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">07 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">08 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">09 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+          <div class="ui-tile">
+            <div class="ui-tile__thumb"></div>
+            <div class="ui-tile__name">10 · 项目名称</div>
+            <div class="ui-tile__desc">任务进度 3 / 11 · <span class="ui-badge">未开始</span></div>
+          </div>
+        </div>
+
+        <div class="ui-row" style="gap:20px">
+          <span class="ui-small ui-muted">总体进度</span>
+          <div class="ui-progress" style="width:420px"><div class="ui-progress__bar" style="width:27%"></div></div>
+          <span class="ui-small" style="color:var(--accent-2)">27%</span>
+          <div class="ui-grow"></div>
+          <span class="ui-small ui-muted">最近一次：项目 03 · 小测验 · 88 分</span>
+        </div>
+      </div>
+      <div class="note">A5 · <b>菜单 / 项目列表</b> · 工具条（搜索/筛选/漫游/成绩/退出）+ 卡片网格 + 进度概览</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A5 · 菜单 / 项目列表页 · 归属 Menu</span>
+</div>
+</body>
+</html>

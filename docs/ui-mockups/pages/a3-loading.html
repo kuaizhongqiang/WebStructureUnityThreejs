@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A3 加载过渡页 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">加载中</span>
+          
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div class="ui-center" style="height:100%;gap:22px">
+        <div class="ui-loading-ring"></div>
+        <div class="ui-h2">正在加载实验环境…</div>
+        <div style="width:620px">
+          <div class="ui-progress ui-progress--lg"><div class="ui-progress__bar" style="width:64%"></div></div>
+          <div class="ui-row" style="justify-content:space-between;margin-top:10px">
+            <span class="ui-muted ui-small">当前阶段：加载三维资源（Addressables 分包）</span>
+            <span class="ui-small" style="color:var(--accent-2)">64%</span>
+          </div>
+        </div>
+        <div class="ui-muted ui-small" style="margin-top:6px">首次加载较慢；后续进入同一实验会命中缓存</div>
+        <div class="note">A3 · <b>加载过渡页</b> · 环形进度 + 条形进度 + 阶段文案（对应参考工程 LoadingPanel）</div>
+      </div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 加载中 ] 正在准备实验环境</span>
+        <span class="ui-statusbar__right">请勿关闭页面</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A3 · 加载过渡页 · 归属 常驻（切场景时）</span>
+</div>
+</body>
+</html>

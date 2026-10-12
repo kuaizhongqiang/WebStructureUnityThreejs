@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D2 D2 题目控件（各题型与状态） — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">组件规范</span>
+          
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="padding:22px 32px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="ui-card ui-question">
+          <div class="ui-row"><span class="ui-badge">单选题</span><span class="ui-badge ui-badge--gold">5 分</span></div>
+          <div class="ui-question__stem"><span class="ui-question__index">1.</span>下列哪个档位用于测量直流电压？</div>
+          <div class="ui-options">
+            <div class="ui-option ui-option--right"><span class="ui-option__key">A</span>V ⎓（直流电压）<span class="ui-grow"></span>✓</div>
+            <div class="ui-option"><span class="ui-option__key">B</span>Ω（电阻）</div>
+          </div>
+        </div>
+        <div class="ui-card ui-question">
+          <div class="ui-row"><span class="ui-badge">多选题</span><span class="ui-badge ui-badge--gold">8 分</span></div>
+          <div class="ui-question__stem"><span class="ui-question__index">2.</span>接线前必须确认的有：</div>
+          <div class="ui-options">
+            <div class="ui-option ui-option--picked"><span class="ui-option__key">☑</span>电源已断开</div>
+            <div class="ui-option ui-option--picked"><span class="ui-option__key">☑</span>量程档位正确</div>
+            <div class="ui-option ui-option--wrong"><span class="ui-option__key">☐</span>表笔可以随意插</div>
+          </div>
+        </div>
+        <div class="ui-card ui-question">
+          <div class="ui-row"><span class="ui-badge">判断题</span><span class="ui-badge ui-badge--gold">5 分</span></div>
+          <div class="ui-question__stem"><span class="ui-question__index">3.</span>量程越大测量越准确。</div>
+          <div class="ui-options" style="flex-direction:row">
+            <div class="ui-option ui-option--right" style="flex:1"><span class="ui-option__key">✓</span>正确</div>
+            <div class="ui-option" style="flex:1"><span class="ui-option__key">✕</span>错误</div>
+          </div>
+          <div class="ui-question__analysis">解析：量程过大将导致相对误差增大，应选择略大于被测值的档位。</div>
+        </div>
+        <div class="ui-card ui-question">
+          <div class="ui-row"><span class="ui-badge">填空题</span><span class="ui-badge ui-badge--gold">6 分</span></div>
+          <div class="ui-question__stem"><span class="ui-question__index">4.</span>测得电阻为 1.204 kΩ，参考值 1.200 kΩ，相对误差为 ______ %。</div>
+          <div class="ui-field"><input class="ui-input" value="0.33"><div class="ui-field__hint">保留两位小数</div></div>
+        </div>
+        <div class="ui-card ui-question" style="grid-column:1 / -1">
+          <div class="ui-row"><span class="ui-badge">排序题</span><span class="ui-badge ui-badge--gold">10 分</span></div>
+          <div class="ui-question__stem"><span class="ui-question__index">5.</span>按正确顺序排列实验步骤：</div>
+          <div class="ui-row" style="gap:10px;flex-wrap:wrap">
+            <span class="ui-badge ui-badge--info">1 · 通电预热</span>
+            <span class="ui-badge ui-badge--info">2 · 选择量程</span>
+            <span class="ui-badge ui-badge--info">3 · 接线测量</span>
+            <span class="ui-badge ui-badge--info">4 · 记录数据</span>
+            <span class="ui-badge">5 · 断电整理</span>
+            <span class="ui-muted ui-small">拖动可排序</span>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>D2 · D2 题目控件（各题型与状态） · 归属 UI · 组件规范</span>
+</div>
+</body>
+</html>

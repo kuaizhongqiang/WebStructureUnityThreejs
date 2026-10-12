@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B3 任务切换 · 资产加载遮罩 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">目录 / <b>温度传感器特性测量</b></span>
+          <span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+<nav class="ui-tabs">
+        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab ui-tab--active">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
+        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+      </nav>
+      <div style="position:absolute;inset:0;background:var(--bg-1)"></div>
+      <div class="ui-mask" style="z-index:50">
+        <div class="ui-panel" style="width:560px">
+          <div class="ui-panel__head">正在切换到「仿真实验」</div>
+          <div class="ui-panel__body ui-col" style="gap:16px">
+            <div class="ui-row"><div class="ui-loading-ring" style="width:34px;height:34px;border-width:3px"></div><span>加载 Unity WebGL 运行时与分包资源…</span></div>
+            <div>
+              <div class="ui-progress"><div class="ui-progress__bar" style="width:42%"></div></div>
+              <div class="ui-row" style="justify-content:space-between;margin-top:8px">
+                <span class="ui-muted ui-small">training.pack · 18.6 MB</span>
+                <span class="ui-small" style="color:var(--accent-2)">42%</span>
+              </div>
+            </div>
+            <div class="ui-muted ui-small">该页由 Unity 承载（DEC-06），首次进入需下载分包；同一会话内再进入会走缓存。</div>
+            <button class="ui-btn ui-btn--sm" style="align-self:flex-start">取消并返回</button>
+          </div>
+        </div>
+      </div>
+      <div class="note" style="z-index:60">B3 · <b>资产加载遮罩</b> · 对应参考工程 LoadingAssetsPanel；「可取消」是必需项</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>B3 · 任务切换 · 资产加载遮罩 · 归属 UI</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2 登录页 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">登录</span>
+          <span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="display:flex;height:100%">
+        <div style="flex:1;position:relative;background:var(--grid);background-color:var(--bg-0);border-right:1px solid var(--line-1)">
+          <div style="position:absolute;left:56px;bottom:56px;max-width:520px">
+            <div class="ui-h2">欢迎使用虚拟仿真教学平台</div>
+            <div class="ui-muted ui-small" style="margin-top:8px;line-height:1.8">登录后可保存学习进度与考核成绩；本期也可以游客身份直接体验全部实验。</div>
+          </div>
+          <div class="ui-company" style="bottom:24px;top:auto"><span class="ui-company__logo">示</span>示范教育科技有限公司</div>
+        </div>
+        <div style="width:680px;padding:0 96px;display:flex;flex-direction:column;justify-content:center;gap:18px">
+          <div class="ui-h2">登录</div>
+          <div class="ui-field">
+            <div class="ui-field__label">账号 / 学号</div>
+            <input class="ui-input" placeholder="请输入账号或学号">
+          </div>
+          <div class="ui-field">
+            <div class="ui-field__label">密码</div>
+            <input class="ui-input" type="password" placeholder="请输入密码">
+          </div>
+          <div class="ui-field">
+            <div class="ui-field__label">身份</div>
+            <select class="ui-select"><option>学生</option><option>教师</option><option>管理员</option></select>
+            <div class="ui-field__hint">对应数据模型的 userType（未知 / 学生 / 教师 / 管理员）</div>
+          </div>
+          <div class="ui-row" style="justify-content:space-between">
+            <label class="ui-check ui-check--on"><span class="ui-check__box">✓</span>记住我</label>
+            <span class="ui-muted ui-small">忘记密码？</span>
+          </div>
+          <button class="ui-btn ui-btn--primary ui-btn--block">登录</button>
+          <button class="ui-btn ui-btn--ghost ui-btn--block">以游客身份进入</button>
+          <div class="ui-alert ui-alert--info">
+            <span class="ui-alert__icon">i</span>
+            <span>本期无后端（DEC-21）：登录仅作界面占位；进度与成绩保存在本机一个 JSON 里（DEC-54）。</span>
+          </div>
+        </div>
+      </div>
+      <div class="note">A2 · <b>登录页</b> · 左品牌区 + 右表单，游客入口并列主按钮</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A2 · 登录页 · 归属 Login</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D1 D1 成绩结算 / 提交页 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">目录 / <b>温度传感器特性测量</b> / 成绩</span>
+          <span class="ui-badge ui-badge--info">高清</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="position:absolute;inset:0;padding:22px 32px;display:flex;gap:20px">
+        <div class="ui-panel" style="flex:1">
+          <div class="ui-panel__head">成绩明细</div>
+          <div class="ui-panel__body ui-col" style="gap:12px">
+            <div class="ui-card ui-row" style="gap:26px;flex-wrap:wrap">
+              <span class="ui-small"><b>学号</b> 20260001</span>
+              <span class="ui-small"><b>班级</b> 传感器 2401</span>
+              <span class="ui-small"><b>姓名</b> 游客</span>
+              <span class="ui-small"><b>身份</b> 学生</span>
+            </div>
+            <div class="ui-list">
+              <div class="ui-list__item"><span class="ui-list__idx">1</span>任务目的<span class="ui-list__meta"><span class="ui-badge ui-badge--ok">已完成</span><span>10 / 10</span></span></div>
+              <div class="ui-list__item"><span class="ui-list__idx">2</span>实验仪器<span class="ui-list__meta"><span class="ui-badge ui-badge--ok">已完成</span><span>10 / 10</span></span></div>
+              <div class="ui-list__item"><span class="ui-list__idx">3</span>实验原理<span class="ui-list__meta"><span class="ui-badge ui-badge--ok">已完成</span><span>10 / 10</span></span></div>
+              <div class="ui-list__item"><span class="ui-list__idx">4</span>电路连接<span class="ui-list__meta"><span class="ui-badge ui-badge--ok">已完成</span><span>18 / 20</span></span></div>
+              <div class="ui-list__item"><span class="ui-list__idx">5</span>仿真实验<span class="ui-list__meta"><span class="ui-badge ui-badge--warn">部分完成</span><span>16 / 20</span></span></div>
+              <div class="ui-list__item"><span class="ui-list__idx">6</span>小测验<span class="ui-list__meta"><span class="ui-badge ui-badge--ok">已完成</span><span>24 / 30</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ui-panel" style="width:420px">
+          <div class="ui-panel__head">结算</div>
+          <div class="ui-panel__body ui-col" style="gap:16px">
+            <div class="ui-center" style="gap:6px;padding:18px 0;background:var(--bg-3);border-radius:12px">
+              <div class="ui-muted ui-small">本次成绩</div>
+              <div style="font-size:40px;font-weight:700;color:var(--gold)">88</div>
+              <div class="ui-badge ui-badge--ok">评定：优秀</div>
+            </div>
+            <div class="ui-col ui-small" style="gap:8px">
+              <div class="ui-row" style="justify-content:space-between"><span class="ui-muted">开始时间</span><span>2026-10-12 13:20</span></div>
+              <div class="ui-row" style="justify-content:space-between"><span class="ui-muted">结束时间</span><span>2026-10-12 14:05</span></div>
+              <div class="ui-row" style="justify-content:space-between"><span class="ui-muted">用时</span><span>45 分 12 秒</span></div>
+              <div class="ui-row" style="justify-content:space-between"><span class="ui-muted">完成度</span><span>6 / 11 个任务</span></div>
+            </div>
+            <button class="ui-btn ui-btn--primary ui-btn--block">提交成绩</button>
+            <button class="ui-btn ui-btn--ghost ui-btn--block">返回继续实验</button>
+            <div class="ui-alert ui-alert--info">
+              <span class="ui-alert__icon">i</span>
+              <span>本期无后端：提交后写入本机存档（DEC-54）；接后端时只换存档实现，界面不变。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ui-corner ui-corner--rt">
+        <div class="ui-fab"><span class="ui-fab__icon">☰</span>目录</div>
+        <div class="ui-fab"><span class="ui-fab__icon">⛶</span>全屏</div>
+        <div class="ui-fab"><span class="ui-fab__icon">◐</span>画质</div>
+      </div>
+      <div class="ui-corner ui-corner--lb">
+        <div class="ui-fab"><span class="ui-fab__icon">←</span>菜单</div>
+      </div>
+      <div class="note" style="z-index:60">D1 · <b>成绩结算</b> · 左侧明细 + 右侧总成绩与时间（对应参考工程 ResultSummitPanel 的 11 项字段）</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>D1 · D1 成绩结算 / 提交页 · 归属 UI · 考核结算</span>
+</div>
+</body>
+</html>

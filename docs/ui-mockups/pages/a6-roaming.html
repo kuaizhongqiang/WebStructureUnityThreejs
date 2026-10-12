@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A6 漫游大场景页 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+
+      <header class="ui-titlebar">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">漫游 / 实验楼一层</span>
+          <span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div style="position:absolute;inset:0">
+<div class="ui-viewport" style="position:absolute;inset:0">
+          <div class="ui-viewport__hint">Unity WebGL · 漫游场景</div>
+          <div class="ui-viewport__tools">
+            <div class="ui-viewport__tool">⟳</div>
+            <div class="ui-viewport__tool">⤢</div>
+            <div class="ui-viewport__tool">⛶</div>
+            <div class="ui-viewport__tool">⌖</div>
+          </div>
+          <div class="ui-viewport__center">三维画布区域 —— 由 Unity WebGL 承载，本稿只表示占位与叠层 UI 的位置</div>
+        </div>
+        <!-- 底部操作提示（3 条淡入淡出，对应参考工程 RoamingBottomPanel） -->
+        <div style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center">
+          <div class="ui-toast" style="position:static;transform:none">W / A / S / D 移动 · 鼠标右键拖拽转视角</div>
+          <div class="ui-toast" style="position:static;transform:none;opacity:.75">对准设备后点击左键，查看该实验项目的介绍</div>
+          <div class="ui-toast" style="position:static;transform:none;opacity:.5">按 ESC 打开目录，可切换到其它实验</div>
+        </div>
+
+        <!-- 点选物体后的信息浮窗（对应 RoamingContentShowPanel） -->
+        <div class="ui-panel" style="position:absolute;right:36px;top:130px;width:400px">
+          <div class="ui-panel__head">设备信息<span class="ui-panel__right"><span class="ui-badge ui-badge--info">可进入</span></span></div>
+          <div class="ui-panel__body ui-col">
+            <div style="font-size:var(--fs-16);font-weight:600">实验台 03 · 温度传感器</div>
+            <div class="ui-muted ui-small">该设备对应教学项目：温度传感器特性测量（11 个任务页签）</div>
+            <div class="ui-row" style="gap:8px">
+              <span class="ui-badge">进度 3 / 11</span>
+              <span class="ui-badge ui-badge--warn">推荐先看「任务目的」</span>
+            </div>
+            <button class="ui-btn ui-btn--primary ui-btn--block">进入该项目</button>
+          </div>
+        </div>
+
+        <div class="ui-fab" style="position:absolute;left:36px;top:130px"><span class="ui-fab__icon">◎</span>复位</div>
+      </div>
+      <div class="note">A6 · <b>漫游大场景</b> · 三维主视图 + 底部操作提示 + 点选信息浮窗（参考工程的漫游链路是断的，此处为本项目自研）</div>
+
+  </div>
+
+      <footer class="ui-statusbar">
+        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
+        <span class="ui-statusbar__right">v0.1 · 排版稿 · docs/ui-mockups</span>
+      </footer>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>A6 · 漫游大场景页 · 归属 Roaming</span>
+</div>
+</body>
+</html>
