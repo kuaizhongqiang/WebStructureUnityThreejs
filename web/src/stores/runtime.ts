@@ -20,9 +20,12 @@ export interface UnityBuildEntry {
   taskType: number | null
   entry?: string
   loader?: string | null
+  /** 是否声明实现了协议桥（DEC-07）；false/缺失时页面会说明"该构建未声明桥支持" */
+  bridge?: boolean
   fileCount?: number
   totalBytes?: number
   stagedAt?: string
+  /** 产物目录指纹：用于给资源 URL 加 `?v=`，避免重建后命中旧的数据缓存（docs/design/06 §3②） */
   treeSha256?: string
 }
 

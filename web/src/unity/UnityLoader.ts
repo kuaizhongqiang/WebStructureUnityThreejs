@@ -20,6 +20,10 @@ export interface UnityBuildInfo {
   readonly taskType: number | null
   readonly entry?: string
   readonly loader?: string | null
+  /** 产物指纹：拼成 `?v=` 防"重建后仍跑旧场景"（Unity 的 dataCaching 按 URL 缓存，docs/design/06 §3②） */
+  readonly treeSha256?: string
+  /** 该构建是否声明实现了协议桥（DEC-07） */
+  readonly bridge?: boolean
 }
 
 export interface UnityMountOptions {
@@ -78,13 +82,17 @@ export function unityBaseUrl(key: string): string {
  * **预压缩版本（.br/.gz）不在这里拼** —— 交给服务器按 `Accept-Encoding` 命中并附 `Content-Encoding`，
  * 这正是 electron/server.js 已经实现的行为，也是 Unity 推荐的服务端配置方式。
  */
-function resolveUrls(base: string, loaderPath: string) {
+function resolveUrls(base: string, loaderPath: string, version?: string) {
   const normalized = loaderPath.replace(/\\/g, '/')
   const prefix = normalized.replace(/\.loader\.js$/, '')
+  // ★ 版本指纹必须带上：Unity 的 dataCaching 会按 **URL** 把 `.data` 存进 IndexedDB，
+  //   同名重建时浏览器会直接命中旧缓存 —— 表现为"重新构建了，但画面还是上一版"。
+  //   服务器会忽略查询串（只按 pathname 找文件），所以 `?v=` 是安全的。
+  const v = version ? `?v=${version.slice(0, 12)}` : ''
   return {
-    dataUrl: `${base}${prefix}.data`,
-    frameworkUrl: `${base}${prefix}.framework.js`,
-    codeUrl: `${base}${prefix}.wasm`,
+    dataUrl: `${base}${prefix}.data${v}`,
+    frameworkUrl: `${base}${prefix}.framework.js${v}`,
+    codeUrl: `${base}${prefix}.wasm${v}`,
     streamingAssetsUrl: `${base}StreamingAssets`,
   }
 }
@@ -149,7 +157,7 @@ export async function mountUnity(options: UnityMountOptions): Promise<UnityHandl
   }
 
   const base = unityBaseUrl(build.key)
-  const urls = resolveUrls(base, build.loader)
+  const urls = resolveUrls(base, build.loader, build.treeSha256)
   let attempt = 0
   let lastError: UnityFailure = { kind: 'init', message: '未知原因' }
 

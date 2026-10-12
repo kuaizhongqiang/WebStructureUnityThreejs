@@ -108,6 +108,8 @@ async function buildReleaseManifest() {
         taskType: build.taskType,
         entry: build.entry,
         loader: build.loader,
+        // 是否声明实现了协议桥：壳冒烟据此决定"要不要握手成功才算通过"（docs/design/06 §5）
+        bridge: Boolean(build.bridge),
         fileCount: build.fileCount,
         totalBytes: build.totalBytes,
         stagedAt: build.stagedAt,

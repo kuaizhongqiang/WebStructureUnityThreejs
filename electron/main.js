@@ -63,7 +63,13 @@ function readUnityManifest() {
     const builds = Array.isArray(parsed.builds) ? parsed.builds : []
     return {
       included: builds.length > 0,
-      builds: builds.map((b) => ({ key: b.key, taskType: b.taskType, totalBytes: b.totalBytes })),
+      builds: builds.map((b) => ({
+        key: b.key,
+        taskType: b.taskType,
+        totalBytes: b.totalBytes,
+        // 是否声明实现了协议桥：决定冒烟"要不要握手成功才算通过"（docs/design/06 §5）
+        bridge: b.bridge === true,
+      })),
       reason: builds.length > 0 ? `已包含 ${builds.length} 个 Unity 构建` : '清单为空',
     }
   } catch (error) {
@@ -228,12 +234,23 @@ async function smokeUnity() {
         badge: (document.querySelector('.ui-panel__right .ui-badge') || {}).textContent || '',
       }
     })()`)
-    const mounted = state.hasCanvas && state.handshake
+    // 握手是不是"必须"由**清单**决定：Unity 侧若还没实现协议桥（.jslib），
+    // 画面照样能挂上但永远不会握手 —— 那是已知缺口（docs/design/06 §5），不该把打包判成坏的；
+    // 但**也不能掩盖**：日志与报告里 handshake 字段照实写。
+    const taskType = 5
+    const build = (unityManifest?.builds || []).find((item) => item.taskType === taskType)
+    const bridgeRequired = Boolean(build && build.bridge)
+    const mounted = state.hasCanvas && (!bridgeRequired || state.handshake)
     const mode = mounted ? 'mounted' : state.absent ? 'absent' : 'unclear'
+    if (state.hasCanvas && !state.handshake && !bridgeRequired) {
+      log('  ⚠️ 画面已挂上，但**桥未握手** —— 该构建未声明实现协议桥（DEC-07 未落地，见 docs/design/06 §5）')
+    }
     log(
-      `Unity 页：canvas=${state.hasCanvas} 握手=${state.handshake} 明确报告未包含=${state.absent} → ${mode}`,
+      `Unity 页：canvas=${state.hasCanvas} 握手=${state.handshake}` +
+        `（${bridgeRequired ? '清单声明需要握手' : '清单未声明桥'}）` +
+        ` 明确报告未包含=${state.absent} → ${mode}`,
     )
-    return { ok: mounted || state.absent, mode, ...state }
+    return { ok: mounted || state.absent, mode, bridgeRequired, ...state }
   } catch (error) {
     log('Unity 页取证失败：', String(error))
     return { ok: false, mode: 'error' }

@@ -196,7 +196,8 @@ function finish(): void {
     :status-left="`[ ${labelOf(taskType)} ] ${meta.hint}`"
     :status-right="
       unity
-        ? `桥协议 v${BRIDGE_PROTOCOL_VERSION} · ${bridgeReady ? '已握手' : '待握手'}`
+        ? `桥协议 v${BRIDGE_PROTOCOL_VERSION} · ` +
+          (bridgeReady ? '已握手' : unityBuild?.bridge ? '待握手' : '该构建未声明桥支持')
         : `桥协议 v${BRIDGE_PROTOCOL_VERSION} · 进度已存本机`
     "
     @select-task="goTo"
