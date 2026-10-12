@@ -38,18 +38,22 @@
 
 ## 3 当前状态
 
+> **本节是"仓库状态"的唯一维护点**（`AGENT.md` 只放纪律，不再重复维护状态）。
+> 未闭合项见 `docs/DECISIONS.md` 末尾的「未闭合」表；已定事项见该文件正文。
+
 | 部分 | 状态 |
 |---|---|
 | 文档与决策 | 五轮问答**全部关闭**，**79 条决策生效**；需求分析 v1 定稿；设计文档 7 篇 |
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
 | Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动，article 与 list 端到端）/ 骨架自检页；样式只走设计系统令牌；**ESLint + Prettier** 已进 hook 与 CI |
 | Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟 20 项**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |
-| Unity 工程 | 程序集分层（Contracts / Core / Runtime / Editor / Tests.EditMode）+ 契约枚举 + **WebGL 基线构建工具** + 契约冻结单测；业务逻辑尚未开始 |
+| Unity 工程 | 程序集分层 `WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode` + 契约枚举 `Assets/Scripts/Contracts/EnumAll.cs` + **WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）+ 契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始** |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 门禁 | pre-commit hook + CI（契约、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
-| Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON |
+| Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
+| **尚未开始** | Unity 业务逻辑与真实场景、内容资源交付（`content/projects/*.json` 仍为内置演示数据）、协议桥的 Unity 侧实现（`.jslib`，DEC-07 未落地） |
 
 ## 4 怎么跑
 
