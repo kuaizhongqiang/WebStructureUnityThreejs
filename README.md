@@ -94,6 +94,20 @@ node tools/check-shell-coupling.mjs   # 业务代码零 import electron（DEC-20
 powershell -File tools/install-hooks.ps1   # 安装 pre-commit hook（一次性）
 ```
 
+### 提交方式：**必须走 PR**
+
+`main` 不接受直接提交（**含文档改动**）——见 `docs/DECISIONS.md` DEC-78。固定流程：
+
+```bash
+git checkout -b feat/xxx      # 1 开分支
+# …改动… git add <路径> 并提交   # 2 本地 hook 先跑一遍门禁
+git push -u origin feat/xxx    # 3 推分支
+# 4 开 PR（base=main），等 CI（比本地多跑类型检查/单测/构建/渲染冒烟）
+# 5 squash merge，然后 git checkout main && git pull
+```
+
+> Unity 侧改动**另外**要在 Plastic 提交（双渠道，DEC-60）；Plastic 没有 PR 概念，git 侧从"直接推 `main`"改为"经 PR 合入 `main`"。
+
 ### Unity 侧
 
 - 用 Unity **2022.3.53f1c1** 打开 `NewStructureUnity/`；
