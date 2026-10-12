@@ -406,5 +406,63 @@
 | 2026-10-12 | 三维渲染冒烟 | `npm run smoke` **12 项断言全通过**（含确定性"非白屏"判定）；**当场抓到并修复一个真实缺陷**（跨 TaskType 导航不切换技术栈 / Unity→Three 切回不重建画布） | DEC-27 / DEC-50 |
 | 2026-10-12 | **git 提交**（DEC-60 渠道①） | `c0a7b0f`（94 文件，首次纳入 docs+web+Unity 脚手架）；`1fd7614`（Unity 编辑器升级 URP 资产到 version 11）。工作区干净 | DEC-56 / DEC-28 |
 | 2026-10-12 | **Plastic 提交**（DEC-60 渠道②） | 纳管 `Assets/Scenes`、`Assets/Settings`、`Packages`、`ProjectSettings`、`ignore.conf`；**`cs:1 → cs:2`**（`/main@NewStructureUnity@tj_kuaiprojcet@cloud.cn`）；私有文件 0 | DEC-60 |
-| 待执行 | WebGL 基线实测 / Addressables / Unity MCP / Unity 目录与 asmdef | **被"编辑器正在运行"阻塞**，待用户给空闲时段（DEC-59） | DEC-44 / DEC-45 / DEC-46 / DEC-47 |
+| 2026-10-12 | WebGL 基线实测（DEC-44） | **构建成功**：空 URP 场景产物 **18 文件 / 8.40 MiB**（wasm.br 5.14 MiB + data.br 3.15 MiB），耗时 **3 分 08 秒**，0 error。⇒ 引擎底座只占 DEC-02 内容预算（250~360MB）的 **2~3%**。详见 `research/08-webgl-baseline.md` | DEC-44 / DEC-63 |
+| 2026-10-12 | 加 Addressables + Unity MCP（DEC-45/46） | 已写入 `manifest.json` 并**解析成功**（Addressables 1.22.3 + `com.coplaydev.unity-mcp`(git) + scriptablebuildpipeline 已入 `packages-lock.json`） | DEC-45 / DEC-46 |
+| 2026-10-12 | Unity 目录与程序集分层（DEC-47） | 已建 `Assets/Scripts/{Core,Contracts}` + `WSU3.Runtime` + `Assets/Editor` + `Assets/Tests/EditMode`；契约落 `Contracts/EnumAll.cs`；C# 侧契约快照测试已落地 | DEC-47 / DEC-68 / DEC-27 |
+| 2026-10-12 | 门禁落地（DEC-66） | `tools/check-contracts.mjs`（TS↔快照↔C#，实测通过）、`tools/check-large-files.mjs`（10MB）、`tools/hooks/pre-commit` + 安装脚本（已装）、`.github/workflows/gate.yml` | DEC-41 / DEC-66 / DEC-65 |
+| 2026-10-12 | 移动端策略落地（DEC-70/71） | `web/src/platform/device.ts`（微信识别 + 25s/1 次/可退回）+ 5 条单测通过 | DEC-49 / DEC-70 / DEC-71 |
 | 待执行 | ESLint + Prettier | 已批准未安装（下一批） | DEC-52 / DEC-62 |
+
+---
+
+# 第三轮决策（DEC-63 ~ DEC-72）
+
+> 来源：`OPEN-QUESTIONS-R3.md`（10 题全部已答，2026-10-12）。**只增不改**。其中 3 题用户明确授权「你自己定就好」，本轮把决定写清并标注"由 AI 定"。
+
+| ID | 决策 | 来源 | 备注 |
+|---|---|---|---|
+| DEC-63 | **Unity 编辑器已关闭**：WebGL 基线实测 / 加 Addressables / 装 Unity MCP 三件**立即执行** | R3-1 | 时效性窗口 |
+| DEC-64 | Unity MCP **只装本项目** `NewStructureUnity/`；参考工程一律不碰 | R3-2=A | 只读纪律 |
+| DEC-65 | 大文件门禁阈值 **10 MB**；并且**凡是 git 无法接受的都主动提醒用户** | R3-3 | 取代"无阈值" |
+| DEC-66 | 门禁载体：**原生 `.git/hooks` 脚本 + 安装脚本**，**合并门禁交给 CI**（GitHub Actions） | R3-4=D | 取代 ★"hooksPath" |
+| DEC-67 | **采用契约快照基准** `content/contracts/snapshot.json`（不是真源，是门禁基准；只能与某一侧同批修改） | R3-5（**由 AI 定**） | — |
+| DEC-68 | 契约校验读 C# 路径＝**`Assets/Scripts/Contracts/EnumAll.cs`** | R3-6（**由 AI 定**） | — |
+| DEC-69 | **确认 DEC-38 的边界**：可读实现、可移植单个交互脚本算法；**不得**照搬目录布局、`Global*Mgr` 骨架、prefab 名＝类名的装配机制；不得改参考工程 | R3-7（**由 AI 定**） | 与 R-1 相容 |
+| DEC-70 | 移动端：**检测微信内置浏览器并给出性能提示**（不阻拦）；验收**必须真机** | R3-8=A | 落地 DEC-49 |
+| DEC-71 | DEC-53 的失败判定：**进入超时 25s**、**重试 1 次**、**允许退回"明确阻拦"** | R3-9 | 补数字 |
+| DEC-72 | 数据模型由 AI 起草 `design/04-data-model.md`（项目/任务/步骤/题目/进度/成绩/设置 七块） | R3-10=A | — |
+
+## 14 第三轮决策的落地要点
+
+### 14.1 DEC-66 门禁的两道（按用户选择"原生 hooks + CI"）
+
+| 时机 | 载体 | 检查 |
+|---|---|---|
+| 提交前 | `.git/hooks/pre-commit`（由 `tools/install-hooks.ps1` 安装，**hook 本体不入库**，安装脚本与检查脚本入库） | ① 大文件 >10MB 拦截（DEC-65）；② `web` 侧 `typecheck` + `test`；③ 契约快照比对；④ 生成目录误提交拦截 |
+| 合并前 | `.github/workflows/gate.yml`（`pull_request` 触发） | 上述全部 + `npm run smoke`（真浏览器渲染）+ `npm run build` |
+
+### 14.2 DEC-69 的边界（写死，避免以后反复争）
+
+- ✅ **可以**：`SensorSimulationTrainingSoftware_v1.0_2026` 与 `MCV_Module` 里读实现、按行为规格重写；移植**单个交互脚本的算法**（旋钮角度映射、接线点判定等），落位到我们自己的目录与命名。
+- ❌ **不可以**：照搬目录布局；照搬 `Global*Mgr` 管理器骨架与 `EventBus<T>` 强引用订阅配对；照搬 prefab 名＝类名 / `ui_{类名}` 的 UI 装配机制；在任何参考工程里修改文件。
+- 例外流程：若确需整块复用，先提新决策取代 R-1 对应部分，不默认放行。
+
+### 14.3 DEC-70 / DEC-71 的落地参数（可直接编码）
+
+```ts
+// 移动端策略（web/src/platform/device.ts 待建）
+const WECHAT_UA = /MicroMessenger/i
+enterTimeoutMs   = 25_000   // 超过即判定进入失败
+retryCount       = 1        // 失败后重试 1 次
+onWeChat         = 提示"性能可能受限，建议在电脑浏览器打开"+ 允许继续
+fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为直接阻拦
+```
+
+## 15 第三轮的未闭合项
+
+| 未闭合 | 原因 | 去向 |
+|---|---|---|
+| 微信内置浏览器的**真机实测**结果 | 需要真机 | 待设备可用 |
+| CI 是否已在 GitHub 仓库启用 | 需要推送后验证 | 首次 push 后观察 |
+| WebGL 基线体积 | ✅ 已闭合（8.40 MiB / 空 URP 场景） | 见 `research/08-webgl-baseline.md` |
+| WebGL 的**首屏加载时间与帧率** | 尚未测（只统计了体积） | 下一步：把产物挂静态服务器实测 |

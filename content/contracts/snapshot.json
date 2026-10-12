@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "_note": "契约校验基准（不是真源）。纪律见 docs/DECISIONS.md DEC-67：只能与某一侧同批修改；门禁比对 TS ↔ 快照 与 C# ↔ 快照，两侧同时被改错时由本文件兜住。",
+  "_sources": {
+    "typescript": ["web/src/contracts/scene-state.ts", "web/src/contracts/task-type.ts"],
+    "csharp": ["NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs"]
+  },
+  "enums": [
+    {
+      "name": "SceneState",
+      "values": [
+        { "name": "Setup", "ordinal": 0, "label": "初始化" },
+        { "name": "Start", "ordinal": 1, "label": "开始" },
+        { "name": "Login", "ordinal": 2, "label": "登录" },
+        { "name": "Menu", "ordinal": 3, "label": "菜单" },
+        { "name": "UI", "ordinal": 4, "label": "UI" },
+        { "name": "Roaming", "ordinal": 5, "label": "漫游" }
+      ]
+    },
+    {
+      "name": "TaskType",
+      "values": [
+        { "name": "None", "ordinal": 0, "label": "空类型" },
+        { "name": "Purpose", "ordinal": 1, "label": "任务目的" },
+        { "name": "Equipment", "ordinal": 2, "label": "实验仪器" },
+        { "name": "Principle", "ordinal": 3, "label": "实验原理" },
+        { "name": "LineConnection", "ordinal": 4, "label": "电路连接" },
+        { "name": "Training", "ordinal": 5, "label": "仿真实验" },
+        { "name": "Test", "ordinal": 6, "label": "小测验" },
+        { "name": "Info", "ordinal": 7, "label": "简介" },
+        { "name": "Structure", "ordinal": 8, "label": "结构" },
+        { "name": "Inspection", "ordinal": 9, "label": "检测" },
+        { "name": "Exam", "ordinal": 10, "label": "考核" }
+      ]
+    }
+  ]
+}
