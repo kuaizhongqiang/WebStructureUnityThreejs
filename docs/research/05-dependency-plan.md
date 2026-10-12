@@ -52,7 +52,7 @@
 1. 改 `NewStructureUnity/Packages/manifest.json`（**唯一允许手编的方式**），一个包一行；
 2. 让 Unity 解析：推荐用**编辑器打开工程**（会自动解析并写 `packages-lock.json`）；
    - 命令行等价做法（**需先确认编辑器未打开**，且属于重操作，执行前会向你确认）：
-     `& "D:\Unity\2022.3.53f1\Editor\Unity.exe" -batchmode -quit -projectPath "f:\Project\WebStructureUnityThreejs\NewStructureUnity" -logFile -`
+     `& "<Unity 编辑器>\Unity.exe" -batchmode -quit -projectPath "<仓库根>\NewStructureUnity" -logFile -`
 3. 验证：`Library/PackageCache` 出现对应包目录、`packages-lock.json` 出现条目、Unity 控制台无包解析错误。
 
 ## 3 Web 侧

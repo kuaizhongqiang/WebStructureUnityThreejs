@@ -74,8 +74,8 @@ Remove-Item Env:NODE_OPTIONS -ErrorAction SilentlyContinue
 ```powershell
 # 编辑器必须先关闭（DEC-59 / DEC-66）
 Remove-Item Env:NODE_OPTIONS -ErrorAction SilentlyContinue
-& "D:\Unity\2022.3.53f1\Editor\Unity.exe" -batchmode -quit `
-  -projectPath "f:\Project\WebStructureUnityThreejs\NewStructureUnity" `
+& "<Unity 编辑器>\Unity.exe" -batchmode -quit `
+  -projectPath "<仓库根>\NewStructureUnity" `
   -buildTarget WebGL `
   -executeMethod WSU3.Editor.BuildTools.WebGLBaselineBuild.RunBaseline `
   -logFile "$env:TEMP\wsu3-webgl-build.log"
