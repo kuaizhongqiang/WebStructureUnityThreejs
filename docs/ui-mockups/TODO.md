@@ -37,7 +37,9 @@
 - [x] 实验原理改视频播放器 + 播放列表 —— `style.css` §16.5，见 `pages/c4-principle.html`
 - [x] 任务目的简化为"一段文字" —— 见 `pages/c2-purpose.html`
 - [x] 简介改为"左三维 + 右文字" —— 见 `pages/c6-info.html`
-- [x] **框体样式统一升级（参考 `D:\dsh\deepseek-harness`）** —— `style.css` §20 + 令牌（§1/§18）：
+- [x] **样式单一来源拆分（DEC-74）** —— `style.css` → `tokens.css`（令牌 381 行）+ `components.css`（组件 1041 行）+ `mockup-shell.css`（评审外壳 129 行）；`style.css` 变为 14 行聚合入口。
+      机械迁移：462 条规则按选择器分类，**规则文本总量守恒**（71876 字符前后一致），且拆分前后同一页面渲染**逐像素差异为 0**。
+- [x] **框体样式统一升级（参考 `D:\dsh\deepseek-harness`）** —— `components.css` §20 + `tokens.css`：
       中性描边全站改 **0.5px 发丝 + α 阶梯**（l1~l4，深色 α 白 / 亮色 α 黑，同一句 border 两套主题通用）、
       圆角收敛为 **6 级刻度并按角色选档**、浮层改 **`border:0` + `--elev-*` 阴影**（阴影第一层就是那道发丝）、
       hover/按压/选中统一为 **叠加层令牌**、新增 **键盘焦点环**（指针输入自动隐藏）。
