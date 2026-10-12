@@ -394,6 +394,33 @@
           <div class="spec-item__cls">.ui-tile--active</div>
         </div>
       </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div class="ui-tile ui-tile--icon" style="width:250px">
+          <span class="ui-tile__icon">✨</span>
+          <div class="ui-tile__body"><div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div><div class="ui-tile__desc">独立显卡 · 开启基础阴影</div></div>
+        </div>
+        <div class="ui-tile ui-tile--icon ui-tile--active" style="width:250px">
+          <span class="ui-tile__icon">💎</span>
+          <div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">全特效，首次加载更慢</div></div>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">卡片 · 图标优先（画质三档那类）</div>
+          <div class="spec-item__desc">图标 + 标题 + 描述（+ 可选的"推荐"徽章）；不用大缩略图。选中态同时点亮图标块</div>
+          <div class="spec-item__cls">.ui-tile.ui-tile--icon / .ui-tile__icon / .ui-tile__body</div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div class="ui-tile-grid ui-tile-grid--boxed" style="grid-template-columns:repeat(3,1fr);width:100%">
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">📶</span><div class="ui-tile__body"><div class="ui-tile__name">标清</div><div class="ui-tile__desc">移动端推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon ui-tile--active"><span class="ui-tile__icon">✨</span><div class="ui-tile__body"><div class="ui-tile__name">高清</div><div class="ui-tile__desc">桌面推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">💎</span><div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">高性能显卡</div></div></div>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">卡片组承载框</div>
+          <div class="spec-item__desc">若干同类卡片要"看成一组的选项"时兜一层框（画质三档）。注意不要给 .ui-tile-grid 加默认框：项目目录把它当可滚动内容用，会框里套框</div>
+          <div class="spec-item__cls">.ui-tile-grid.ui-tile-grid--boxed</div>
+        </div>
+      </div>
   </div>
   <div class="spec-section-title">五、表单与控件</div>
   <div class="spec-grid">

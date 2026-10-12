@@ -93,6 +93,29 @@ export const styleSpecSections = [
         cls: '.ui-tile--active',
         html: '<div class="ui-tile ui-tile--active" style="width:200px"><div class="ui-tile__thumb"></div><div class="ui-tile__name">02 · 项目名称</div><div class="ui-tile__desc">进度 7 / 11</div></div>',
       },
+      {
+        name: '卡片 · 图标优先（画质三档那类）',
+        desc: '图标 + 标题 + 描述（+ 可选的"推荐"徽章）；不用大缩略图。选中态同时点亮图标块',
+        cls: '.ui-tile.ui-tile--icon / .ui-tile__icon / .ui-tile__body',
+        html: `<div class="ui-tile ui-tile--icon" style="width:250px">
+          <span class="ui-tile__icon">✨</span>
+          <div class="ui-tile__body"><div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div><div class="ui-tile__desc">独立显卡 · 开启基础阴影</div></div>
+        </div>
+        <div class="ui-tile ui-tile--icon ui-tile--active" style="width:250px">
+          <span class="ui-tile__icon">💎</span>
+          <div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">全特效，首次加载更慢</div></div>
+        </div>`,
+      },
+      {
+        name: '卡片组承载框',
+        desc: '若干同类卡片要"看成一组的选项"时兜一层框（画质三档）。注意不要给 .ui-tile-grid 加默认框：项目目录把它当可滚动内容用，会框里套框',
+        cls: '.ui-tile-grid.ui-tile-grid--boxed',
+        html: `<div class="ui-tile-grid ui-tile-grid--boxed" style="grid-template-columns:repeat(3,1fr);width:100%">
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">📶</span><div class="ui-tile__body"><div class="ui-tile__name">标清</div><div class="ui-tile__desc">移动端推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon ui-tile--active"><span class="ui-tile__icon">✨</span><div class="ui-tile__body"><div class="ui-tile__name">高清</div><div class="ui-tile__desc">桌面推荐</div></div></div>
+          <div class="ui-tile ui-tile--icon"><span class="ui-tile__icon">💎</span><div class="ui-tile__body"><div class="ui-tile__name">超清</div><div class="ui-tile__desc">高性能显卡</div></div></div>
+        </div>`,
+      },
     ],
   },
   {

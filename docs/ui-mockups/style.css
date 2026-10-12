@@ -338,6 +338,26 @@ body {
 .ui-tile__name { font-size: var(--fs-14); font-weight: 600; }
 .ui-tile__desc { font-size: var(--fs-12); color: var(--text-3); }
 
+/* 分组框：若干同类卡片要"看成一组的选项"时，用它兜一个承载框（A4 画质三档）。
+   为什么不直接给 .ui-tile-grid 加框：A5 的项目目录把它当"可滚动的网格内容"用，
+   再套一层框会形成框里套框。所以做成显式修饰类。 */
+.ui-tile-grid--boxed {
+  padding: var(--sp-4);
+  background: var(--glass-panel);
+  border: var(--hairline) solid var(--line-1);
+  border-radius: var(--radius-xl);
+}
+/* 图标优先的紧凑卡片：图标 + 标题 + 描述（+ 可选的"推荐"徽章），不用大缩略图 */
+.ui-tile--icon { flex-direction: row; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-4); }
+.ui-tile__icon {
+  width: 46px; height: 46px; flex: none; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center; font-size: 24px;
+  background: var(--glass-inset); border: var(--hairline) solid var(--glass-border);
+}
+.ui-tile--active .ui-tile__icon { border-color: var(--accent); background: var(--accent-weak); }
+.ui-tile__body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ui-tile--icon .ui-tile__name { display: flex; align-items: center; gap: var(--sp-2); }
+
 /* ------------------------------------------------------- 9. 表单与控件 */
 .ui-input, .ui-select {
   height: 40px; padding: 0 var(--sp-3); width: 100%;
@@ -388,6 +408,7 @@ body {
   display: inline-flex; align-items: center; gap: 4px;
   padding: 2px 8px; border-radius: var(--r-1);
   font-size: var(--fs-12); background: var(--bg-1); border: 0.5px solid var(--line-2); color: var(--text-2);
+  white-space: nowrap;   /* 徽章文字永不换行：被压窄时应该"截断面包屑"而不是"把标签挤成两行" */
 }
 .ui-badge--ok { background: var(--ok-weak); border-color: rgba(34, 197, 94, 0.4); color: #8ce6ab; }
 .ui-badge--warn { background: var(--warn-weak); border-color: rgba(245, 158, 11, 0.4); color: #ffd28a; }
@@ -1325,8 +1346,8 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
      为什么必须封顶：站点线是横贯条且第一站就在左上，左内边距必须给够；
      若不封顶（实测最宽卡 747px ⇒ 左预留要 810px），再加右侧 268px，
      11 站的站点线只剩约 790px，连接段会被压到接近 0。 */
-  --shell-card-max-w: 560px;
-  --shell-reserve-top-left: 620px;      /* = 卡上限 560 + 左边距 50 + 余量 10 */
+  --shell-card-max-w: 600px;
+  --shell-reserve-top-left: 660px;      /* = 卡上限 600 + 左边距 50 + 余量 10 */
   --shell-reserve-top-right: 268px;     /* 页面右上按钮组的避让（§19 实测值） */
 
   /* H1 投影：近处一道实边 + 远处一层柔光（不是大范围模糊，避免糊成一团） */
@@ -1359,6 +1380,11 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 .ui-titlebar--float .ui-titlebar__crumb {
   max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+/* 收缩优先级：**先压面包屑、名字，绝不压徽章**。
+   否则徽章会被 flex 挤窄、文字换行（A4 上就是这么暴露的：浮卡有 560px 上限）。 */
+.ui-titlebar--float .ui-titlebar__right { min-width: 0; }
+.ui-titlebar--float .ui-titlebar__right .ui-badge { flex: none; }
+.ui-titlebar--float .ui-titlebar__crumb { flex: 0 1 auto; }
 .ui-titlebar--float .ui-titlebar__en { letter-spacing: 0.8px; }   /* 英文副标题收紧，别把卡撑宽 */
 /* 外壳里的顶栏 = 浮卡 + 钉在左上角 */
 .board > .ui-titlebar {

@@ -156,21 +156,28 @@ export const pagesAB = [
       <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px">
         <div class="ui-h2">选择画面质量</div>
         <div class="ui-muted ui-small">首次进入需要选择一次；之后可在右上「画质」按钮修改</div>
-        <div class="ui-tile-grid" style="width:1180px;grid-template-columns:repeat(3,1fr)">
-          <div class="ui-tile">
-            <div class="ui-tile__thumb"></div>
-            <div class="ui-tile__name">标清</div>
-            <div class="ui-tile__desc">低端集显 / 移动端推荐 · 关闭阴影与后处理</div>
+        <!-- 三个选项卡放在一个承载框里；卡内不再用大缩略图，改为 图标 + 标题 + 描述（+ 推荐徽章） -->
+        <div class="ui-tile-grid ui-tile-grid--boxed" style="width:1180px;grid-template-columns:repeat(3,1fr)">
+          <div class="ui-tile ui-tile--icon">
+            <span class="ui-tile__icon">📶</span>
+            <div class="ui-tile__body">
+              <div class="ui-tile__name">标清</div>
+              <div class="ui-tile__desc">低端集显 / 移动端推荐 · 关闭阴影与后处理</div>
+            </div>
           </div>
-          <div class="ui-tile ui-tile--active">
-            <div class="ui-tile__thumb"></div>
-            <div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div>
-            <div class="ui-tile__desc">独立显卡 / 桌面浏览器 · 开启基础阴影</div>
+          <div class="ui-tile ui-tile--icon ui-tile--active">
+            <span class="ui-tile__icon">✨</span>
+            <div class="ui-tile__body">
+              <div class="ui-tile__name">高清 <span class="ui-badge ui-badge--ok">推荐</span></div>
+              <div class="ui-tile__desc">独立显卡 / 桌面浏览器 · 开启基础阴影</div>
+            </div>
           </div>
-          <div class="ui-tile">
-            <div class="ui-tile__thumb"></div>
-            <div class="ui-tile__name">超清</div>
-            <div class="ui-tile__desc">高性能显卡 · 全特效，首次加载更慢</div>
+          <div class="ui-tile ui-tile--icon">
+            <span class="ui-tile__icon">💎</span>
+            <div class="ui-tile__body">
+              <div class="ui-tile__name">超清</div>
+              <div class="ui-tile__desc">高性能显卡 · 全特效，首次加载更慢</div>
+            </div>
           </div>
         </div>
         <div class="ui-alert ui-alert--warn" style="width:1180px">
@@ -181,7 +188,7 @@ export const pagesAB = [
           <button class="ui-btn ui-btn--primary">确定并进入</button>
           <button class="ui-btn ui-btn--ghost">使用推荐值</button>
         </div>
-        <div class="note">A4 · <b>画质设置</b> · 三档卡片 + 硬件提示</div>
+        <div class="note">A4 · <b>画质设置</b> · 承载框 + 三档图标卡片（图标 / 标题 / 描述 / 推荐）+ 硬件提示</div>
       </div>`,
   },
 
