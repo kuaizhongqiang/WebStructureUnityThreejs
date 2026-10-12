@@ -1,0 +1,48 @@
+# 合并门禁（docs/DECISIONS.md DEC-66：提交门禁在本地 hook，合并门禁交给 CI）。
+# 覆盖：契约三方一致、大文件、Web 侧类型检查 / 单测 / 构建 / 真浏览器渲染冒烟。
+name: gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  contracts:
+    name: 契约与资产门禁
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: 双端契约一致性（TS <-> 快照 <-> C#）
+        run: node tools/check-contracts.mjs
+      - name: 大文件门禁（已跟踪文件，10MB 阈值）
+        run: node tools/check-large-files.mjs --tracked
+
+  web:
+    name: Web 构建与渲染冒烟
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: 安装依赖
+        run: npm ci
+      - name: 类型检查
+        run: npm run typecheck
+      - name: 单元测试（契约快照）
+        run: npm test
+      - name: 生产构建
+        run: npm run build
+      - name: 安装 Chromium
+        run: npx playwright install --with-deps chromium
+      - name: 三维渲染冒烟
+        run: npm run smoke
