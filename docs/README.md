@@ -1,13 +1,13 @@
 # docs/ 索引
 
-> 读者：AI 与人｜状态：2026-10-12 v1｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
+> 读者：AI 与人｜状态：2026-10-12 **v2（已与仓库现状同步：72 条决策 / research 01~08 / 框体令牌升级）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
 
 ## 先看哪份（按角色）
 
 | 你是什么 | 顺序 |
 |---|---|
-| **人（决策者）** | `OPEN-QUESTIONS-R2.md`（待你回答 27 题）→ `DECISIONS.md`（已定的 33 条）→ `requirement/requirement-analysis.md` |
-| **AI（执行者）** | `../AGENT.md` → `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` |
+| **人（决策者）** | `DECISIONS.md`（**已定的 72 条，三轮问答全部关闭**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
+| **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` / `design/` |
 
 ## 文件清单
 
@@ -22,14 +22,15 @@
 
 | 文件 | 内容 | 状态 |
 |---|---|---|
-| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：DEC-01~DEC-33，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。**只增不改** | v1 生效 |
+| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：**DEC-01 ~ DEC-72（三轮）**，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。章节：§1~§9 第一轮、§10~§13 第二轮、§14~§15 第三轮。**只增不改** | v1~v3 生效 |
 | `OPEN-QUESTIONS.md` | 第一轮问题清单（32 题）**原文保留**，答案已全部固化到 `DECISIONS.md` | v1 已关闭 |
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
 | `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |
 | **`PAGE-WORKLIST.md`** | **页面工作清单**：按两个参考工程实测盘点的全部页面（6 组 / 11 个任务页 / 通用组件）+ 里程碑 + 照什么不照什么 | 待审 |
-| `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、29 个页面排版稿入口 | 待审 |
+| `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、**第九节框体令牌（圆角 6 级 / 0.5px 描边阶梯 / elevation / 交互叠加层 / 焦点环）**、29 个页面入口 | 待审 |
 | `ui-mockups/pages/*.html` | **29 个页面的静态排版稿**（A 组 10 · B 组 5 · C 组 11 · D 组 3），逐页审核用 | 待审 |
-| `ui-mockups/style.css` | 样式唯一依赖：全部设计令牌 + 组件样式（类名即组件名，可复制进 `web/`） | — |
+| `ui-mockups/style.css` | **样式唯一依赖**：全部设计令牌 + 组件样式（类名即组件名，可复制进 `web/`）。分节：§17 毛玻璃、§18 亮色方案、§19 第四轮修正、**§20 框体统一升级**（参考 `D:\dsh\deepseek-harness`；"有意没照搬什么"写在 §20.7） | — |
+| `ui-mockups/TODO.md` | 排版稿待办（T1 菜单页重做 / T2 题目样式 / T3 考核页 / T4 Unity 页暂不设计）+ 已完成清单 | 活文档 |
 | `ui-mockups/src/*.mjs` | 排版稿生成器（改完重新执行 `node docs/ui-mockups/src/render.mjs`） | — |
 
 ### 设计草案 `design/`
@@ -62,6 +63,7 @@
 | `research/05-dependency-plan.md` | 依赖清单与拉取方案：环境实测、Unity/Web 两侧候选依赖、执行与验收标准 |
 | `research/06-scale-baseline.md` | **规模基线**：参照工程 `SensorSimulationTrainingSoftware` 的实测规模，与 **×3 容量预算** |
 | `research/07-web-scaffold.md` | **Web 工程落地记录**：已装依赖与版本、验收输出、**TS 7 与 vue-tsc 不兼容的坑**、未完成项 |
+| `research/08-webgl-baseline.md` | **WebGL 基线实测**：空场景构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）+ 逐文件占用，是资源预算与"包体是首要敌人"的实测依据 |
 
 > ⚠️ `research/` 各篇里的 `★` 是**当时的建议**，可能已被 `DECISIONS.md` 取代；**冲突时以 `DECISIONS.md` 为准**。
 
