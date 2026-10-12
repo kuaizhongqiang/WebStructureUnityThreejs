@@ -122,7 +122,7 @@ web/
 ## 7 附：本机运行方式
 
 ```powershell
-cd f:\Project\WebStructureUnityThreejs\web
+cd <仓库根>/web
 npm run dev        # 开发服务器（127.0.0.1:5273）
 npm run build      # 类型检查 + 生产构建 → web/dist
 npm run preview    # 预览生产产物
