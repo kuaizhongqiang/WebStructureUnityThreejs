@@ -8,12 +8,15 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { SceneState, TASK_TYPE_LABELS, TaskType, ViewerStack, isTaskType } from '@/contracts'
+import { detectDevice } from '@/platform/device'
 import { useSessionStore } from '@/stores/session'
 import { Viewer } from '@/viewer/Viewer'
 
 const route = useRoute()
 const router = useRouter()
 const session = useSessionStore()
+// 设备提示（DEC-70）：只提示不阻拦；画质档随之取 low/high。
+const device = detectDevice()
 
 const canvasHost = ref<HTMLElement | null>(null)
 const viewerError = ref<string>('')
@@ -105,6 +108,8 @@ function goHome(): void {
       </span>
     </div>
 
+    <p v-if="device.notice" class="notice">{{ device.notice }}</p>
+
     <div v-if="stack === ViewerStack.Three" class="stage">
       <div ref="canvasHost" class="canvas-host"></div>
       <p v-if="viewerError" class="error">渲染器初始化失败：{{ viewerError }}</p>
@@ -146,5 +151,15 @@ function goHome(): void {
 
 .error {
   color: #ff8f8f;
+}
+
+.notice {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border: 1px solid #6b5a20;
+  border-radius: 8px;
+  background: #2a2415;
+  color: #ffd98a;
+  font-size: 13px;
 }
 </style>
