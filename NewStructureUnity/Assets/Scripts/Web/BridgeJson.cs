@@ -166,6 +166,20 @@ namespace WSU3.Web
             return value;
         }
 
+        /// <summary>
+        /// 该原始片段是否是**数字字面量**（`-` 开头或数字开头）。
+        ///
+        /// 为什么需要单独判：`JsonUtility` 遇到 <c>{"taskType":"five"}</c> 这种"字段类型不对"时
+        /// **不报错**，而是把 int 字段读成 0 —— 而 0 正好是 `TaskType.None`，
+        /// "看起来是合法枚举"于是被静默分发下去（新加的单测抓到的）。原文一看就知道真假。
+        /// </summary>
+        public static bool IsNumberLiteral(string raw)
+        {
+            if (string.IsNullOrEmpty(raw)) return false;
+            char c = raw[0];
+            return (c >= '0' && c <= '9') || c == '-';
+        }
+
         /// <summary>取顶层数字字段（整数）。</summary>
         public static int GetInt(string json, string key, int fallback = 0)
         {

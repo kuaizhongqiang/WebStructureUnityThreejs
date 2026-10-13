@@ -31,15 +31,20 @@
 | 1.12 | **P0-1 Play 验收** | 三条启动日志齐全；**抓到并修掉"桥随 `0_Setup` 被卸载"的沉默故障**（`WebBridge` 挪到 `Manager` 下 + 根物体自保 + 自检日志/上报） | git（见提交）；Plastic（见提交） |
 | 1.13 | **P0-2 单构建多任务语义（DEC-81）** | 清单 `taskTypes[]` + `--task-types`（带契约校验）+ `pickUnityBuild`（兼容旧清单）+ 壳侧同口径 + 7 项选件单测；**验收：桩构建 → 打包 → 壳冒烟 `mounted`** | git（见提交）；纯 JS/TS/文档，**无 Unity 侧改动**（故未走 Plastic） |
 | 1.14 | **P0-3 Web 内容层改用 `content/data/*.json`** | 适配层 + 内容 store + 菜单/任务页 + 同形状兜底 + 13 项单测 + 冒烟 8 条新断言；**过程中修掉两个 SPA 状态 bug**（坏链接污染目录、内容晚到导致视口挂不上） | git（见提交）；纯 Web/文档，无 Unity 侧改动 |
+| 1.16 | **P0-1 入站验证（桥的 EditMode 单测）** | 32 项单测（信封扫描 12 / 入站分发 14 / 出站映射与拾取上报 6）；**过程中修掉 3 个真问题**：计数器跨用例串、EditMode 不跑 `OnEnable` 导致出站订阅没接上、`JsonUtility` 把坏 `taskType` 读成 0 当合法值放行；**验收：32 passed / 0 failed** | git + Plastic（`Assets/Scripts/Web/*`、`Assets/Tests/EditMode/*`） |
 | 1.15 | **P1-4 三维资产搬运 + Blender 转 GLB** | 13 FBX + 24 贴图 + 48 原理图；13 个 GLB / 31.8 MB（BaseColor+Normal）；两个可重跑脚本 + 两份清单报告；**改掉 3 处口径**（两代模型是分工不是重复、闭包收不全贴图、mask map 通道不符） | git（工具/原理图/报告/文档）+ Plastic（`Assets/Models`、`Assets/Sprites`）；**未动 Unity 侧脚本与场景** |
 
 ---
 
 ## 2 待执行
 
-### P0-1 Unity 侧协议桥 + 启动编排（**a/b 已完成**，c~g 待做）
+### P0-1 Unity 侧协议桥 + 启动编排 —— ✅ **代码 a~g 全部就位**（只剩"入站路径的真环境验证"）
 
 **目标**：Unity 侧能真正收发桥消息，并按 `design/09` 的启动链跑起来。
+
+> ⚠️ 本标题此前写作"a/b 已完成，c~g 待做"，与下面的表格**不一致**（表格里 c~g 早已 ✅）—— 2026-10-13 已更正。
+> 真实欠账只有一条：**入站路径（Web → Unity）没在真环境跑过**（编辑器没有页面桥，WebGL 要关编辑器人工构建），
+> 对应的验证手段是 P2-6f 的 **Bridge EditMode 单测**（2026-10-13 已写，见 §"入站验证"）。
 
 | 步骤 | 内容 | 落点 | 验收 | 状态 |
 |---|---|---|---|---|
@@ -85,6 +90,39 @@
   判定存活要用**游戏自己的自检日志**（如上面的 `WebBridge 就绪`）。
 - 编辑器里没有页面桥：握手与消息只在 WebGL 构建里才真正上网（`WebChannel.Sent` 事件是编辑器/单测的观察点）。
   **入站路径（Web → Unity）尚未在真环境跑过** —— 要等 P0-2 的单构建语义改完、真 WebGL 构建接上页面才能验。
+
+**入站验证（P2-6f 的桥单测，2026-10-13 已写，**运行被阻塞**）**：
+
+| 文件 | 覆盖 |
+|---|---|
+| `Assets/Tests/EditMode/BridgeProtocolTests.cs`（12 项） | 信封扫描（嵌套 payload、字符串里含 `}`、`payload:null`、`\uXXXX` 转义、缺字段回落、非信封拒绝）；出站信封（type/version/seq/payload、`seq` 自增、无名消息丢弃、握手幂等）；**`WebBridge.*` 10 条出站消息逐条比对 type 与分组**（拼错立刻红） |
+| `Assets/Tests/EditMode/WebBridgeInboundTests.cs`（13 项） | 入站分发逐条（`app:init` / `preload:task` / `scene:enter` / `scene:exit` / `runtime:resume` / `view:focus` / `input:enable` / `debug:ping`→`debug:pong`）；**三条"不该静默"**（版本不符 → `unity:error{1001,fatal}` 且**不分发**；脏信封 → 报错且不回消息；未知 type → 只告警）；越界 `taskType` 忽略；载荷坏忽略；出站意图 5 条真的上网；**点空白不上报 / 点中物体上报 / 悬停不上报** |
+| `Assets/Tests/EditMode/WSU3.Tests.EditMode.asmdef` | 加 `WSU3.Core` + `WSU3.Runtime` 两个引用（一次性加够，避免反复触发重导入） |
+
+⚠️ **过程记录：第一次尝试时跑不起来，但不是这批测试的问题** —— 工程当时编译不过
+（负责人正在编的 steps 条件系统：`ConditionBase : ICondition` 已声明实现、4 个成员还没写，
+报 4 条 CS0535）。`WSU3.Core` 挂 → `WSU3.Runtime` → `WSU3.Tests.EditMode` 都编译不出新 DLL。
+**没有动负责人的 WIP**，等工程能编译后重跑 —— 结论见下。
+
+⚠️ **2026-10-13 实测：跑起来了，32 项全过（0 失败）**；过程中修掉 3 个真问题：
+
+| # | 现象 | 根因 | 处理 |
+|---|---|---|---|
+| 1 | 3 个用例"期望 0 却是 1" | 计数器串了：NUnit 的 fixture 实例会**复用**，而 `[SetUp]` 只清了 `_sent` | `SetUp` 里把所有计数器一起归零 |
+| 2 | 2 个出站用例"期望 5 条消息，实得 0 条" | **EditMode 下 `AddComponent` 不触发 `OnEnable`**（生命周期只在播放态跑），而"意图事件 → 上网"的订阅正好写在 `OnEnable` | 测试里**显式调用真实的 `OnEnable`/`OnDisable`**（反射，不是替身），并在销毁前退订 |
+| 3 | `{"taskType":"five"}` 被**静默当成 `TaskType.None` 分发下去** | `JsonUtility` 对类型不对的字段**不报错**，读成 0 —— 而 0 是合法枚举 | 收紧实现：`BridgeJson.IsNumberLiteral` + `WebBridgeBehaviour.HasNumericTaskType`，`taskType` 必须是数字字面量（缺字段/字符串都拒），告警"不是数字字面量" |
+
+> 另：首次运行"通过"过一次**假绿** —— 工程当时编译不过（负责人 WIP 的 `ConditionBase`），
+> 测试运行器跑的是**上一次成功编译的旧 DLL**，只发现 4 个旧测试、新测试一个都不出现。
+> **"跑过了"≠"跑到我的测试了"**，看 `total` 才知道。
+
+| 文件 | 落点 |
+|---|---|
+| `Assets/Scripts/Web/BridgeJson.cs` | 加 `IsNumberLiteral`（数字字面量判定，第 3 条的修复） |
+| `Assets/Scripts/Web/WebBridgeBehaviour.cs` | 加 `HasNumericTaskType`，`scene:enter` / `preload:task` / `preload:cancel` 三处生效 |
+| `Assets/Tests/EditMode/{BridgeProtocolTests,WebBridgeInboundTests}.cs` | 32 项：信封扫描 12 + 入站分发 14 + 出站与拾取上报 6 |
+
+**验收（已跑通）**：Unity Test Runner → `WSU3.Tests.EditMode` → **32 passed / 0 failed**（`total=32` 是"真的跑到新测试"的证据）。
 
 **c/d/e 的实现要点（给下一次续会话）**：
 - **流程管理点只有一处**：`Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`），**不另建 controller/MonoBehaviour**；`Init` 订阅入站事件，逐帧由 `GlobalManager.Update` → `CoreUpdate` 推进。

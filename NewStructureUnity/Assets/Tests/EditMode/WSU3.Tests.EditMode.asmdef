@@ -3,6 +3,8 @@
   "rootNamespace": "WSU3.Tests.EditMode",
   "references": [
     "WSU3.Contracts",
+    "WSU3.Core",
+    "WSU3.Runtime",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],

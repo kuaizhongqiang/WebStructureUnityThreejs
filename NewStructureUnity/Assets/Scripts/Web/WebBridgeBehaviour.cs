@@ -183,6 +183,11 @@ namespace WSU3.Web
 
                 case BridgeMessageType.SceneEnter:
                 {
+                    if (!HasNumericTaskType(envelope))
+                    {
+                        Debug.LogWarning("[WebBridge] scene:enter 载荷里的 taskType 不是数字字面量，已忽略。");
+                        return;
+                    }
                     var p = BridgeJson.ParsePayload<SceneEnterPayload>(envelope.Payload);
                     if (p == null)
                     {
@@ -266,14 +271,31 @@ namespace WSU3.Web
 
         private static bool TryReadTaskType(BridgeEnvelope envelope, out TaskType taskType)
         {
+            taskType = TaskType.None;
+            if (!HasNumericTaskType(envelope))
+            {
+                Debug.LogWarning($"[WebBridge] {envelope.Type} 载荷里的 taskType 不是数字字面量，已忽略。");
+                return false;
+            }
             var p = BridgeJson.ParsePayload<TaskRefPayload>(envelope.Payload);
             if (p == null)
             {
                 Debug.LogWarning($"[WebBridge] {envelope.Type} 载荷解析失败，已忽略。");
-                taskType = TaskType.None;
                 return false;
             }
             return TryConvertTaskType(p.taskType, envelope.Type, out taskType);
+        }
+
+        /// <summary>
+        /// 载荷里的 `taskType` 必须是**数字字面量**。
+        ///
+        /// 为什么不能只靠 `JsonUtility`：它遇到 <c>{"taskType":"five"}</c> 不报错，而是读成 0，
+        /// 而 0 是合法的 `TaskType.None` —— 于是"坏载荷"变成"一个看起来正常的任务"被静默放行。
+        /// 单测 `BrokenPayload_IsIgnoredWithAWarning` 就是为这条而写。
+        /// </summary>
+        private static bool HasNumericTaskType(BridgeEnvelope envelope)
+        {
+            return BridgeJson.IsNumberLiteral(BridgeJson.GetRaw(envelope.Payload, "taskType"));
         }
 
         /// <summary>契约值越界一律当"忽略 + 告警"处理，不抛异常。</summary>
