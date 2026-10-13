@@ -34,6 +34,8 @@
 | D-03 | 步骤系统的 **Web 侧落地面板**（`ui:request` / `ui:result` 的 DOM）+ 内容装配 + 面板 `timeoutSeconds` 取值 | Unity 侧已通，Web 侧待做 |
 | D-04 | `PAGE-WORKLIST.md` 里的未完成页面（考核页重做等） | 见 `docs/PAGE-WORKLIST.md` |
 | D-05 | 排版稿层面的待办（组件打磨、页面调整） | 见 `docs/ui-mockups/TODO.md` |
+| D-06 | 其余 README 按**新口径**逐个核对：`web/`、`electron/`、`content/assets/`、`unity/builds/` 四份是否还写着旧口径（如"未闭合见 `DECISIONS` 末尾表"、13 个 GLB、"进 `docs/ui-mockups` 起 `http.server 5280`"） | 本轮只做了**根 `README.md` 重写**与 `docs/README.md`；四份分册尚未逐个核对 |
+| D-07 | `DECISIONS.md` 各章末尾的历史「未闭合」表：**整体删除、只留 `TODO.md` 一份**，还是保留作"每条决策自己的出处"？ | 现状：保留 + `TODO.md` 汇总回链（`AGENT.md` §5 已写明"状态以 `TODO.md` 为准"）；请负责人定 |
 
 ## 3 已做完但没进版本库
 
