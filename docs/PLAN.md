@@ -22,25 +22,32 @@
 | 1.3 | 内容数据双份门禁 | 结构签名比对（7 份，63/17/6/21/33/12/5 条字段路径） | `tools/check-content-data.mjs`，进 hook + CI |
 | 1.4 | 契约扩展 | `QuestionType` / `QuestionUsage` / `BridgeMessageType`（23 条） | 三方比对通过；`contracts.spec.ts` 17 项单测 |
 | 1.5 | 文档 | `design/08`、`design/09`、`research/09`；`design/02/03/04/05` 同步 | — |
-| 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:8` | **PR 待人工开**（本机 GitHub 凭据失效） |
+| 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4` + `5f49b62`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:9` | **PR 待人工开**（本机 GitHub 凭据失效） |
+| 1.7 | Unity 侧桥的**传输与分发** | `.jslib` + 信封扫描器 + 4 个 C# 文件；4 个文件 `validate_script` 0 error、Unity console 无编译错误 | git `debea2e`；Plastic `cs:9` |
 
 ---
 
 ## 2 待执行
 
-### P0-1 Unity 侧协议桥 + 启动编排（进行中）
+### P0-1 Unity 侧协议桥 + 启动编排（**a/b 已完成**，c~g 待做）
 
 **目标**：Unity 侧能真正收发桥消息，并按 `design/09` 的启动链跑起来。
 
-| 步骤 | 内容 | 落点 | 验收 |
-|---|---|---|---|
-| a | `.jslib`：把 Unity → Web 的消息投到 `window.__WSU3_BRIDGE__.post(json)` | `NewStructureUnity/Assets/Scripts/Web/Plugins/Wsu3Bridge.jslib` | 浏览器控制台能看到 Unity 发出的握手 |
-| b | 消息信封解析（`type`/`version`/`seq`/`payload`）+ 分发到事件 | `Assets/Scripts/Web/BridgeMessage.cs`、`WebBridgeBehaviour.cs` | 未知 `type` 只告警不崩；版本不符→错误上报 |
-| c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Core/Managers/*`、`Assets/Scripts/Setup.cs`（新） | 日志出现"待命，等待 Web 指令" |
-| d | Web → Unity 消息落地：`app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume` / `debug:ping` | 同上 | `debug:ping` 能回 `debug:pong` |
-| e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P1-2） | 同上 | 切任务时两条就绪都发得出来 |
-| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` |
-| g | 场景接线：`0_Setup` / `1_Content` 各挂什么（`Manager.prefab`、`MainCamera.prefab`） | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 |
+| 步骤 | 内容 | 落点 | 验收 | 状态 |
+|---|---|---|---|---|
+| a | `.jslib`：把 Unity → Web 的消息投到 `window.__WSU3_BRIDGE__`（`onReady` / `post` / `onProgress` 三条通道） | `NewStructureUnity/Assets/Scripts/Web/Plugins/Wsu3Bridge.jslib` | WebGL 构建里能看到握手 | ✅ 代码就位（**WebGL 构建后实测**） |
+| b | 信封解析（`type`/`version`/`seq`/`payload`）+ 分发到 `EventBus<T>`；版本不符 → 错误码 1001 | `Assets/Scripts/Web/{BridgeJson,BridgeProtocol,WebBridgeBehaviour}.cs`、`WebChannelNative.cs`、`WebChannelEditor.cs` | 未知 `type` 只告警；编辑器里 `WebChannel.Sent` 能观察到出站消息 | ✅ `validate_script` 4 个文件 0 error；Unity console 无编译错误 |
+| c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Setup.cs`（新）、`Core/Managers/*` | 日志出现"待命，等待 Web 指令" | ⬜ |
+| d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Assets/Scripts/Managers/*` | `debug:ping` 回 `debug:pong` | ⬜ |
+| e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上 | 切任务时两条就绪都发得出来 | ⬜ |
+| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` | ⬜ |
+| g | 场景接线：`0_Setup` / `1_Content` 各挂什么（`Manager.prefab`、`MainCamera.prefab`） | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜ |
+
+**已知实现细节（给下一次续会话）**：
+- `WebBridgeBehaviour` 必须挂在**名叫 `WebBridge` 的 GameObject** 上（Web 侧 `BRIDGE_GAME_OBJECT` 写死了这个名字），收消息方法是 `OnWebMessage(string)`。
+- 出站走 `WebBridge.*`（`AssetsReady` / `SceneReady` / `SceneExited` / `SceneProgress` / `StepChanged` / `TaskCompleted` / `ReportError` / `Pong`）；`WebChannel.Sent` 是编辑器/单测的观察点。
+- 平台分文件是**刻意的**（`WebChannelNative.cs` / `WebChannelEditor.cs`）：静态检查工具不懂 `#if`，同文件两分支同名会被判"重复方法"。
+- WebGL 里 `.jslib` 的函数名必须与 C# 的 `DllImport("__Internal")` 名字逐字一致（`Wsu3Bridge_Ready/Post/Progress`）。
 
 **风险/约束**：
 - ⚠️ 写 `.cs` 会让**正在开着的 Unity 编辑器重编译**（负责人知情）；`asmdef` 变动会触发更久的重导入，尽量一次改完。
