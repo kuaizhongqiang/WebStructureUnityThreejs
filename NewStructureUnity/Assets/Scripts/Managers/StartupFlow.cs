@@ -59,8 +59,9 @@ namespace WSU3.Managers
             // ① 握手（幂等：WebBridgeBehaviour 若已发过就不会重复）
             WebChannel.Ready();
 
-            // ② 任务编排常驻对象（不依赖场景里手工挂载；后续若想放进 Manager.prefab 也可以，Ensure 会复用）
+            // ② 常驻编排对象（不依赖场景里手工挂载；后续若想放进 Manager.prefab 也可以，Ensure 会复用）
             TaskFlowController.Ensure();
+            WSU3.Interaction.InteractionPickManager.Ensure();
 
             // ③ single 切到常驻内容场景
             string sceneName = DataStructMapping.GetContentSceneName();

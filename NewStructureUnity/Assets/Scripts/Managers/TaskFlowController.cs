@@ -69,6 +69,7 @@ namespace WSU3.Managers
             EventBus<InputEnableEvent>.Subscribe(OnInputEnable);
             EventBus<RuntimeResumeEvent>.Subscribe(OnRuntimeResume);
             EventBus<DebugPingEvent>.Subscribe(OnDebugPing);
+            EventBus<GlobalInteractionEventData>.Subscribe(OnInteraction);
         }
 
         private void OnDisable()
@@ -84,6 +85,7 @@ namespace WSU3.Managers
             EventBus<InputEnableEvent>.Unsubscribe(OnInputEnable);
             EventBus<RuntimeResumeEvent>.Unsubscribe(OnRuntimeResume);
             EventBus<DebugPingEvent>.Unsubscribe(OnDebugPing);
+            EventBus<GlobalInteractionEventData>.Unsubscribe(OnInteraction);
         }
 
         private void OnDestroy()
@@ -171,6 +173,18 @@ namespace WSU3.Managers
         {
             // 回包已在桥里完成（成对处理）；这里只留一条日志便于排查
             Debug.Log($"[TaskFlow] debug:ping at={e.At}");
+        }
+
+        /// <summary>
+        /// 交互单一出口的 **Web 上报**：只有"点中了物体"才报 `object:picked`。
+        /// 「点空白」（`Target == null`）不上报 —— 那条语义 Web 侧自己就能感知（DOM 层本来就收得到）。
+        /// </summary>
+        private void OnInteraction(GlobalInteractionEventData e)
+        {
+            if (e == null || e.Target == null) return;
+            if (e.Type != GlobalInteractionType.Click) return;
+
+            WebBridge.ObjectPicked(e.Target.ObjectKey);
         }
 
         // ── 动作序列 ──────────────────────────────────────────────────────

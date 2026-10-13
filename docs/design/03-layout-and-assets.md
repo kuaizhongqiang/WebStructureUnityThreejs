@@ -44,10 +44,15 @@ NewStructureUnity/Assets/Tests/           # 测试（DEC-27）
 | 程序集 | 目录 | 依赖 | 说明 |
 |---|---|---|---|
 | `WSU3.Contracts` | `Contracts/` | 无（除 Unity 内置） | 契约层：只有枚举与消息常量，**不得**引用其它程序集 |
-| `WSU3.Core` | `Core/` | `WSU3.Contracts` | 框架基础设施，不得反向依赖上层 |
-| `WSU3.Runtime` | `Managers/` `Viewers/` `Web/` `Services/` | `WSU3.Core` `WSU3.Contracts` | 业务运行时 |
+| `WSU3.Core` | `Core/` | `WSU3.Contracts` + `UnityEngine.UI` | 框架基础设施，不得反向依赖上层 |
+| `WSU3.Runtime` | `Managers/` `Interaction/` `Viewers/` `Web/` `Services/` | `WSU3.Core` `WSU3.Contracts` + `UnityEngine.UI` | 业务运行时 |
 | `WSU3.Editor` | `Assets/Editor/` | `WSU3.Runtime` `WSU3.Core` | 编辑器工具 |
 | `WSU3.Tests.*` | `Assets/Tests/` | 被测程序集 + test-framework | 单测 / PlayMode |
+
+**为什么 `UnityEngine.UI` 会被引用**（2026-10-13 补，DEC-80 的落地）：它提供的是
+`UnityEngine.EventSystems`（`EventSystem` / `StandaloneInputModule` / `PhysicsRaycaster` / `IPointer*Handler`），
+也就是**三维拾取的那套输入体系** —— **不是**拿来画界面的（界面在 Web 的 DOM 层，DEC-16/80）。
+`WSU3.Core` 里引用它是为了交互物基类能实现 `IPointer*Handler`；`WSU3.Runtime` 里引用它是为了建 `EventSystem` 与 `PhysicsRaycaster`。
 
 依赖纪律（DEC-86）：`WSU3.Core → WSU3.Contracts` 是**允许且唯一**的一条下行依赖（`Core` 里的管理器要认枚举与消息名）；
 `Contracts` 必须保持零依赖。至于 **TMP / uGUI 包**：本批**保留在 `Packages/manifest.json` 里不删**（Q-R6-5 = B），

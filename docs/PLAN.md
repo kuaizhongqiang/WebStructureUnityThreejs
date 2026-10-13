@@ -25,6 +25,7 @@
 | 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4` + `5f49b62`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:9` | **PR 待人工开**（本机 GitHub 凭据失效） |
 | 1.7 | Unity 侧桥的**传输与分发** | `.jslib` + 信封扫描器 + 4 个 C# 文件；4 个文件 `validate_script` 0 error、Unity console 无编译错误 | git `debea2e`；Plastic `cs:9` |
 | 1.8 | **启动编排 + 任务编排 + 输入闸门** | `StartupFlow`（自检 → 握手 → single 切内容场景 → 待命）、`TaskFlowController`（消息落地 + `assets:ready`/`progress`/`scene:ready`/`scene:exited`）、`InputGate`、`SceneManager` 的三个场景调用；5 个文件 `validate_script` 0 error | git `26488d0`；Plastic `cs:10` |
+| 1.9 | **三维拾取体系** | `InteractiveObjBase`（改造成真基类：自注册 + 指针事件单一出口）、`InteractiveRegistry`（按契约 key）、`IHighlightService`（可降级）、`InteractionPickManager`（按需建 EventSystem + 给主相机补 PhysicsRaycaster + 点空白补发）、`TaskFlowController` 上报 `object:picked`；两个 asmdef 加 `UnityEngine.UI` | 全量重编译后 console 无 error |
 
 ---
 
@@ -41,8 +42,17 @@
 | c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Managers/StartupFlow.cs`、`Core/Managers/FunctionManager/SceneManager.cs` | 日志出现"已停在 '1_Content' 待命" | ✅ 代码就位（**待场景挂载**，见 g） |
 | d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Assets/Scripts/Managers/TaskFlowController.cs` | 每条消息有日志；`debug:ping` 回 `debug:pong` | ✅ 代码就位 |
 | e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上 | 切任务时两条就绪都发得出来 | ✅ 序列就位；**资源装载/装配是占位**（报非致命码 9001） |
-| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` | ⬜（`InputGate` 已就位，拾取本体待做） |
+| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Core/Interactive/{InteractiveObjBase,InteractiveRegistry,IHighlightService}.cs`、`Assets/Scripts/Interaction/InteractionPickManager.cs`、`TaskFlowController` | 点中物体 → Web 收到 `object:picked`；点空白 → 一条 `Target=null` 的 Click | ✅ 代码就位（**待场景里有交互物可点**，见 g） |
 | g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜（**只有这一步必须动场景**） |
+
+**f 的实现要点**：
+- 拾取**不建 Canvas**：`InteractionPickManager` 按需创建 `EventSystem + StandaloneInputModule`（挂在自身名下，随常驻对象活过场景切换），并给主相机补 `PhysicsRaycaster`。
+- **物体侧**：派生 `InteractiveObjBase` 的组件（配 `Collider`）自动进 `InteractiveRegistry`；悬停/按下/抬起/点击 → `EventBus<GlobalInteractionEventData>` 单一出口；`InputGate` 关掉时直接忽略指针事件。
+- **点空白**：EventSystems 只在命中物体时回调，所以"点空白"由拾取管理器自己射线判定后补发一条 `Target = null` 的 Click（取消连线/收起浮卡依赖它）。
+- **高亮可降级**：`HighlightService.Current` 为 null 时静默不生效（本期宿主未接管，P2-6 接材质描边/自发光）。
+- **`view:focus`**：按 key 找物体 → 高亮（每次只亮一个；`scene:exit` 时清掉）。
+- **未做**（有意）：右键与双击（契约里已有 `ClickRight` / `ClickDouble` 两个类型值，需要时在拾取管理器补判定）。
+- **待回收的**：`Core/Managers/FunctionManager/InteractiveManager` 那份 Guid 字典与 `InteractiveRegistry` 是同一件事的两种口径，P2-6 时改为委托。
 
 **c/d/e 的实现要点（给下一次续会话）**：
 - `TaskFlowController` 用 `Ensure()` **运行时自建常驻对象**，所以不挂场景也能跑；以后想放进 `Manager.prefab` 也可以（`Ensure` 会复用已有实例）。
