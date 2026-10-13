@@ -17,6 +17,7 @@
 | `docs/research/01~09` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘** |
 | `docs/design/01~09` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
+| `docs/PLAN.md` | **执行计划（活文档）**：接下来要做什么、落点与验收、"待办"的唯一维护点 |
 | `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用），`style.css` 是聚合入口 |
 | `docs/README.md` | 文档总索引与写作约定 |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |

@@ -598,7 +598,8 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 
 | 未闭合 | 原因 | 去向 |
 |---|---|---|
-| **Unity 侧协议桥实现**（`.jslib` + 消息接收 + 启动编排） | DEC-85 已定清单，尚未写代码 | 下一批：`Assets/Scripts/Web/` |
+| **接下来要做什么**（步骤 / 落点 / 验收） | 唯一维护点已独立成文，避免上下文被压缩后丢失 | **`PLAN.md`** |
+| **Unity 侧协议桥实现**（`.jslib` + 消息接收 + 启动编排） | DEC-85 已定清单，尚未写代码 | `PLAN.md` P0-1；落点 `Assets/Scripts/Web/` |
 | **流水线与加载器的"单构建多任务"语义**（DEC-81） | 决定已下，代码未改 | `unity-stage.mjs` / 清单 `taskTypes[]` / `stores/runtime.ts` |
 | **Unity 侧"编辑期 SO → 导出 JSON"链路**（DEC-82 / DEC-88） | 本期先采用"JSON 手写" | 数据面稳定后接入 |
 | **Web 侧内容层改用 `content/data/*.json`** | 当前仍走 `content/projects/` 的演示数据 | 与 Unity 桥同批做 |

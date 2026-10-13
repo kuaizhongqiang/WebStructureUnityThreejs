@@ -1,0 +1,136 @@
+# 执行计划（活文档）
+
+> 读者：AI 与人｜状态：2026-10-13 **v1**｜性质：**活文档**。
+> **为什么有它**：会话上下文会被压缩，计划必须落盘 —— 本文件是"**接下来要做什么**"的唯一维护点。
+> 边界：**已定事项**（结论）仍在 `DECISIONS.md`；**未闭合需要负责人拍板**的也在 `DECISIONS.md` 末尾的表里；本文件只写**步骤、落点、验收与证据**。
+> 权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > `DECISIONS.md` > 本文件 > 其它。
+
+## 0 怎么用
+
+1. 每完成一项：把状态改成 ✅，并把**证据**写进"证据"列（命令输出摘要 / commit / PR / Plastic 变更集号）。**不要删条目**，保留轨迹。
+2. 新增待办：只加到这里；若需要负责人拍板，**同批**加进 `DECISIONS.md` 未闭合表。
+3. 执行顺序默认按 §2 的编号（P0 → P1 → P2）；同一优先级里可并行（多开 subagent 时，各自负责不重叠的文件集）。
+
+---
+
+## 1 已完成（2026-10-13，第六轮）
+
+| # | 事项 | 结果 | 证据 |
+|---|---|---|---|
+| 1.1 | 第六轮问答（26 + 14 条）→ 决策 | DEC-80 ~ DEC-88 生效 | `DECISIONS.md` §17 |
+| 1.2 | 内容数据全量采用 | 7 份 JSON / 9 个项目 / 73 KB，两处落点 | `web/public/content/data/`、`Assets/StreamingAssets/Data/` |
+| 1.3 | 内容数据双份门禁 | 结构签名比对（7 份，63/17/6/21/33/12/5 条字段路径） | `tools/check-content-data.mjs`，进 hook + CI |
+| 1.4 | 契约扩展 | `QuestionType` / `QuestionUsage` / `BridgeMessageType`（23 条） | 三方比对通过；`contracts.spec.ts` 17 项单测 |
+| 1.5 | 文档 | `design/08`、`design/09`、`research/09`；`design/02/03/04/05` 同步 | — |
+| 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:8` | **PR 待人工开**（本机 GitHub 凭据失效） |
+
+---
+
+## 2 待执行
+
+### P0-1 Unity 侧协议桥 + 启动编排（进行中）
+
+**目标**：Unity 侧能真正收发桥消息，并按 `design/09` 的启动链跑起来。
+
+| 步骤 | 内容 | 落点 | 验收 |
+|---|---|---|---|
+| a | `.jslib`：把 Unity → Web 的消息投到 `window.__WSU3_BRIDGE__.post(json)` | `NewStructureUnity/Assets/Scripts/Web/Plugins/Wsu3Bridge.jslib` | 浏览器控制台能看到 Unity 发出的握手 |
+| b | 消息信封解析（`type`/`version`/`seq`/`payload`）+ 分发到事件 | `Assets/Scripts/Web/BridgeMessage.cs`、`WebBridgeBehaviour.cs` | 未知 `type` 只告警不崩；版本不符→错误上报 |
+| c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Core/Managers/*`、`Assets/Scripts/Setup.cs`（新） | 日志出现"待命，等待 Web 指令" |
+| d | Web → Unity 消息落地：`app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume` / `debug:ping` | 同上 | `debug:ping` 能回 `debug:pong` |
+| e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P1-2） | 同上 | 切任务时两条就绪都发得出来 |
+| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` |
+| g | 场景接线：`0_Setup` / `1_Content` 各挂什么（`Manager.prefab`、`MainCamera.prefab`） | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 |
+
+**风险/约束**：
+- ⚠️ 写 `.cs` 会让**正在开着的 Unity 编辑器重编译**（负责人知情）；`asmdef` 变动会触发更久的重导入，尽量一次改完。
+- ⚠️ 新目录 `Assets/Scripts/Web/` 落在 `WSU3.Runtime.asmdef` 覆盖范围内（该 asmdef 在 `Assets/Scripts/` 根，递归生效），**不要**为它新建 asmdef。
+- Unity 侧每次改动都要**双渠道**提交（git 走 PR 分支；Plastic 按路径 `cm add` + `cm ci`）。
+- 本期**不采用** Newtonsoft（避免加包）；信封用小扫描器 + `JsonUtility` 解析 payload（见 `design/09`）。
+
+### P0-2 流水线"单构建多任务"语义（DEC-81）
+
+| 步骤 | 内容 | 落点 |
+|---|---|---|
+| a | 暂存入参改 `--key main --task-types 4,5,8,9` | `tools/pipeline/unity-stage.mjs` |
+| b | 清单每项加 `taskTypes: number[]` | `tools/pipeline/*`、`unity/builds/manifest.json` 形状 |
+| c | 加载器改"找第一个声明包含该 taskType 的构建" | `web/src/stores/runtime.ts`（`unityBuildFor`）、`web/src/unity/UnityLoader.ts` |
+| d | 壳冒烟里的 Unity 页断言随之更新 | `electron/` 冒烟脚本、`web/tools/` |
+
+**验收**：`make-stub-unity.mjs` 用新形状产出桩构建 → 打包 → 壳里 Unity 页仍 `mounted`。
+
+### P0-3 Web 内容层改用 `content/data/*.json`
+
+| 步骤 | 内容 | 落点 |
+|---|---|---|
+| a | 内容层读取路径与形状换成被采纳数据（`ProjectData.json` / `QuestionData.json` / `MenuData.json`） | `web/src/stores/content.ts`、`web/src/domain/*` |
+| b | 项目列表 / 菜单 / 题目页改用真实数据；`content/projects/demo-temperature.json` 保留为"无真实内容时的演示兜底" | `web/src/views/*` |
+| c | 渲染冒烟断言随之补（至少：9 个项目出现、随机进一个项目能出正文） | `web/tools/render-smoke.mjs` |
+
+**依赖**：P1-4 的原理图 Sprite（页面要显示图），否则先只跑文字。
+
+### P1-4 三维资产搬运（首批）
+
+**范围**（已测绘，见 `research/09` §5）：8 个器件的**新代** FBX + PBR 贴图（BaseColor / Normal / AO-Gloss）+ 8×6 张原理图 Sprite。
+**剔除**：PSD 设计稿、演示帧、未压缩背景大图、旧代模型、TMP 字体 SDF。
+
+**落点决定（2026-10-13，AI 定）**：
+
+| 用途 | 落点 | 谁管 | git |
+|---|---|---|---|
+| Unity 侧源资产（FBX / 贴图 / 预制体） | `NewStructureUnity/Assets/Models/**` | **Plastic** | **忽略**（`.gitignore` 增规则） |
+| Three 侧资产（glTF/GLB） | `content/assets/three/**` | git 仓库（不进库） | **忽略**（已有规则） |
+
+> 原 `content/assets/unity/` 的设想**作废**：Unity 要导入资产就必须放进它自己的 `Assets/`，放仓库根等于又多一份。
+
+**步骤**：
+1. 复制 8 器件新代 FBX + 贴图 → `NewStructureUnity/Assets/Models/`（保持原目录语义：按器件分目录）；
+2. 复制原理图 Sprite → 同一工程内（供 Unity）与 `web/public/content/sprites/`（供 Web，体积小先在 git 里）；
+3. 可选：Blender 批量把 FBX 转 GLB → `content/assets/three/`（Three 侧任务用）；
+4. `.gitignore` 增 `NewStructureUnity/Assets/Models/`；Plastic 侧提交。
+
+**验收**：Unity 里能把模型拖进场景无紫红；Web 侧原理图能显示。
+
+### P1-5 资产发布链（大资产怎么进产物）
+
+| 项 | 内容 |
+|---|---|
+| 问题 | `web/public/` 下的东西会被 Vite 拷进 `dist` 并进 git；`content/assets/` 不能进 git，但运行时必须能被 Web 服务到 |
+| 方案 | 新增 `tools/pipeline/web-assets.mjs`：构建**前**把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`（`dist` 不进 git）；`pack.mjs` 把它计入发布清单 |
+| 落点 | `tools/pipeline/`、`web/dist/release-manifest.json` 的 `content.assets` 字段 |
+
+### P2-6 资源包与场景（依赖 P0-1 落地）
+
+| # | 事项 | 说明 |
+|---|---|---|
+| a | 包登记表 + 三条链路（AB / AA / 内置） | `design/03` §7；包配置资产放 `Resources/Config/`，产物落 `Assets/StreamingAssets/` |
+| b | 一个项目一个内容包 + 实例登记 + 卸载纪律（防变粉） | 切任务 = 卸旧项目包 + 装新项目包 |
+| c | 漫游场景（additive，走 AA 或同构建内场景） | 入口先不做实现（浮动按钮预留）；**内容不采纳房间场景** |
+| d | 结构拆装动画（`.anim`）是否重建 | 取决于 P1-4 之后的效果评估 |
+| e | Unity 侧"编辑期 SO → 导出 JSON"链路 | 数据面稳定后接入；接入前**必须先备份 `StreamingAssets/Data/*.json`**（空 SO 会覆盖） |
+| f | 桥消息的 Unity 侧单测（EditMode） | 信封解析 / 版本不符 / 未知 type |
+
+---
+
+## 3 关键落点与纪律速查
+
+| 东西 | 落点 |
+|---|---|
+| Unity 源码 | `NewStructureUnity/Assets/Scripts/{Core,Contracts,Managers,Viewers,Web,Services}`（**无 `UIs/`**，DEC-80/86） |
+| Unity 内容数据 | `NewStructureUnity/Assets/StreamingAssets/Data/*.json` |
+| Unity 大资产 | `NewStructureUnity/Assets/Models/**`（Plastic 管，git 忽略） |
+| Web 内容数据 | `web/public/content/data/*.json` |
+| Three 大资产 | `content/assets/three/**`（git 忽略；构建前拷进 `dist`） |
+| 契约三处 | `web/src/contracts/*` ↔ `content/contracts/snapshot.json` ↔ `Assets/Scripts/Contracts/*.cs` |
+| 门禁 | `node tools/check-contracts.mjs`、`node tools/check-content-data.mjs`、`check-large-files`、`check-shell-coupling` |
+| 提交 | git：分支 + PR（`main` 不收直接提交，DEC-78）；Unity 侧：另走 Plastic（`cm add --recursive` + `cm ci`，DEC-60） |
+
+## 4 待负责人拍板（已登记在 `DECISIONS.md` 未闭合表）
+
+| 项 | 现在怎么办 |
+|---|---|
+| PR 由谁开 | 本机 GitHub 凭据失效，需人工开：`feat/unity-scaffold-bridge` → `main` |
+| 编辑器内的在编文件（`0_Setup`/`1_Content`/`Core/**`/`Resources/`）何时提交 | 未纳入本批，留负责人自己那一批 |
+| 亮色是否作为默认主题 | 现状：默认深色 |
+| 包体预算门禁（DEC-02 的 250~360 MB 只有文字） | 真产物接入后加脚本 |
+| 微信内置浏览器真机实测 | 待设备 |

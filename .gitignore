@@ -70,10 +70,15 @@ unity/builds/*
 !unity/builds/README.md
 
 # ---------- 内容大资产（DEC-57：模型 / 贴图 / 视频不进 git） ----------
-# 落点见 docs/design/03-layout-and-assets.md §5：content/assets/three|unity/
+# Three.js 侧：落点 content/assets/three/（构建前由流水线拷进 web/dist）
 # 与 unity/builds/ 同款处理：整目录忽略，只放行那份说明文件，保证新克隆的仓库里目录仍在。
 content/assets/**
 !content/assets/README.md
+
+# Unity 侧源资产（FBX / 贴图 / 预制体）：必须放在 Unity 自己的 Assets/ 下才能导入，
+# 由 Plastic 渠道管理（DEC-60）；git 侧一律忽略，避免大文件进门禁（DEC-57/65）。
+NewStructureUnity/Assets/Models/
+NewStructureUnity/Assets/Sounds/
 
 # ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/

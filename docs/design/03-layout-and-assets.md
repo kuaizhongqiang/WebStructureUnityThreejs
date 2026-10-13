@@ -102,9 +102,8 @@ content/
   contracts/
     snapshot.json         # ★ 契约校验基准（不是真源，见下）；枚举与桥消息的第三方比对物
   asset-registry.json     # §4 的资源登记表（以资源为主键）
-  assets/                 # 大资产落点（★ 不进 git，DEC-57）
-    three/                #   Three.js 侧（glTF/GLB）
-    unity/                #   Unity 侧（FBX / 贴图 / 预制体 / 包产物）
+  assets/
+    three/                # Three.js 侧大资产（glTF/GLB）★ 不进 git（DEC-57）；构建前拷进 web/dist
 
 web/public/content/data/                        # ← **Web 那一份内容数据**（随 web/dist 发布）
   ProjectData.json  QuestionData.json  MenuData.json  StepContentData.json
@@ -147,7 +146,16 @@ NewStructureUnity/Assets/StreamingAssets/Data/  # ← **Unity 那一份**（同�
 4. **bundle 文件名一律小写、目录段保持原样** —— 大小写写错在 WebGL / Linux 上直接 404。
 
 **包登记表的落点**：`Resources/Config/` 下的包配置资产 + 一张主清单（运行时与编辑器共用，`Resources` 保证两边取到同一份）。
-**包产物的落点**：`Assets/StreamingAssets/`（随构建发布）。**大资产源文件**（FBX / 贴图）放 `content/assets/unity/`（不进 git，DEC-57）。
+**包产物的落点**：`Assets/StreamingAssets/`（随构建发布）。
+
+**大资产源文件的落点**（2026-10-13 定）：
+
+| 用途 | 落点 | 谁管 | git |
+|---|---|---|---|
+| Unity 侧源资产（FBX / 贴图 / 预制体） | `NewStructureUnity/Assets/Models/**` | **Plastic**（Unity 侧渠道） | **忽略**（DEC-57；Unity 要导入就必须放在自己的 `Assets/` 下） |
+| Three.js 侧资产（glTF/GLB） | `content/assets/three/**` | git 仓库（不进库） | **忽略**；构建前由流水线拷进 `web/dist/assets/three/` |
+
+> 「`content/assets/unity/`」这个早期设想**作废** —— 那会让同一份资产在仓库里出现两次。
 
 **明确的取舍**（见 `../research/09-adopted-content-data.md` §5）：**不采用**被采纳工程的第三方表现插件与自制 ShaderGraph，
 材质改用 URP 标准光照 + 贴图通道直接映射（BaseColor / Normal / AO-Gloss），画面效果降级但避免把插件依赖拖进来。
