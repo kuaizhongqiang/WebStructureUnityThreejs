@@ -210,6 +210,7 @@ namespace WSU3.Web
     {
         private static int s_Seq;
         private static int s_Version = BridgeMessageType.ProtocolVersion;
+        private static bool s_ReadySent;
 
         /// <summary>本机（编辑器 / 单测）观察用：每发一条消息都会带上完整信封 JSON。</summary>
         public static event Action<string> Sent;
@@ -221,10 +222,25 @@ namespace WSU3.Web
             set => s_Version = value;
         }
 
-        /// <summary>握手：Unity 就绪（在 `app:init` 之前）。</summary>
+        /// <summary>
+        /// 握手：Unity 就绪（在 `app:init` 之前）。
+        /// **幂等**：谁先调用谁发（启动编排在"自检通过"时发，比 MonoBehaviour 的 Start 更准确），重复调用不再发。
+        /// </summary>
         public static void Ready()
         {
+            if (s_ReadySent) return;
+            s_ReadySent = true;
             Wsu3Bridge_Ready(s_Version.ToString());
+        }
+
+        /// <summary>是否已经握过手（供编排判断当前阶段）。</summary>
+        public static bool IsReadySent => s_ReadySent;
+
+        /// <summary>重置握手标记（仅测试用）。</summary>
+        public static void ResetForTests()
+        {
+            s_ReadySent = false;
+            s_Seq = 0;
         }
 
         /// <summary>引擎加载进度（0~1）；它是独立通道，可早于协议使用。</summary>

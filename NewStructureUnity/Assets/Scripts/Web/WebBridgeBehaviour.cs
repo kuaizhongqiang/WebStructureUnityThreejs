@@ -24,8 +24,10 @@ namespace WSU3.Web
         [Tooltip("收到的原始消息是否打到 Console（排查协议问题时打开；正常运行时关掉）")]
         [SerializeField] private bool logIncoming;
 
-        [Tooltip("启动时自动发握手（unity:ready）。只有在演练/单测时才需要关掉。")]
-        [SerializeField] private bool handshakeOnStart = true;
+        // 默认**不发**：真正"就绪"的时刻是"管理器自检通过、已停在内容场景待命"（见 StartupFlow），
+        // 而不是本组件 Start 的那一帧。`WebChannel.Ready()` 是幂等的，两边都调用也只会发一次。
+        [Tooltip("本组件 Start 时就发握手（unity:ready）。默认关闭，改由 StartupFlow 在自检通过时发。")]
+        [SerializeField] private bool handshakeOnStart;
 
         private void Start()
         {
