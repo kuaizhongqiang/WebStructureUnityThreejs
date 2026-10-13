@@ -138,6 +138,15 @@ describe('桥消息类型契约（DEC-85）', () => {
     }
   })
 
+  it('步骤与教学面板的消息都在，且 ui:request / ui:result 成对（DEC-91）', () => {
+    for (const type of ['step:changed', 'task:completed', 'ui:request', 'ui:result']) {
+      expect(isBridgeMessageType(type)).toBe(true)
+    }
+    // 请求是 Unity 发的，回执是 Web 发的 —— 方向写反了会表现成"消息石沉大海"
+    expect(isMessageFromWeb('ui:request')).toBe(false)
+    expect(isMessageFromWeb('ui:result')).toBe(true)
+  })
+
   it('方向判定与分组一致', () => {
     expect(isMessageFromWeb('app:init')).toBe(true)
     expect(isMessageFromWeb('scene:ready')).toBe(false)

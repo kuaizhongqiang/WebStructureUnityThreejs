@@ -3,6 +3,7 @@ using UnityEngine;
 using WSU3.Contracts;
 using WSU3.Contracts.Events;
 using WSU3.Core.Interactive;
+using WSU3.Core.Steps;
 
 namespace WSU3.Web
 {
@@ -29,6 +30,12 @@ namespace WSU3.Web
         // 而不是本组件 Start 的那一帧。`WebChannel.Ready()` 是幂等的，两边都调用也只会发一次。
         [Tooltip("本组件 Start 时就发握手（unity:ready）。默认关闭，改由 StartupFlow 在自检通过时发。")]
         [SerializeField] private bool handshakeOnStart;
+
+        /// <summary>
+        /// 教学面板端口的实现（步骤条件的 `ui:request` / `ui:result` 两端都在它身上）。
+        /// 桥活着期间注册；桥一停就注销，免得条件把请求发给一个已经没人的端口。
+        /// </summary>
+        private WebStepPanelPort panelPort;
 
         /// <summary>
         /// 桥必须**活过** `0_Setup → 1_Content` 的 single 切换 —— 否则场景一切，接消息的物体就没了，
@@ -73,6 +80,14 @@ namespace WSU3.Web
             EventBus<SceneProgressEvent>.Subscribe(OnSceneProgress);
             EventBus<BridgeErrorEvent>.Subscribe(OnBridgeError);
             EventBus<GlobalInteractionEventData>.Subscribe(OnInteraction);
+
+            // 步骤进度与完成：Core 只发事件，真正上网在这一层（Core 不依赖桥）
+            EventBus<StepChangedEvent>.Subscribe(OnStepChanged);
+            EventBus<AllStepsCompletedEvent>.Subscribe(OnAllStepsCompleted);
+
+            // 教学面板端口：Core 的条件要弹面板时用它，实现留在 Runtime
+            panelPort = new WebStepPanelPort();
+            StepPanelPort.Register(panelPort);
         }
 
         private void OnDisable()
@@ -83,6 +98,14 @@ namespace WSU3.Web
             EventBus<SceneProgressEvent>.Unsubscribe(OnSceneProgress);
             EventBus<BridgeErrorEvent>.Unsubscribe(OnBridgeError);
             EventBus<GlobalInteractionEventData>.Unsubscribe(OnInteraction);
+
+            EventBus<StepChangedEvent>.Unsubscribe(OnStepChanged);
+            EventBus<AllStepsCompletedEvent>.Unsubscribe(OnAllStepsCompleted);
+
+            // 先让端口把"等回执"的订阅退掉，再注销：否则静态事件总线上会留一条指向死端口的订阅
+            panelPort?.Dispose();
+            StepPanelPort.Unregister(panelPort);
+            panelPort = null;
         }
 
         private static void OnTaskAssetsReady(TaskAssetsReadyEvent e)
@@ -120,6 +143,21 @@ namespace WSU3.Web
             if (e.Type != GlobalInteractionType.Click) return;
 
             WebBridge.ObjectPicked(e.Target.ObjectKey);
+        }
+
+        /// <summary>步骤推进 → `step:changed`（序号用**扁平序号**，Web 侧进度条直接用）。</summary>
+        private static void OnStepChanged(StepChangedEvent e)
+        {
+            WebBridge.StepChanged(e.StepIndex, e.StepTotal, e.StepName);
+        }
+
+        /// <summary>
+        /// 整条流程结束 → `task:completed`。
+        /// 分数目前恒为 0（成绩体系未建，见 docs/PLAN.md）：**不编造分数**，用时如实上报。
+        /// </summary>
+        private static void OnAllStepsCompleted(AllStepsCompletedEvent e)
+        {
+            WebBridge.TaskCompleted(e.TaskType, e.Score, e.ElapsedMs);
         }
 
         /// <summary>由 Unity 官方 SendMessage 调用：一条完整信封 JSON。</summary>
@@ -251,6 +289,23 @@ namespace WSU3.Web
                 case BridgeMessageType.RuntimeResume:
                     EventBus<RuntimeResumeEvent>.Publish(new RuntimeResumeEvent());
                     return;
+
+                case BridgeMessageType.UiResult:
+                {
+                    var p = BridgeJson.ParsePayload<UiResultPayload>(envelope.Payload);
+                    if (p == null)
+                    {
+                        Debug.LogWarning("[WebBridge] ui:result 载荷解析失败，已忽略。");
+                        return;
+                    }
+                    EventBus<UiResultEvent>.Publish(new UiResultEvent
+                    {
+                        Kind = p.kind,
+                        Result = p.result,
+                        Detail = p.detail,
+                    });
+                    return;
+                }
 
                 case BridgeMessageType.DebugPing:
                 {
