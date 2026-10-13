@@ -1,88 +1,94 @@
 /**
- * 内容层（项目 / 任务 / 步骤 / 题目）。
+ * 内容层（项目 / 任务 / 题目）。
  *
- * 依据：
- *   · `docs/design/04-data-model.md` —— 七块数据模型（项目/任务/步骤/题目/进度/成绩/设置）；
- *   · DEC-23（内容**整体重发**，不做热更新）与 DEC-57（大资产不进 git）⇒ 内容与资源**物理分开**：
- *     内容 JSON 从 `content/` 读，三维资源由各自的加载器按需取（不在本文件里管）。
- *   · DEC-21（本期无后端）⇒ 只有静态 JSON；读不到就用内置演示数据兜底，**不报错、不白屏**。
+ * **数据源**：`content/data/*.json` —— 由既有实训软件导出的数据**原样采纳**（见 `docs/research/09`）：
+ *   · `MenuData.json`    菜单（9 项：8 个器件 + 小测验），每项指向一个 `ProjectData` 里的 clip；
+ *   · `ProjectData.json` 9 个 clip，每个 clip 有 10 个 `taskXxxData` 槽位（未启用为 `null`）；
+ *   · `QuestionData.json` 题库（考核题 + 步骤内题，靠 `usage` 区分，DEC-83）。
+ * 形状与坑都在**适配层** `domain/adopted-content.ts` 里（纯函数、有单测）；本文件只管"取哪份、缓存、兜底"。
  *
- * ⚠️ 阶段说明：本期 `content/` 里只有契约快照，没有项目内容，所以**实际走的是内置演示数据**。
- *    内容侧交付后，把 JSON 放进 `content/projects/`，本文件的加载路径即为最终形态。
+ * **兜底**：内容数据缺失时用 `content/projects/demo-temperature.json`（同形状的迷你内容包，
+ * 走**同一条**适配路径）—— 保证"数据没到位"时页面仍然可跑通而不是白屏（DEC-21 本期无后端）。
+ *
+ * **为什么一次读全**：`ProjectData.json` 30 KB，9 个项目的任务清单是菜单页要显示的（"这个器件有几站"），
+ * 与其为每个项目发一次请求，不如一次读完缓存住 —— 内容整体重发、不做增量（DEC-23）。
+ *
+ * **不做的事**：不加载三维资源（只透传 `prefabKey` / `imageKey`，由各自的加载器按需取）。
  */
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { TaskType } from '@/contracts'
-import { metaOf, labelOf } from '@/domain/registry'
+import { QuestionUsage, TaskType } from '@/contracts'
+import { labelOf, metaOf } from '@/domain/registry'
+import {
+  toContentMenu,
+  toContentProject,
+  toQuestionBank,
+  type ContentMenuItem,
+  type ContentProject,
+  type ContentQuestion,
+  type ContentSection,
+  type ContentTask,
+} from '@/domain/adopted-content'
 
-export interface ContentStep {
-  id: string
-  text: string
-  hint?: string
+export type { ContentMenuItem, ContentProject, ContentQuestion, ContentSection, ContentTask }
+
+/** 兜底演示内容的 id（同时也是 `content/projects/` 下的文件名）。 */
+export const DEMO_PROJECT_ID = 'demo-temperature'
+
+const DATA_DIR = 'content/data/'
+const FALLBACK_PATH = `content/projects/${DEMO_PROJECT_ID}.json`
+
+type Source = 'builtin' | 'data' | 'fallback'
+
+async function fetchJson(path: string): Promise<unknown> {
+  try {
+    const response = await fetch(`${import.meta.env.BASE_URL}${path}`)
+    if (!response.ok) return null
+    return (await response.json()) as unknown
+  } catch {
+    // 网络 / 解析失败都按"这份数据没有"处理：内容层不该让页面白屏
+    return null
+  }
 }
 
-export interface ContentTask {
-  taskType: TaskType
-  title: string
-  /** 正文段落（中文排版由设计系统的 .ui-article 负责缩进与段距） */
-  paragraphs: string[]
-  steps: ContentStep[]
-}
-
-export interface ContentProject {
-  id: string
-  title: string
-  summary: string
-  /** 预计用时（分钟） */
-  minutes: number
-  tasks: ContentTask[]
-}
-
-/** 内置演示项目：结构完整（可跑通站点线 + 任务页），内容待内容侧替换。 */
-export const DEMO_PROJECT: ContentProject = {
-  id: 'demo-temperature',
-  title: '温度传感器特性测量',
-  summary: '以温度传感器为对象，覆盖「认识仪器 → 理解原理 → 接线 → 仿真操作 → 测验考核」的完整链路。',
-  minutes: 45,
-  tasks: [
-    {
-      taskType: TaskType.Purpose,
-      title: '任务目的',
-      paragraphs: [
-        '本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，并掌握万用表的正确使用方法与数据记录规范。',
-        '实验前请先确认仪器完好、连线无破损；测量时注意量程档位与被测物理量一致。若读数长时间不稳定，请检查接线是否松动，并确认加热台温度已稳定后再记录数据。',
-      ],
-      steps: [
-        { id: 'p1', text: '确认实验台通电、仪器归位' },
-        { id: 'p2', text: '记录当前室温作为基准点' },
-      ],
-    },
-    {
-      taskType: TaskType.Equipment,
-      title: '实验仪器',
-      paragraphs: [
-        '本任务需要以下仪器：数字万用表、直流稳压电源、温度传感器、加热台与连接线。',
-        '所有仪器均以三维模型展示，可旋转查看接口位置；点击条目可高亮对应模型。',
-      ],
-      steps: [
-        { id: 'e1', text: '认识万用表的档位与插孔' },
-        { id: 'e2', text: '确认电源输出电压范围' },
-      ],
-    },
-  ],
+function clipsOf(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) return raw
+  if (raw && typeof raw === 'object' && 'clips' in raw) {
+    const clips = (raw as { clips: unknown }).clips
+    return Array.isArray(clips) ? clips : []
+  }
+  return []
 }
 
 export const useContentStore = defineStore('content', () => {
-  const project = ref<ContentProject>(DEMO_PROJECT)
-  const source = ref<'builtin' | 'json'>('builtin')
+  const menu = ref<ContentMenuItem[]>([])
+  /** 全部项目（与菜单同源，供菜单页显示"每个项目有哪几站"） */
+  const projects = ref<ContentProject[]>([])
+  /** 当前项目（任务页在用的那个） */
+  const project = ref<ContentProject | null>(null)
+  const bank = ref<ContentQuestion[]>([])
+  const source = ref<Source>('builtin')
   const loading = ref(false)
+  /** 目录级错误（内容数据本身读不到）—— 菜单页显示 */
   const error = ref<string | null>(null)
+  /** 项目级错误（链接里的项目 id 在数据里不存在）—— 任务页显示，目录不受影响 */
+  const projectError = ref<string | null>(null)
 
-  /** 任务标题：优先用内容里的标题，其次用契约标签（契约是权威，内容只是呈现）。 */
-  function taskOf(taskType: TaskType): ContentTask | undefined {
-    return project.value.tasks.find((task) => task.taskType === taskType)
+  function projectOf(id: string): ContentProject | null {
+    return projects.value.find((item) => item.id === id) ?? null
   }
 
+  /** 项目里启用的任务（按契约顺序）—— 站点线、上一/下一站、进度都按它走。 */
+  function enabledTypesOf(id?: string): TaskType[] {
+    const target = id ? projectOf(id) : project.value
+    return target ? target.tasks.map((task) => task.taskType) : []
+  }
+
+  function taskOf(taskType: TaskType): ContentTask | undefined {
+    return project.value?.tasks.find((task) => task.taskType === taskType)
+  }
+
+  /** 任务页标题：优先内容里的显示名，其次契约标签（契约是权威，内容只负责呈现）。 */
   function titleOf(taskType: TaskType): string {
     return taskOf(taskType)?.title ?? labelOf(taskType)
   }
@@ -92,27 +98,108 @@ export const useContentStore = defineStore('content', () => {
   }
 
   /**
-   * 尝试从 `content/projects/<id>.json` 载入；不存在则保持内置演示数据。
-   * 部署形态（DEC-22：先本地静态服务器验证）下，`content/` 会随产物一起发布。
+   * 该任务要显示的题目：
+   *   · 项目自己的题组（`taskExamData.questionClips`）优先；
+   *   · 考核（`TaskType.Exam`）没有自备题组时，用题库里 `usage = Exam` 的题；
+   *   · 其余任务没有题就是没有 —— 不拿题库硬凑。
    */
-  async function load(id = DEMO_PROJECT.id): Promise<void> {
+  function questionsOf(taskType: TaskType): ContentQuestion[] {
+    const own = taskOf(taskType)?.questions ?? []
+    if (own.length > 0) return own
+    if (taskType === TaskType.Exam) return bank.value.filter((item) => item.usage === QuestionUsage.Exam)
+    return []
+  }
+
+  /** 读兜底演示项目（同形状、走同一条适配路径）；读不到返回 null。 */
+  async function readDemoProject(): Promise<ContentProject | null> {
+    return toContentProject(clipsOf(await fetchJson(FALLBACK_PATH))[0])
+  }
+
+  /**
+   * 目录整体兜底：内容数据没有/读不到时，用兜底项目当**目录**。
+   * ⚠️ 只有在"目录本身不可用"时才允许动 `menu` / `projects` ——
+   * 仅仅某个项目找不到时不能走这里，否则会把整个目录换成兜底（页面是 SPA，状态会一直留着）。
+   */
+  async function useFallbackCatalog(): Promise<void> {
+    const demo = await readDemoProject()
+    projects.value = demo ? [demo] : []
+    menu.value = demo ? [{ id: demo.id, title: demo.title, projectId: demo.id }] : []
+    project.value = demo
+    source.value = 'fallback'
+    error.value = demo ? null : '内容数据与兜底内容都读不到'
+  }
+
+  /** 读菜单 + 全部项目（幂等）。数据缺失时降级到兜底，**不报错**（内容可能尚未随包发布）。 */
+  async function ensureCatalog(): Promise<void> {
+    if (source.value !== 'builtin' || loading.value) return
     loading.value = true
-    error.value = null
     try {
-      const response = await fetch(`${import.meta.env.BASE_URL}content/projects/${id}.json`)
-      if (!response.ok) throw new Error(`HTTP ${response.status}`)
-      const data = (await response.json()) as ContentProject
-      if (!data?.tasks?.length) throw new Error('内容为空')
-      project.value = data
-      source.value = 'json'
-    } catch (cause) {
-      // 内容未交付是**正常状态**（本阶段），只降级不报错
-      source.value = 'builtin'
-      error.value = cause instanceof Error ? cause.message : String(cause)
+      const items = toContentMenu(await fetchJson(`${DATA_DIR}MenuData.json`))
+      const mapped = clipsOf(await fetchJson(`${DATA_DIR}ProjectData.json`)).flatMap((clip) => {
+        const item = toContentProject(clip)
+        return item ? [item] : []
+      })
+      if (items.length === 0 || mapped.length === 0) {
+        await useFallbackCatalog()
+        return
+      }
+      menu.value = items
+      projects.value = mapped
+      source.value = 'data'
     } finally {
       loading.value = false
     }
   }
 
-  return { project, source, loading, error, taskOf, titleOf, hintOf, load }
+  /**
+   * 选中项目（幂等，可反复调用）。`id` 缺省时用菜单第一项 ——
+   * 这样"直接打开 `#/task/2`"（URL 里没有项目）也能落到一个**真实**项目上。
+   */
+  async function ensureProject(id?: string): Promise<ContentProject | null> {
+    await ensureCatalog()
+    const wanted = id ?? menu.value[0]?.projectId ?? ''
+    if (project.value && (wanted === '' || project.value.id === wanted)) return project.value
+
+    const found = wanted === '' ? null : projectOf(wanted)
+    if (found) {
+      project.value = found
+      projectError.value = null
+      return found
+    }
+    if (wanted !== '') {
+      // 坏链接 / 内容重发改了 id：**只**把当前项目换成兜底，目录照旧（页面是 SPA，别留脏状态）
+      projectError.value = `找不到项目 ${wanted} —— 当前显示的是兜底演示内容`
+      project.value = await readDemoProject()
+    } else if (!project.value) {
+      await useFallbackCatalog()
+    }
+    return project.value
+  }
+
+  /** 读题库（幂等）。 */
+  async function loadBank(): Promise<ContentQuestion[]> {
+    if (bank.value.length > 0) return bank.value
+    bank.value = toQuestionBank(await fetchJson(`${DATA_DIR}QuestionData.json`))
+    return bank.value
+  }
+
+  return {
+    menu,
+    projects,
+    project,
+    bank,
+    source,
+    loading,
+    error,
+    projectError,
+    projectOf,
+    enabledTypesOf,
+    taskOf,
+    titleOf,
+    hintOf,
+    questionsOf,
+    ensureCatalog,
+    ensureProject,
+    loadBank,
+  }
 })

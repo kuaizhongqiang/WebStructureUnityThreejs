@@ -30,6 +30,7 @@
 | 1.11 | **`0_Setup` 场景接线（P0-1 g）** | 加 `WebBridge`（`WebBridgeBehaviour`）与 `Setup`（`StartupFlow`）；用附加加载改场景，未触碰负责人在编的 `1_Content` | git `64526b7`；Plastic `cs:15` |
 | 1.12 | **P0-1 Play 验收** | 三条启动日志齐全；**抓到并修掉"桥随 `0_Setup` 被卸载"的沉默故障**（`WebBridge` 挪到 `Manager` 下 + 根物体自保 + 自检日志/上报） | git（见提交）；Plastic（见提交） |
 | 1.13 | **P0-2 单构建多任务语义（DEC-81）** | 清单 `taskTypes[]` + `--task-types`（带契约校验）+ `pickUnityBuild`（兼容旧清单）+ 壳侧同口径 + 7 项选件单测；**验收：桩构建 → 打包 → 壳冒烟 `mounted`** | git（见提交）；纯 JS/TS/文档，**无 Unity 侧改动**（故未走 Plastic） |
+| 1.14 | **P0-3 Web 内容层改用 `content/data/*.json`** | 适配层 + 内容 store + 菜单/任务页 + 同形状兜底 + 13 项单测 + 冒烟 8 条新断言；**过程中修掉两个 SPA 状态 bug**（坏链接污染目录、内容晚到导致视口挂不上） | git（见提交）；纯 Web/文档，无 Unity 侧改动 |
 
 ---
 
@@ -123,13 +124,30 @@
 **兼容性口径（写进代码注释与文档）**：新清单只写 `taskTypes`；旧清单的单值 `taskType` 仍被读取（已打出去的包不用重打）。
 **两代都为空 ⇒ 不认定** —— 宁可显示"产物未就位"，也不挂上不知道能不能干活的构建。
 
-### P0-3 Web 内容层改用 `content/data/*.json`
+### P0-3 Web 内容层改用 `content/data/*.json` —— ✅ **已完成（2026-10-13）**
 
-| 步骤 | 内容 | 落点 |
-|---|---|---|
-| a | 内容层读取路径与形状换成被采纳数据（`ProjectData.json` / `QuestionData.json` / `MenuData.json`） | `web/src/stores/content.ts`、`web/src/domain/*` |
-| b | 项目列表 / 菜单 / 题目页改用真实数据；`content/projects/demo-temperature.json` 保留为"无真实内容时的演示兜底" | `web/src/views/*` |
-| c | 渲染冒烟断言随之补（至少：9 个项目出现、随机进一个项目能出正文） | `web/tools/render-smoke.mjs` |
+| 步骤 | 内容 | 落点 | 状态 |
+|---|---|---|---|
+| a | **纯适配层**：被采纳 JSON → 页面内容模型（`TaskType` ↔ 10 个槽位、防御式读取、枚举按名字） | `web/src/domain/adopted-content.ts` | ✅ |
+| b | 内容取数：一次读全目录 + 项目 + 题库，幂等缓存；**目录级**与**项目级**兜底分开 | `web/src/stores/content.ts` | ✅ |
+| c | 项目列表用真实数据（9 个项目 × 各自启用的站数）；任务页出真实正文/分节/题目；未启用槽位显示明确状态 | `web/src/views/{MenuView,TaskView}.vue` | ✅ |
+| d | 兜底内容改成**同形状**（走同一条适配路径，不做第二套代码） | `web/public/content/projects/demo-temperature.json` | ✅ |
+| e | 渲染冒烟补 6 条内容层断言 + 2 条"状态不被污染"断言 | `web/tools/render-smoke.mjs` | ✅ |
+| f | 单测：13 项（形状与三个静默陷阱 + **真实数据的结构性不变量**：菜单→项目无死链、题型都认得出） | `web/src/domain/adopted-content.spec.ts` | ✅ |
+
+**验收（已跑通）**：`cd web && npm run smoke` →
+`菜单页：项目卡片 9 个（接触器/热继电器/…/小测验）`、`项目任务页：正文 63 字（真实内容）`、
+`未启用槽位：显示"本项目未启用"`、`小测验页：共 5 题（项目题组）`、`坏链接：状态条明说且目录不被污染`，
+全套 29 项断言通过；`npm test` 37 项、typecheck / lint / format 全绿。
+
+**过程中修掉的两个真 bug（都是 SPA 状态问题，只有真浏览器冒烟抓得到）**：
+
+1. **一次坏链接污染整个目录**：项目找不到时曾把 `menu` / `projects` 一起换成兜底 —— hash 路由不重载页面，于是目录一直是兜底的。改成"目录级失败才换目录，项目级失败只换当前项目并在状态条明说"。
+2. **内容晚到，三维视口挂不上**：换 `?project=` 后项目数据是异步取的，页面先落到"未启用"分支（没有视口容器），数据到达后没人再挂视口。补了"内容到位再同步一次视口"的监听。
+
+**留给内容侧的缺口（不是实现问题，已写进 `design/08` §8）**：8 个器件**都没有**填
+`Purpose` / `Equipment` / `LineConnection` / `Training` / `Test` 五个槽位 —— 其中 Three 的 `list` 骨架（实验仪器）
+今天只有兜底项目能走到；Unity 侧的 4/5 站只能由 Unity 自己带内容。
 
 **依赖**：P1-4 的原理图 Sprite（页面要显示图），否则先只跑文字。
 

@@ -55,7 +55,7 @@
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、流水线的"单构建多任务"语义（DEC-81）、Web 内容层改用 `content/data/*.json`、三维资产的搬运与格式转换（DEC-88，进行中） |
+| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、三维资产的搬运与格式转换（DEC-88，进行中） |
 
 ## 4 怎么跑
 

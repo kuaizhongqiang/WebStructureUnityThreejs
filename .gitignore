@@ -105,3 +105,6 @@ nul
 # 注意用通配：pack.mjs 支持 --out release-xxx 换输出目录（上一次的 exe 被占用时），那些也要忽略
 electron/release/
 electron/release-*/
+
+# 壳冒烟报告（`npm run smoke` 每次运行都会重写：机器名/时间/IP 全在里头，是产物不是源码）
+electron/wsu3-shell-smoke.json

@@ -135,3 +135,46 @@
 - 不采用其"每帧物理射线拾取"的实现（本工程用 `EventSystem + PhysicsRaycaster`，DEC-80）。
 - 不采用其 TMP 字体资产（本工程 Unity 侧不做 UGUI/TMP 界面，DEC-80）。
 - 内容层面的 `StepType`（步骤交互类型）**本期不纳入契约**：被采纳数据里没有"步骤序列"字段（步骤数据在来源工程里不在 JSON 中），本工程先不定义，避免造一份没有数据支撑的契约。
+
+## 8 Web 侧怎么读它（**已实现**，2026-10-13）
+
+| 落点 | 职责 |
+|---|---|
+| `web/src/domain/adopted-content.ts` | **纯适配层**：原始 JSON → 页面用的内容模型。无网络、无 Vue，13 项单测（`adopted-content.spec.ts`） |
+| `web/src/stores/content.ts` | 取哪份、缓存、兜底：`ensureCatalog()` / `ensureProject(id)` / `loadBank()` |
+| `web/src/views/MenuView.vue` | 项目目录：9 个项目 + 每个项目**真正启用的站数**（点进去不会走到空页） |
+| `web/src/views/TaskView.vue` | 任务页：正文 / 分节 / 题目 / Unity 视口；未启用的槽位显示**"本项目未启用"** |
+
+**TaskType ↔ 槽位字段**（顺序按契约，不按 JSON 字段顺序）：
+
+| TaskType | 槽位字段 | 今天有数据的项目 |
+|---|---|---|
+| 1 `Purpose` 任务目的 | `taskPurposeData` | **无** |
+| 2 `Equipment` 实验仪器 | `taskEquipmentData` | **无** |
+| 3 `Principle` 实验原理 | `taskPrincipleData` | 8 个器件 |
+| 4 `LineConnection` 电路连接 | `taskLineConnectionData` | **无** |
+| 5 `Training` 仿真实验 | `taskTrainingData` | **无** |
+| 6 `Test` 小测验 | `taskTestData` | **无** |
+| 7 `Info` 简介 | `taskInfoData` | 8 个器件 |
+| 8 `Structure` 结构 | `taskStructureData` | 8 个器件 |
+| 9 `Inspection` 检测 | `taskInspectionData` | 8 个器件 |
+| 10 `Exam` 考核 | `taskExamData` | `clip_quiz` |
+
+**三个会静默出错的坑**（都有单测）：
+
+1. **未启用的槽位是 `null`**（不是空对象），`taskActive:false` 也要当未启用 —— 两者都要能读出"这个项目没这个任务"；
+2. **题库里 8 道考核题没有 `usage` 字段**：C# 序列化省略默认值（`0 = Exam`），"缺字段"必须解释成 `Exam`，否则会静默丢掉大半题库；
+3. **枚举在 JSON 里是名字**（`"SingleChoice"` / `"Step"`），不是序号（DEC-83）。
+
+**契约优先 / 内容呈现的分工**：`Inspection` 槽位在数据里叫**"测量"**，契约标签是"检测" —— 两者都不丢：
+**任务页标题**用内容的 `displayName`，**站点线**用契约标签。契约管"有哪几站、归哪个栈"，内容管"这一页叫什么"。
+
+**今天的内容侧缺口（不是实现问题）**：8 个器件**都没有**填 `Purpose` / `Equipment` / `LineConnection` / `Training` / `Test` 五个槽位。
+后果之一是 Three.js 的 `list` 骨架（实验仪器）**今天只有兜底项目能走到** —— 渲染冒烟因此用兜底项目验证三维视口，
+并用真实项目验证"未启用"的正确显示。这五站的内容补齐前，Unity 侧的 4/5 站只能由 **Unity 自己带内容**（它读自己那份数据）。
+
+**兜底的口径**（踩过一次坑，写下来）：
+
+- **目录级失败**（内容数据整体读不到）才允许把 `menu` / `projects` 换成兜底演示内容；
+- **单个项目找不到**（坏链接 / 内容重发改了 id）**只换当前项目**，并在任务页状态条明说"找不到项目 X"——
+  页面是 SPA（hash 路由不重载），一旦在项目级失败时把目录也换掉，整个目录会一直是兜底的（渲染冒烟已加断言守住这条）。

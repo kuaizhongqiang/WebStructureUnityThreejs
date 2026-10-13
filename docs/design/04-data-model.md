@@ -164,6 +164,6 @@
 | 项 | 状态 |
 |---|---|
 | Unity 侧"编辑期 SO → 导出 JSON（单向覆盖）"的链路 | **待实现**（登记在 `../DECISIONS.md` 未闭合表） |
-| Web 侧内容层改造为读 `content/data/*.json` | **待实现**（当前 `stores/content.ts` 仍走 `content/projects/` 的演示数据） |
+| Web 侧内容层改造为读 `content/data/*.json` | ✅ **已实现**（2026-10-13）：适配层 `domain/adopted-content.ts` + `stores/content.ts`；`content/projects/demo-temperature.json` 保留为**同形状**的兜底内容。映射表、三个静默陷阱、兜底口径见 [`08`](./08-content-data-adoption.md) §8 |
 | 是否引入 JSON Schema 校验内容数据 | 本阶段不做；现有门禁做的是**结构签名**比对 |
 | 多语言 | 内容数据自带 `*En` 列；`locale` 只进 settings |
