@@ -9,7 +9,7 @@
 
 | 你是什么 | 顺序 |
 |---|---|
-| **人（决策者）** | `DECISIONS.md`（**已定的 72 条，三轮问答全部关闭**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
+| **人（决策者）** | `DECISIONS.md`（**已定的 97 条**；轮次与问题清单的口径见 `TODO.md` T-07）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
 | **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` / `design/` |
 
 ## 文件清单
@@ -37,12 +37,12 @@
 | `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、**第九节框体令牌（圆角 6 级 / 0.5px 描边阶梯 / elevation / 交互叠加层 / 焦点环）**、29 个页面入口 | 待审 |
 | `ui-mockups/pages/*.html` | **29 个页面的静态排版稿**（A 组 10 · B 组 5 · C 组 11 · D 组 3），逐页审核用 | 待审 |
 | `ui-mockups/tokens.css` | **令牌层（产品用）**：颜色 / 字号 / 间距 / 圆角 / 描边 α 阶梯 / elevation / 交互叠加层 / 焦点环 / 毛玻璃 / 亮色方案 | — |
-| `ui-mockups/components.css` | **组件层（产品用）**：全部 `.ui-*`。含 §16 站点线与浮窗、§17 毛玻璃应用、§19 第四轮修正、**§20 框体统一升级**（参考 `D:\dsh\deepseek-harness`，"有意没照搬什么"在 §20.7）、§21 外壳浮卡、§22 下拉浮层、§23 图标 | — |
+| `ui-mockups/components.css` | **组件层（产品用）**：全部 `.ui-*`。含 §16 站点线与浮窗、§17 毛玻璃应用、§19 第四轮修正、**§20 框体统一升级**（"有意没照搬什么"在 §20.7）、§21 外壳浮卡、§22 下拉浮层、§23 图标 | — |
 | `ui-mockups/mockup-shell.css` | **仅评审用的外壳**：`.board`（1920×1080 缩放画布）、`.spec-*`（成果页卡片）、`.note`、`.theme-switch`。**产品不得 import**（DEC-74） | — |
 | `ui-mockups/style.css` | 排版稿的**聚合入口**（14 行，只做 `@import` 三份）；规则不要再写在这里 | — |
 | `ui-mockups/TODO.md` | 排版稿待办（T1 菜单页重做 / T2 题目样式 / T3 考核页 / T4 Unity 页暂不设计）+ 已完成清单 | 活文档 |
 | `ui-mockups/src/*.mjs` | 排版稿生成器（改完重新执行 `node docs/ui-mockups/src/render.mjs`） | — |
-| **`model-preview/index.html`** | **模型检视页（审核用）**：13 个 GLB 逐个挂 Three.js，定**环境**（光照 / IBL / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图）；读数分"证据（转换报告）"与"实测（GLB 现读）" | **待审**（DEC-96） |
+| **`model-preview/index.html`** | **模型检视页（审核用）**：8 个 GLB 逐个挂 Three.js，定**环境**（光照 / IBL / 背景 / 曝光）与**材质**（贴图 / 清漆 / 表面模式）；读数分"证据（转换报告）"与"实测（GLB 现读）"；`&embed=1` 只留画布（排版稿 C6 内嵌用的就是它） | **待审**（DEC-96） |
 | `model-preview/serve.mjs` | 该页的静态服务器：**服务根＝仓库根**（页面要取 `content/assets/three/**` 与 `web/node_modules/three`），并给 `.mjs` / `.glb` 正确的 MIME | — |
 
 ### 设计草案 `design/`
@@ -97,3 +97,12 @@
 3. 事实必须可追溯：结论要带**仓库内**路径（可行时带行号）。**不得**写本机绝对路径或外部仓库/工程路径；
    需要遵循外部规则时，把**规则本身摘录进 `docs/`** 再引用我们自己的文档（见 `AGENT.md` §4「文档里禁止出现外部引用」）。
 4. `DECISIONS.md` **只增不改**；推翻旧决策要新增条目并注明取代关系。
+5. **⚠️ 计划 / 待办 / 记录三分，各只有一个维护点**（完整纪律与联动节奏见 `AGENT.md` §4「文档三分」）：
+   - **接下来做什么** → `PLAN.md`（分批 / 落点 / 验收标准；**不写"已完成"、不写"待拍板"**）；
+   - **现在还剩什么** → `TODO.md`（§1 待拍板 / §2 待做 / §3 未提交；**所有新增待办只加这里**）；
+   - **做完了什么 + 证据** → `RECORD.md`（日期 / 结果 / 提交号 / PR；**只增不改**）；
+   - **已定事项** → `DECISIONS.md`（只增不改）。
+   - **同一件事不许两处写**：待办在 `TODO.md` 只落一条（一句话 + 来源链接），细节留在来源文件里。
+   - **完成一项的动作**：从 `TODO.md` 删掉该条 → 在 `RECORD.md` 加一行（带证据）→ 若它还是 `PLAN.md` 的计划项，改状态或删除。
+6. **不写外部引用**：本目录内（`requirement/` 与 `research/` 的摘录档案除外）**不得**出现外部仓库名、外部工程名、本机绝对路径；
+   需要遵循外部规则时，把**规则本身**摘录进 `docs/design/NN-*.md`，再引用我们自己的文档（见 `AGENT.md` §4）。

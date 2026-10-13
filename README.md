@@ -11,24 +11,24 @@
 | 路径 | 内容 |
 |---|---|
 | `docs/requirement/raw/raw-requirement.md` | **原始需求，唯一权威来源**（只读，不得改写） |
-| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 79 条（DEC-01 ~ DEC-79，五轮问答的结论），**只增不改** |
-| `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留：第一轮 32 题 / 第二轮 28 题 / 第三轮 10 题（答案已固化进 `DECISIONS.md`），**第六轮 26 题待回答**（Unity 脚手架的 UI 形态与启动阶段事件）；第四、五轮以追加条目形式直接落在 `DECISIONS.md` |
+| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 **DEC-01 ~ DEC-97**（六轮问答的结论），**只增不改** |
+| `docs/PLAN.md` | **执行计划（活文档）**：**只写"接下来做什么"** —— 分批（P0→P1→P2）/ 落点 / 验收标准 / 依赖顺序 |
+| `docs/TODO.md` | **待办（活文档）**：**只写"现在还剩什么"** —— 待拍板 / 待做 / 未提交。**新增待办只加这里** |
+| `docs/RECORD.md` | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表 + 日期 / 提交号 / PR；**只增不改** |
+| `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留（第一 / 二 / 三轮已关闭，答案固化进 `DECISIONS.md`；第六轮见该文件）。⚠️ 轮次口径 README 与 `DECISIONS.md` 尚有出入，见 `TODO.md` T-07 |
 | `docs/requirement/requirement-analysis.md` | 需求分析：原始需求条目化（R-1~R-8）、红线、需求→交付物映射、缺口闭合表 |
 | `docs/research/01~09` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘** |
-| `docs/design/01~09` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地** |
+| `docs/design/01~10` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地**、**步骤系统** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
-| `docs/PLAN.md` | **执行计划（活文档）**：**只写"接下来做什么"**（分批 / 落点 / 验收标准） |
-| `docs/TODO.md` | **待办（活文档）**：**只写"现在还剩什么"** —— 待拍板 / 待做 / 未提交；已合并原先四处分散的待办 |
-| `docs/RECORD.md` | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表 + 日期 / 提交 / PR（只增不改） |
-| `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用），`style.css` 是聚合入口 |
-| `docs/model-preview/` | **模型检视页（审核用）**：把 `content/assets/three/**` 的 13 个 GLB 逐个挂上 Three.js，用来定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图接没接上）。自带 `serve.mjs`（服务根＝仓库根，见 §4） |
-| `docs/README.md` | 文档总索引与写作约定 |
+| `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用）；`style.css` 是聚合入口 |
+| `docs/model-preview/` | **模型检视页（审核用）**：把 `content/assets/three/**` 的 **8 个 GLB** 逐个挂上 Three.js，用来定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（贴图接没接上、清漆、表面模式）。自带 `serve.mjs`（服务根＝仓库根，见 §4） |
+| `docs/README.md` | 文档总索引与**写作 / 维护纪律** |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
 | `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
 | `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
-| `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**）；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
-| `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存、校验、打包） |
+| `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**）；材质规格与人工修正：`asset-material-spec.json` / `asset-material-textures.json` / `material-overrides.json`；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
+| `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存校验打包、三维资产搬运与 Blender 转换） |
 | `.github/workflows/gate.yml` | 合并门禁（CI） |
 
 ## 2 架构红线（不可违背）
@@ -43,24 +43,27 @@
 ## 3 当前状态
 
 > **本节是"仓库状态"的唯一维护点**（`AGENT.md` 只放纪律，不再重复维护状态）。
-> 未闭合项（待拍板 / 待做 / 未提交）见 **`docs/TODO.md`**；已定事项见 `docs/DECISIONS.md` 正文；
+> **未闭合项（待拍板 / 待做 / 未提交）见 `docs/TODO.md`**；已定事项见 `docs/DECISIONS.md`；
 > 做完的事与证据见 `docs/RECORD.md`；接下来做什么见 `docs/PLAN.md`。
 
 | 部分 | 状态 |
 |---|---|
-| 文档与决策 | 六轮问答**全部关闭**，**88 条决策生效**（DEC-01 ~ DEC-88）；需求分析 v1 定稿；设计文档 9 篇 |
+| 文档与决策 | **DEC-01 ~ DEC-97** 生效；"计划 / 待办 / 记录"已分家（`PLAN.md` / `TODO.md` / `RECORD.md`）；设计文档 10 篇、调研 9 篇 |
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
-| Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动，article 与 list 端到端）/ 骨架自检页；样式只走设计系统令牌；**ESLint + Prettier** 已进 hook 与 CI |
-| Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟 20 项**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |
-| Unity 工程 | 程序集分层 `WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode` + 契约（`EnumAll.cs` 的 `SceneState` / `TaskType` / `QuestionType` / `QuestionUsage` + `BridgeMessageType.cs`）+ **WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）+ 契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始**（场景骨架 `0_Setup` / `1_Content` 正在编辑器里搭，见 DEC-81） |
+| Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动）/ 骨架自检页；样式只走设计系统令牌；ESLint + Prettier 已进 hook 与 CI |
+| Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |
+| Unity 工程 | ✅ 程序集分层 + 契约（`SceneState` / `TaskType` / `QuestionType` / `QuestionUsage` / `BridgeMessageType`）+ **协议桥**（`.jslib` + 信封扫描 + 入站分发/出站映射） + **启动编排** + **任务编排 + 输入闸门** + **拾取体系** + **步骤系统**（进程 → 步骤 → 条件三级结构、跳转重置与快进、协作式打断）；EditMode **49/49** 通过（DEC-89 ~ DEC-95） |
 | 内容数据 | ✅ **已全量采用既有实训软件的数据**（DEC-88）：7 份 JSON / 9 个项目 / 73 KB，Web 与 Unity **各一份**（DEC-82），`tools/check-content-data.mjs` 在 hook 与 CI 里比对结构 |
+| 三维资产（Three 侧） | ✅ **8 个 GLB / 7.3 MB**：**GLB 只出 mesh + mat，一张贴图都不带**，base（含 alpha）/ normal / mask 三张图**全部渲染期后加载**（DEC-97，查找表 `content/asset-material-textures.json`）；材质规格由 `content/asset-material-spec.json` 驱动，人工修正落 `content/material-overrides.json` |
+| 材质通路 | ✅ 逐子材质核对（贴图按**规格声明**接、表面模式 MASK/BLEND、清漆 `_CoatedMask` 带出、全零顶点色剔除）；mask 已按 HDRP 通道在渲染期重排为 glTF ORM ⇒ **金属度 / 粗糙度是贴图驱动**，不再是常数兜底 |
+| Blender 中间内容仓 | ✅ `content/assets/blend/<器件>.blend`（贴图已打包、自包含，**不进 git**）：FBX 载入 → 人在 Blender 里细调 → 从 .blend 导出 GLB（**不重导 FBX**，手工调整全保留） |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
-| Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
-| 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
-| 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：13 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人本页审阅后定** |
+| Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁） |
+| 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；框体规则见 `docs/design/07-frame-style-rules.md` |
+| 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：8 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人审阅后定**（见 `TODO.md` T-01 / T-02） |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、模型的 URP 材质贴图赋值（P1-4 待办） |
+| **尚未开始 / 欠** | ① **P1-5 产品侧资产链**：构建前把 `content/assets/three/**`（8 个 GLB + 30 张贴图 + 两张 JSON）拷进产物，运行时走 `/assets/three/**`；② Web 侧步骤系统的**落地面板**（`ui:request`/`ui:result` 的 DOM）与内容装配；③ 待负责人拍板项见 `TODO.md` §1 |
 
 ## 4 怎么跑
 
@@ -74,7 +77,7 @@ npm run typecheck     # vue-tsc --noEmit
 npm run lint          # ESLint（DEC-52）
 npm run format        # Prettier 写入（format:check 用于门禁）
 npm test              # vitest（契约快照测试）
-npm run smoke         # 真浏览器冒烟：20 项断言（三维渲染 / 设计系统加载 / 站点线 / 骨架自检）
+npm run smoke         # 真浏览器冒烟（三维渲染 / 设计系统加载 / 站点线 / 骨架自检）
 npm run build         # 类型检查 + 生产构建 → dist/
 ```
 
@@ -96,40 +99,52 @@ web/src/
 
 > ⚠️ **TypeScript 固定 5.9.3，不要升到 7.x**：`vue-tsc` 与 TS 7 不兼容（实测直接崩溃），见 DEC-33。
 
-### 静态排版稿（审核用）
+### 静态排版稿与模型检视页（审核用）
 
 ```bash
-cd docs/ui-mockups
-python -m http.server 5280        # 打开 http://127.0.0.1:5280/index.html
-node src/render.mjs               # 改过样式或页面生成器后重新生成（29 页 + 成果页）
-```
-
-右上角可切「深色 / 亮色」，单页也可用 `?theme=light`。
-
-### 模型检视页（审核用，DEC-96）
-
-```bash
-# 服务根必须是**仓库根**：页面要同时取到三处 —— docs/model-preview/（自己）、
-# content/assets/three/**（13 个 GLB，不进 git，只在本机磁盘上）、web/node_modules/three（three 库）
+# 一个服务同时供两者（服务根＝仓库根）：
 node docs/model-preview/serve.mjs
-# → http://127.0.0.1:5281/docs/model-preview/index.html
+#   排版稿     → http://127.0.0.1:5281/docs/ui-mockups/index.html
+#   模型检视页 → http://127.0.0.1:5281/docs/model-preview/index.html
 ```
 
-- 左侧按器件列出 13 个 GLB（中文名取内容数据 `content/data/ProjectData.json`），点开即加载、可旋转；
-  深链 `?model=<器件>/<名字>`（如 `?model=contactor/NewACContactor`）可直接把"就是这一个"发给别人。
-- 本页要定的两件事：**环境**（产品现状 / 灯光+IBL / 仅 IBL / 仅环境光四档，加背景与曝光）与
-  **材质**（贴图开关、线框、金属度与粗糙度覆盖滑块 —— GLB 里现在是 `0.0 / 0.5` 常数兜底）。
+- **`5280` 那种"进到 `docs/ui-mockups` 起服务"的方式已经不够用了**：C6 的三维区是 iframe 内嵌检视页，
+  它要取 `content/assets/three/**` 与 `web/node_modules/three` —— **必须从仓库根起服务**。
+- 排版稿：右上角可切「深色 / 亮色」，单页也可用 `?theme=light`；改过样式或页面生成器后跑
+  `node docs/ui-mockups/src/render.mjs` 重新生成（29 页 + 成果页）。
+- 模型检视页：左侧按器件列出 **8 个 GLB**（中文名取 `content/data/ProjectData.json`），点开即加载、可旋转；
+  深链 `?model=<器件>/<名字>`（如 `?model=contactor/NewACContactor`）；**嵌入模式 `&embed=1`** 只留画布，
+  页壳（列表 / 环境面板 / 读数）收起 —— 排版稿用的就是它。
 - 读数分两栏："证据"来自 `content/asset-convert-report.json`，"实测"是从 GLB 现读的 —— 两边不一致就说明清单漂了。
-- 清单**不另维护第二份**（避免"同一件事两处写、两处漂"）；本页只消费 `docs/ui-mockups` 的令牌与元件，
-  **不新增设计令牌、不新增产品组件类**。
-- 本页**不是产品**，也不属于 §4 的打包链路：产品要用的资产链仍是 `docs/PLAN.md` 的 **P1-5**
-  （构建前把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`），**尚未实现**。
-- **环境默认是影棚 HDRI**：`content/assets/three/env/StudioWhiteUmbrella.exr`（5.65 MB，不进 git）
-  **同时**当天空盒（背景）与光源（IBL）。页面上**没有地面网格**，**右键不再平移**（左键旋转 / 滚轮缩放）。
-- 材质通路有**两个可重跑的工具**（结论见 `docs/DECISIONS.md` §19.4）：
-  - `node tools/pipeline/extract-material-spec.mjs` → `content/asset-material-spec.json`
-    （从**只读**来源工程抽 shader 的贴图通路、mask 通道语义与区间重映射、表面模式、预制体覆写）；
-  - `node tools/pipeline/audit-material-mapping.mjs` → 逐模型**逐子材质**核对"规格要求的"与"GLB 里实际接的"。
+- 环境默认是**影棚 HDRI**：`content/assets/three/env/StudioWhiteUmbrella.exr`（不进 git）**同时**当天空盒与光源；
+  嵌入模式下画布**透明**，背景交给宿主 UI（排版稿自己的底色与网格底纹）。
+- 材质通路的可重跑工具：`node tools/pipeline/extract-material-spec.mjs`（抽规格）、
+  `node tools/pipeline/audit-material-mapping.mjs`（逐模型逐子材质核对）。
+
+### 三维资产：搬运 / Blender 转换 / 中间内容仓
+
+```bash
+# ① 从既有实训软件搬 FBX + 贴图 + 原理图（只读来源工程；先加 --dry-run 看要搬什么）
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录> --dry-run
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录>
+
+# ② 两条产出 GLB 的路（都是 Blender 批处理，每个模型一个独立进程）
+node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe>                # 一条龙 FBX → GLB（可复现基线）
+
+# ③ Blender 当**中间内容仓**用（人要在 Blender 里细调材质的那条路）
+node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe> --prepare-blend   # FBX → content/assets/blend/<器件>.blend
+#    …在 Blender 里调好、Ctrl+S 保存…
+node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe> --from-blend      # .blend → GLB（不重导 FBX，改动全保留）
+
+# ④ 贴图搬运（**按材质引用**搬齐 base / normal / mask，写查找表）
+node tools/pipeline/import-material-textures.mjs
+```
+
+- 两份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项 / 每个材质的接线）：
+  `content/asset-import-report.json`、`content/asset-convert-report.json`。
+- 落点：`Assets/Models/`（Plastic 管）、`web/public/content/sprites/`（进 git）、
+  `content/assets/three/`（GLB 与贴图，**不进 git**，DEC-57）、`content/assets/blend/`（中间仓，同）。
+- ⚠️ `--prepare-blend --force` 会**覆盖** .blend，把手工调整丢掉 —— 加这个组合前先想清楚。
 
 ### 应用壳（Electron）
 
@@ -142,8 +157,7 @@ npm run dist                  # 打包 → release/WSU3-Shell-<version>-portable
 ```
 
 打包版没有控制台，因此 `--smoke` 会把结果写成 JSON（默认与 exe 同目录，或 `WSU3_SMOKE_REPORT=<path>`），
-"能打开"这件事有可读证据。窗口外观（Windows 隐藏原生标题栏 + 系统浮层按钮 + 主题同步）见
-[`electron/README.md`](./electron/README.md)。
+"能打开"这件事有可读证据。窗口外观见 [`electron/README.md`](./electron/README.md)。
 
 ### Unity 产物与打包流水线
 
@@ -162,21 +176,6 @@ node tools/pipeline/pack.mjs
 - 发布清单 `web/dist/release-manifest.json` 会随包发布，写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与服务端约定。
 - **Unity 缺席不影响 Web 侧打包，但界面上会明确写"Unity 产物未包含"**（Unity 类任务不再假装能进）。
 - `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
-
-细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
-
-### 三维资产搬运（P1-4，细则见 [`docs/design/03`](./docs/design/03-layout-and-assets.md) §5.1）
-
-```bash
-# ① 从既有实训软件搬 FBX + 贴图 + 原理图（只读来源工程；先加 --dry-run 看要搬什么）
-node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录> --dry-run
-node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录>
-# ② Blender 批量把 FBX 转成 GLB（Three 侧用；每个模型一个独立进程）
-node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe 路径>
-```
-
-- 两份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项）：`content/asset-import-report.json`、`content/asset-convert-report.json`。
-- 落点：`Assets/Models/`（Plastic 管）、`web/public/content/sprites/`（进 git）、`content/assets/three/`（不进 git，DEC-57）。
 
 ### 提交门禁
 
@@ -206,15 +205,19 @@ git push -u origin feat/xxx    # 3 推分支
 
 - 用 Unity **2022.3.53f1c1** 打开 `NewStructureUnity/`；
 - WebGL 基线构建：菜单 `WSU3/Build/WebGL Baseline`（等价批处理：`-executeMethod WSU3.Editor.BuildTools.WebGLBaselineBuild.RunBaseline`）；
-- 契约冻结单测：EditMode 测试 `ContractIntegrityTests`（校验 TaskType / SceneState 的**名字、顺序、中文标签**）。
+- 契约冻结单测：EditMode 测试 `ContractIntegrityTests`（校验 TaskType / SceneState 的**名字、顺序、中文标签**）；
+- 步骤系统单测：EditMode `StepSystemTests`（49 项全流程）。
 
-## 5 两条最容易踩的纪律
+## 5 纪律（细节与依据见 `AGENT.md` §4）
 
-- **双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区。**涉及 Unity 侧的改动，两个渠道都必须提交**（git 按路径显式 `add`，永不 `-A`；Plastic 用 `cm add --recursive` + `cm ci --all` 并复核）。只提交一侧会造成两边历史分叉。细节见 `AGENT.md` §4。
+- **⚠️ 文档三分，各只有一个维护点（硬纪律）**：
+  **接下来做什么** → `docs/PLAN.md`；**现在还剩什么** → `docs/TODO.md`；**做完了什么 + 证据** → `docs/RECORD.md`；
+  **已定事项** → `docs/DECISIONS.md`（只增不改）。**同一件事不许两处写**（会漂）。做法见 `AGENT.md` §4「文档三分」。
+- **双版本控制**：外层 git 仓库 + `NewStructureUnity/` 内嵌的 Plastic 工作区。**涉及 Unity 侧的改动，两个渠道都必须提交**（git 按路径显式 `add`，永不 `-A`；Plastic 用 `cm add --recursive` + `cm ci --all` 并复核）。只提交一侧会造成两边历史分叉。
 - **样式必须看得见**：任何 Web 样式都要在 `docs/ui-mockups/index.html` 成果页里有对应展示；框体规则（0.5px 发丝描边 + α 阶梯、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版）的权威描述见 [`docs/design/07-frame-style-rules.md`](./docs/design/07-frame-style-rules.md)，落地在 `tokens.css` + `components.css` §20。
 - **样式只有一份**（DEC-74）：`tokens.css`（令牌）+ `components.css`（组件）= **产品要用的**；`mockup-shell.css` 是评审外壳，产品不得 import；`style.css` 只是排版稿的聚合入口。
 - **壳与业务的边界**：业务代码（`web/src`）**零 `import electron`**（DEC-20）。壳能力只通过 `window.wsu3Shell` 只读快照暴露，实现在 `electron/preload.js`；这条由 `tools/check-shell-coupling.mjs` 机械保证（已进 hook 与 CI）。
-- **文档里不写外部引用**：`docs/`、`README.md`、`AGENT.md` 与代码注释**不得**出现外部仓库名或本机绝对路径；需要遵循的规则要**摘录进 `docs/`**（如框体规则 → `docs/design/07`、Unity 构建注意 → `docs/design/06`），再引用我们自己的文档。理由见 `AGENT.md` §4。
+- **文档里不写外部引用**：`README.md`、`AGENT.md`、`docs/README.md`、`docs/design/**` 与代码注释**不得**出现外部仓库名或本机绝对路径；需要遵循的规则要**摘录进 `docs/`**（如框体规则 → `docs/design/07`、Unity 构建注意 → `docs/design/06`），再引用我们自己的文档。
 
 ## 6 许可
 
