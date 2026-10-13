@@ -28,6 +28,7 @@
 | 1.9 | **拾取体系 + 任务流程收进 GlobalManager** | `InteractiveObjBase`（真基类：自注册 + 单一出口 + `OnHighlightChanged` 虚方法钩子，**无接口/服务**）、`InteractiveManager`（注册表 + 检测射线 + 点空白 + view:focus 全在一个文件里）、`TaskFlowManager`（流程 + 自驱协程泵）、`WebBridgeBehaviour`（意图事件 → 上网）、`Contracts/Events/BridgeEvents.cs`（入站事件 + 出站意图）；`WSU3.Core` 加 `UnityEngine.UI`（只为 EventSystems，DEC-80） | 全量重编译后 console 无 error（期间抓到并修掉一处缺 `using`） |
 | 1.10 | **检测权收归管理器** | 物体不再实现 `IPointer*Handler`，改由 `InteractiveManager.CoreUpdate()` 每帧射线后调 `Invoke*`；去掉 `PhysicsRaycaster`；悬停不再碰高亮 | git `f8399e1`；Plastic `cs:14` |
 | 1.11 | **`0_Setup` 场景接线（P0-1 g）** | 加 `WebBridge`（`WebBridgeBehaviour`）与 `Setup`（`StartupFlow`）；用附加加载改场景，未触碰负责人在编的 `1_Content` | git `64526b7`；Plastic `cs:15` |
+| 1.12 | **P0-1 Play 验收** | 三条启动日志齐全；**抓到并修掉"桥随 `0_Setup` 被卸载"的沉默故障**（`WebBridge` 挪到 `Manager` 下 + 根物体自保 + 自检日志/上报） | git（见提交）；Plastic（见提交） |
 
 ---
 
@@ -45,7 +46,7 @@
 | d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`） | 每条消息有日志；`debug:ping` 回 `debug:pong` | ✅ 代码就位 |
 | e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上（只发意图事件，上网在桥里） | 切任务时两条就绪都发得出来 | ✅ 序列就位；**资源装载/装配是占位**（报非致命码 9001） |
 | f | 拾取体系：**检测全在 `InteractiveManager.CoreUpdate()`**（自建 `ScreenPointToRay` + `Physics.Raycast`，不建 Canvas、物体不实现 `IPointer*`）+ 交互物自注册 + `object:picked` | `Core/Interactive/InteractiveObjBase.cs`、`Core/Managers/FunctionManager/InteractiveManager.cs`（含注册表与检测，**不另建脚本/manager**）、`GlobalManager.Update`、`Web/WebBridgeBehaviour.cs`（上报） | 点中物体 → Web 收到 `object:picked`；点空白 → 一条 `Target=null` 的 Click | ✅ 代码就位（**待场景里有交互物可点**，见 g） |
-| g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/0_Setup.unity` | 编辑器里能 Play 起来 | ✅ 已改好（用 Unity MCP，见下）；**Play 验收待做**（需先把负责人的场景存盘） |
+| g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`WebBridge` 放在 `Manager` 下（常驻子树） | `Assets/Scenes/0_Setup.unity`、`Web/WebBridgeBehaviour.cs`、`Managers/StartupFlow.cs` | 编辑器里 Play 起来，启动链日志齐全且桥存活 | ✅ **已改好 + Play 验收通过**（见下） |
 
 **f 的实现要点**：
 - **检测在管理器里**（负责人 2026-10-13 明确）：`InteractiveManager.CoreUpdate()` 每帧一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，
@@ -67,11 +68,20 @@
 - `0_Setup` 现场（用 Unity MCP 改的）：`Manager`（`GlobalManager` + 子物体 `EventSystem`、`MainCamera`）、**`WebBridge`（`WebBridgeBehaviour`）**、**`Setup`（`StartupFlow`）**；
 - `Manager` 里**已经有** `EventSystem + StandaloneInputModule`，所以 `InteractiveManager.EnsureEventSystem()` 不会重复创建；
 - 改场景时用的是**附加加载**（`load additive` + `set_active_scene` + `save` + 关掉 + 切回），**没有碰负责人正在编辑的 `1_Content`**（它当时是 dirty 状态）；
-- ⚠️ **Play 验收还没做**：进入 Play 模式会要求保存已修改的场景，而 `1_Content` 是负责人的在编文件（未存盘），所以先不擅自 Play。负责人存盘后，验收看这几条日志：
+- **Play 验收（2026-10-13 已做，通过）**：`1_Content` 存盘后进 Play，console 三条日志齐全：
   1. `[StartupFlow] 管理器自检通过。`
   2. `[StartupFlow] 切换到常驻内容场景 '1_Content' …`
-  3. `[StartupFlow] 已停在 '1_Content' 待命，等待 Web 指令（preload:task / scene:enter）。`
-  编辑器里没有页面桥，握手与消息只在 WebGL 构建里才真正上网（`WebChannel.Sent` 事件是编辑器/单测的观察点）。
+  3. `[StartupFlow] 已停在 '1_Content' 待命，WebBridge 就绪，等待 Web 指令（preload:task / scene:enter）。`
+- 🐛 **验收抓到的真 bug（已修）**：`WebBridge` 原本是 `0_Setup` 的**根物体**，而 `StartupFlow` 用 `LoadSceneSingle`
+  切场景时**会把 `0_Setup` 整个卸掉** → 接消息的物体被销毁，Web 的消息从此无人接收，而画面看起来一切正常（沉默故障）。
+  修法两条并用：① 场景里把 `WebBridge` 挪到 **`Manager` 下**（`GlobalManager` 已 `DontDestroyOnLoad`，子树一起常驻）；
+  ② `WebBridgeBehaviour.Awake` 里"作为根物体时自保"（`transform.parent == null` 才 `DontDestroyOnLoad`，子物体标了会报错）。
+  并加了**自检日志/错误上报**（`WebBridgeBehaviour.IsAlive`）：切完场景若桥不在，直接 `Debug.LogError` + 上报 1001，不再沉默。
+- ⚠️ **一条工具限制（别被误导）**：Unity MCP 的 `find_gameobjects` **看不到 `DontDestroyOnLoad` 场景里的物体**
+  （实测连常驻的 `EventSystem` 也搜不到）。所以"搜不到"**不能**当作"物体被销毁了"的证据 ——
+  判定存活要用**游戏自己的自检日志**（如上面的 `WebBridge 就绪`）。
+- 编辑器里没有页面桥：握手与消息只在 WebGL 构建里才真正上网（`WebChannel.Sent` 事件是编辑器/单测的观察点）。
+  **入站路径（Web → Unity）尚未在真环境跑过** —— 要等 P0-2 的单构建语义改完、真 WebGL 构建接上页面才能验。
 
 **c/d/e 的实现要点（给下一次续会话）**：
 - **流程管理点只有一处**：`Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`），**不另建 controller/MonoBehaviour**；`Init` 订阅入站事件，逐帧由 `GlobalManager.Update` → `CoreUpdate` 推进。

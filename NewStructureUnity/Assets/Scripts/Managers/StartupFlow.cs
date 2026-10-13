@@ -74,7 +74,20 @@ namespace WSU3.Managers
             }
             WebBridge.SceneProgress(1f);
 
-            Debug.Log($"[StartupFlow] 已停在 '{sceneName}' 待命，等待 Web 指令（preload:task / scene:enter）。");
+            // 自检：桥必须活过这次 single 切换。若它跟着 0_Setup 被卸掉了，
+            // Web 的消息会从此无人接收，而画面看起来一切正常 —— 这种沉默故障必须在这里喊出来。
+            if (WebBridgeBehaviour.IsAlive)
+            {
+                Debug.Log($"[StartupFlow] 已停在 '{sceneName}' 待命，WebBridge 就绪，等待 Web 指令（preload:task / scene:enter）。");
+            }
+            else
+            {
+                string message = "切场景后 WebBridge 已不存在：Web 的消息将无人接收。" +
+                                 "请把挂 WebBridgeBehaviour 的物体放到 Manager 下（DontDestroyOnLoad 子树），或让它作为根物体自保。";
+                Debug.LogError($"[StartupFlow] {message}");
+                WebBridge.ReportError(1001, message, true);
+            }
+
             Destroy(gameObject); // 引导阶段的职责到此为止
         }
     }

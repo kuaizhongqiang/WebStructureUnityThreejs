@@ -30,6 +30,31 @@ namespace WSU3.Web
         [Tooltip("本组件 Start 时就发握手（unity:ready）。默认关闭，改由 StartupFlow 在自检通过时发。")]
         [SerializeField] private bool handshakeOnStart;
 
+        /// <summary>
+        /// 桥必须**活过** `0_Setup → 1_Content` 的 single 切换 —— 否则场景一切，接消息的物体就没了，
+        /// Web 发来的消息从此石沉大海（Play 验收实测踩到过：切场景后 `WebBridge` 直接查不到）。
+        ///
+        /// 两种摆放都支持：
+        ///   · 放在 `Manager` 下（`GlobalManager` 已 `DontDestroyOnLoad`，子树一起常驻）—— 推荐，也是当前场景的摆法；
+        ///   · 作为根物体时，这里自己标记常驻（只有根物体能标，子物体会报错，所以先判 parent）。
+        /// </summary>
+        /// <summary>
+        /// 桥是否活着。它的实战用途：启动流程切完场景后要自检一次 ——
+        /// 若桥跟着 `0_Setup` 被卸掉了，Web 发来的消息会**从此无人接收**，而画面看起来一切正常。
+        /// </summary>
+        public static bool IsAlive { get; private set; }
+
+        private void Awake()
+        {
+            IsAlive = true;
+            if (transform.parent == null) DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            IsAlive = false;
+        }
+
         private void Start()
         {
             if (handshakeOnStart) WebChannel.Ready();
