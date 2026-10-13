@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>模型检视 — 材质与环境（审核用）</title>
+<!--
+  模型检视页（审核用，与 docs/ui-mockups/ 同级）。
+
+  为什么有它：Three 侧那 13 个 GLB 躺在 content/assets/three/（不进 git），
+  只看转换报告判断不了"贴图接得对不对、朝向反没反、材质在什么光照下像真的"。
+  这一页把它们逐个挂上 Three.js，并**把环境与材质摊开**，好让负责人当场定：
+    · 环境：用哪套光照 / 要不要环境贴图（IBL）/ 什么背景与曝光；
+    · 材质：金属度与粗糙度取什么值（GLB 里现在是常数 0.0 / 0.5 兜底，
+      因为 HDRP 的 *_M_AO_G.png 通道语义与 glTF 不符，转换时**故意没塞**）。
+
+  怎么跑（服务根必须是仓库根，页面要取 content/assets 与 web/node_modules）：
+      node docs/model-preview/serve.mjs
+      → http://127.0.0.1:5281/docs/model-preview/index.html
+
+  样式纪律：只消费 docs/ui-mockups 的令牌与元件（同一份样式），
+  本页的 <style> 只做布局与少量排版微调，**不新增令牌、不新增产品组件类**。
+-->
+<link rel="stylesheet" href="../ui-mockups/style.css">
+<style>
+/* 仅本页布局；颜色/间距/字号一律取令牌 */
+.mp-page { max-width: 1680px; }
+.mp-layout { display: grid; grid-template-columns: 296px minmax(0, 1fr); gap: var(--sp-4); align-items: stretch; height: calc(100vh - 260px); min-height: 620px; }
+.mp-side, .mp-main { display: flex; flex-direction: column; min-height: 0; }
+.mp-side .ui-panel__body { padding: var(--sp-2); }
+.mp-main .ui-panel__body { padding: var(--sp-3); }
+.mp-list { display: flex; flex-direction: column; gap: 2px; }
+.mp-list .ui-btn { width: 100%; justify-content: flex-start; text-align: left; gap: var(--sp-2); }
+.mp-list .ui-btn .mp-tri { margin-left: auto; color: var(--text-3); font-size: var(--fs-12); }
+.mp-group { padding: var(--sp-2) var(--sp-2) 0; color: var(--text-3); font-size: var(--fs-12); }
+.mp-split { display: grid; grid-template-columns: minmax(0, 1fr) 336px; gap: var(--sp-4); align-items: stretch; }
+.mp-stage { position: relative; min-height: 420px; }
+.mp-viewport { position: absolute; inset: 0; overflow: hidden; }
+.mp-viewport canvas { display: block; }
+.mp-hint { position: absolute; left: var(--sp-3); top: var(--sp-3); z-index: 1; padding: 2px var(--sp-2); border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.42); color: #fff; font-size: var(--fs-12); }
+.mp-tools { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center; }
+.mp-field { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--text-3); font-size: var(--fs-12); }
+.mp-field input[type="range"] { width: 108px; }
+.mp-field--num { min-width: 34px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.mp-kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px var(--sp-3); font-size: var(--fs-12); }
+.mp-kv dt { color: var(--text-3); }
+.mp-kv dd { margin: 0; color: var(--text-2); overflow-wrap: anywhere; }
+.mp-table { width: 100%; border-collapse: collapse; font-size: var(--fs-12); }
+.mp-table th { text-align: left; color: var(--text-3); font-weight: 500; padding: 2px var(--sp-2) 2px 0; }
+.mp-table td { padding: 2px var(--sp-2) 2px 0; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.mp-warn { color: var(--warn); }
+.mp-banner { display: none; margin-bottom: var(--sp-3); }
+.mp-banner--on { display: block; }
+</style>
+<script>
+  // 与 docs/ui-mockups/index.html 同一套：主题只改 <html data-theme>，以及输入模态决定焦点环。
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
+  })();
+</script>
+<!-- three 走 import map 直引 web/node_modules：一份库，Web 产品与本页共用（不复制、不打包） -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "../../web/node_modules/three/build/three.module.js",
+    "three/addons/": "../../web/node_modules/three/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div class="spec-page mp-page">
+  <div class="spec-head">
+    <h1>模型检视（材质与环境）</h1>
+    <div class="sub">
+      逐个挂载 <b>content/assets/three/</b> 下的 13 个 GLB，用 Three.js 真实渲染。
+      本页要定的两件事：<b>环境</b>（光照 / 环境贴图 / 背景 / 曝光）与
+      <b>材质</b>（金属度、粗糙度、贴图是否接对）。
+      <br>模型列表与证据读数取 <b>content/asset-convert-report.json</b>（P1-4 的转换证据，进 git），
+      不另维护第二份清单；右侧读数里"实测"一栏是从 GLB 里现读出来的，与"证据"不一致就说明清单漂了。
+    </div>
+    <div class="ui-row" style="margin-top: 12px">
+      <span class="ui-badge">服务根必须是仓库根</span>
+      <span class="ui-small ui-muted">node docs/model-preview/serve.mjs → http://127.0.0.1:5281/docs/model-preview/index.html</span>
+    </div>
+  </div>
+
+  <div class="ui-panel mp-banner" id="banner">
+    <div class="ui-panel__head">启动检查未通过</div>
+    <div class="ui-panel__body" id="banner-body"></div>
+  </div>
+
+  <div class="mp-layout">
+    <!-- ── 左：模型列表（按器件分组） ─────────────────────────────── -->
+    <aside class="ui-panel mp-side">
+      <div class="ui-panel__head">
+        模型（<span id="list-count">…</span>）
+        <span class="ui-panel__right"><span class="ui-badge" id="list-size">…</span></span>
+      </div>
+      <div class="ui-panel__body" style="flex: 1; min-height: 0">
+        <div class="mp-list" id="model-list"></div>
+      </div>
+      <div class="ui-panel__body ui-small ui-muted" style="flex: none">
+        两代模型是<b>分工不是重复</b>：结构任务用旧代（<code>ACContactor</code>），简介/测量用新代（<code>NewACContactor</code>）。
+      </div>
+    </aside>
+
+    <div class="mp-main ui-col">
+      <!-- ── 右上：环境与材质（本页要定的两件事） ─────────────────── -->
+      <div class="ui-panel">
+        <div class="ui-panel__head">
+          环境与材质
+          <span class="ui-panel__right">
+            <button class="ui-btn ui-btn--sm" id="btn-reset">重置视角</button>
+            <button class="ui-btn ui-btn--sm" id="btn-reload">重新加载</button>
+          </span>
+        </div>
+        <div class="ui-panel__body ui-col">
+          <div class="mp-tools">
+            <label class="mp-field">环境
+              <select class="ui-select" id="env-preset"></select>
+            </label>
+            <label class="mp-field">背景
+              <select class="ui-select" id="bg">
+                <option value="hdr">影棚 HDR 天空盒</option>
+                <option value="dark">深色 #1b1f27（产品现状）</option>
+                <option value="mid">中灰 #6b7078</option>
+                <option value="light">浅色 #f0f2f5</option>
+              </select>
+            </label>
+            <label class="mp-field">色调映射
+              <select class="ui-select" id="tone">
+                <option value="none">无（产品现状）</option>
+                <option value="aces">ACES Filmic</option>
+              </select>
+            </label>
+            <label class="mp-field">曝光
+              <input type="range" id="exposure" min="0.2" max="2" step="0.05" value="1" />
+              <span class="mp-field--num" id="exposure-out">1.00</span>
+            </label>
+            <label class="mp-field">环境强度
+              <input type="range" id="env-intensity" min="0" max="3" step="0.05" value="1" />
+              <span class="mp-field--num" id="env-intensity-out">1.00</span>
+            </label>
+          </div>
+          <div class="mp-tools">
+            <label class="ui-check"><input type="checkbox" id="chk-solve" checked /> 材质解算（按源工程读 mask→ORM / 子材质贴图 / 表面模式）</label>
+            <label class="ui-check"><input type="checkbox" id="chk-textures" checked /> 贴图（关掉＝素模，看 UV / 接图有没有错）</label>
+            <label class="ui-check"><input type="checkbox" id="chk-wireframe" /> 线框</label>
+            <label class="ui-check"><input type="checkbox" id="chk-axes" /> 坐标轴</label>
+            <label class="ui-check"><input type="checkbox" id="chk-spin" /> 自动旋转</label>
+          </div>
+          <div class="mp-tools">
+            <label class="ui-check"><input type="checkbox" id="chk-override" /> 覆盖 PBR 常数（GLB 里现在是 0.0 / 0.5 兜底）</label>
+            <label class="mp-field">金属度
+              <input type="range" id="metalness" min="0" max="1" step="0.01" value="0" disabled />
+              <span class="mp-field--num" id="metalness-out">0.00</span>
+            </label>
+            <label class="mp-field">粗糙度
+              <input type="range" id="roughness" min="0" max="1" step="0.01" value="0.5" disabled />
+              <span class="mp-field--num" id="roughness-out">0.50</span>
+            </label>
+            <span class="ui-small ui-muted" id="preset-note"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── 右下：视口 + 读数 ───────────────────────────────────── -->
+      <div class="mp-split" style="flex: 1; min-height: 0">
+        <div class="ui-panel" style="display: flex; flex-direction: column; min-height: 0">
+          <div class="ui-panel__head">
+            <span id="view-title">未选择模型</span>
+            <span class="ui-panel__right ui-small ui-muted" id="render-stats">—</span>
+          </div>
+          <div class="ui-panel__body mp-stage" style="flex: 1; padding: 0">
+            <div class="mp-viewport" id="viewport">
+              <span class="mp-hint">左键旋转 · 滚轮缩放</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ui-panel" style="display: flex; flex-direction: column; min-height: 0">
+          <div class="ui-panel__head">
+            读数
+            <span class="ui-panel__right"><span class="ui-badge" id="load-time">—</span></span>
+          </div>
+          <div class="ui-panel__body" style="flex: 1; overflow: auto">
+            <div class="mp-group" style="padding-left: 0">证据（转换报告）</div>
+            <dl class="mp-kv" id="evidence"><dt>—</dt><dd></dd></dl>
+            <div class="mp-group" style="padding-left: 0">实测（从 GLB 现读）</div>
+            <dl class="mp-kv" id="runtime"><dt>—</dt><dd></dd></dl>
+            <div class="mp-group" style="padding-left: 0">材质</div>
+            <div class="ui-small ui-muted" id="solve-summary">—</div>
+            <table class="mp-table" id="materials">
+              <thead>
+                <tr><th>#</th><th>名称</th><th>金属度</th><th>粗糙度</th><th>贴图</th><th>渲染态</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            <div class="mp-group" style="padding-left: 0">欠账</div>
+            <div class="ui-small mp-warn" id="unmapped">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="./src/main.mjs"></script>
+</body>
+</html>

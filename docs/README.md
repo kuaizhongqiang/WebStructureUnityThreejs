@@ -37,6 +37,8 @@
 | `ui-mockups/style.css` | 排版稿的**聚合入口**（14 行，只做 `@import` 三份）；规则不要再写在这里 | — |
 | `ui-mockups/TODO.md` | 排版稿待办（T1 菜单页重做 / T2 题目样式 / T3 考核页 / T4 Unity 页暂不设计）+ 已完成清单 | 活文档 |
 | `ui-mockups/src/*.mjs` | 排版稿生成器（改完重新执行 `node docs/ui-mockups/src/render.mjs`） | — |
+| **`model-preview/index.html`** | **模型检视页（审核用）**：13 个 GLB 逐个挂 Three.js，定**环境**（光照 / IBL / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图）；读数分"证据（转换报告）"与"实测（GLB 现读）" | **待审**（DEC-96） |
+| `model-preview/serve.mjs` | 该页的静态服务器：**服务根＝仓库根**（页面要取 `content/assets/three/**` 与 `web/node_modules/three`），并给 `.mjs` / `.glb` 正确的 MIME | — |
 
 ### 设计草案 `design/`
 
@@ -51,6 +53,7 @@
 | `design/07-frame-style-rules.md` | **框体样式规则（本项目自持）**：描边 α 阶梯 + 0.5px 发丝、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版、明确不做的五项 | **生效**（落地在 `ui-mockups` 的 tokens/components） |
 | `design/08-content-data-adoption.md` | **内容数据的采用与"双份"口径**（DEC-82/83）：两份落点、门禁比对什么、数据形状与十个任务槽位、枚举写名字、资源 key 命名规则、未采用项 | **生效** |
 | `design/09-startup-orchestration.md` | **启动编排与桥消息落地**（DEC-80/81/84）：preload 的定义、场景结构、启动链、两条就绪、进度合成、实例常驻与恢复、输入开关、构建粒度改动待办 | **生效** |
+| `design/10-step-system.md` | **步骤系统**（DEC-89 ~ DEC-93）：进程 → 步骤 → 条件的三级结构、数据挂在条件上的取舍、协程三阶段与动画原语、跳转从 P0S0 重置与快进、协作式打断、面板端口与 `ui:request`/`ui:result` 接线、场景接线自查清单、条件一览与遗留项 | **生效** |
 
 ### 门禁与工具（不在 `docs/` 下，但归属关系记录在此）
 
@@ -59,6 +62,8 @@
 | `tools/check-contracts.mjs` | 双端契约一致性门禁：**TS ↔ 快照 ↔ C#** 三方逐值比对 | DEC-10 / DEC-67 / DEC-68 |
 | `tools/check-large-files.mjs` | 大文件门禁：10MB 阈值、忽略规则、生成目录（`--tracked` 供 CI 用） | DEC-41 / DEC-57 / DEC-65 |
 | `tools/check-shell-coupling.mjs` | **壳耦合门禁**：`web/src` 里出现 `import electron` 等一律拦下 | DEC-20 |
+| `tools/pipeline/extract-material-spec.mjs` | 从**只读**来源工程抽材质规格（shader 贴图通路 / mask 通道语义与区间重映射 / 表面模式 / 预制体覆写）→ `content/asset-material-spec.json`；**可重跑、幂等** | DEC-94 |
+| `tools/pipeline/audit-material-mapping.mjs` | **逐模型逐子材质核对**：贴图是否被错误共用、表面模式是否与源工程一致；报告不加失败退出（现状 18 处待修） | DEC-94 / P1-4b |
 | `electron/` | **应用壳**：本机静态服务加载 `web/dist`；`npm run smoke` 可冒烟（打包分发未做） | DEC-12 / DEC-20 / DEC-32 |
 | `tools/hooks/pre-commit` + `tools/install-hooks.ps1` | 提交前门禁（hook 本体不入库，由安装脚本复制到 `.git/hooks/`） | DEC-66 |
 | `.github/workflows/gate.yml` | 合并门禁（CI）：契约 + 大文件 + 类型检查 + 单测 + 构建 + 渲染冒烟 | DEC-66 |
