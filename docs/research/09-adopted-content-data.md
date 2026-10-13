@@ -118,7 +118,7 @@
 | 项 | 状态 |
 |---|---|
 | 三维资产的**分批复制与格式转换**（含 Blender 批量转 GLB） | ✅ **第一批已完成（2026-10-13）**：见 §5.1；工具 `tools/pipeline/import-adopted-assets.mjs` + `fbx-to-glb.mjs` |
-| Unity 侧材质：24 个抽出的 URP Lit 材质**贴图未接**（`_BaseMap` 为空），需按 BaseColor/Normal 批量赋值 | 待办（`_M_AO_G` 的通道重排见 `design/03` §5.1 第 2 条） |
+| Unity 侧材质：24 个抽出的 URP Lit 材质**贴图未接**（`_BaseMap` 为空），需按 BaseColor/Normal 批量赋值 | ⏳ 待办，已立为 `../PLAN.md` **P1-4b**（含 `_M_AO_G` 的通道重排） |
 | 来源工程里**题目有两套**（`QuestionData.json` 的 8 道考核题 与 `clip_quiz.taskExamData` 的 5 道题，内容不同） | 采用现状（两套都留着），口径见 `../design/04-data-model.md` §2.5 |
 | 结构拆装动画（`.anim`）是否重建 | 待三维资产批次推进后定 |
 | 漫游（房间）内容是否采纳 | 本期只保留"漫游"这个 TaskType 位置，不采纳房间内容 |

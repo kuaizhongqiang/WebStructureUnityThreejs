@@ -235,6 +235,25 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 2. `_M_AO_G` 的**通道重排**（R=金属度→metallic、A=光泽度→1-roughness、G→occlusion 的 R）需要离屏重排后另出一张图；
 3. 7 个器件的"测量"模型在来源工程里是**内置立方体占位**（只有接触器是真的），需要内容侧补模型。
 
+### P1-4b Unity 侧材质贴图赋值（P1-4 的收尾）—— ⏳ **待办**
+
+**问题**（2026-10-13 实测）：Unity 导入 FBX 时按来源工程 `.fbx.meta` 的 `materialLocation: External` 设置，
+已经把 **24 个材质**抽到各器件的 `Models/<器件>/Materials/` 下，且都是 **URP Lit**（`Lit.shader`，**不会紫红**）——
+但 `_BaseMap` 是空的：**贴图没接上**，模型现在是 0.79 灰。
+
+| # | 事项 | 说明 |
+|---|---|---|
+| a | **BaseColor / Normal 批量赋值** | 按**同名前缀**（`<模型名>_*Base Color*` / `*Normal*`）给 24 个材质接线。建议做成编辑器菜单（`WSU3/Assets/Assign Model Materials`）：**可重跑、可评审**，免得"手工点 24 次、下次重导就丢" |
+| b | **`_M_AO_G` 的通道重排** | 它是 HDRP mask map（R=金属度 / G=AO / A=光泽度），与 glTF 的 occlusion（读 R）/ roughness（读 metallicRoughness 的 G）**通道语义不符**。要做对得离屏重排后另出一张图（在 Blender 里做，规则见 `tools/pipeline/blender-fbx-to-glb.py` 头部第 2 条） |
+
+**为什么不在 Web 侧一并做**：Three 侧的 GLB 只接了 BaseColor + Normal、金属度/粗糙度用常数兜底；
+两份资产**各自处理各自的表现层**（DEC-60：允许两侧各保留一份），不互相等。
+
+**验收**：Unity 里把任一器件模型拖进场景，**看到贴图**（不是灰模），法线细节在（不是平的）。
+
+**不阻塞任何事**：随时可在编辑器里做；做完把那 24 个 `.mat` 一起提交（Plastic）。
+相关：`docs/research/09` §6、`docs/design/03` §5.1。
+
 ### P1-5 资产发布链（大资产怎么进产物）
 
 | 项 | 内容 |
