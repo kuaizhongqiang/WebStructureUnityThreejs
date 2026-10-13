@@ -335,8 +335,8 @@ function finish(): void {
                   这是一个<b>明确状态</b>，不是"加载中卡住"：发布清单（release-manifest.json）里没有该任务的构建。
                   接入方式见 <code>docs/design/05-unity-packaging-pipeline.md</code>：<br />
                   <code
-                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key
-                    {{ unityBuild?.key ?? 'training' }} --task-type {{ taskType }}</code
+                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key main --task-types
+                    4,5,8,9</code
                   >
                 </div>
                 <div v-if="runtime.unityState === 'unknown'" class="ui-muted" style="font-size: var(--fs-11)">

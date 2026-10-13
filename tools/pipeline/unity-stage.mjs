@@ -2,13 +2,16 @@
 /**
  * 把 Unity WebGL 构建输出搬进仓库内的**暂存区**，并生成清单（见 docs/design/05）。
  *
- * 用法：
- *   node tools/pipeline/unity-stage.mjs --from <Unity 构建输出目录> --key <任务键> --task-type <n>
- *   node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl-baseline --key training --task-type 5
+ * 用法（DEC-81：**一个构建承载多个 TaskType**）：
+ *   node tools/pipeline/unity-stage.mjs --from <Unity 构建输出目录> --key <构建名> --task-types <n,n,...>
+ *   node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl --key main --task-types 4,5,8,9
  *
  * 可选：
  *   --extra <目录>   一并搬走构建目录之外的产物（Addressed 内容常在 ServerData/WebGL），复制到暂存产物**根**下
  *   --bridge         声明该构建**实现了协议桥**（会调 __WSU3_BRIDGE__.onReady）。壳冒烟据此决定"是否要求握手成功"
+ *   --force          形状校验失败也照搬（仅排查用）
+ *
+ * 已废弃（仍接受，会告警）：`--task-type <n>` —— 旧口径"一个构建一个任务"；新清单只写 `taskTypes[]`。
  *
  * 行为：
  *   ① 校验源目录**形状正确**（缺 wasm/data 之类直接失败，不搬半份进去）；
@@ -36,29 +39,60 @@ const REQUIRED = [
 ]
 
 function parseArgs(argv) {
-  const args = { key: '', from: '', taskType: null, force: false, bridge: false, extra: [] }
+  const args = { key: '', from: '', taskTypes: [], force: false, bridge: false, extra: [] }
+  let legacyTaskType = null
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
     if (token === '--from') args.from = argv[++i]
     else if (token === '--key') args.key = argv[++i]
-    else if (token === '--task-type') args.taskType = Number(argv[++i])
+    else if (token === '--task-types') {
+      args.taskTypes.push(
+        ...String(argv[++i] ?? '')
+          .split(',')
+          .map((piece) => piece.trim())
+          .filter((piece) => piece !== '')
+          .map(Number),
+      )
+    } else if (token === '--task-type') legacyTaskType = Number(argv[++i])
     else if (token === '--extra') args.extra.push(argv[++i])
     else if (token === '--bridge') args.bridge = true
     else if (token === '--force') args.force = true
     else if (token === '--help' || token === '-h') args.help = true
   }
+  if (legacyTaskType !== null && args.taskTypes.length === 0) {
+    console.warn(
+      '[unity-stage] ⚠️ --task-type 已废弃（DEC-81：一个构建可承载多个 TaskType），本次按单值处理；\n' +
+        '             请改用 --task-types 4,5,8,9，清单从此只写 taskTypes[]。\n',
+    )
+    args.taskTypes.push(legacyTaskType)
+  }
+  // 去重 + 升序：同一份声明写成什么顺序都得到同一个清单，减少无意义的清单 diff
+  args.taskTypes = [...new Set(args.taskTypes)].sort((a, b) => a - b)
   return args
 }
 
-const HELP = `用法：node tools/pipeline/unity-stage.mjs --from <目录> --key <任务键> --task-type <n>
+const HELP = `用法：node tools/pipeline/unity-stage.mjs --from <目录> --key <构建名> --task-types <n,n,...>
 
   --from        Unity 构建输出目录（含 index.html 与 Build/）
-  --key         任务键，例如 training / line-connection（默认取目录名）
-  --task-type   TaskType 数值（见 docs/design/05 §3.2；清单里的权威字段）
+  --key         构建名，例如 main（默认取目录名）。**不再是任务名** —— 一个构建可承载多个 TaskType（DEC-81）
+  --task-types  该构建能承载的 TaskType 数值，逗号分隔（例：4,5,8,9）
+                Unity 类任务通常是 4 电路连接 / 5 仿真实验 / 8 结构 / 9 检测（见 docs/design/05 §3.2）
   --extra <目录> 构建目录之外的产物（Addressables 内容常在 ServerData/WebGL），复制到暂存产物根下
   --bridge      声明该构建实现了协议桥（会调 __WSU3_BRIDGE__.onReady）；壳冒烟据此决定是否要求握手
   --force       源目录形状校验失败也照搬（慎用，仅用于排查）
 `
+
+/** 从契约快照读 TaskType 的合法序号（没有快照时返回 null = 跳过校验）。 */
+async function loadTaskTypeNames() {
+  try {
+    const snapshot = JSON.parse(await readFile(join(repoRoot, 'content', 'contracts', 'snapshot.json'), 'utf8'))
+    const taskType = (snapshot.enums || []).find((entry) => entry.name === 'TaskType')
+    if (!taskType) return null
+    return new Map((taskType.values || []).map((value) => [value.ordinal, value.name]))
+  } catch {
+    return null
+  }
+}
 
 async function walk(dir, base = dir) {
   const out = []
@@ -92,6 +126,31 @@ async function main() {
     process.stdout.write(HELP)
     process.exitCode = args.help ? 0 : 1
     return
+  }
+
+  // —— ⓪ 声明校验：一个构建必须声明"能承载哪些 TaskType"，否则它永远选不中（DEC-81）
+  if (args.taskTypes.length === 0) {
+    console.error('缺少 --task-types：必须声明该构建能承载哪些 TaskType（例如 --key main --task-types 4,5,8,9）。')
+    console.error('  DEC-81：一个 Unity 构建承载全部 Unity 类任务；加载器按"第一个声明包含该 taskType 的构建"选件。')
+    process.exitCode = 1
+    return
+  }
+  if (args.taskTypes.some((value) => !Number.isInteger(value) || value <= 0)) {
+    console.error(`--task-types 里有非法值：${args.taskTypes.join(',')}（应为正整数，且是 TaskType 的序号）`)
+    process.exitCode = 1
+    return
+  }
+  const taskTypeNames = await loadTaskTypeNames()
+  if (taskTypeNames) {
+    const unknown = args.taskTypes.filter((value) => !taskTypeNames.has(value))
+    if (unknown.length > 0) {
+      console.error(`--task-types 里有契约里不存在的 TaskType：${unknown.join(',')}`)
+      console.error(`  合法值：${[...taskTypeNames.entries()].map(([ord, name]) => `${ord}=${name}`).join(' / ')}`)
+      process.exitCode = 1
+      return
+    }
+  } else {
+    console.warn('[unity-stage] 未读到 content/contracts/snapshot.json，跳过 TaskType 合法性校验。')
   }
 
   const source = resolve(repoRoot, args.from)
@@ -154,7 +213,12 @@ async function main() {
   const manifest = await readManifest()
   const entry = {
     key,
-    taskType: Number.isFinite(args.taskType) ? args.taskType : null,
+    /**
+     * 这个构建声明的 TaskType 列表（升序、去重）。
+     * DEC-81：一个构建承载多个任务；加载器（web/src/stores/runtime.ts 与 electron/main.js）
+     * 按"**第一个声明包含该 taskType 的构建**"选件，不再要求 key 等于任务名。
+     */
+    taskTypes: args.taskTypes,
     source: relative(repoRoot, source).split('\\').join('/'),
     entry: 'index.html',
     loader: staged.map((f) => f.path).find((p) => /\.loader\.js$/.test(basename(p))) ?? null,
@@ -177,6 +241,9 @@ async function main() {
   const mb = (totalBytes / 1024 / 1024).toFixed(1)
   console.log(`已暂存 Unity 构建：${key}`)
   console.log(`  源：    ${relative(repoRoot, source)}`)
+  console.log(
+    `  承载：  ${args.taskTypes.map((ord) => `${ord}=${taskTypeNames?.get(ord) ?? '?'}`).join(', ')}`,
+  )
   console.log(`  暂存：  unity/builds/${key}（${staged.length} 个文件，${mb} MB）`)
   console.log(`  loader：${entry.loader ?? '（未识别，需人工确认）'}`)
   console.log(`  协议桥：${entry.bridge ? '已声明实现（壳冒烟将要求握手成功）' : '未声明（壳冒烟只验"画面挂上"，日志会写明未握手）'}`)

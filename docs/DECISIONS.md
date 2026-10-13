@@ -600,7 +600,7 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 |---|---|---|
 | **接下来要做什么**（步骤 / 落点 / 验收） | 唯一维护点已独立成文，避免上下文被压缩后丢失 | **`PLAN.md`** |
 | **Unity 侧协议桥实现**（`.jslib` + 消息接收 + 启动编排） | DEC-85 已定清单，尚未写代码 | `PLAN.md` P0-1；落点 `Assets/Scripts/Web/` |
-| **流水线与加载器的"单构建多任务"语义**（DEC-81） | 决定已下，代码未改 | `unity-stage.mjs` / 清单 `taskTypes[]` / `stores/runtime.ts` |
+| **流水线与加载器的"单构建多任务"语义**（DEC-81） | ✅ **已实现（2026-10-13）**：`--task-types` + 清单 `taskTypes[]` + `pickUnityBuild` + 壳侧同口径；验收＝桩构建 → 打包 → 壳冒烟 `mounted` | 见 `docs/PLAN.md` 已完成 1.13 |
 | **Unity 侧"编辑期 SO → 导出 JSON"链路**（DEC-82 / DEC-88） | 本期先采用"JSON 手写" | 数据面稳定后接入 |
 | **Web 侧内容层改用 `content/data/*.json`** | 当前仍走 `content/projects/` 的演示数据 | 与 Unity 桥同批做 |
 | **三维资产搬运与格式转换**（DEC-88） | 范围、体积与取舍已测绘（`research/09`） | 分批：8 器件新代模型 → 原理图 →（需要时）Blender 转 GLB |

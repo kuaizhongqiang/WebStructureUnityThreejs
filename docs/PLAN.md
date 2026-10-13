@@ -29,6 +29,7 @@
 | 1.10 | **检测权收归管理器** | 物体不再实现 `IPointer*Handler`，改由 `InteractiveManager.CoreUpdate()` 每帧射线后调 `Invoke*`；去掉 `PhysicsRaycaster`；悬停不再碰高亮 | git `f8399e1`；Plastic `cs:14` |
 | 1.11 | **`0_Setup` 场景接线（P0-1 g）** | 加 `WebBridge`（`WebBridgeBehaviour`）与 `Setup`（`StartupFlow`）；用附加加载改场景，未触碰负责人在编的 `1_Content` | git `64526b7`；Plastic `cs:15` |
 | 1.12 | **P0-1 Play 验收** | 三条启动日志齐全；**抓到并修掉"桥随 `0_Setup` 被卸载"的沉默故障**（`WebBridge` 挪到 `Manager` 下 + 根物体自保 + 自检日志/上报） | git（见提交）；Plastic（见提交） |
+| 1.13 | **P0-2 单构建多任务语义（DEC-81）** | 清单 `taskTypes[]` + `--task-types`（带契约校验）+ `pickUnityBuild`（兼容旧清单）+ 壳侧同口径 + 7 项选件单测；**验收：桩构建 → 打包 → 壳冒烟 `mounted`** | git（见提交）；纯 JS/TS/文档，**无 Unity 侧改动**（故未走 Plastic） |
 
 ---
 
@@ -102,16 +103,25 @@
 - Unity 侧每次改动都要**双渠道**提交（git 走 PR 分支；Plastic 按路径 `cm add` + `cm ci`）。
 - 本期**不采用** Newtonsoft（避免加包）；信封用小扫描器 + `JsonUtility` 解析 payload（见 `design/09`）。
 
-### P0-2 流水线"单构建多任务"语义（DEC-81）
+### P0-2 流水线"单构建多任务"语义（DEC-81）—— ✅ **已完成（2026-10-13）**
 
-| 步骤 | 内容 | 落点 |
-|---|---|---|
-| a | 暂存入参改 `--key main --task-types 4,5,8,9` | `tools/pipeline/unity-stage.mjs` |
-| b | 清单每项加 `taskTypes: number[]` | `tools/pipeline/*`、`unity/builds/manifest.json` 形状 |
-| c | 加载器改"找第一个声明包含该 taskType 的构建" | `web/src/stores/runtime.ts`（`unityBuildFor`）、`web/src/unity/UnityLoader.ts` |
-| d | 壳冒烟里的 Unity 页断言随之更新 | `electron/` 冒烟脚本、`web/tools/` |
+| 步骤 | 内容 | 落点 | 状态 |
+|---|---|---|---|
+| a | 暂存入参改 `--key main --task-types 4,5,8,9`（`--task-type` 废弃但兼容） | `tools/pipeline/unity-stage.mjs` | ✅ |
+| b | 清单每项写 `taskTypes: number[]`（升序去重）；暂存时与契约快照的 `TaskType` 序号比对，写错直接拒绝 | `tools/pipeline/unity-stage.mjs`、`unity-verify.mjs`、`make-stub-unity.mjs`、`pack.mjs` | ✅ |
+| c | 加载器改"**第一个声明包含该 taskType 的构建**"，并兼容旧清单的单值 `taskType` | `web/src/stores/runtime.ts`（`declaresTaskType` / `pickUnityBuild`）、`web/src/unity/UnityLoader.ts` | ✅ |
+| d | 壳侧同一口径（独立进程，不共享页面模块）+ 启动日志与冒烟打印 `taskTypes` | `electron/main.js` | ✅ |
+| e | 单测锁住四种形状：新清单命中/不命中、旧清单兼容、声明为空不认定、多候选取第一个 | `web/src/stores/runtime.spec.ts`（7 项） | ✅ |
+| f | 页面"接入命令"提示改为新命令 | `web/src/views/TaskView.vue` | ✅ |
 
-**验收**：`make-stub-unity.mjs` 用新形状产出桩构建 → 打包 → 壳里 Unity 页仍 `mounted`。
+**验收（已跑通）**：
+1. `node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --stage` → 清单写 `taskTypes: [4,5,8,9]`；
+2. `node tools/pipeline/unity-verify.mjs` → `[unity] ✓ main（承载 taskTypes=4,5,8,9）`；
+3. `node tools/pipeline/pack.mjs` → 发布清单里 `taskTypes` 正确、摘要不再出现 `undefined`；
+4. `cd electron && npm run smoke` → **`Unity 页：canvas=true … → mounted`，冒烟通过**；壳日志打印 `· main（承载 taskTypes=4,5,8,9）`。
+
+**兼容性口径（写进代码注释与文档）**：新清单只写 `taskTypes`；旧清单的单值 `taskType` 仍被读取（已打出去的包不用重打）。
+**两代都为空 ⇒ 不认定** —— 宁可显示"产物未就位"，也不挂上不知道能不能干活的构建。
 
 ### P0-3 Web 内容层改用 `content/data/*.json`
 

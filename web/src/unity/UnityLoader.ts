@@ -15,9 +15,13 @@ import { UnityBridge } from './UnityBridge'
 import { BRIDGE_PROTOCOL_VERSION } from '@/contracts'
 
 export interface UnityBuildInfo {
+  /** 构建名（一个构建可承载多个 TaskType，DEC-81；`key` 不再是任务名） */
   readonly key: string
-  /** 清单里允许为空（手写清单时可能没填），加载器不依赖它 */
-  readonly taskType: number | null
+  /**
+   * 该构建声明能承载哪些 TaskType。
+   * 加载器**不用它选件**（选件在 `stores/runtime.ts` 的 `unityBuildFor`），只用于日志与排查。
+   */
+  readonly taskTypes?: readonly number[]
   readonly entry?: string
   readonly loader?: string | null
   /** 产物指纹：拼成 `?v=` 防"重建后仍跑旧场景"（Unity 的 dataCaching 按 URL 缓存，docs/design/06 §3②） */

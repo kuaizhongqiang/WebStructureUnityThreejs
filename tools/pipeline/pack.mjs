@@ -109,7 +109,12 @@ async function buildReleaseManifest() {
       const files = (build.files || []).map((f) => f.path)
       builds.push({
         key: build.key,
-        taskType: build.taskType,
+        // DEC-81：一个构建承载多个 TaskType；旧清单的单值 taskType 仍兼容
+        taskTypes: Array.isArray(build.taskTypes)
+          ? build.taskTypes
+          : build.taskType != null
+            ? [build.taskType]
+            : [],
         entry: build.entry,
         loader: build.loader,
         // 是否声明实现了协议桥：壳冒烟据此决定"要不要握手成功才算通过"（docs/design/06 §5）
@@ -164,7 +169,10 @@ function summary(manifest, exePath) {
   console.log(`内容项目：   ${manifest.content.projects.length ? manifest.content.projects.join('、') : '（无）'}`)
   if (manifest.unity.included) {
     for (const build of manifest.unity.builds) {
-      console.log(`Unity 构建： ${build.key}（taskType=${build.taskType}）${mb(build.totalBytes)} MB，指纹 ${build.treeSha256.slice(0, 12)}…`)
+      console.log(
+        `Unity 构建： ${build.key}（承载 taskTypes=${build.taskTypes.join(',') || '未声明'}）` +
+          `${mb(build.totalBytes)} MB，指纹 ${build.treeSha256.slice(0, 12)}…`,
+      )
     }
   } else {
     console.log('Unity 构建： **未包含** —— ' + manifest.unity.reason)

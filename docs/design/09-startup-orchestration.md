@@ -91,18 +91,20 @@
 - **清单说没有 Unity 产物时，绝不预加载**（DEC-79：缺席必须明说）。
 - **移动端不预加载**（流量与内存），画质一律 `low`（DEC-70）。
 
-## 9 构建粒度（DEC-81）与"待实现"清单
+## 9 构建粒度（DEC-81）—— **已实现**
 
 **决定**：**一个 Unity 构建承载全部 Unity 类任务**（换任务只换资源包），不再"一个 TaskType 一个构建"。
 
-这会让现有流水线与加载器的语义变化，**尚未实现**（已登记在 `../DECISIONS.md` 未闭合表）：
+落到代码里就是下面这几处（2026-10-13 落地，验收：桩构建 → 打包 → 壳冒烟仍 `mounted`）：
 
-| 待改 | 现状 | 目标 |
-|---|---|---|
-| `unity/builds/<key>/` 的 `<key>` | TaskType 名（`training` / `structure` …） | **构建名**（建议 `main`） |
-| `release-manifest.json` 的 `unity.builds[]` | 一个构建对一个 `taskType` | 每项加 **`taskTypes: number[]`**（声明能承载哪些任务） |
-| `web/src/stores/runtime.ts` | `unityBuildFor(taskType)` 精确匹配 | "找第一个声明包含该 taskType 的构建" |
-| `tools/pipeline/unity-stage.mjs` | `--key --task-type` | `--key main --task-types 4,5,8,9` |
+| 环节 | 实现（2026-10-13 已落地） |
+|---|---|
+| `unity/builds/<key>/` 的 `<key>` | **构建名**（当前固定 `main`），不再是任务名 |
+| 暂存命令 | `--key main --task-types 4,5,8,9`（`--task-types` 必填，且与契约里的 TaskType 序号比对，写错直接拒绝） |
+| `unity/builds/manifest.json` / `release-manifest.json` 的 `unity.builds[]` | 每项 **`taskTypes: number[]`**（升序去重）；旧清单的单值 `taskType` 仍兼容读取 |
+| `web/src/stores/runtime.ts` | `pickUnityBuild`：**第一个声明包含该 taskType 的构建**（`declaresTaskType` 处理新/旧两种形状） |
+| `electron/main.js` | 壳侧同一口径（独立进程，不共享页面模块） |
+| 单测 | `web/src/stores/runtime.spec.ts` 锁住四种形状：新清单命中/不命中、旧清单兼容、声明为空不认定、多候选取第一个 |
 
 ## 10 本轮**不**做的事
 
