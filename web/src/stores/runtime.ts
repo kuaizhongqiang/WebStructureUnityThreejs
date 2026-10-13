@@ -33,7 +33,7 @@ export interface ReleaseManifest {
   version: number
   generatedAt: string
   web?: { files: number; bytes: number }
-  content?: { projects: string[] }
+  content?: { projects: string[]; data?: string[] }
   unity?: { included: boolean; builds: UnityBuildEntry[]; reason?: string }
   serving?: Record<string, unknown>
   shell?: Record<string, unknown>

@@ -1,0 +1,76 @@
+{
+  "clips": [
+    {
+      "id": "menu_contactor",
+      "displayName": "接触器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_contactor",
+      "displayNameEn": "Contactor"
+    },
+    {
+      "id": "menu_thermalRelay",
+      "displayName": "热继电器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_thermalRelay",
+      "displayNameEn": "Thermal Relay"
+    },
+    {
+      "id": "menu_timeRelay",
+      "displayName": "时间继电器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_timeRelay",
+      "displayNameEn": "Time Relay"
+    },
+    {
+      "id": "menu_masterAppliance",
+      "displayName": "主令电器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_masterAppliance",
+      "displayNameEn": "Master Appliance"
+    },
+    {
+      "id": "menu_fuse",
+      "displayName": "熔断器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_fuse",
+      "displayNameEn": "Fuse"
+    },
+    {
+      "id": "menu_breaker",
+      "displayName": "断路器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_breaker",
+      "displayNameEn": "Circuit Breaker"
+    },
+    {
+      "id": "menu_speedRelay",
+      "displayName": "速度继电器",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_speedRelay",
+      "displayNameEn": "Speed Relay"
+    },
+    {
+      "id": "menu_combinationSwitch",
+      "displayName": "组合开关",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_combinationSwitch",
+      "displayNameEn": "Combination Switch"
+    },
+    {
+      "id": "menu_quiz",
+      "displayName": "小测验",
+      "parentId": null,
+      "clip": null,
+      "projectId": "clip_quiz",
+      "displayNameEn": "Quiz"
+    }
+  ]
+}

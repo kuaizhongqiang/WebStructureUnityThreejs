@@ -1,0 +1,161 @@
+{
+  "id": "stepContentData",
+  "displayName": "步骤内容集",
+  "description": "步骤文字内容（UI 说明 / 提示等）：多态条目按 id 取用。",
+  "contents": [
+    {
+      "contentType": "UI",
+      "id": "contactor_ui_measure",
+      "displayName": "测量开始说明",
+      "description": "接触器测量链第 1 步（Start）的说明弹框；步骤 usingId 填本 id。",
+      "title": "接触器检测",
+      "pages": [
+        "步骤1：将万用表拨至“Ω”挡，选择 R×100 量程。\n步骤2：将红、黑表笔分别接触待测的两个端子。\n步骤3：观察读数，判断触点的通断状态。",
+        "动断触点：静止时电阻为零（导通）；按下试验按键后电阻变为无穷大（OL）。\n动合触点：静止时电阻为无穷大（OL）；按下试验按键后变为零（导通）。",
+        "线圈检测：若测得电阻在几百欧姆左右，说明线圈完好；若为 0 表示线圈短路；若为 OL 表示线圈断路。"
+      ],
+      "displayNameEn": "Measurement Start Instructions",
+      "descriptionEn": "Explanation dialog for step 1 (Start) of the contactor measurement chain; set the step usingId to this id.",
+      "titleEn": "Contactor Inspection",
+      "pagesEn": [
+        "Step 1: Turn the multimeter to the \"Ω\" range and select the R×100 scale.\nStep 2: Touch the red and black probes to the two terminals to be tested.\nStep 3: Read the display and judge whether the contact is open or closed.",
+        "Normally-closed contact: at rest the resistance is zero (conducting); after the test button is pressed the resistance becomes infinite (OL).\nNormally-open contact: at rest the resistance is infinite (OL); after the test button is pressed it becomes zero (conducting).",
+        "Coil test: if the measured resistance is around a few hundred ohms, the coil is intact; a reading of 0 means the coil is short-circuited; OL means the coil is open-circuited."
+      ]
+    },
+    {
+      "contentType": "UI",
+      "id": "contactor_ui_measure_finish",
+      "displayName": "测量结束说明",
+      "description": "接触器测量链第 7 步（Finish）的结束说明；步骤 usingId 填本 id。",
+      "title": "接触器检测 · 完成",
+      "pages": [
+        "本次检测完成：你已用万用表测出主触点、辅助触点与线圈的通断状态，并据此判断了触点类型。",
+        "检查要点：主触点 1L1-2T1、3L2-4T2、5L3-6T3 应两两导通（电阻接近 0）；线圈 A1-A2 应有几百欧姆电阻，读数为 0 表示线圈短路，显示 OL 表示线圈断路。",
+        "收纳：把红、黑表笔从端子上取下，万用表旋钮拨回 OFF 挡，整理好导线与器材。"
+      ],
+      "displayNameEn": "Measurement Completion Instructions",
+      "descriptionEn": "Completion explanation for step 7 (Finish) of the contactor measurement chain; set the step usingId to this id.",
+      "titleEn": "Contactor Inspection · Complete",
+      "pagesEn": [
+        "This inspection is complete: you have used the multimeter to test the continuity of the main contacts, the auxiliary contacts and the coil, and have judged the contact types from the results.",
+        "Key checkpoints: the main contacts 1L1-2T1, 3L2-4T2 and 5L3-6T3 should conduct in pairs (resistance close to 0); the coil A1-A2 should have a resistance of a few hundred ohms; a reading of 0 means the coil is short-circuited, and OL means the coil is open-circuited.",
+        "Tidy up: remove the red and black probes from the terminals, turn the multimeter knob back to the OFF range, and put the leads and equipment away."
+      ]
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step1_tips",
+      "displayName": "步骤1提示（说明）",
+      "description": "对应 Step_1（Start）：读说明后点确认开始。",
+      "stepTips": "阅读检测说明，明确本次要检测什么",
+      "stepImageKey": "",
+      "opTips": "看弹框里的检测步骤与判据，点「确认」开始检测",
+      "opImageKey": "",
+      "displayNameEn": "Step 1 Tip (Instructions)",
+      "descriptionEn": "Corresponds to Step_1 (Start): read the instructions and click confirm to begin.",
+      "stepTipsEn": "Read the inspection instructions to know what will be tested",
+      "opTipsEn": "Read the inspection steps and criteria in the dialog box, then click \"Confirm\" to start the inspection"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step2_tips",
+      "displayName": "步骤2提示（打开万用表）",
+      "description": "对应 Step_2（Click）。⚠️ 该步骤的 targetObj 尚未在预制体里配置，配好万用表对象后才可通过。",
+      "stepTips": "取出万用表，准备测量",
+      "stepImageKey": "",
+      "opTips": "点击万用表，把它展开到工作位置",
+      "opImageKey": "",
+      "displayNameEn": "Step 2 Tip (Open the Multimeter)",
+      "descriptionEn": "Corresponds to Step_2 (Click). WARNING: the targetObj of this step is not yet configured in the prefab; it can only be passed after the multimeter object is set up.",
+      "stepTipsEn": "Take out the multimeter and get ready to measure",
+      "opTipsEn": "Click the multimeter to unfold it into the working position"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step3_tips",
+      "displayName": "步骤3提示（调档位）",
+      "description": "对应 Step_3（GearAdjust）。⚠️ targetObj（旋钮）与 gearType 尚未配置：当前 gearType=Off，需改为 Ohm（只判功能档、不判量程）。",
+      "stepTips": "把万用表拨到电阻档",
+      "stepImageKey": "",
+      "opTips": "拖动万用表旋钮，转到 Ω（电阻）功能档",
+      "opImageKey": "",
+      "displayNameEn": "Step 3 Tip (Set the Range)",
+      "descriptionEn": "Corresponds to Step_3 (GearAdjust). WARNING: targetObj (the knob) and gearType are not yet configured; gearType is currently Off and must be changed to Ohm (only the function range is checked, not the scale).",
+      "stepTipsEn": "Turn the multimeter to the resistance range",
+      "opTipsEn": "Drag the multimeter knob to the Ω (resistance) function range"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step4_tips",
+      "displayName": "步骤4提示（测一对点）",
+      "description": "对应 Step_4（MeasurePair）。⚠️ points 尚未配置：端子对确定后，把 stepTips/opTips 改成具体端子名（如 1L1 / 2T1）。",
+      "stepTips": "把红、黑表笔接到待测的一对端子上",
+      "stepImageKey": "",
+      "opTips": "分别拖动红表笔和黑表笔，吸附到本步要求的两个端子上；两支都放到位即通过（红黑对调算同一对）",
+      "opImageKey": "",
+      "displayNameEn": "Step 4 Tip (Measure One Pair)",
+      "descriptionEn": "Corresponds to Step_4 (MeasurePair). WARNING: points is not yet configured; once the terminal pairs are fixed, change stepTips/opTips to the specific terminal names (such as 1L1 / 2T1).",
+      "stepTipsEn": "Connect the red and black probes to the pair of terminals to be tested",
+      "opTipsEn": "Drag the red probe and the black probe separately and snap them onto the two terminals required by this step; the step is passed once both are in place (swapping red and black counts as the same pair)"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step5_tips",
+      "displayName": "步骤5提示（按试验按钮）",
+      "description": "对应 Step_5（Click）。⚠️ 该步骤的 targetObj 尚未在预制体里配置，需绑定接触器的试验（手动）按钮。",
+      "stepTips": "按下试验按钮，观察触点动作",
+      "stepImageKey": "",
+      "opTips": "点击接触器上的试验按钮，让触头动作，注意动断触点断开、动合触点闭合",
+      "opImageKey": "",
+      "displayNameEn": "Step 5 Tip (Press the Test Button)",
+      "descriptionEn": "Corresponds to Step_5 (Click). WARNING: the targetObj of this step is not yet configured in the prefab; it must be bound to the test (manual) button of the contactor.",
+      "stepTipsEn": "Press the test button and observe the contact operation",
+      "opTipsEn": "Click the test button on the contactor to make the contacts operate; note that the normally-closed contact opens and the normally-open contact closes"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step6_tips",
+      "displayName": "步骤6提示（答题）",
+      "description": "对应 Step_6（Question）。题目 id：contactor_q_mainContact（题目统一在 StreamingAssets/Data/QuestionData.json，usage=Step）。",
+      "stepTips": "根据测量结果回答一道问题",
+      "stepImageKey": "",
+      "opTips": "在弹出面板里选择答案，答对才能继续",
+      "opImageKey": "",
+      "displayNameEn": "Step 6 Tip (Answer the Question)",
+      "descriptionEn": "Corresponds to Step_6 (Question). Question id: contactor_q_mainContact (all questions are kept in StreamingAssets/Data/QuestionData.json, usage=Step).",
+      "stepTipsEn": "Answer one question based on the measurement results",
+      "opTipsEn": "Choose an answer in the pop-up panel; you can only continue after answering correctly"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_step7_tips",
+      "displayName": "步骤7提示（完成）",
+      "description": "对应 Step_7（Finish）：确认结束说明后整条链结束并发完成事件。",
+      "stepTips": "检测完成，整理器材",
+      "stepImageKey": "",
+      "opTips": "看完结束说明点「确认」，把表笔从端子上取下、旋钮拨回 OFF 挡",
+      "opImageKey": "",
+      "displayNameEn": "Step 7 Tip (Finish)",
+      "descriptionEn": "Corresponds to Step_7 (Finish): after the completion explanation is confirmed, the whole chain ends and a completion event is fired.",
+      "stepTipsEn": "Inspection complete; put the equipment away",
+      "opTipsEn": "After reading the completion explanation, click \"Confirm\", remove the probes from the terminals and turn the knob back to the OFF range"
+    },
+    {
+      "contentType": "Tips",
+      "id": "contactor_measure_coil_question_tips",
+      "displayName": "步骤提示（线圈判断答题）",
+      "description": "给新增的第 2 个 Question 步骤（线圈电阻判断）用；⚠️ 该步骤尚未在预制体里创建，条目暂时无人引用。",
+      "stepTips": "判断线圈是否完好",
+      "stepImageKey": "",
+      "opTips": "按 A1-A2 测得的电阻值判断：几百欧左右为正常，读数为 0 是短路，显示 OL 是断路",
+      "opImageKey": "",
+      "displayNameEn": "Step Tip (Answer the Coil Judgement Question)",
+      "descriptionEn": "Used for the newly added 2nd Question step (coil resistance judgement); WARNING: that step has not been created in the prefab yet, so this entry is currently referenced by nothing.",
+      "stepTipsEn": "Judge whether the coil is intact",
+      "opTipsEn": "Judge from the resistance measured across A1-A2: around a few hundred ohms is normal, a reading of 0 is a short circuit, and OL means an open circuit"
+    }
+  ],
+  "displayNameEn": "Step Content Set",
+  "descriptionEn": "Step text content (UI descriptions / tips, etc.): polymorphic entries are retrieved by id."
+}

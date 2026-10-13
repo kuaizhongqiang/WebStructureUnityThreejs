@@ -69,6 +69,12 @@ docs/ui-mockups/shots/
 unity/builds/*
 !unity/builds/README.md
 
+# ---------- 内容大资产（DEC-57：模型 / 贴图 / 视频不进 git） ----------
+# 落点见 docs/design/03-layout-and-assets.md §5：content/assets/three|unity/
+# 与 unity/builds/ 同款处理：整目录忽略，只放行那份说明文件，保证新克隆的仓库里目录仍在。
+content/assets/**
+!content/assets/README.md
+
 # ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/
 /web/public/unity-build-*/

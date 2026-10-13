@@ -1,0 +1,41 @@
+{
+  "projectInfo": {
+    "projectName": "低压电器仿真实训软件",
+    "projectEnglishName": "Low-Voltage Electrical Appliance Simulation Training Software",
+    "version": "1.0.0",
+    "company": "大连通科应用技术有限公司",
+    "id": "ProjectInfo",
+    "displayName": "软件信息",
+    "description": "TK231",
+    "displayNameEn": "Software Information",
+    "descriptionEn": "TK231",
+    "projectNameEn": "Low-Voltage Electrical Appliance Simulation Training Software",
+    "companyEn": "Dalian Tongke Applied Technology Co., Ltd."
+  },
+  "copyRight": {
+    "copyright": "Copyright © 2026 大连通科应用技术有限公司. All rights reserved.",
+    "isCopyRight": true,
+    "id": "CopyRight",
+    "displayName": "版权信息",
+    "description": "",
+    "displayNameEn": "Copyright Information",
+    "descriptionEn": "",
+    "copyrightEn": "Copyright © 2026 Dalian Tongke Applied Technology Co., Ltd. All rights reserved."
+  },
+  "renderQuality": {
+    "renderQuality": 0,
+    "qualitySetted": true,
+    "id": "RenderQuality",
+    "displayName": "渲染质量",
+    "description": "",
+    "displayNameEn": "Render Quality",
+    "descriptionEn": ""
+  },
+  "languageType": 0,
+  "textType": 0,
+  "id": "",
+  "displayName": "",
+  "description": "",
+  "displayNameEn": "",
+  "descriptionEn": ""
+}

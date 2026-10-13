@@ -1,0 +1,14 @@
+{
+  "userName": "",
+  "indentyNum": "",
+  "className": "",
+  "password": "",
+  "userType": 0,
+  "loginTime": "0001-01-01T00:00:00",
+  "lastLoginTime": "0001-01-01T00:00:00",
+  "id": "UserData",
+  "displayName": "默认用户",
+  "description": "默认用户的数据组装",
+  "displayNameEn": "Default User",
+  "descriptionEn": "Data assembly for the default user"
+}

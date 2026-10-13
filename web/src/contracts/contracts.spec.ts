@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  BRIDGE_MESSAGE_TYPES,
+  BRIDGE_MESSAGES_FROM_UNITY,
+  BRIDGE_MESSAGES_FROM_WEB,
+  QuestionType,
+  QuestionUsage,
+  QUESTION_TYPE_LABELS,
+  QUESTION_USAGE_LABELS,
+  QUESTION_TYPES,
+  QUESTION_USAGES,
   SceneState,
   SCENE_STATE_LABELS,
   TASK_TYPE_LABELS,
@@ -7,6 +16,8 @@ import {
   TASK_TYPES,
   TaskType,
   ViewerStack,
+  isBridgeMessageType,
+  isMessageFromWeb,
   resolveViewerStack,
 } from './index'
 
@@ -63,6 +74,74 @@ describe('TaskType 契约（MCV EnumAll.cs:389-415）', () => {
     TASK_TYPES.forEach((value, index) => {
       expect(value).toBe(index)
     })
+  })
+})
+
+describe('QuestionType / QuestionUsage 契约（DEC-83）', () => {
+  const QUESTION_TYPE_SNAPSHOT: ReadonlyArray<[number, string, string]> = [
+    [0, 'None', '空类型'],
+    [1, 'SingleChoice', '单选'],
+    [2, 'MultipleChoice', '多选'],
+    [3, 'TrueFalse', '判断'],
+    [4, 'FillInBlank', '填空'],
+  ]
+
+  it('序号、名字、中文标签逐值一致', () => {
+    for (const [ordinal, name, label] of QUESTION_TYPE_SNAPSHOT) {
+      expect(QuestionType[ordinal]).toBe(name)
+      expect(QUESTION_TYPE_LABELS[ordinal as QuestionType]).toBe(label)
+    }
+    expect(QUESTION_TYPES).toHaveLength(QUESTION_TYPE_SNAPSHOT.length)
+  })
+
+  it('名字就是内容数据的取值：JSON 里写名字而不是序号（docs/design/08）', () => {
+    // 采用既有内容数据的前提条件：这两组名字必须与数据里的字符串逐字一致
+    expect(QuestionType[QuestionType.SingleChoice]).toBe('SingleChoice')
+    expect(QuestionType[QuestionType.TrueFalse]).toBe('TrueFalse')
+    expect(QuestionUsage[QuestionUsage.Exam]).toBe('Exam')
+    expect(QuestionUsage[QuestionUsage.Step]).toBe('Step')
+  })
+
+  it('QuestionUsage 只有考核 / 步骤两类，中文标签逐值一致', () => {
+    expect(QUESTION_USAGES).toEqual([QuestionUsage.Exam, QuestionUsage.Step])
+    expect(QUESTION_USAGE_LABELS[QuestionUsage.Exam]).toBe('考核')
+    expect(QUESTION_USAGE_LABELS[QuestionUsage.Step]).toBe('步骤')
+  })
+})
+
+describe('桥消息类型契约（DEC-85）', () => {
+  it('两个方向都非空，且并集无重复（新增只能往后追加）', () => {
+    expect(BRIDGE_MESSAGES_FROM_WEB.length).toBeGreaterThan(0)
+    expect(BRIDGE_MESSAGES_FROM_UNITY.length).toBeGreaterThan(0)
+    expect(new Set(BRIDGE_MESSAGE_TYPES).size).toBe(BRIDGE_MESSAGE_TYPES.length)
+    expect(BRIDGE_MESSAGE_TYPES).toHaveLength(
+      BRIDGE_MESSAGES_FROM_WEB.length + BRIDGE_MESSAGES_FROM_UNITY.length,
+    )
+  })
+
+  it('启动链上的关键消息都在（少一条就会静默不工作）', () => {
+    for (const type of [
+      'app:init',
+      'preload:task',
+      'preload:cancel',
+      'scene:enter',
+      'scene:exit',
+      'input:enable',
+      'runtime:resume',
+      'unity:ready',
+      'unity:progress',
+      'assets:ready',
+      'scene:ready',
+      'scene:exited',
+    ]) {
+      expect(isBridgeMessageType(type)).toBe(true)
+    }
+  })
+
+  it('方向判定与分组一致', () => {
+    expect(isMessageFromWeb('app:init')).toBe(true)
+    expect(isMessageFromWeb('scene:ready')).toBe(false)
+    expect(isBridgeMessageType('scene:unknown')).toBe(false)
   })
 })
 

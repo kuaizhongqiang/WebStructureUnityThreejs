@@ -96,6 +96,10 @@ async function buildReleaseManifest() {
   const contentProjects = webFiles
     .filter((file) => /^content\/projects\/.+\.json$/.test(file))
     .map((file) => basename(file))
+  // 内容数据（DEC-82）：与 web/dist 一起发布的那一份，Unity 侧另有一份同名文件（随 Unity 构建发布）
+  const contentData = webFiles
+    .filter((file) => /^content\/data\/.+\.json$/.test(file))
+    .map((file) => basename(file))
 
   let unity = { included: false, builds: [], reason: '本机没有 Unity 暂存产物' }
   if (existsSync(join(unityStage, 'manifest.json'))) {
@@ -129,7 +133,7 @@ async function buildReleaseManifest() {
     version: 1,
     generatedAt: new Date().toISOString(),
     web: { files: webFiles.length, bytes: await dirBytes(distRoot, webFiles) },
-    content: { projects: contentProjects },
+    content: { projects: contentProjects, data: contentData },
     unity,
     // 服务端约定：把 DEC-22 的"MIME/压缩/缓存清单"写进产物，部署方照抄
     serving: {

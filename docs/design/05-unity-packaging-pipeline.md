@@ -1,9 +1,9 @@
 # 05 · Unity 产物与打包流水线
 
-> 状态：**已定方向并已实现**（2026-10-12，DEC-79）。本文只写"约定与做法"，判定归 `docs/DECISIONS.md`。
-> 相关既有决策：DEC-06（技术栈归属）、DEC-07/DEC-12（同页挂载 + 协议握手 + 必须 Quit）、
-> DEC-22（本机静态服务器验证 MIME/压缩/缓存）、DEC-23（内容与资源物理分开）、
-> DEC-44（基线构建）、DEC-53/DEC-71（移动端先试再回退）、DEC-57（大资产不进 git）、DEC-77（壳打包）。
+> 状态：**已定方向并已实现**（2026-10-12，DEC-79）；**构建粒度已于 2026-10-13 改为"单构建多任务"（DEC-81），其中清单与加载器的语义改动尚未实现** —— 见 §3.1 的 ⚠️。
+> 相关既有决策：DEC-06（技术栈归属）、DEC-07/DEC-12（同页挂载 + 协议握手）、DEC-22（本机静态服务器验证 MIME/压缩/缓存）、
+> DEC-23（内容与资源物理分开）、DEC-44（基线构建）、DEC-53/DEC-71（移动端先试再回退）、DEC-57（大资产不进 git）、
+> DEC-77（壳打包）、**DEC-81（一个 Unity 构建承载全部 Unity 类任务）**、DEC-82（内容数据两份）。
 
 ## 1 一句话
 
@@ -41,22 +41,23 @@
 | 路径 | 用途 | 进 git？ |
 |---|---|---|
 | `NewStructureUnity/Builds/<name>/` | Unity 编辑器的构建输出（人手动产生） | **否** |
-| `unity/builds/<key>/` | **暂存区**：流水线搬进来的 Unity 产物，`<key>` 是任务键（如 `training`） | **否** |
+| `unity/builds/<key>/` | **暂存区**：流水线搬进来的 Unity 产物，`<key>` 是**构建名**（DEC-81 后建议固定为 `main`，不再是任务键） | **否** |
 | `unity/builds/manifest.json` | Unity 清单：每个构建的关键文件、字节数、`sha256`、时间 | 否 |
 | `web/dist/release-manifest.json` | **发布清单**：这次包里到底有什么（Web / 内容 / Unity / 服务端约定） | 否（随产物） |
 
-### 3.2 任务键与 TaskType 的对应
+### 3.2 构建名与 TaskType（**DEC-81 已改，待实现**）
 
-Unity 承载的 4 个 TaskType 各自可以有独立构建（DEC-06）：
+⚠️ **现状与目标不一致，改动尚未落地**（登记在 `../DECISIONS.md` 未闭合表）：
 
-| TaskType | 值 | 建议 key |
+| | 现状（已实现） | 目标（DEC-81） |
 |---|---|---|
-| 电路连接 `LineConnection` | 4 | `line-connection` |
-| 仿真实验 `Training` | 5 | `training` |
-| 结构 `Structure` | 8 | `structure` |
-| 检测 `Inspection` | 9 | `inspection` |
+| 一个构建服务几个 TaskType | **一个** | **多个**（换任务只换资源包，不重建实例） |
+| 暂存命令 | `unity-stage.mjs --key training --task-type 5` | `unity-stage.mjs --key main --task-types 4,5,8,9` |
+| 清单字段 | 每项一个 `taskType` | 每项加 `taskTypes: number[]` |
+| 加载器选件 | `stores/runtime.ts` 按 `taskType` 精确匹配 | "找第一个声明包含该 `taskType` 的构建" |
 
-一个 key 只服务一个 TaskType（清单里 `taskType` 字段是权威）；同一个 TaskType 多构建时，后者覆盖前者并留 `stagedAt`。
+Unity 承载的 4 个 TaskType：电路连接 `LineConnection`=4、仿真实验 `Training`=5、结构 `Structure`=8、检测 `Inspection`=9。
+**目标形态**：这 4 个由**同一个构建**（`main`）承载；若某类任务确实需要完全不同的场景（如漫游），再追加一个独立构建。
 
 ### 3.3 Unity 构建输出必须包含
 
