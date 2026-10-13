@@ -3,8 +3,7 @@
   "rootNamespace": "WSU3",
   "references": [
     "WSU3.Core",
-    "WSU3.Contracts",
-    "UnityEngine.UI"
+    "WSU3.Contracts"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

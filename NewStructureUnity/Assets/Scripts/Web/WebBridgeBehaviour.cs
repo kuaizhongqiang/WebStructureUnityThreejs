@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using WSU3.Contracts;
 using WSU3.Contracts.Events;
+using WSU3.Core.Interactive;
 
 namespace WSU3.Web
 {
@@ -32,6 +33,68 @@ namespace WSU3.Web
         private void Start()
         {
             if (handshakeOnStart) WebChannel.Ready();
+        }
+
+        // ── 出站：把 Core 的「意图事件」真正发上网 ─────────────────────────
+        //
+        // 分层约定：Core 的编排只管**发布意图**（TaskAssetsReadyEvent 等），
+        // 因为 Core 不能引用 Runtime 的桥；把"意图 → 线上的 type"这一步留在桥里。
+
+        private void OnEnable()
+        {
+            EventBus<TaskAssetsReadyEvent>.Subscribe(OnTaskAssetsReady);
+            EventBus<TaskSceneReadyEvent>.Subscribe(OnTaskSceneReady);
+            EventBus<TaskExitedEvent>.Subscribe(OnTaskExited);
+            EventBus<SceneProgressEvent>.Subscribe(OnSceneProgress);
+            EventBus<BridgeErrorEvent>.Subscribe(OnBridgeError);
+            EventBus<GlobalInteractionEventData>.Subscribe(OnInteraction);
+        }
+
+        private void OnDisable()
+        {
+            EventBus<TaskAssetsReadyEvent>.Unsubscribe(OnTaskAssetsReady);
+            EventBus<TaskSceneReadyEvent>.Unsubscribe(OnTaskSceneReady);
+            EventBus<TaskExitedEvent>.Unsubscribe(OnTaskExited);
+            EventBus<SceneProgressEvent>.Unsubscribe(OnSceneProgress);
+            EventBus<BridgeErrorEvent>.Unsubscribe(OnBridgeError);
+            EventBus<GlobalInteractionEventData>.Unsubscribe(OnInteraction);
+        }
+
+        private static void OnTaskAssetsReady(TaskAssetsReadyEvent e)
+        {
+            WebBridge.AssetsReady(e.TaskType);
+        }
+
+        private static void OnTaskSceneReady(TaskSceneReadyEvent e)
+        {
+            WebBridge.SceneReady(e.TaskType);
+        }
+
+        private static void OnTaskExited(TaskExitedEvent e)
+        {
+            WebBridge.SceneExited(e.TaskType);
+        }
+
+        private static void OnSceneProgress(SceneProgressEvent e)
+        {
+            WebBridge.SceneProgress(e.Progress);
+        }
+
+        private static void OnBridgeError(BridgeErrorEvent e)
+        {
+            WebBridge.ReportError(e.Code, e.Message, e.Fatal);
+        }
+
+        /// <summary>
+        /// 交互单一出口的 **Web 上报**：只有"点中了物体"才报 `object:picked`。
+        /// 「点空白」（`Target == null`）不上报 —— 那条语义 Web 侧自己就能感知（DOM 层本来就收得到）。
+        /// </summary>
+        private static void OnInteraction(GlobalInteractionEventData e)
+        {
+            if (e == null || e.Target == null) return;
+            if (e.Type != GlobalInteractionType.Click) return;
+
+            WebBridge.ObjectPicked(e.Target.ObjectKey);
         }
 
         /// <summary>由 Unity 官方 SendMessage 调用：一条完整信封 JSON。</summary>

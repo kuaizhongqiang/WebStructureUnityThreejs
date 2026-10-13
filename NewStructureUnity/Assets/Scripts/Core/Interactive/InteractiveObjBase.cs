@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using WSU3.Contracts.Events;
+using WSU3.Core.Managers.FunctionManager;
 
 namespace WSU3.Core.Interactive
 {
@@ -10,7 +11,8 @@ namespace WSU3.Core.Interactive
     ///
     /// 体系（Q-R6-S1 = A）：`EventSystem + StandaloneInputModule + PhysicsRaycaster`，
     /// **不建 Canvas、不用 GraphicRaycaster** —— 拾取的是三维 Collider，不是 UI。
-    /// 派生类只要挂 `Collider` + 本组件（或它的子类），就会自动进 <see cref="InteractiveRegistry"/> 并参与拾取。
+    /// 派生类只要挂 `Collider` + 本组件（或它的子类），就会自动登记进
+    /// <see cref="InteractiveManager"/>（`GlobalManager.InteractiveManager`）并参与拾取。
     ///
     /// 三条纪律：
     ///   ① **单一出口**：悬停/按下/抬起/点击都汇成 `EventBus&lt;GlobalInteractionEventData&gt;` 一条事件，
@@ -18,8 +20,11 @@ namespace WSU3.Core.Interactive
     ///   ② **受闸门约束**：`InputGate` 关掉（模态面板打开 / 容器不可见）时**直接忽略**指针事件；
     ///   ③ **不做文字标签**：Web 侧用侧栏列表联动（Q-R6-2 = C），这里只上报 key 与交互类型。
     ///
+    /// 高亮**不做实现**：基类只维护"是否高亮"这个状态，表现由派生类重写
+    /// <see cref="OnHighlightChanged"/> 自己写（材质描边 / 自发光 / 后处理都行）。
+    ///
     /// 未实现（本期有意留空，见 docs/PLAN.md P2-6）：右键（`ClickRight`）与双击（`ClickDouble`）
-    /// —— 契约里已有这两个类型值，需要时在拾取管理器里补判定即可。
+    /// —— 契约里已有这两个类型值，需要时在交互管理器里补判定即可。
     /// </summary>
     [DisallowMultipleComponent]
     public abstract class InteractiveObjBase : MonoBehaviour,
@@ -33,6 +38,7 @@ namespace WSU3.Core.Interactive
 
         private Guid guid = Guid.NewGuid();
         private bool hovered;
+        private bool highlighted;
 
         /// <summary>运行时唯一标识（诊断用；**对 Web 暴露的是 <see cref="ObjectKey"/>，不是它**）。</summary>
         public Guid Guid => guid;
@@ -44,15 +50,18 @@ namespace WSU3.Core.Interactive
 
         public bool IsHovered => hovered;
 
+        /// <summary>是否处于高亮态（状态在基类，表现在派生类）。</summary>
+        public bool IsHighlighted => highlighted;
+
         protected virtual void Awake()
         {
             guid = Guid.NewGuid();
-            InteractiveRegistry.Register(this);
+            InteractiveManager.Register(this);
         }
 
         protected virtual void OnDestroy()
         {
-            InteractiveRegistry.Unregister(this);
+            InteractiveManager.Unregister(this);
         }
 
         /// <summary>运行时开关（禁用态部件）。</summary>
@@ -67,10 +76,23 @@ namespace WSU3.Core.Interactive
             }
         }
 
-        /// <summary>高亮（走可降级服务；未接管时什么都不做）。</summary>
+        /// <summary>
+        /// 高亮开关：悬停与 `view:focus` 都会调用它。
+        /// 基类只切状态并回调钩子 —— **具体表现请重写 <see cref="OnHighlightChanged"/>**。
+        /// </summary>
         public void SetHighlight(bool on)
         {
-            HighlightService.Set(this, on);
+            if (highlighted == on) return;
+            highlighted = on;
+            OnHighlightChanged(on);
+        }
+
+        /// <summary>
+        /// 高亮表现钩子（**派生类自己实现**）。
+        /// 基类故意不提供默认实现，也不引入任何服务/接口 —— 表现方式由业务决定。
+        /// </summary>
+        protected virtual void OnHighlightChanged(bool on)
+        {
         }
 
         /// <summary>指针事件统一入口判据：可交互 **且** 输入闸门打开。</summary>

@@ -61,81 +61,13 @@ namespace WSU3.Web
         public long at;
     }
 
-    // ========================================================================
-    // 二、Unity 侧收到的消息（经 EventBus<T> 发布，业务只订阅、不解析 JSON）
-    // ========================================================================
-
-    /// <summary>`app:init`：启动配置（语言 / 画质 / 协议版本）。</summary>
-    public class AppInitEvent
-    {
-        public string Locale;
-        public string QualityProfile;
-        public int ProtocolVersion;
-    }
-
-    /// <summary>`preload:task`：预装某任务的资源包，**不进入交互**。</summary>
-    public class PreloadTaskRequestEvent
-    {
-        public TaskType TaskType;
-    }
-
-    /// <summary>`preload:cancel`：取消预装。</summary>
-    public class PreloadCancelRequestEvent
-    {
-        public TaskType TaskType;
-    }
-
-    /// <summary>`scene:enter`：进入某任务（装项目资源包 → 装配 → 就绪）。</summary>
-    public class SceneEnterRequestEvent
-    {
-        public TaskType TaskType;
-        public string ProjectId;
-        public string ContentVersion;
-    }
-
-    /// <summary>`scene:exit`：退出当前任务（卸包清理，**实例不销毁**）。</summary>
-    public class SceneExitRequestEvent
-    {
-    }
-
-    /// <summary>`view:focus`：聚焦某个部件。</summary>
-    public class ViewFocusRequestEvent
-    {
-        public string ObjectKey;
-        public bool Animate;
-    }
-
-    /// <summary>`ui:set-locale`：切换语言。</summary>
-    public class LocaleChangeRequestEvent
-    {
-        public string Locale;
-    }
-
-    /// <summary>`ui:set-quality`：运行时降质。</summary>
-    public class QualityChangeRequestEvent
-    {
-        public string QualityProfile;
-    }
-
-    /// <summary>`input:enable`：三维输入开关（模态面板打开时关掉）。</summary>
-    public class InputEnableEvent
-    {
-        public bool Enabled;
-    }
-
-    /// <summary>`runtime:resume`：容器重新可见，恢复运行。</summary>
-    public class RuntimeResumeEvent
-    {
-    }
-
-    /// <summary>`debug:ping`：连通性自检。</summary>
-    public class DebugPingEvent
-    {
-        public long At;
-    }
+    // 注：入站消息对应的**事件类**不在本文件 —— 它们放在契约层的
+    // `Assets/Scripts/Contracts/Events/BridgeEvents.cs`（namespace WSU3.Contracts.Events）：
+    // 订阅方既有 Runtime（编排）也有 Core（交互管理器要接 view:focus），
+    // 而 Core 不能引用 Runtime，所以这些纯数据类必须待在两边都看得见的地方。
 
     // ========================================================================
-    // 三、Unity → Web 的出站载荷与发送入口
+    // 二、Unity → Web 的出站载荷与发送入口
     // ========================================================================
 
     [Serializable]
