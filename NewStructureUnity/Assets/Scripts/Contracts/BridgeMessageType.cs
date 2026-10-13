@@ -31,6 +31,11 @@ namespace WSU3.Contracts
         public const string InputEnable = "input:enable";
         public const string RuntimeResume = "runtime:resume";
         public const string DebugPing = "debug:ping";
+        /// <summary>
+        /// 教学面板回执：Web 侧把 `ui:request` 弹的面板结果回给 Unity 的步骤条件。
+        /// 没有它，`ConditionUI` / `ConditionQuestion` 只能"发出去就再也等不到结果"。
+        /// </summary>
+        public const string UiResult = "ui:result";
 
         // ── Unity → Web（声明顺序 = 契约顺序）──────────────────────────
         public const string UnityReady = "unity:ready";
@@ -51,6 +56,7 @@ namespace WSU3.Contracts
         {
             AppInit, PreloadTask, PreloadCancel, SceneEnter, SceneExit,
             ViewFocus, UiSetLocale, UiSetQuality, InputEnable, RuntimeResume, DebugPing,
+            UiResult,
         };
 
         /// <summary>Unity 会发给 Web 的消息（发送用）。</summary>
