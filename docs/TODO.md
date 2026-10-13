@@ -41,4 +41,3 @@
 
 | # | 内容 | 说明 |
 |---|---|---|
-| U-01 | **Blender 变换重导**（负责人在 .blend 里改了部分模型的初始角度 / 位置） | 已从 `--from-blend` 重导 8 个 GLB（5 个变化：breaker / contactor / fuse / speedRelay / thermalRelay）；`content/asset-convert-report.json` 的 sha256 / 字节随之变化，**该文件进 git，需提交**；`.blend` 与 GLB 本身按 DEC-57 不进 git |
