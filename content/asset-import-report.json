@@ -1,0 +1,2073 @@
+{
+  "generatedAt": "2026-10-13T05:17:17.147Z",
+  "dryRun": false,
+  "from": "F:\\Project\\Low-voltageElectricalSimulationSoftware",
+  "files": [
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor.fbx",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor.fbx",
+      "bytes": 1056992,
+      "sha256": "760db3008c8ee5762da79b56d690608203dba022650bf230a3883e3f5153463c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor.fbx.meta",
+      "bytes": 2830,
+      "sha256": "02c7f101f281dad9dc75f9a1b90f0365b4648ad20f123e92a0196b2503ed8d65",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Base Color.png",
+      "bytes": 33030,
+      "sha256": "ecef025a2d0b958771882613225f9a709576cb578f5e09598acd21ea7204346f",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "b3b79e2b433e43d748beb2c2127553e7ad8411230a26d1a0fbef2df0af4c6c82",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_M_AO_G.png",
+      "bytes": 1265419,
+      "sha256": "2aca07030d0edf0877290f86f25354728c79c58886e43518028f10b26289d083",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "635c510df9d80f896d3bc182ac1e0261e725ac6a7adb5a3a19d66607d478bc12",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Normal.png",
+      "bytes": 1578154,
+      "sha256": "9310e1e30b5f3e96f70c513c8272387fc53654c03c7d984ebd3f973bd8f84be7",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "f65843e8c758a64279a1ef69a507fdedd5c6e34153faf645de9db1e0e638b95a",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor.fbx",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor.fbx",
+      "bytes": 1588944,
+      "sha256": "e8fa4e329351f596efb991987e703943782f44abf30e3e63f111564a6860262d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor.fbx.meta",
+      "bytes": 2830,
+      "sha256": "0cc9ff99b16689f5229b7ba9a8d7b02da30d3ad759402aeb8080956fa04b47f0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Base Color.png",
+      "bytes": 169398,
+      "sha256": "d042861c6cdc8f4f00f7dccf6dcf7ee001d5909c2d9bb11f9b76fe38e2f1293f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "8a0c673cdefa40da6a1bd53285a89852ec5e62afaa2220061486cf1f20a418af",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_M_AO_G.png",
+      "bytes": 1824856,
+      "sha256": "152a724a7463e69f3806e585d3d3bbeaf79264e057f95d0e93537d8212867016",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "53063d99394202d4ae37c502243237b50d7d02d65002e7c9e2e01ed090ee9e27",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Normal.png",
+      "bytes": 332010,
+      "sha256": "257b7684199690e8f11d9c4e7d74504ec08dab514c5afc7fc93d081b62a52f3b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "0dfa835cd479fd6f9bb766e30fe21ee42f35f28af6de7fd35d05fe859cfb6dc2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor.fbx",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor.fbx",
+      "bytes": 1056992,
+      "sha256": "760db3008c8ee5762da79b56d690608203dba022650bf230a3883e3f5153463c",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor.fbx.meta",
+      "bytes": 2830,
+      "sha256": "02c7f101f281dad9dc75f9a1b90f0365b4648ad20f123e92a0196b2503ed8d65",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/档位.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/档位.png",
+      "bytes": 94309,
+      "sha256": "da1d99660828aaa98f700893da14ae7c35975291a8e8a06f6dd1473c9f134234",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/档位.png.meta",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/档位.png.meta",
+      "bytes": 2978,
+      "sha256": "a215e00ab9cf2b552d68749d40f0e044a2ff8f094bedeea21d8d0213727f34a2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/WYB.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/WYB.png",
+      "bytes": 747919,
+      "sha256": "1705189a72431aec6dab6b53f80fdc28c8bad49398017670ef03e4acfe6a55be",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/WYB.png.meta",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/WYB.png.meta",
+      "bytes": 2978,
+      "sha256": "8b453424b9b0de35b73348b9167347eff21cbaea4d84e8a8dec98e34e0e43865",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/表笔黑2.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/表笔黑2.png",
+      "bytes": 40064,
+      "sha256": "8cdd3dacd55351f7571022926d4d0546a28f92220ab24ebe7051a0b714aa9259",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/表笔黑2.png.meta",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/表笔黑2.png.meta",
+      "bytes": 2978,
+      "sha256": "5849f26043f6c6274a568ed2750bfc669235c4ab65f5efffe2d6b937444abf73",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/表笔红2.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/表笔红2.png",
+      "bytes": 39551,
+      "sha256": "4ec1344e93a10c6393153b67521928827ce07863005e3b1eab9fb4bc5592d089",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Measure/表笔红2.png.meta",
+      "path": "NewStructureUnity/Assets/Models/_shared/Sprites/Origin/Content/Measure/表笔红2.png.meta",
+      "bytes": 2978,
+      "sha256": "f7f26663adb6504ae58542d933214c444981876bc6e11889cfab22cef15955a1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Base Color.png",
+      "bytes": 33030,
+      "sha256": "ecef025a2d0b958771882613225f9a709576cb578f5e09598acd21ea7204346f",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "b3b79e2b433e43d748beb2c2127553e7ad8411230a26d1a0fbef2df0af4c6c82",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_M_AO_G.png",
+      "bytes": 1265419,
+      "sha256": "2aca07030d0edf0877290f86f25354728c79c58886e43518028f10b26289d083",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "635c510df9d80f896d3bc182ac1e0261e725ac6a7adb5a3a19d66607d478bc12",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Normal.png",
+      "bytes": 1578154,
+      "sha256": "9310e1e30b5f3e96f70c513c8272387fc53654c03c7d984ebd3f973bd8f84be7",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "f65843e8c758a64279a1ef69a507fdedd5c6e34153faf645de9db1e0e638b95a",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/pic-jcq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/pic-jcq01.png",
+      "bytes": 242699,
+      "sha256": "68522568b6a5a8ee924479ba6eeae86a0e9bca3b59bb96b0acc1b48e0b69787a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/pic-jcq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/pic-jcq01.png.meta",
+      "bytes": 2977,
+      "sha256": "c041b9d6c1e55d330a8def41b15ab9b2f9ee5e2018ac1c8db9fd64bcbdaafdfe",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/pic-jcq01.png",
+      "path": "web/public/content/sprites/contactor/pic-jcq01.png",
+      "bytes": 242699,
+      "sha256": "68522568b6a5a8ee924479ba6eeae86a0e9bca3b59bb96b0acc1b48e0b69787a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq02.png",
+      "bytes": 272279,
+      "sha256": "47f5330ff4a49d65cfd3fb3d36c9d74e90bf6209fd26b93879b4acf664b354e0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq02.png.meta",
+      "bytes": 2977,
+      "sha256": "b7e20ce6c66433a7fd526357797bfa26e58169e1fd2070f819a106125d3957b2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq02.png",
+      "path": "web/public/content/sprites/contactor/Pic-jcq02.png",
+      "bytes": 272279,
+      "sha256": "47f5330ff4a49d65cfd3fb3d36c9d74e90bf6209fd26b93879b4acf664b354e0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq03.png",
+      "bytes": 275290,
+      "sha256": "c907a85311ea9c9c01e81c4f0cbcdc5c326f8ed6c88b858899f6c34b78279ef6",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq03.png.meta",
+      "bytes": 2977,
+      "sha256": "1674f6ab365701b1d0ba73633822c9cc1c15b3430099e582fbece538a8e9fc7c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq03.png",
+      "path": "web/public/content/sprites/contactor/Pic-jcq03.png",
+      "bytes": 275290,
+      "sha256": "c907a85311ea9c9c01e81c4f0cbcdc5c326f8ed6c88b858899f6c34b78279ef6",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq04.png",
+      "bytes": 292591,
+      "sha256": "ec596a0a1e4ff8f654b3e1a206317bcdc7ac968c9df2e850daaffc0f73aeacf2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq04.png.meta",
+      "bytes": 2977,
+      "sha256": "05d0161aacc2a099b544df6dc4b6154e20d5a9155fc340a8670bc35d3736695a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq04.png",
+      "path": "web/public/content/sprites/contactor/Pic-jcq04.png",
+      "bytes": 292591,
+      "sha256": "ec596a0a1e4ff8f654b3e1a206317bcdc7ac968c9df2e850daaffc0f73aeacf2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq05.png",
+      "bytes": 295851,
+      "sha256": "e3cf3bf09395bc31408865d3e5f9bc6b6d83bc9b3a9de6077db0c1f9cfed2b12",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq05.png.meta",
+      "bytes": 2977,
+      "sha256": "3dd2ad83ba3cc9e2fe8cc0f26666897a236d48e6eae27c68b92e851250efc4ca",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq05.png",
+      "path": "web/public/content/sprites/contactor/Pic-jcq05.png",
+      "bytes": 295851,
+      "sha256": "e3cf3bf09395bc31408865d3e5f9bc6b6d83bc9b3a9de6077db0c1f9cfed2b12",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq06.png",
+      "bytes": 288278,
+      "sha256": "fa47be41c571157421a56270af59eeffc5d3fe46718d338ce36578b954d7e4f0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/contactor/Pic-jcq06.png.meta",
+      "bytes": 2977,
+      "sha256": "5f1c7fe731c3e6d26a54894fcb14c660e7901f4cd33fb0a85e53da1307c93263",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/1接触器/Pic-jcq06.png",
+      "path": "web/public/content/sprites/contactor/Pic-jcq06.png",
+      "bytes": 288278,
+      "sha256": "fa47be41c571157421a56270af59eeffc5d3fe46718d338ce36578b954d7e4f0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay.fbx",
+      "bytes": 531824,
+      "sha256": "ee4d7abeb39d57b4a01200d3f7734adfdcf95d184a1a2d7c1be180fc77da180c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "269a145c800eb0ef4184994e25d442a8b829b261c9f9ee12bbe779a2e757a473",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Base Color.png",
+      "bytes": 30300,
+      "sha256": "c91ad8d1634c2f1dee078d678979a1a43822cfc2ed68e445dd6a829d266bd3fb",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "81c82d8fffc2614ad8518e6d8aacfda5d6c29c06736be3bb79aaa0d25c3791b6",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_M_AO_G.png",
+      "bytes": 1162328,
+      "sha256": "7aa12c3e0701ec4b0f675c37c723b02f69e6ad1ae83e0791f1fc15e181927b88",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "6b0e4502f48e170d82b2282ae8cf7d4eadd28b524e01f4901758ca480edf8d8e",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Normal.png",
+      "bytes": 1888289,
+      "sha256": "0282a2725d56dff06b33846736fcf29ff59fd65fc39c7428a50b1fa298317732",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "5bfdba794ad5f511cb28b534e15f873c26cbb3c0c818a66cd39f9ad4513e7c56",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay.fbx",
+      "bytes": 834544,
+      "sha256": "c895efc0d52820e6aad8bd78b09c3bf9744b5b12763ee17c5f5a4c854daf235c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "c2c65e09b430395ce9a5fdd5ba04233e5e4c4933e6e1dab291ffa3950b9d2afd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+      "bytes": 56471,
+      "sha256": "4e309b8664f63c2c3421816ecee405167af5289a9d4128adbccf99511e5106aa",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "3f91abf030a1f3306f182abf969542646d927acc5702be7e81c2235adfaa619e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+      "bytes": 2293180,
+      "sha256": "0c896b0d76c3addafca00d658c595f2489576d9da79427c533e72c40dc086804",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "f809264d4c7db8f9a483e3ff46d1b2ee9e51940cb7f20a4f8c74b6ab756929cd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+      "bytes": 284347,
+      "sha256": "5b811597d99e9c50bb898dfbb8bdd056a801f44aeac5039906ef206bb1e06f0e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "d34a2838f3d1cce3854af46aae54d4a2413cd95cf6ac94d89054b52b7142a42a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_2.jpg",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_2.jpg",
+      "bytes": 82569,
+      "sha256": "79f47d9a46a54ce025d35f0c9204bd306ce344958700bbfaa40991411c23f27c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_2.jpg.meta",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_2.jpg.meta",
+      "bytes": 2946,
+      "sha256": "e3ed5f07b11a30ab031f450883dc58cc786389523e9845017ed095bbf370acde",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq01.png",
+      "bytes": 294511,
+      "sha256": "d56af5bf28e37afa7252ca5fc23cedf7cc2d09534cced9cf2a78146c29e9d22a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq01.png.meta",
+      "bytes": 2977,
+      "sha256": "179b59c7aae6a1fa37b48e00b1447a13a9e05c34cdc9e6b24352c6ec8f723cde",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq01.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq01.png",
+      "bytes": 294511,
+      "sha256": "d56af5bf28e37afa7252ca5fc23cedf7cc2d09534cced9cf2a78146c29e9d22a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq02.png",
+      "bytes": 288582,
+      "sha256": "c5034d4d3eccf16be0bd9bf2a5bd7b1850e299ba6fac88a91d5910d1297e5298",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq02.png.meta",
+      "bytes": 2977,
+      "sha256": "d0b0a5d928b732e126112e35060cc03feb682301775d502e832c54612a6646e2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq02.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq02.png",
+      "bytes": 288582,
+      "sha256": "c5034d4d3eccf16be0bd9bf2a5bd7b1850e299ba6fac88a91d5910d1297e5298",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq03.png",
+      "bytes": 298505,
+      "sha256": "5e4d0da9e35f0a5a9c2355df116c0820f05a47ab173ae926fab4b9e1e829d4ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq03.png.meta",
+      "bytes": 2977,
+      "sha256": "80365ec5120652b5440434085e9c878533696f50b28b5509299410d85b4aded8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq03.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq03.png",
+      "bytes": 298505,
+      "sha256": "5e4d0da9e35f0a5a9c2355df116c0820f05a47ab173ae926fab4b9e1e829d4ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq04.png",
+      "bytes": 206711,
+      "sha256": "2ebb338cbcc76d8d757b00413b1ed71c9e03f961f203a2b6ed162369cc064162",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq04.png.meta",
+      "bytes": 2977,
+      "sha256": "4c4ae89844a57992bfbbecdab20d5dd7ebd9bf948593fad5622389bb71d71588",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq04.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq04.png",
+      "bytes": 206711,
+      "sha256": "2ebb338cbcc76d8d757b00413b1ed71c9e03f961f203a2b6ed162369cc064162",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq05.png",
+      "bytes": 174008,
+      "sha256": "9fdbc7569442dc7ddddb7678b2122f7ddfa7edc71035bc977dc6993b02e14811",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq05.png.meta",
+      "bytes": 2977,
+      "sha256": "bfa6039d93d657c9662d4b6d57bb24668ad2da9e4ae91c4e60da7785e387da9e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq05.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq05.png",
+      "bytes": 174008,
+      "sha256": "9fdbc7569442dc7ddddb7678b2122f7ddfa7edc71035bc977dc6993b02e14811",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq06.png",
+      "bytes": 172214,
+      "sha256": "684d5a8c0d0b8ab8946f3af9b51ae736e3bd0d570b183e82dda09ef3da70ac16",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/thermalRelay/Pic-rjdq06.png.meta",
+      "bytes": 2977,
+      "sha256": "3a70f93b83b64f900118d08a40a16f7d3abee744732f722ae32983940580fafd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/2热继电器/Pic-rjdq06.png",
+      "path": "web/public/content/sprites/thermalRelay/Pic-rjdq06.png",
+      "bytes": 172214,
+      "sha256": "684d5a8c0d0b8ab8946f3af9b51ae736e3bd0d570b183e82dda09ef3da70ac16",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay.fbx",
+      "bytes": 533296,
+      "sha256": "45652c1476a27561a399e323b3349924bbd32c8d133b4a0232aa47cdc9a28ee4",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "e5426e42ce02bde11927cef6b6c57a070acfb9661d636448de6c87ba92a3ddd2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Base Color.png",
+      "bytes": 26862,
+      "sha256": "d261852b408765193f8909d381688bb4e7d8ce294af52da2088565d45f8fe5a5",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "601e23f5650839551484aec53203c3344bc7417df23f327b5c8a2eb0933cd9a9",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_M_AO_G.png",
+      "bytes": 1158998,
+      "sha256": "6850c93407190ef2bd10773dd9d116b5ce6d2b77c30c8d3178042638934a4f2a",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "bce71d78a93a05ec97ff5d1cf621a32806e05161c399cce5b0bfa5ba8c951049",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Normal.png",
+      "bytes": 23107,
+      "sha256": "a542167f0d845be8d1015899adc48a595087dee2bd135a50a044312f89550e84",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "f7811f3b2df27e524b45b110ae097cfebb5322fc4fbc5a6aab2cce03b8aa3596",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay.fbx",
+      "bytes": 1106288,
+      "sha256": "ae67227cfbca1f4b4647b0a5c21d2114a80b0c7b2b20623d409337fe0e0c2b5b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "0be0a718b4cc0c0751962427607f7c2ae6e77cb411a927170c046c9dbe7dfc49",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Base Color.png",
+      "bytes": 1869587,
+      "sha256": "660844c0d9773badbbd3ef0585890ac61abf9cd789fe65b23663da4ec6568eb4",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "ff3751e33cd0f408309cc0e6a8faba0302f629d6a2202edcc37891eb1159e22b",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_M_AO_G.png",
+      "bytes": 3601234,
+      "sha256": "c1e92f719ab3df5a68adb90499078ca25e6ad3a0ccc25f5b4d38d083dbae4df0",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "db7d91f7da38a161791da1788b8b5d5cd584b2566fc8cd22b42557c2367646a2",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Normal.png",
+      "bytes": 776800,
+      "sha256": "840c54b310b8eea0af034d8af1413d7ad43106d6da1ef8a605490cc1a2d9337b",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "c1d0c7863c57a128ddb09a9d502dfbb4b167000fa10c108cd15502e50f8ef2fc",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq01.png",
+      "bytes": 225389,
+      "sha256": "4106e76e93cb9e23505b746b7a5e3fd48a3fdf8da59d4720511815acb1fe37ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq01.png.meta",
+      "bytes": 2977,
+      "sha256": "8466c00b307cfcad9bd553865f63ae2f3d22e12c0a16d6da1a94574f706c8be3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq01.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq01.png",
+      "bytes": 225389,
+      "sha256": "4106e76e93cb9e23505b746b7a5e3fd48a3fdf8da59d4720511815acb1fe37ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq02.png",
+      "bytes": 365376,
+      "sha256": "81c1ef5f04c04e1485a49d637a9d2c9399a0b42b62eca0471ec9567b57053cce",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq02.png.meta",
+      "bytes": 2977,
+      "sha256": "dfd901f6e18f313afd6c04019bea8108d081091549c43b01e06475b60e4a3fbd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq02.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq02.png",
+      "bytes": 365376,
+      "sha256": "81c1ef5f04c04e1485a49d637a9d2c9399a0b42b62eca0471ec9567b57053cce",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq03.png",
+      "bytes": 291783,
+      "sha256": "9ac339ac6449a463cbe50b527770f6b8491bf988f95be344d8b91d650c983a3e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq03.png.meta",
+      "bytes": 2977,
+      "sha256": "d9803d581dfb710d25746415630e468a6fd6a1c9294b61c9706c3233259a5f40",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq03.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq03.png",
+      "bytes": 291783,
+      "sha256": "9ac339ac6449a463cbe50b527770f6b8491bf988f95be344d8b91d650c983a3e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq04.png",
+      "bytes": 210039,
+      "sha256": "18f923edcc736dad92439595f1bf5b0a18d79bd2ebea708ff662465f80890277",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq04.png.meta",
+      "bytes": 2977,
+      "sha256": "8baa2d18c21a21fa40267e203bfdf4b3ab98bafc09bd1a13b73cc577c5ed7877",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq04.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq04.png",
+      "bytes": 210039,
+      "sha256": "18f923edcc736dad92439595f1bf5b0a18d79bd2ebea708ff662465f80890277",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq05.png",
+      "bytes": 245533,
+      "sha256": "81126bb088a8556146f08e5332d6c0b8341a902134ca005ec6f85494f124004a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq05.png.meta",
+      "bytes": 2977,
+      "sha256": "0b83417ec2de34703de157286cde9142cdc6580fc9d0a560f1f651fd9c9fb019",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq05.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq05.png",
+      "bytes": 245533,
+      "sha256": "81126bb088a8556146f08e5332d6c0b8341a902134ca005ec6f85494f124004a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq06.png",
+      "bytes": 277865,
+      "sha256": "f6c881ae71cce4d42664aad5ccd85c36e1c266e50077aebe39eebf6f98b02f92",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/timeRelay/Pic-sjjdq06.png.meta",
+      "bytes": 2977,
+      "sha256": "728b8a0420ced9c1513ad1c5f3bb422d674ebff81651776673026c7fc04a6126",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/3时间继电器/Pic-sjjdq06.png",
+      "path": "web/public/content/sprites/timeRelay/Pic-sjjdq06.png",
+      "bytes": 277865,
+      "sha256": "f6c881ae71cce4d42664aad5ccd85c36e1c266e50077aebe39eebf6f98b02f92",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances.fbx",
+      "bytes": 1034736,
+      "sha256": "093465282842eb1c4ffbba9662ea0ad62ead336cd277e2e329d37b5e0d50ed99",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances.fbx.meta",
+      "bytes": 2830,
+      "sha256": "043325b349e9001ec32cfbca58b1049e0e73c06d6bcdb1c4d5f825b5720418f3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "bytes": 49232,
+      "sha256": "83fb69ef556c804a072ed40248a825af24cb3406974e5c2d02aea52a7369eda5",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "2ba6b4943c536f284cee46c61b052df95eaf87609fc6d468736a2d1eadcb9d0b",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "bytes": 1446498,
+      "sha256": "86279adba69e7168a1ef50ee35d69bbcb4a19966c12521b364b2525267f666fa",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "7ce01485ee933951befffbcdf01faa202d4a4c7cc7b10195c92d7fb7bd354e6f",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "bytes": 1791758,
+      "sha256": "b7b9003a19e9f72cce4e99e2d78cd8625eca732e178a537867d3b2761a0abe48",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "5e6670461c950461a91ab355158091d3ce1858207753c77de63a02899f2a1b5d",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances.fbx",
+      "bytes": 1034736,
+      "sha256": "093465282842eb1c4ffbba9662ea0ad62ead336cd277e2e329d37b5e0d50ed99",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances.fbx.meta",
+      "bytes": 2830,
+      "sha256": "043325b349e9001ec32cfbca58b1049e0e73c06d6bcdb1c4d5f825b5720418f3",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "bytes": 49232,
+      "sha256": "83fb69ef556c804a072ed40248a825af24cb3406974e5c2d02aea52a7369eda5",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "2ba6b4943c536f284cee46c61b052df95eaf87609fc6d468736a2d1eadcb9d0b",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "bytes": 1446498,
+      "sha256": "86279adba69e7168a1ef50ee35d69bbcb4a19966c12521b364b2525267f666fa",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "7ce01485ee933951befffbcdf01faa202d4a4c7cc7b10195c92d7fb7bd354e6f",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "bytes": 1791758,
+      "sha256": "b7b9003a19e9f72cce4e99e2d78cd8625eca732e178a537867d3b2761a0abe48",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "5e6670461c950461a91ab355158091d3ce1858207753c77de63a02899f2a1b5d",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq01.png",
+      "bytes": 313401,
+      "sha256": "55fd35f4796d6d1b338d38f6cb1fe1f3f09014ad353b717a675835e4026cda0a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq01.png.meta",
+      "bytes": 2977,
+      "sha256": "4cbb745aadee85dc91bb9669639bc80163549850a8f80653088b753c739bad82",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq01.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq01.png",
+      "bytes": 313401,
+      "sha256": "55fd35f4796d6d1b338d38f6cb1fe1f3f09014ad353b717a675835e4026cda0a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq02.png",
+      "bytes": 263159,
+      "sha256": "91c63c625a9a2389af02ead4138a076672f1aedb9d23981c9a4e496c1d033d8c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq02.png.meta",
+      "bytes": 2977,
+      "sha256": "dda0723fe803940ad7b58a11ed10db709858df255ed2b51f7436fd4c99590244",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq02.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq02.png",
+      "bytes": 263159,
+      "sha256": "91c63c625a9a2389af02ead4138a076672f1aedb9d23981c9a4e496c1d033d8c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq03.png",
+      "bytes": 210475,
+      "sha256": "e76dbf9cbf9039d71106a2e82a708aa7b06f90f1824edb32046683ffb838ac26",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq03.png.meta",
+      "bytes": 2977,
+      "sha256": "f7efcedea310884854656afa6ef8b509d43ec0833457ee975c1bcfcd8c8476b0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq03.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq03.png",
+      "bytes": 210475,
+      "sha256": "e76dbf9cbf9039d71106a2e82a708aa7b06f90f1824edb32046683ffb838ac26",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq04.png",
+      "bytes": 201531,
+      "sha256": "fb06e6904a21c928dac2c5bcd7754042bc724505ec119b82749a3016d9cf8103",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq04.png.meta",
+      "bytes": 2977,
+      "sha256": "3c8fc65ddd3fe8f15641de8a24f97a8893153c526972abbe36192677bee7a68b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq04.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq04.png",
+      "bytes": 201531,
+      "sha256": "fb06e6904a21c928dac2c5bcd7754042bc724505ec119b82749a3016d9cf8103",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq05.png",
+      "bytes": 173340,
+      "sha256": "25595621c76691d7e266ce2e2df5fabac12944daddda1a5adb74ea81031c04f3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq05.png.meta",
+      "bytes": 2977,
+      "sha256": "03c638c94ffff2859b2474a42a2d1bf6bdb9c30a9615782958d505f55c66caf5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq05.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq05.png",
+      "bytes": 173340,
+      "sha256": "25595621c76691d7e266ce2e2df5fabac12944daddda1a5adb74ea81031c04f3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq06.png",
+      "bytes": 137578,
+      "sha256": "e6141776f3a15e09972091097a797e52b6ffc63287d29f6f52a12711ee6d45f8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/masterAppliance/Pic-zldq06.png.meta",
+      "bytes": 2977,
+      "sha256": "93612675d810ea45b4109370e703837f8ca97eae25dbd9b66017a88a3a6451da",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/4主令电器/Pic-zldq06.png",
+      "path": "web/public/content/sprites/masterAppliance/Pic-zldq06.png",
+      "bytes": 137578,
+      "sha256": "e6141776f3a15e09972091097a797e52b6ffc63287d29f6f52a12711ee6d45f8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse.fbx",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse.fbx",
+      "bytes": 133824,
+      "sha256": "2aa47b9c65d0e93d575bd02611f4d15218bf6fbbe320bfc8092f8919e68a6961",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse.fbx.meta",
+      "bytes": 2830,
+      "sha256": "a721f56641e96930e79d51ef58b1b4fdb188885fa3c53405c802e931ac331bf3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Base Color.png",
+      "bytes": 24545,
+      "sha256": "225b3ab65e6f708344c4bbfae7125b4f04b84f9207925ed17aff59621e04140e",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "c16a955ef627eac0b28ade442c6a29edf0394dc84a8cc6b7dcaf6158d0e49b6e",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_M_AO_G.png",
+      "bytes": 822129,
+      "sha256": "72b66ee31a0a4cd2b75aefe595843c98344f106fa01ee12cc1d572e812350036",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "72c3cd62ece6df5f107568f866d4d282a228f379fe427d75b63780c7bf8d9a7c",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Normal.png",
+      "bytes": 76015,
+      "sha256": "eef2ac2d62512ae46f2177027e332edebdcf67f4ddf1f0c2303bfc65dc461bcf",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "3796df9b9615fa08d6927d4828b8eab962c40a8d92cc6c8db56ee3bd2eeb2716",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse.fbx",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse.fbx",
+      "bytes": 608880,
+      "sha256": "6dc61645a5d889e5b291f49a0889aada11e73a8e25ce82a46bf61862962a8998",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse.fbx.meta",
+      "bytes": 2830,
+      "sha256": "c1fc01c5e254c897db40c476b32a736547b8b6b5c4008fbea43eb7fb20b7ad3d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+      "bytes": 706077,
+      "sha256": "05979caed20280f82c48ec9a718a85aa24628d4ae31d438642cbf85880efde00",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "cee4af13567ba9986a7ff19176145b7f5c1790b8bdd717a56504c353a3df7769",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+      "bytes": 1485764,
+      "sha256": "0859b3af2ab9c96b61505dc0392f404455542b9a42fb42572fe2bc77917a936a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "0ffaf782e276e5fd437008d233b93b193f8c98a3c46a97f0a970a2d1d1efd60f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+      "bytes": 298011,
+      "sha256": "6d60df1d47a85abb5be3af50108987c800572e30e665bc0f1f5dc759523b52d1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "8c5df02c68ead565272bd21e64da31716a9f0c39bc17826b7f0024d088336ef6",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq01.png",
+      "bytes": 155357,
+      "sha256": "e4a538811552862870309c75df93b31ae6c2dbf0cad311aa666ccdd52af75f3c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq01.png.meta",
+      "bytes": 2977,
+      "sha256": "f8810cadf02464d14d87c5a6eebffd2cc77f47799f7a5a7268fff8f4712ffd74",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq01.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq01.png",
+      "bytes": 155357,
+      "sha256": "e4a538811552862870309c75df93b31ae6c2dbf0cad311aa666ccdd52af75f3c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq02.png",
+      "bytes": 199522,
+      "sha256": "a6f37bff166f7958228b9ee0fa2127e0546bf675b600d0ba40409ad2731207bd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq02.png.meta",
+      "bytes": 2977,
+      "sha256": "5b892922e28679d16579f9fdcf68541e7e986113195f1ddcf4472497af16a284",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq02.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq02.png",
+      "bytes": 199522,
+      "sha256": "a6f37bff166f7958228b9ee0fa2127e0546bf675b600d0ba40409ad2731207bd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq03.png",
+      "bytes": 186158,
+      "sha256": "6e6a8f190707b3d498d904c54f31f22afd456d05bccbd9af67276ac00edc19ae",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq03.png.meta",
+      "bytes": 2977,
+      "sha256": "fc5a16bfa6c82c31735fd476c5a323e3422cfd44bbdf46e892c1089bb60757cd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq03.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq03.png",
+      "bytes": 186158,
+      "sha256": "6e6a8f190707b3d498d904c54f31f22afd456d05bccbd9af67276ac00edc19ae",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq04.png",
+      "bytes": 213354,
+      "sha256": "da733e35b73c116e6ccc9807b7d73e0b5b36c59e62e0f12473af2fba6039c1ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq04.png.meta",
+      "bytes": 2977,
+      "sha256": "0f6f57994d235ffeae21577e262ea1d15edd4f5b8832a5856b996a8847da2832",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq04.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq04.png",
+      "bytes": 213354,
+      "sha256": "da733e35b73c116e6ccc9807b7d73e0b5b36c59e62e0f12473af2fba6039c1ea",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq05.png",
+      "bytes": 177912,
+      "sha256": "ce6f930d50d98680107d301277c1c981a4849cea8ef16cd0e4dc05d53e6892f8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq05.png.meta",
+      "bytes": 2977,
+      "sha256": "aa76860ec6058dcca4b18d06b51b11773af5966b48202cff9a027c19a96b643a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq05.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq05.png",
+      "bytes": 177912,
+      "sha256": "ce6f930d50d98680107d301277c1c981a4849cea8ef16cd0e4dc05d53e6892f8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq06.png",
+      "bytes": 135909,
+      "sha256": "70bc3cccccec75ca0b527a4a8bfd740af44a805f1e3685182b3f67a6e2fc262c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/fuse/Pic-rdq06.png.meta",
+      "bytes": 2977,
+      "sha256": "5181a61371784f61d4c7571f41e45fbf8ccc914c4b1de92ca8b6b509f99111f9",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/5熔断器/Pic-rdq06.png",
+      "path": "web/public/content/sprites/fuse/Pic-rdq06.png",
+      "bytes": 135909,
+      "sha256": "70bc3cccccec75ca0b527a4a8bfd740af44a805f1e3685182b3f67a6e2fc262c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker.fbx",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker.fbx",
+      "bytes": 494608,
+      "sha256": "13435f5f8d5bcfb14aae96119084f79aea89f1e2463bd2639111173a8e4f4e5d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker.fbx.meta",
+      "bytes": 2830,
+      "sha256": "67c8ad5e7f96bf7325f8733590eca0b6a43179d4120cc76eb532e434ff7f69cc",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+      "bytes": 49606,
+      "sha256": "9e2bc8dcd61a06e3ca553578c963ae406996e71925ae760b9c98f43f58c9798d",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "0c074617c1916da1f615e5c0bff1bc8f107715725e3e8204ebc99866d28f74de",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
+      "bytes": 1228767,
+      "sha256": "a134c8da5db562e2d71b43584b1d83803e6d5f4b9a1923ed0e30ce4789eb4638",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "269ee3960977bbd31efa32465d1ded8239c4b8bd8beebe93e7ee508e71716bf2",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+      "bytes": 1464650,
+      "sha256": "dbb8fe22fe3c464ef8e880dd8c40859e5ecd3574e85bf98a36a4ab1f48f32293",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "23f828697ba3731a703ab1988981dd6f088cd93c3183e4ab21cb9ffddc2b7a1d",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker.fbx",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker.fbx",
+      "bytes": 3899168,
+      "sha256": "4676ea82d7e64682a1cf846ad3ee05fc00528338ef9cc95690a8be7175077fbe",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker.fbx.meta",
+      "bytes": 2830,
+      "sha256": "d677751f4ab0e2e4f8086bb705bfa4e4cf6edd7c86ecd084cafd98eaead98e6f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Base Color.png",
+      "bytes": 199949,
+      "sha256": "dd338b3e091ed29e23a5bf594abeaa4798cb8b781846197f6f725a1d9d23a568",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "509e7d34f9febc3154a713a9f4cc61bf41600c3f022f1394f93515b149432cf5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_M_AO_G.png",
+      "bytes": 4287156,
+      "sha256": "c8849fcd885101901704f9591dfd13083fd48ca2ab93ab8edaaf37429e24d96e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "656ee7e9353b6ca8fccd8d404d817ee6c8e7c28b84954f3d704db176516c52e9",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Normal.png",
+      "bytes": 347941,
+      "sha256": "c2b9b28eca3ea7e3bc57afd049ecd0e81966537a9423d3e43a1188bd0ff92f5c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "4efb0f9da0627e554f33e2a734206d02c5cdb7e49a427d88f9ebd76ba0855e13",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/铭牌.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/铭牌.png",
+      "bytes": 191384,
+      "sha256": "f2da2e7cb500645c3b9aa216d16c17a4f226a2dd442fc6ae5e6ecb1d3c481023",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/铭牌.png.meta",
+      "path": "NewStructureUnity/Assets/Models/breaker/铭牌.png.meta",
+      "bytes": 2946,
+      "sha256": "89f1a7be8e6914e443df59c42b95851f4f5b08eeb178c2159a6e6823137e3c32",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq01.png",
+      "bytes": 271364,
+      "sha256": "71a191e32cc7d7a188b404532d1832fa9686affcf71e702c6fbc4b592d6e5961",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq01.png.meta",
+      "bytes": 2977,
+      "sha256": "a103694007f8cdda84e386b9e45f11ff123686626dd7af368f1fe5c1f1109e23",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq01.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq01.png",
+      "bytes": 271364,
+      "sha256": "71a191e32cc7d7a188b404532d1832fa9686affcf71e702c6fbc4b592d6e5961",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq02.png",
+      "bytes": 201466,
+      "sha256": "21107c09a3cf5ae65c6107368d082cdfa3e110ba2b3dac2f210c4bd5a39b34e1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq02.png.meta",
+      "bytes": 2977,
+      "sha256": "c4dd77038ad8ba3c42b02ad94131a87cb208b41e16a412fd97cb658819b26581",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq02.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq02.png",
+      "bytes": 201466,
+      "sha256": "21107c09a3cf5ae65c6107368d082cdfa3e110ba2b3dac2f210c4bd5a39b34e1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq03.png",
+      "bytes": 252682,
+      "sha256": "e3db922656b0602e095edda1a98f8482bd8d81ce8bd0b66a447e37f13cc77b09",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq03.png.meta",
+      "bytes": 2977,
+      "sha256": "c49983142b0f555f016e08777076f9b1d237e81aec91c5f929a7e6e3dcf72756",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq03.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq03.png",
+      "bytes": 252682,
+      "sha256": "e3db922656b0602e095edda1a98f8482bd8d81ce8bd0b66a447e37f13cc77b09",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq04.png",
+      "bytes": 298744,
+      "sha256": "da847107c1431c5293a2ae9f0ec5be994a744b03f40710b0cc8617a2496cf1dd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq04.png.meta",
+      "bytes": 2977,
+      "sha256": "b2a768e509934dd670d87f293004d09a4eb1f60ec0b121c528a46b528aa91980",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq04.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq04.png",
+      "bytes": 298744,
+      "sha256": "da847107c1431c5293a2ae9f0ec5be994a744b03f40710b0cc8617a2496cf1dd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq05.png",
+      "bytes": 278316,
+      "sha256": "aca6d80b0f95ef9b55667795b8b029191c2cfc89d04b92b7f09bcfac94ff0fbb",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq05.png.meta",
+      "bytes": 2977,
+      "sha256": "bfab07ba6063220dda0508015cef113c58d88f3d9480bf1ae586aaa69c802876",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq05.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq05.png",
+      "bytes": 278316,
+      "sha256": "aca6d80b0f95ef9b55667795b8b029191c2cfc89d04b92b7f09bcfac94ff0fbb",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq06.png",
+      "bytes": 312281,
+      "sha256": "0f4990571053c855ab5b7f48c9a36cdf9311b2b9193c94a65ef3f72d02402813",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/breaker/Pic-dlq06.png.meta",
+      "bytes": 2977,
+      "sha256": "3383ebce65536efc1e6287f37d3222d0f64216bf8a40ff5194f6ff4027700932",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/6断路器/Pic-dlq06.png",
+      "path": "web/public/content/sprites/breaker/Pic-dlq06.png",
+      "bytes": 312281,
+      "sha256": "0f4990571053c855ab5b7f48c9a36cdf9311b2b9193c94a65ef3f72d02402813",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay.fbx",
+      "bytes": 1819392,
+      "sha256": "c3ffd7c887df46911c9f08bd427542723c238137b4058740719718d9f0ffdeeb",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "2526bb5b45c2bdb6bd5e44b891b40c68cdb5bb815c889f3c885c285838e517a4",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Base Color.png",
+      "bytes": 1334852,
+      "sha256": "4ba9cd65703db320018dbce6ba55a67a3f220b3226a4e5fc39a9fc588f908c9c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "1b9818006188337342368470c341a9f89e051621b0906a5d6a032ab2c780aa67",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "bytes": 3180111,
+      "sha256": "e24c2919c861cf7361f80dd9f11ac2033835a3c5d3cd0b4b986b0dc8fee0c1fc",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "a6acd593396629b1fa6c53f00c4f725de7de8b98ed03b7eed645c29e003819ec",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Normal.png",
+      "bytes": 1885780,
+      "sha256": "c287a61982543d9b87ed70c199857958a8e6484e2462750c5ca39c1c9209ed2f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "ff593f108640ed1720cee63dd7a151c9d41ff1beda002f7886189114bfa8603a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay.fbx",
+      "bytes": 1819392,
+      "sha256": "c3ffd7c887df46911c9f08bd427542723c238137b4058740719718d9f0ffdeeb",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay.fbx.meta",
+      "bytes": 2830,
+      "sha256": "2526bb5b45c2bdb6bd5e44b891b40c68cdb5bb815c889f3c885c285838e517a4",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Base Color.png",
+      "bytes": 1334852,
+      "sha256": "4ba9cd65703db320018dbce6ba55a67a3f220b3226a4e5fc39a9fc588f908c9c",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "1b9818006188337342368470c341a9f89e051621b0906a5d6a032ab2c780aa67",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "bytes": 3180111,
+      "sha256": "e24c2919c861cf7361f80dd9f11ac2033835a3c5d3cd0b4b986b0dc8fee0c1fc",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "a6acd593396629b1fa6c53f00c4f725de7de8b98ed03b7eed645c29e003819ec",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Normal.png",
+      "bytes": 1885780,
+      "sha256": "c287a61982543d9b87ed70c199857958a8e6484e2462750c5ca39c1c9209ed2f",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "ff593f108640ed1720cee63dd7a151c9d41ff1beda002f7886189114bfa8603a",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq01.png",
+      "bytes": 251987,
+      "sha256": "7c980a6a5eea56616b2bacd1741f5ed63f6c2fb931e5c5fe8184b29bdd55e7ce",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq01.png.meta",
+      "bytes": 2977,
+      "sha256": "d581694bbb1d2be09546ce213dfd46c9e184430509ecbccac2a7d9b14b4b1135",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq01.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq01.png",
+      "bytes": 251987,
+      "sha256": "7c980a6a5eea56616b2bacd1741f5ed63f6c2fb931e5c5fe8184b29bdd55e7ce",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq02.png",
+      "bytes": 196955,
+      "sha256": "59bb748affc1a96f6e5739a3ce5926a53350f76f3f904e446e49e088b818f040",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq02.png.meta",
+      "bytes": 2977,
+      "sha256": "c35b7dcd4057bb9a3059b6cdde3f223a6f3e4904475fd1506c655eaa7b564baa",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq02.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq02.png",
+      "bytes": 196955,
+      "sha256": "59bb748affc1a96f6e5739a3ce5926a53350f76f3f904e446e49e088b818f040",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq03.png",
+      "bytes": 185392,
+      "sha256": "74506d44cad78a6a75cee80d7d83971ec226aae91fe87a6f60a4b5de5a1f3835",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq03.png.meta",
+      "bytes": 2977,
+      "sha256": "2afec0aecee306bd32ec8d0cdb09c54324a0d937111b73c2490f214d852baaf2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq03.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq03.png",
+      "bytes": 185392,
+      "sha256": "74506d44cad78a6a75cee80d7d83971ec226aae91fe87a6f60a4b5de5a1f3835",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq04.png",
+      "bytes": 203284,
+      "sha256": "283891aa32718c4261a4e7388f86eca295c8c3f4f5bbd0e821ca130afb4cfc07",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq04.png.meta",
+      "bytes": 2977,
+      "sha256": "6712d0210e03ee1a47736b17914b4a341b9f456492e549929eef3dbb482206ad",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq04.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq04.png",
+      "bytes": 203284,
+      "sha256": "283891aa32718c4261a4e7388f86eca295c8c3f4f5bbd0e821ca130afb4cfc07",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq05.png",
+      "bytes": 205097,
+      "sha256": "f5338c34291f85bf6ddc53036e2c21b8af420e954578ee5e53204b5aa684b48a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq05.png.meta",
+      "bytes": 2977,
+      "sha256": "a6c9a0c55c26b1bb151854db0a8936e0c9fbfe2131967479bf1051aabc54527d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq05.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq05.png",
+      "bytes": 205097,
+      "sha256": "f5338c34291f85bf6ddc53036e2c21b8af420e954578ee5e53204b5aa684b48a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq06.png",
+      "bytes": 161768,
+      "sha256": "3026b272e06701a0966b393c63dc520d6416cdacb5df1cec40967bbee6c2acec",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/speedRelay/Pic-sdjdq06.png.meta",
+      "bytes": 2977,
+      "sha256": "ec960034b0f8b72931a893769be71b8e2e9628740336a5680b65bc75c9ad6f2a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/7速度继电器/Pic-sdjdq06.png",
+      "path": "web/public/content/sprites/speedRelay/Pic-sdjdq06.png",
+      "bytes": 161768,
+      "sha256": "3026b272e06701a0966b393c63dc520d6416cdacb5df1cec40967bbee6c2acec",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch.fbx",
+      "bytes": 1293472,
+      "sha256": "38b435f330e5e39d0f3d78f86579b2ec92fb44a47c637ecb43f2c30d5fb7b6da",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch.fbx.meta",
+      "bytes": 2830,
+      "sha256": "c656b5bb3d09b6ff7c454c67f47320bdb0b4cc1bafacb7d861531d851d137fac",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "bytes": 610550,
+      "sha256": "29242330039f6f7faf26c957ea53f64d2afa5b7cbea59cc346fc1611a92f8bc3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "57579798c08499abb988e092a850cd6551c580cad36eba24da6ee91b37e0b7d5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "bytes": 2498432,
+      "sha256": "fcd4cb16faba8c33cbb233d32c0b34f2c31f812c3ccad2728638a74b1098085d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "78a5bbc2916e569eb986ca2f61ad9bfaf132f587354aadd69947e5b0d0cbfaaa",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Normal.png",
+      "bytes": 1052597,
+      "sha256": "25cb294d7533d9900aa179b81c8f583e2ab80a5775cb16f090711d68c040ff3a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "d4d97d02bc9656e3f188293552744376b9cb96f180a57582d74a860b2bfb1e46",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch.fbx",
+      "bytes": 1293472,
+      "sha256": "38b435f330e5e39d0f3d78f86579b2ec92fb44a47c637ecb43f2c30d5fb7b6da",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch.fbx.meta",
+      "bytes": 2830,
+      "sha256": "c656b5bb3d09b6ff7c454c67f47320bdb0b4cc1bafacb7d861531d851d137fac",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "bytes": 610550,
+      "sha256": "29242330039f6f7faf26c957ea53f64d2afa5b7cbea59cc346fc1611a92f8bc3",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Base Color.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Base Color.png.meta",
+      "bytes": 2946,
+      "sha256": "57579798c08499abb988e092a850cd6551c580cad36eba24da6ee91b37e0b7d5",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "bytes": 2498432,
+      "sha256": "fcd4cb16faba8c33cbb233d32c0b34f2c31f812c3ccad2728638a74b1098085d",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_M_AO_G.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_M_AO_G.png.meta",
+      "bytes": 2946,
+      "sha256": "78a5bbc2916e569eb986ca2f61ad9bfaf132f587354aadd69947e5b0d0cbfaaa",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Normal.png",
+      "bytes": 1052597,
+      "sha256": "25cb294d7533d9900aa179b81c8f583e2ab80a5775cb16f090711d68c040ff3a",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Normal.png.meta",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Normal.png.meta",
+      "bytes": 2946,
+      "sha256": "d4d97d02bc9656e3f188293552744376b9cb96f180a57582d74a860b2bfb1e46",
+      "status": "duplicate"
+    },
+    {
+      "from": "Assets/Model/Public/White.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/White.png",
+      "bytes": 2219,
+      "sha256": "8a7fd93a1a58fdafa7fca08a5968cbdd265d81878a7df74ab8726af13bcdf761",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Model/Public/White.png.meta",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/White.png.meta",
+      "bytes": 3302,
+      "sha256": "e5dcbc3298ad2bb54c04dc1f58de35e6aad6e96936b9323847f69535ec63db57",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg01.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg01.png",
+      "bytes": 218705,
+      "sha256": "7896b479437142783968bf93b3dc8be854ef99c6937c4cddd76bbf866164c9b8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg01.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg01.png.meta",
+      "bytes": 2977,
+      "sha256": "f8172e168f43b35020f59b1d902f49997a018e9cfa09a4e74cd9e88599fd1701",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg01.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg01.png",
+      "bytes": 218705,
+      "sha256": "7896b479437142783968bf93b3dc8be854ef99c6937c4cddd76bbf866164c9b8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg02.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg02.png",
+      "bytes": 153327,
+      "sha256": "4171561dec2db35bb8d3ae2fde8fcad3cb4b69e8cf5b1e267c3ca37e77bfc519",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg02.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg02.png.meta",
+      "bytes": 2977,
+      "sha256": "92446dbddd0dacaecedfc675fe9f816c850f8bf23c21cd55f2c134daeef2a35a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg02.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg02.png",
+      "bytes": 153327,
+      "sha256": "4171561dec2db35bb8d3ae2fde8fcad3cb4b69e8cf5b1e267c3ca37e77bfc519",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg03.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg03.png",
+      "bytes": 201933,
+      "sha256": "6d8254017f85f616dcf9a30cf3c9f88fdbd0b63953c44a9421928df2ac5f48de",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg03.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg03.png.meta",
+      "bytes": 2977,
+      "sha256": "8e3bcfca2105b173081a0b4033bf5e44e854ba419505fc236eba2ea11f5f5897",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg03.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg03.png",
+      "bytes": 201933,
+      "sha256": "6d8254017f85f616dcf9a30cf3c9f88fdbd0b63953c44a9421928df2ac5f48de",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg04.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg04.png",
+      "bytes": 210806,
+      "sha256": "df6da1dd456ac36b2cc525355f7e5dbbb0163a87ea364b2eb375925e3f9eeb03",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg04.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg04.png.meta",
+      "bytes": 2977,
+      "sha256": "3e029516f45b71c9cbc06e8e556a4e4ca9636b914a215bd0547d8dff3293d263",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg04.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg04.png",
+      "bytes": 210806,
+      "sha256": "df6da1dd456ac36b2cc525355f7e5dbbb0163a87ea364b2eb375925e3f9eeb03",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg05.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg05.png",
+      "bytes": 218654,
+      "sha256": "589a52cb7abac5887103214076348a36ec6f73c00fdecc72a96179730ca6636b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg05.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg05.png.meta",
+      "bytes": 2977,
+      "sha256": "ebf416d2a2ca02dfc05dafdeff980e24266390cbcae14b940e41ed6c9049aef8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg05.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg05.png",
+      "bytes": 218654,
+      "sha256": "589a52cb7abac5887103214076348a36ec6f73c00fdecc72a96179730ca6636b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg06.png",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg06.png",
+      "bytes": 138491,
+      "sha256": "6034580566b36625506595a09fd7e1ef22edcdc53a7e7c1bd4393bb221b92154",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg06.png.meta",
+      "path": "NewStructureUnity/Assets/Sprites/Content/combinationSwitch/Pic-zhkg06.png.meta",
+      "bytes": 2977,
+      "sha256": "40efaa9031944a93c98b4d0358d2f95f020e2fd61a9699118c12cabab746cc9e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Sprites/Origin/Content/Info/8组合开关/Pic-zhkg06.png",
+      "path": "web/public/content/sprites/combinationSwitch/Pic-zhkg06.png",
+      "bytes": 138491,
+      "sha256": "6034580566b36625506595a09fd7e1ef22edcdc53a7e7c1bd4393bb221b92154",
+      "status": "exists"
+    }
+  ],
+  "excluded": [
+    {
+      "from": "Assets/Sprites/Public/Room_0609.png",
+      "bytes": 49847706,
+      "reason": "单张图 ≥10 MB：未压缩背景大图（P1-4 剔除项）"
+    }
+  ],
+  "missing": []
+}

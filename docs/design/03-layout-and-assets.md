@@ -119,6 +119,33 @@ NewStructureUnity/Assets/StreamingAssets/Data/  # ← **Unity 那一份**（同�
 ```
 
 - **为什么两份**、门禁怎么比对、形状与字段清单：见 [`08-content-data-adoption.md`](./08-content-data-adoption.md)。
+
+### 5.1 三维资产的落点（P1-4，**已落地**）
+
+```text
+NewStructureUnity/Assets/Models/<器件>/            # FBX + PBR 贴图（+ 配套 .meta）★ 不进 git
+NewStructureUnity/Assets/Models/_shared/…          # 多器件共用的贴图（万用表 / 表笔等）
+NewStructureUnity/Assets/Sprites/Content/<器件>/    # 原理图（供 Unity）★ 不进 git
+web/public/content/sprites/<器件>/                 # 同一批原理图（供 Web，小，进 git）
+content/assets/three/<器件>/<名>.glb               # Blender 转出的 GLB（Three 侧）★ 不进 git
+content/asset-import-report.json                   # 搬运清单（来源 / 目标 / 字节 / sha256）★ 进 git
+content/asset-convert-report.json                  # 转换清单（三角面 / 贴图 / 未映射项）★ 进 git
+```
+
+两件工具（都可重跑，幂等）：
+
+| 脚本 | 作用 |
+|---|---|
+| `tools/pipeline/import-adopted-assets.mjs` | 按**内容数据**决定搬什么：`prefabKey` → 包配置 → prefab → GUID 依赖闭包取 FBX + 贴图；`images[]` → 原理图。**只读来源工程** |
+| `tools/pipeline/fbx-to-glb.mjs` + `blender-fbx-to-glb.py` | 每个模型一个 `blender --background` 进程转 GLB，自带"清掉 FBX 里的失效贴图引用、按文件名重接 BaseColor/Normal" |
+
+两条从执行中学到的规矩：
+
+1. **FBX 的依赖闭包收不全贴图**：prefab 会覆盖材质，于是 FBX 自己的 PBR 贴图可能不在依赖链上 ——
+   所以按**同名前缀**把兄弟贴图一并搬（`<FBX 名>_*.png`）；
+2. **`*M_AO_G*` 不能直连 glTF**：它是 HDRP 的 mask map（R=金属度 / G=AO / A=光泽度），
+   与 glTF 的 occlusion（读 R）/ roughness（读 metallicRoughness 的 G）通道语义不符，
+   硬塞出来的画面是错的且难查 —— 转换脚本只**记录未映射**，金属度/粗糙度用常数兜底。
 - **`content/assets/` 不进 git**（DEC-57）：模型与贴图体积远超单文件阈值，落点与忽略规则在 `.gitignore` / `ignore.conf` 里成对维护。
 - 早期 `content/projects/*.json` 的示例数据（`demo-temperature.json`）**保留**，供"没有真实内容时也能跑通页面"的演示路径使用；真实内容一律走 `content/data/`。
 

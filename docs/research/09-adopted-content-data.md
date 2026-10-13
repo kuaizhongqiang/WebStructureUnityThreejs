@@ -78,16 +78,38 @@
 **采纳**（按批次搬运，落点与忽略规则见 `../design/03-layout-and-assets.md`）：
 
 1. **内容数据 7 份 JSON**（已采纳，两侧各一份）；
-2. **8 个器件的新代 FBX + PBR 贴图**（用于 Unity 侧复杂三维任务）；
+2. **8 个器件的 FBX + PBR 贴图**（用于 Unity 侧复杂三维任务）—— ⚠️ 见下方"只取新代"的更正；
 3. **原理图 Sprite**（8 器件 × 6 张，用于 Web 侧图文页面）；
 4. **菜单 / 公共 UI 图**（按需，体积小的那些）。
+
+### 5.1 执行结果（2026-10-13，第一批）
+
+| 项 | 数字 |
+|---|---|
+| Unity 侧模型 | 13 个 FBX（14.2 MB）+ 24 张贴图（22.9 MB）+ 共用贴图 → `Assets/Models/<器件>/` + `_shared/` |
+| 原理图 | 48 张（10.6 MB）→ Unity 侧 `Assets/Sprites/Content/` 与 Web 侧 `web/public/content/sprites/` |
+| GLB（Blender 转） | 13 个 / 31.8 MB → `content/assets/three/`（BaseColor + Normal 已接，见下） |
+| 剔除 | 1 张 47.5 MB 未压缩背景图（`Sprites/Public/Room_0609.png`，按"单张 ≥10 MB"规则自动剔除） |
+| 清单 | `content/asset-import-report.json`（262 个目标 / 含 sha256）、`content/asset-convert-report.json` |
+
+**三条执行期发现（都改了口径或写进了工具）**：
+
+1. **"只取新代"是错的**（本文件 §5 原来的第 2 条口径）：同一器件两代模型**不是重复品而是分工** ——
+   `contactor_info_model` / `contactor_inspection_model` 用新代 `NewACContactor`，
+   而 `contactor_structure_model` 用的是**旧代** `ACContactor`。判据改为**包配置指向的 prefab 的依赖闭包**。
+2. **7/8 个器件的"测量"模型是内置立方体占位**：`*_inspection_model.prefab` 中
+   只有 `contactor` 是 148 KB 的真模型（依赖新代 FBX），其余 7 个都是 3.8 KB、`m_Mesh` 指向
+   Unity 内置资源 GUID（`0000…e000…`）的占位。**所以这 7 个器件的测量模型没有可搬的原始资产。**
+3. **`*M_AO_G*`（HDRP mask map）不能直连 glTF**：通道语义不符（R=金属度/G=AO/A=光泽度
+   vs glTF 的 occlusion 读 R、roughness 读 G）。Blender 转换只接 BaseColor + Normal，
+   金属度/粗糙度用常数兜底，并把"未映射"记进转换报告。
 
 **剔除**：
 
 - 5 个 PSD 设计稿（226 MB，不参与运行）；
 - 13 张演示帧 `TVShow_*.png`（71 MB，漫游展示用，本阶段不做漫游内容）；
 - 3 张未压缩背景大图（115 MB，需要时另行压缩后再取）；
-- 旧代 FBX 与配套贴图（同一器件两代模型，只取新代）；
+- 未被任何槽位用到的 FBX 与贴图（判据是**包配置的依赖闭包**，不是新旧代一刀切 —— 见 §5.1 第 1 条）；
 - TMP 字体 SDF（Unity 侧不再用 UGUI/TMP 做界面 —— DEC-80）；
 - 第三方表现插件与自制 ShaderGraph（**改用量身重做的 URP 材质**：贴图通道直接映射，效果降级可接受，避免把插件与自制 Shader 拖进新工程）。
 
@@ -95,7 +117,8 @@
 
 | 项 | 状态 |
 |---|---|
-| 三维资产的**分批复制与格式转换**（含 Blender 批量转 GLB） | 进行中；清单与落点见 `../design/03-layout-and-assets.md` §5 |
+| 三维资产的**分批复制与格式转换**（含 Blender 批量转 GLB） | ✅ **第一批已完成（2026-10-13）**：见 §5.1；工具 `tools/pipeline/import-adopted-assets.mjs` + `fbx-to-glb.mjs` |
+| Unity 侧材质：24 个抽出的 URP Lit 材质**贴图未接**（`_BaseMap` 为空），需按 BaseColor/Normal 批量赋值 | 待办（`_M_AO_G` 的通道重排见 `design/03` §5.1 第 2 条） |
 | 来源工程里**题目有两套**（`QuestionData.json` 的 8 道考核题 与 `clip_quiz.taskExamData` 的 5 道题，内容不同） | 采用现状（两套都留着），口径见 `../design/04-data-model.md` §2.5 |
 | 结构拆装动画（`.anim`）是否重建 | 待三维资产批次推进后定 |
 | 漫游（房间）内容是否采纳 | 本期只保留"漫游"这个 TaskType 位置，不采纳房间内容 |

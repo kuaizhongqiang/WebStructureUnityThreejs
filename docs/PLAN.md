@@ -31,6 +31,7 @@
 | 1.12 | **P0-1 Play 验收** | 三条启动日志齐全；**抓到并修掉"桥随 `0_Setup` 被卸载"的沉默故障**（`WebBridge` 挪到 `Manager` 下 + 根物体自保 + 自检日志/上报） | git（见提交）；Plastic（见提交） |
 | 1.13 | **P0-2 单构建多任务语义（DEC-81）** | 清单 `taskTypes[]` + `--task-types`（带契约校验）+ `pickUnityBuild`（兼容旧清单）+ 壳侧同口径 + 7 项选件单测；**验收：桩构建 → 打包 → 壳冒烟 `mounted`** | git（见提交）；纯 JS/TS/文档，**无 Unity 侧改动**（故未走 Plastic） |
 | 1.14 | **P0-3 Web 内容层改用 `content/data/*.json`** | 适配层 + 内容 store + 菜单/任务页 + 同形状兜底 + 13 项单测 + 冒烟 8 条新断言；**过程中修掉两个 SPA 状态 bug**（坏链接污染目录、内容晚到导致视口挂不上） | git（见提交）；纯 Web/文档，无 Unity 侧改动 |
+| 1.15 | **P1-4 三维资产搬运 + Blender 转 GLB** | 13 FBX + 24 贴图 + 48 原理图；13 个 GLB / 31.8 MB（BaseColor+Normal）；两个可重跑脚本 + 两份清单报告；**改掉 3 处口径**（两代模型是分工不是重复、闭包收不全贴图、mask map 通道不符） | git（工具/原理图/报告/文档）+ Plastic（`Assets/Models`、`Assets/Sprites`）；**未动 Unity 侧脚本与场景** |
 
 ---
 
@@ -151,27 +152,50 @@
 
 **依赖**：P1-4 的原理图 Sprite（页面要显示图），否则先只跑文字。
 
-### P1-4 三维资产搬运（首批）
+### P1-4 三维资产搬运（首批）—— ✅ **已完成（2026-10-13）**
 
-**范围**（已测绘，见 `research/09` §5）：8 个器件的**新代** FBX + PBR 贴图（BaseColor / Normal / AO-Gloss）+ 8×6 张原理图 Sprite。
-**剔除**：PSD 设计稿、演示帧、未压缩背景大图、旧代模型、TMP 字体 SDF。
+**范围**（已测绘，见 `research/09` §5）：8 个器件的 **FBX + PBR 贴图** + 8×6 张原理图 Sprite。
+**剔除**：PSD 设计稿、演示帧、未压缩背景大图（单张 ≥10 MB 自动剔除）、TMP 字体 SDF、`.mat` 与自制 ShaderGraph、`.anim`（留给 P2-6d 定）。
 
 **落点决定（2026-10-13，AI 定）**：
 
 | 用途 | 落点 | 谁管 | git |
 |---|---|---|---|
-| Unity 侧源资产（FBX / 贴图 / 预制体） | `NewStructureUnity/Assets/Models/**` | **Plastic** | **忽略**（`.gitignore` 增规则） |
+| Unity 侧源资产（FBX / 贴图 / 预制体） | `NewStructureUnity/Assets/Models/**` | **Plastic** | **忽略**（`.gitignore` 已有规则） |
 | Three 侧资产（glTF/GLB） | `content/assets/three/**` | git 仓库（不进库） | **忽略**（已有规则） |
+| 原理图（供 Web） | `web/public/content/sprites/**` | git（10.6 MB，小） | **进 git** |
 
 > 原 `content/assets/unity/` 的设想**作废**：Unity 要导入资产就必须放进它自己的 `Assets/`，放仓库根等于又多一份。
 
-**步骤**：
-1. 复制 8 器件新代 FBX + 贴图 → `NewStructureUnity/Assets/Models/`（保持原目录语义：按器件分目录）；
-2. 复制原理图 Sprite → 同一工程内（供 Unity）与 `web/public/content/sprites/`（供 Web，体积小先在 git 里）；
-3. 可选：Blender 批量把 FBX 转 GLB → `content/assets/three/`（Three 侧任务用）；
-4. `.gitignore` 增 `NewStructureUnity/Assets/Models/`；Plastic 侧提交。
+**执行结果**：见 `docs/research/09` §5.1。一句话：**13 个 FBX（14.2 MB）+ 24 张贴图 + 48 张原理图（10.6 MB）已就位；
+Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**。
 
-**验收**：Unity 里能把模型拖进场景无紫红；Web 侧原理图能显示。
+| 步骤 | 落点 | 状态 |
+|---|---|---|
+| a 搬运脚本：按**内容数据**决定搬什么（`prefabKey` → 包配置 → prefab → GUID 闭包；`images[]` → 原理图），只读来源工程 | `tools/pipeline/import-adopted-assets.mjs` + `content/asset-import-report.json` | ✅ |
+| b 原理图 → Unity 侧 + Web 侧（Web 侧不带 `.meta`） | `Assets/Sprites/Content/`、`web/public/content/sprites/` | ✅ |
+| c Blender 批量转 GLB：每个模型独立进程；清掉 FBX 里的失效贴图引用后按文件名重接 BaseColor / Normal | `tools/pipeline/fbx-to-glb.mjs` + `blender-fbx-to-glb.py` + `content/asset-convert-report.json` | ✅ |
+| d `.gitignore` 规则 | 已在位（`content/assets/**`、`Assets/Models/`） | ✅ |
+
+**执行中改掉的三处口径**（都写进了 `research/09` §5.1 与 `design/03` §5.1）：
+
+1. **"只取新代"是错的**：两代模型是**分工**（`structure` 用旧代 `ACContactor`，`info`/`inspection` 用新代
+   `NewACContactor`）—— 按文件名一刀切会漏掉结构任务的模型。判据改成**包配置的依赖闭包**。
+2. **闭包收不全贴图**：prefab 会覆盖材质，FBX 自己的三张 PBR 贴图可能不在依赖链上 ——
+   按**同名前缀**把兄弟贴图补进来（`<FBX 名>_*.png`）。
+3. **`*M_AO_G*` 不能直连 glTF**（HDRP mask map 的通道语义与 glTF 不符）：只接 BaseColor + Normal，
+   金属度/粗糙度用常数兜底，并把"未映射"记进报告 —— 不硬塞一个错的画面。
+
+**验收**：
+- 产物侧：13 个 GLB 全部生成且 0 失败；48 张原理图在 `web/public/content/sprites/`（最大 0.35 MB，未触大文件门禁）；
+- Unity 侧（**需在编辑器里确认**）：13 个 FBX 已导入，Unity 自动抽出的 **24 个材质是 URP Lit（`Lit.shader`）→ 不会紫红**，
+  但 `_BaseMap` 为空（贴图未自动接上）—— 见下面的"待办"。
+
+**待办（交给下一步）**：
+
+1. **24 个材质的贴图赋值**（BaseColor / Normal）—— 建议写一个编辑器菜单（`WSU3/Assets/…`）按同名前缀批量赋值，可重跑、可评审；
+2. `_M_AO_G` 的**通道重排**（R=金属度→metallic、A=光泽度→1-roughness、G→occlusion 的 R）需要离屏重排后另出一张图；
+3. 7 个器件的"测量"模型在来源工程里是**内置立方体占位**（只有接触器是真的），需要内容侧补模型。
 
 ### P1-5 资产发布链（大资产怎么进产物）
 

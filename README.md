@@ -55,7 +55,7 @@
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、三维资产的搬运与格式转换（DEC-88，进行中） |
+| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、模型的 URP 材质贴图赋值（P1-4 待办） |
 
 ## 4 怎么跑
 
@@ -134,6 +134,19 @@ node tools/pipeline/pack.mjs
 - `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
 
 细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
+
+### 三维资产搬运（P1-4，细则见 [`docs/design/03`](./docs/design/03-layout-and-assets.md) §5.1）
+
+```bash
+# ① 从既有实训软件搬 FBX + 贴图 + 原理图（只读来源工程；先加 --dry-run 看要搬什么）
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录> --dry-run
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录>
+# ② Blender 批量把 FBX 转成 GLB（Three 侧用；每个模型一个独立进程）
+node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe 路径>
+```
+
+- 两份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项）：`content/asset-import-report.json`、`content/asset-convert-report.json`。
+- 落点：`Assets/Models/`（Plastic 管）、`web/public/content/sprites/`（进 git）、`content/assets/three/`（不进 git，DEC-57）。
 
 ### 提交门禁
 
