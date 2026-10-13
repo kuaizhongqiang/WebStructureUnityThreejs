@@ -80,6 +80,17 @@ namespace WSU3.Contracts.Events
         public long At;
     }
 
+    /// <summary>
+    /// `ui:result`：教学面板的回执（Web 对 `ui:request` 的答复）。
+    /// `Kind` 与请求里的 kind 对应（`tips` / `ui` / `question`）；`Result` 取值见 `WebBridge.UiResultKind`。
+    /// </summary>
+    public class UiResultEvent
+    {
+        public string Kind;
+        public string Result;
+        public string Detail;
+    }
+
     // ========================================================================
     // Unity → Web 的「出站意图」
     //

@@ -58,6 +58,7 @@ Web 侧：mount Unity 容器
 | `input:enable` | `{ enabled: boolean }` | 输入开关：模态面板打开时关掉三维输入（DEC-84，防止"被盖住还在拖"） |
 | `runtime:resume` | `null` | 容器重新可见后告知 Unity 恢复（隐藏期间渲染循环仍在，交互与更新提前返回） |
 | `debug:ping` | `{ at: number }` | 连通性自检；Unity 回 `debug:pong` |
+| `ui:result` | `{ kind: "tips" \| "ui" \| "question", result: "success" \| "failed" \| "unavailable", detail?: string }` | **教学面板的回执**（与 `ui:request` 成对，DEC-91）。`kind` 必须与请求一致；**面板弹不出来也必须回一条 `unavailable`**，而且**一个请求只回一条**。Unity 侧的等待默认**不限时**（尊重"学生要想很久"），不回就等于把这一步挂住（需要兜底时按条件配 `timeoutSeconds`，见 `docs/design/10` §5） |
 
 ### 3.2 生命周期与结果（Unity → Web）
 
@@ -68,11 +69,11 @@ Web 侧：mount Unity 容器
 | `assets:ready` | `{ taskType: number }` | **资源包装完**（Web 可开始渲染该任务的界面）；与下一条是两个阶段（DEC-84） |
 | `scene:ready` | `{ taskType: number }` | 装配完成、**可交互**，Web 结束 loading |
 | `scene:exited` | `{ taskType: number }` | 已退出该任务并卸包完成；**Web 不销毁实例**（DEC-81） |
-| `step:changed` | `{ stepIndex: number, stepTotal: number, stepName?: string }` | 步骤推进（对应参照工程的步骤状态机） |
-| `task:completed` | `{ taskType: number, score?: number, elapsedMs: number }` | **完成事件**（DEC-40 的硬约束） |
+| `step:changed` | `{ stepIndex: number, stepTotal: number, stepName?: string }` | 步骤推进（DEC-90）。`stepIndex` 是**扁平序号**（跨进程连续、从 0 起），`stepTotal` 是整条流程的步骤总数 —— 进度条直接用这两个数，不用再关心进程概念（`docs/design/10` §5） |
+| `task:completed` | `{ taskType: number, score?: number, elapsedMs: number }` | **完成事件**（DEC-40 的硬约束）。步骤系统在流程走完（或遇到终止型条件）时上报；`elapsedMs` 从本次执行开始算，**`score` 目前恒为 0**（成绩体系未建，不编造分数） |
 | `score:report` | `{ score: number, detail?: object }` | 成绩回报（考核类） |
 | `object:picked` | `{ objectKey: string }` | 点中了某个部件（Web 可据此弹说明） |
-| `ui:request` | `{ kind: "question" \| "confirm" \| "tips", payload: object }` | Unity 请求 Web 侧弹 UI（**因为教学界面在 DOM 层**，DEC-16） |
+| `ui:request` | `{ kind: "tips" \| "ui" \| "question", refId: string, body?: { title?, content?, questionType?, options?: string[], tips? } }` | Unity 请求 Web 侧弹 UI（**因为教学界面在 DOM 层**，DEC-16）。`refId` 是内容数据的键（`tipsKey` / `uiId` / `questionId`）；`body` 只带**展示用**字段，**不含答案** —— 判定留在界面层（Web 持有同一份题库），结果用 `ui:result` 回执（DEC-91） |
 | `unity:error` | `{ code: number, message: string, fatal: boolean }` | 错误上报 |
 | `debug:pong` | `{ at: number }` | 自检回应 |
 
@@ -105,7 +106,8 @@ Web 侧：mount Unity 容器
 | 项目标识的形态 | **`projectId` 用稳定字符串**（如 `clip_contactor`），不用数组下标（DEC-69 / `docs/design/08` §3） |
 | 超时与重试 | 进入 **25s / 重试 1 次**（DEC-71）；预加载失败**静默**（DEC-84） |
 | 心跳 | **本期不做**；需要时用 `debug:ping/pong` 手动自检（`09-startup-orchestration.md` §10） |
-| `ui:request` | Unity **只允许"请求"**，由 Web 决定是否响应（真源单一） |
+| `ui:request` / `ui:result` | Unity **只允许"请求"**，由 Web 决定是否响应（真源单一）；**回执必须成对**（含弹不出来时回 `unavailable`），判定在界面层（DEC-91） |
+| 步骤推进的语义 | 步骤系统的三级结构与"跳转从 P0S0 重置"口径见 `docs/design/10`；桥只负责把扁平进度与完成事件报出去 |
 | 内容数据谁读 | Unity **读自己那份**（与 Web 的同名文件同结构，门禁比对）；`scene:enter` 只下发任务标识，不下发正文（DEC-82） |
 
 **仍开放**：Unity 侧的真实构建与桥实现尚未落地（`.jslib` + 消息接收），首次真实构建后按 `09-startup-orchestration.md` 联调。

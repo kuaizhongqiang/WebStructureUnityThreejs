@@ -61,6 +61,14 @@ namespace WSU3.Web
         public long at;
     }
 
+    [Serializable]
+    public class UiResultPayload
+    {
+        public string kind;
+        public string result;
+        public string detail;
+    }
+
     // 注：入站消息对应的**事件类**不在本文件 —— 它们放在契约层的
     // `Assets/Scripts/Contracts/Events/BridgeEvents.cs`（namespace WSU3.Contracts.Events）：
     // 订阅方既有 Runtime（编排）也有 Core（交互管理器要接 view:focus），
@@ -111,11 +119,52 @@ namespace WSU3.Web
     }
 
     [Serializable]
+    internal class UiRequestPayload
+    {
+        public string kind;
+        public string refId;
+        public UiRequestBody body;
+    }
+
+    [Serializable]
     internal class ErrorPayload
     {
         public int code;
         public string message;
         public bool fatal;
+    }
+
+    /// <summary>`ui:request` 要弹什么：提示条 / 信息面板 / 答题面板。</summary>
+    public static class UiPanelKind
+    {
+        public const string Tips = "tips";
+        public const string Ui = "ui";
+        public const string Question = "question";
+    }
+
+    /// <summary>`ui:result` 的结果取值（Web 侧按这几个字符串回）。</summary>
+    public static class UiResultKind
+    {
+        /// <summary>用户读完/确认/答对。</summary>
+        public const string Success = "success";
+        /// <summary>用户答错或取消。</summary>
+        public const string Failed = "failed";
+        /// <summary>面板弹不出来（Web 侧没实现/题目取不到）：Unity 侧按降级处理，不阻塞流程。</summary>
+        public const string Unavailable = "unavailable";
+    }
+
+    /// <summary>
+    /// `ui:request` 的**展示用**载荷：只给"要显示什么"，**不含答案**（判定在 Web 侧，它持有同一份题库）。
+    /// 字段留空时 Web 侧可以只按 `refId` 自己取内容数据。
+    /// </summary>
+    [Serializable]
+    public class UiRequestBody
+    {
+        public string title;
+        public string content;
+        public string questionType;
+        public string[] options;
+        public string tips;
     }
 
     [Serializable]
@@ -249,6 +298,18 @@ namespace WSU3.Web
         public static void ObjectPicked(string objectKey)
         {
             Send(BridgeMessageType.ObjectPicked, new ObjectPickedPayload { objectKey = objectKey });
+        }
+
+        /// <summary>
+        /// 请求 Web 侧弹教学面板（`kind` 见 <see cref="UiPanelKind"/>，`refId` 是内容数据的 key）。
+        /// 结果由 Web 回 `ui:result`；**面板弹不出来时也要回一条 `unavailable`** ——
+        /// Unity 侧的等待默认**不限时**（学生可能真的在想），不回答就等于把这一步挂住。
+        /// 需要兜底时在条件上配 `timeoutSeconds`（见 `docs/design/10` §5）。
+        /// </summary>
+        public static void UiRequest(string kind, string refId, UiRequestBody body = null)
+        {
+            Send(BridgeMessageType.UiRequest,
+                new UiRequestPayload { kind = kind, refId = refId, body = body });
         }
 
         /// <summary>错误上报。code 语义见 docs/design/02 §3.3；<paramref name="fatal"/> = 该任务已不可用。</summary>

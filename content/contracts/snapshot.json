@@ -73,7 +73,8 @@
       "ui:set-quality",
       "input:enable",
       "runtime:resume",
-      "debug:ping"
+      "debug:ping",
+      "ui:result"
     ],
     "fromUnity": [
       "unity:ready",

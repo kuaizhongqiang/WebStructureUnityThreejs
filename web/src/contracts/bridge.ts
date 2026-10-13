@@ -25,6 +25,7 @@ export const BRIDGE_MESSAGES_FROM_WEB = [
   'input:enable', // 输入开关（模态面板打开时关掉三维输入）
   'runtime:resume', // 恢复运行（容器重新可见）
   'debug:ping', // 连通性自检
+  'ui:result', // 教学面板回执（ui:request 的结果；步骤条件靠它继续）
 ] as const
 
 /** Unity → Web。顺序是契约顺序。 */

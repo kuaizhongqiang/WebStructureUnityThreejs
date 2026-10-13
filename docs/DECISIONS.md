@@ -596,6 +596,51 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 - **剔除项**：PSD 设计稿、演示帧、未压缩背景大图、旧代模型、TMP 字体 SDF（理由与体积见 `research/09` §5）。
 - **落点**：大资产源文件放 `content/assets/unity/`（不进 git，DEC-57）；Three 侧所需 glTF/GLB 放 `content/assets/three/`。
 
+## 18 第七轮追加（2026-10-13）：步骤系统
+
+| 编号 | 决定 | 选项来源 | 状态 |
+|---|---|---|---|
+| DEC-89 | **步骤数据的归属按"条件自带数据"**：`StepHandler` 只留元数据（id / 显示名 / 描述）+ 一个 `[SerializeReference]` 多态条件；显隐表、动画槽位、提示/音频 key、以及各条件自己的字段（点击目标、面板 id、题号、配对表）全在条件上。理由是"每种条件只用得上自己那几个字段"，摊在步骤上会留一堆空字段 | 负责人 2026-10-13（在"数据挂步骤 / 数据挂条件 / 条件做成组件"三案中选后者前一案） | **已生效**（`docs/design/10`） |
+| DEC-90 | **所有跳转都从 P0S0 重置后再快进到目标**（状态一致性优先于跳转性能）：跳转先全员 `ResetCondition()`，再把目标之前的步骤 `FastComplete()`（定格末帧、不播放、不发事件），目标步骤走正常三阶段 | 需求方口径 | **已生效** |
+| DEC-91 | **新增入站契约消息 `ui:result`**（教学面板回执），与既有出站 `ui:request` 成对；**判定留在界面层**（Web 持有同一份题库），Unity 只认 Success / Failed / Unavailable 三种结果 | 负责人 2026-10-13（"全链路实现"） | **已生效**（三处契约同批：C# / TS / 快照，门禁通过） |
+| DEC-92 | **步骤推进由自驱小泵驱动**（`StepManager.CoreUpdate()` 逐帧推进 `Stack<IEnumerator>`）而不是 `StartCoroutine`：这样 `InputGate.ShouldUpdate` 能直接管住"容器不可见时先别推进"，编辑器测试也能手动一帧帧推 | AI 定（与 `TaskFlowManager` 同一套写法） | **已生效** |
+| DEC-93 | 本期**不实现** `Tool` / `Drag` 两种条件；`ConditionLineConnect` 先做"配对状态机 + 常驻连线"，**临时线跟随鼠标**与成绩体系留待后续（`task:completed` 的 score **恒为 0**，不编造分数） | 负责人 2026-10-13 | **已生效**，遗留项见下表 |
+
+### 18.1 DEC-89 ~ DEC-93 的落地口径
+
+- **三级结构**：`StepManager`（场景根，导演）→ `ProcessingHandler`（进程）→ `StepHandler`（步骤）→ `ConditionBase`（条件）。收集只看**直接子节点**，缺组件会被跳过并告警（不静默少几步）。
+- **三阶段**：`Prepare`（显隐归位 + 动画隐藏 + 子类隐藏交互物）→ `Waiting`（定格首帧 + 显示交互物 + 等待，**阻塞点必须用 `WaitUntilOrForceComplete`**）→ `Complete`（收尾 + 播放 + 等播完 + 按需隐藏）；`FastComplete` 不播放、直接定格末帧。
+- **归位 ≠ 定格首帧**：跳转归位阶段动画物体是**隐藏**，定格首帧只发生在目标步骤进入 `Waiting` 时。
+- **协作式打断**：`NextStep / SkipCurrentStep / CompleteCurrentStep` 都走 `ForceComplete()`；打断发生在阶段间隙时退化为"按最近的可跳转位置重放"。
+- **面板分层**：Core 定 `IStepPanelPort`（提示 / 信息面板 / 答题），Runtime 的桥实现它（`ui:request` 出站、`ui:result` 入站）；**端口缺席时降级为"直接完成"并告警**，绝不把流程卡死在等不到的面板上。
+- **事件出口**：Core 发 `StepChangedEvent` / `AllStepsCompletedEvent`，Runtime 的桥订阅后转 `step:changed` / `task:completed`（与 `object:picked` 同一走法，Core 不依赖桥）。
+- **测试**：`Assets/Tests/EditMode/StepSystemTests.cs` **17 项**（全流程与扁平进度、跳转重置与快进、打断、终止型条件、空条件、面板等待与降级、答错重问、连线配对与画板，以及 DEC-94/95 的收尾 8 项），全量 EditMode **49/49 通过**。
+
+### 18.2 第七轮复盘：跳转打断与快进的收尾（DEC-94 / DEC-95）
+
+> 触发：2026-10-13 用两个独立 subagent 把实现与参考文档逐条对账 + 做状态机缺陷扫描，
+> 命中若干"会改变运行行为"的问题，同日修完并补测试（本仓库从未把 subagent 结论直接当结论，
+> 每条都回到代码复核过一遍）。
+
+| 编号 | 决定 | 来源 | 状态 |
+|---|---|---|---|
+| DEC-94 | **跳转打断要收尾**：`Restart`/`StopExecution` 先 `CloseTopPanel()`；**快进 = `Prepare` + `FastComplete`**（显隐表必须落地，否则"跳过去"与"走过去"状态不等价）；终止型条件在快进路径同样结束流程；**泵内发起的导航推迟**到本轮推进结束（否则跳转会被静默吞掉）；流程结束后再按"下一步"不再重跑 | 复核发现（破坏"状态一致"） | **已生效** |
+| DEC-95 | **面板等待默认不限时**（`timeoutSeconds = 0`，需要时按条件配）；**非 WebGL 环境当场降级**（编辑器/独立播放器没有页面桥）；桥停用时端口 `Dispose()` 退订 | 复核发现（与"绝不卡死"的声明不符） | **已生效** |
+
+**同批修正的文档口径**（都改在 `docs/design/10`）：事件时机（`StepWaitingEvent`/`step:changed` 是"进入 Waiting 那一刻"发，
+早于条件内部的首帧定格与交互物显示）、连线**不跨跳转保留**（与 DEC-90 的"从 0 重置"一致，不再写"跨跳转保留"）。
+
+### 18.3 第七轮仍未闭合
+
+| 未闭合 | 原因 | 去向 |
+|---|---|---|
+| Web 侧 **`ui:request` / `ui:result` 的落地面板**（DOM） | 契约与 Unity 侧已就绪，页面还没实现；WebGL 里信息/答题条件会一直等（编辑器里已改为当场降级，见 DEC-95）。落地时要守两条：弹不出来也回 `unavailable`、一个请求只回一条回执 | `PLAN.md`（Web 侧待办） |
+| 面板等待的 **`timeoutSeconds` 取值** | 默认 0（不限时，尊重"学生要想很久"）；真内容接入后才知道该不该配下限 | 内容装配时定 |
+| **`Tool` / `Drag` 条件** | DEC-93 本期不做（工具面板、拖拽命中都还没有业务面） | 有内容需求时再补，`ConditionType` 已留值 |
+| 连线**临时线跟随鼠标** | 只做了"配对状态机 + 常驻线"，手感专项未做 | 连线手感专项 |
+| 步骤层级**尚未挂进场景**（`1_Content` 里还没有 `StepManager` 节点） | 内容装配（P2-6）未落地，先有代码再有树 | 内容装配时一起接；接法与自查清单见 `docs/design/10` §6 |
+| **成绩体系未建**：`task:completed` 的 `score` 恒为 0 | 计分规则未定 | 成绩专项；在此之前不编造分数 |
+
 | 未闭合 | 原因 | 去向 |
 |---|---|---|
 | **接下来要做什么**（步骤 / 落点 / 验收） | 唯一维护点已独立成文，避免上下文被压缩后丢失 | **`PLAN.md`** |
@@ -611,3 +656,101 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 | 运行环境的最终形态（在线 / 离线 / 局域网、目标静态托管） | DEC-05 / DEC-35 先不定 | 实现按"服务器可控"推进，目标托管与 COOP/COEP、缓存头一并定 |
 | **亮色是否作为默认主题** | 两套主题都已支持，默认仍是深色 | 负责人拍板；改动点只有 `stores/theme` 的默认值 |
 | **包体预算门禁** | DEC-02 的 250~360 MB 预算只有文字，无脚本 | 真产物接入后加门禁脚本（现有门禁只管单文件 10 MB） |
+
+## 19 追加（2026-10-13）：模型检视页（审核用）
+
+| 编号 | 决定 | 选项来源 | 状态 |
+|---|---|---|---|
+| DEC-94 | **模型检视页（审核用）落 `docs/model-preview/`**：与 `docs/ui-mockups/` 同级，静态页、不起构建；**服务根＝仓库根**（`node docs/model-preview/serve.mjs`），直接读磁盘上的 `content/assets/three/**` 与 `web/node_modules/three` —— **不复制、不进 git、不改产品构建链路**；清单**不另维护第二份**（读 `content/asset-convert-report.json`）；**只消费 `ui-mockups` 的令牌与元件**，不新增令牌与产品组件类 | 负责人 2026-10-13（"和 ui-mockups 同级、功能也差不多"） | **生效**（已实测 13 个模型） |
+
+### 19.1 DEC-94 的落地要点
+
+- **它是审核工具，不是产品**：不起构建、不进门禁、不进打包链路。用途是把 13 个 GLB 逐个挂上 Three.js，当场定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图接没接上）。
+- **跑法**：`node docs/model-preview/serve.mjs` → `http://127.0.0.1:5281/docs/model-preview/index.html`。**服务根必须是仓库根**，因为页面要同时取到三处：自己（`docs/model-preview/`）、13 个 GLB（`content/assets/three/**`，按 DEC-57 **不进 git**，所以不在任何 `dist` 里）、three 库（`web/node_modules/three`，一份库两处用）。
+  没有用 `python -m http.server` 的理由只有一条：ESM 的 import map 与 `<script type="module">` 对 `.mjs` 的 MIME 是强校验的，自带脚本才给得稳（顺带给 `.glb` 一个 `model/gltf-binary`）。⚠️ 该脚本里有一个**踩过**的坑已写成注释：写响应头后**不能**先 `res.end()` 再 `pipe()`，否则"头写 content-length、正文 0 字节"，浏览器永远等不到 `load`。
+- **清单不另维护第二份**：模型 / 字节 / 三角面 / 贴图 / 未映射项读 `content/asset-convert-report.json`（P1-4 的转换证据，进 git），器件中文名读 `content/data/ProjectData.json` 的 `clip_<器件>`；页面还会对每个 GLB 发一次 HEAD 校验字节数 —— 清单与磁盘漂了要**立刻看得见**。
+- **读数分两栏**："证据"＝转换报告，"实测"＝从 GLB 现读。⚠️ 两个**口径差异**是实测踩出来的，不标清楚会得出"清单错了"的假结论：
+  - 实测"网格"是 **glTF primitive 数**（GLTFLoader 一个 primitive 建一个 Mesh），清单里是 Blender 的网格对象数（一个网格拆多 primitive 时不等）；
+  - 实测"材质"是 **three.js 材质实例数**（GLTFLoader 会因几何体缺法线/切线等**克隆**材质），要与清单比的是**按名字**的种类数。
+- **实测结论（2026-10-13，13/13）**：三角面逐个**精确一致**、材质名逐个一致、无 console 错误、绘制调用 > 0；**切模型后显存回落基线**（几何 = primitive + 网格，贴图恒定）—— 即 `dispose()` 链无泄漏。切到 IBL 会常驻 **+12 几何 +2 贴图**（环境贴图与 PMREM 的内部资源），反复切换**不再增长**（一次性的），退出页面由 `Stage.dispose()` 一并释放。
+- **材质现状（本页要拍板的依据）**：22 张贴图 **BC + N 全部接上**；13 个 GLB 的材质**全部 `doubleSided` + `alphaMode: OPAQUE`**；金属度/粗糙度是转换期的**常数兜底 `0.0 / 0.5`**（`*_M_AO_G.png` 是 HDRP mask map，通道语义与 glTF 不符，转换脚本**故意没塞**，只记进 `unmapped`）。
+- **样式纪律**：只消费 `ui-mockups` 的 `tokens.css` + `components.css`（页面里的 `<style>` 只做本页布局，**不新增令牌、不新增产品组件类**），因此不产生"必须在成果页展出"的新样式。
+- **与 P1-5 的边界**：本页**不**解决"产品怎么拿到大资产"。产品侧仍是 `docs/PLAN.md` 的 **P1-5**（构建前把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`，运行时 URL `/assets/three/**`），**尚未实现**。
+
+### 19.2 本页要拍板的两件事（未闭合）
+
+| 未闭合 | 原因 | 去向 |
+|---|---|---|
+| **环境取哪一套**（影棚 HDRI / 产品现状 / 灯光+IBL / 仅环境光；以及背景、曝光、色调映射） | DEC-94 落地的正是"让人当场看"的页面，结论要负责人看过再定 | 本页审阅后定；定完改 `web/src/viewer/Viewer.ts` 的默认值 |
+| **材质取什么值**（金属度 / 粗糙度常数，或按通道重排另出 metallicRoughness 贴图；`doubleSided` 是否保留） | 同上；常数兜底是转换期的权宜，重排贴图是另一批工 | 见 §19.4 的 `P1-4b` 增量（已定技术路径） |
+
+### 19.3 影棚 HDR 环境贴图（2026-10-13，负责人指定）
+
+- **落点**：`content/assets/three/env/StudioWhiteUmbrella.exr`（5.65 MB，Three 侧大资产，按 DEC-57 不进 git；`content/assets/**` 已被忽略）。
+- **用法**：本页把它**同时**当**背景（天空盒）与光源（IBL）** —— 原图直接当 `scene.background`（PMREM 版太糊，只给材质做 `scene.environment`）。
+- 新增环境方案 `影棚 HDRI · Studio White Umbrella`，**设为默认档**；`产品现状` 档连背景一起回到深色（要的是"整体可对照"，不只是灯）。
+- 页面按负责人要求去掉了**地面网格**（连同它的开关），并**解绑右键平移**（`mouseButtons.RIGHT = null`；中键缩放、左键旋转保留）。
+
+### 19.4 材质通路：源工程实测结论与 `P1-4b` 增量（2026-10-13）
+
+**从只读来源工程抽出的规格**：`content/asset-material-spec.json`（新工具 `tools/pipeline/extract-material-spec.mjs`，可重跑、幂等）。
+
+实测（全部来自材质实值，不是文档转述）：
+
+| 项 | 实测 |
+|---|---|
+| 主材质 shader | `HDRPtoURPCustomDirtLitShader`（10 个器件），`_BaseMap` / `_NormalMap` / `_MaskMap` 三张全绑 |
+| mask 通道语义 | **HDRP Lit 排布：R=Metallic、G=AO、B=DetailMask（未用）、A=Smoothness** |
+| 区间重映射 | `_MetallicMin/Max` [0,1]、**`_OAMin/OAMax` [0.5,1]**、`_SmoothnessMin/Max` [0,1]（`SpeedRelay_Coat` 的 Smooth 是 [0,**0.8**]） |
+| 表面模式 | `Glass`、`CombinationSwitch2` = **BLEND**（`_Surface=1`、`Src/Dst=1/10`、`ZWrite=0`；α 分别 0.2 / 0.6）；`ElectronicSupermarket2`、`CircuitBreaker_2`、`WYF`、`档位`、`表笔红2/黑2`、`Alpha` = **MASK** |
+| 双面 | 全部 `_Cull=2`（Off）→ 双面 |
+| glTF 表达不了 | `*_Metal` 的 `Chrome05.cubemap` + `_CubeColor` 染色、清漆层、程序化污渍 —— **已在规格里逐条记账**（`lostInGltf`） |
+
+**⭐ 逐子材质核对（新工具 `tools/pipeline/audit-material-mapping.mjs`）：13 个模型里 8 个含第二/第三套子材质，全部错**：
+**每个材质都共用主干的那两张贴图（`img=[1,0]`）**，即"铭牌 / 贴花 / 面板图 / 透明罩"现在显示的是**器件主干纹理**。
+根因：搬运脚本只按"与 FBX 同名前缀"收贴图，而 `铭牌.png` / `ElectronicSupermarket2.png` / `TimeRelayMap.png` / `ThermalOerloadRelay_2.jpg` / `White.png`（`Model/Public` 的 2KB 白图）
+**文件名对不上前缀 → 根本没搬进来**；转换脚本再按前缀给所有材质挂同一张图。合计 **18 处**。
+
+| 子材质 | 现状 | 应为 |
+|---|---|---|
+| `CircuitBreaker_2` | 主干贴图 | `铭牌.png` + MASK |
+| `ElectronicSupermarket2`（5 个模型） | 主干贴图 | `ElectronicSupermarket2.png` + MASK |
+| `CombinationSwitch2` | 主干贴图 | `White.png` + BLEND（α 0.6） |
+| `Glass`（2 个模型） | 主干贴图 | `White.png` + BLEND（α 0.2） |
+| `TimeRelayMap` | 主干贴图 | `TimeRelayMap.png` |
+| `ThermalOerloadRelay_2` | 主干贴图 | `ThermalOerloadRelay_2.jpg` |
+
+**预制体覆写**（材质挂在 `MeshRenderer` 上，按 FBX 转必丢）：`SpeedRela_Metal` + `SpeedRelay_Coat` ← `speedRelay_info/structure_model`；`CombinationSwitch_Metal` ← `combinationSwitch_info/structure_model`；`CeramicPlugInFse_Metal` ← `fuse_structure_model`；`ThermalOerloadRelay_Metal` 只在 `Preview_Room1.unity`（预制体里没有）。
+
+**⭐ 覆写机制已查明（2026-10-13，2026-10-13 负责人要求"必须通过正确的 prefab 导出"）**：
+
+- 现在的转换链**只有 FBX、预制体一次都没参与**：`fbx-to-glb.mjs` 输入 `Assets/Models/<器件>/*.fbx`；
+  `blender-fbx-to-glb.py` 第 45 行 `bpy.ops.import_scene.fbx(...)`、第 174 行 `export_scene.gltf(...)`。**这是材质覆写丢失的根因。**
+- `*_info_model` 预制体里**没有自己的 MeshRenderer**（解析出 0 个），但有一个 `PrefabInstance`：
+  `m_SourcePrefab` 的 guid 解析出来**就是那个 FBX**（Unity 把 FBX 当可实例化的预制体）；
+  `m_Modifications` 里 `propertyPath: m_Materials.Array.data[0]` + `target: {fileID, guid: <FBX>}`
+  ⇒ **覆写是按 FBX 内部 MeshRenderer 的 fileID 打的**，`.guid` 就是 `SpeedRela_Metal` / `SpeedRelay_Coat`。
+- `*_structure_model` 则是**直接**在自己节点上写材质（`fuse_structure_model` 有 `CeramicPlugInFse_Metal`、
+  `combinationSwitch_structure_model` 有 `CombinationSwitch_Metal`；`speedRelay_structure_model` 的 41 个节点直写 `SpeedRelay`，
+  `*_Metal`/`*_Coat` 同样在 `m_Modifications` 里）。
+- **因此几何不需要重新装配**（照旧从 FBX 导入），缺的只是**覆写层**：把 `m_Materials.Array.data[N]` 的 fileID
+  经 `*.fbx.meta` 的 `internalIDToNameTable` 映射到节点名，再在 Blender 里按节点应用覆写材质。
+  材质属性本身规格里已有（`content/asset-material-spec.json`），按 PBR 等价降级。
+- ⚠️ 上一版这里写的"硬套会贴错地方"**只对"按节点名猜"成立**。
+
+**已实施（2026-10-13）**：
+
+1. `extract-material-spec.mjs` 增加 `devices[<器件>].prefabOverrides`（**末段节点名 → 材质名**）：以**结构件 prefab** 的 MeshRenderer 为准（节点名与 FBX 逐字对应、给出全量分配），并用 `*_info_model` 的 fileID 覆写做**交叉校验**（只比材料多重集，因 fileID 推不出名字；不满足 ≥ 就告警）。
+2. `blender-fbx-to-glb.py` 增加覆写层（`--spec` + `--model-key`，不传则行为与以前完全一致）：按节点名替换材质槽；`*_Metal`/`*_Coat` 克隆主干材质并**只建一次**（`material.copy()` 会自动加 `.001`，而渲染期按**材质名**对规格 —— 名字带后缀会全部落空，实测踩过）；无基色贴图的（`Alpha`）自建材质 + α=0 + CLIP。
+3. `fbx-to-glb.mjs` 传 `--spec content/asset-material-spec.json`。
+
+**重建结果（13/13，0 失败）**：几何未变（三角面与重建前逐个一致）；**32 个非主干材质节点**落地（combinationSwitch 13×`CombinationSwitch_Metal`、fuse 2×`CeramicPlugInFse_Metal`、speedRelay 3×`_Coat` + 1×`_Metal`、breaker `CircuitBreaker60=CircuitBreaker_2`、timeRelay `TimeRelayMap` ×2…）；**GLB 里 0 个材质名对不上规格**（渲染期解算能全部命中）。
+
+⚠️ **已知缺口（真实，不掩盖）**：预制体里有一部分节点是**预制体自己加的内置图元**（`Cube`/`Cube (1..3)`/`Cylinder`/`jiexiankong`），FBX 里没有 → 我们的 GLB 不含这些几何，它们身上的 `Alpha`（基色 α=0 ⇒ 原工程里不可见）材质也就无从应用。要不要把这些图元也搬进来，**待负责人定**。
+
+**`P1-4b` 的增量（技术路径已定，实施另批）**：
+
+1. **补搬**子材质引用的贴图：`tools/pipeline/import-adopted-assets.mjs` 由"同名前缀"改为"**按材质引用**"（`_BaseMap` / `_NormalMap` / `_MaskMap`），并补 `Assets/Model/Public/White.png`；
+2. **按材质逐槽位挂钩** + **ORM 重排**（`R←AO(G)`、`G←1−Remap(Smoothness(A))`、`B←Metallic(R)`，区间按规格烘进去）+ **表面模式**（MASK/`alphaCutoff`、BLEND/`baseColorFactor.a`，并把 BaseColor 的 α 接到 BSDF）：改 `tools/pipeline/blender-fbx-to-glb.py`；
+3. **预制体覆写**：先解决"结构件装配"这一层（节点对应关系），再谈 `*_Metal` / `*_Coat`；
+4. 重建 13 个 GLB → 重跑 `audit-material-mapping.mjs`（**问题数要归零**）→ 再跑模型检视页逐个核对。

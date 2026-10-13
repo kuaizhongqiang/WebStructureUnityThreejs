@@ -33,6 +33,10 @@
 | 1.14 | **P0-3 Web 内容层改用 `content/data/*.json`** | 适配层 + 内容 store + 菜单/任务页 + 同形状兜底 + 13 项单测 + 冒烟 8 条新断言；**过程中修掉两个 SPA 状态 bug**（坏链接污染目录、内容晚到导致视口挂不上） | git（见提交）；纯 Web/文档，无 Unity 侧改动 |
 | 1.16 | **P0-1 入站验证（桥的 EditMode 单测）** | 32 项单测（信封扫描 12 / 入站分发 14 / 出站映射与拾取上报 6）；**过程中修掉 3 个真问题**：计数器跨用例串、EditMode 不跑 `OnEnable` 导致出站订阅没接上、`JsonUtility` 把坏 `taskType` 读成 0 当合法值放行；**验收：32 passed / 0 failed** | git + Plastic（`Assets/Scripts/Web/*`、`Assets/Tests/EditMode/*`） |
 | 1.15 | **P1-4 三维资产搬运 + Blender 转 GLB** | 13 FBX + 24 贴图 + 48 原理图；13 个 GLB / 31.8 MB（BaseColor+Normal）；两个可重跑脚本 + 两份清单报告；**改掉 3 处口径**（两代模型是分工不是重复、闭包收不全贴图、mask map 通道不符） | git（工具/原理图/报告/文档）+ Plastic（`Assets/Models`、`Assets/Sprites`）；**未动 Unity 侧脚本与场景** |
+| 1.17 | **P2-7 步骤系统全链路**（DEC-89 ~ DEC-93） | 三级结构（`StepManager → ProcessingHandler → StepHandler → ConditionBase`）+ 协程三阶段 + 跳转从 P0S0 重置与快进 + 协作式打断 + 动画五原语；条件：Default / Click / UI / Question / LineConnect / Finish（Tool、Drag 本期不做）；面板端口 `IStepPanelPort` 接 `ui:request` / `ui:result`；两个自定义 Inspector（条件多态校验、运行时驱动按钮）；新增 `docs/design/10-step-system.md` | 编译 0 error；**EditMode 49/49 通过**（新增 17 项）；`node tools/check-contracts.mjs` 通过（桥消息 24 条）；`contracts.spec.ts` 13 项 + web typecheck 通过；**尚未提交**（负责人要求等其他 agent） |
+| 1.18 | **P2-7 步骤系统复核收尾**（DEC-94 / DEC-95） | 跳转打断收面板 + **快进 = Prepare + FastComplete**（显隐表落地，与"走过去"等价）+ 终止型条件在快进路径同样结束流程 + **泵内导航推迟**（防跳转被静默吞掉）+ 结束后"下一步"不重跑；面板等待默认不限时（`timeoutSeconds`）+ 非 WebGL 当场降级 + 桥停用退订；归位收回交互物/连线端点；`PrevStep` 跳过空进程；多实例不再抢 `Instance` | **EditMode 49/49**；编译 0 error；文档口径同步（design/10 事件时机、连线不跨跳转保留）；**尚未提交** |
+| 1.19 | **材质通路规格 + 逐子材质核对（DEC-94 §19.3/19.4）** | 新增 `tools/pipeline/extract-material-spec.mjs` → `content/asset-material-spec.json`（从只读来源工程抽：mask 通道语义 R=Metallic/G=AO/A=Smoothness、三组区间重映射（**AO 下界 0.5**）、表面模式、**预制体覆写**、glTF 表达不了的项逐条记账）；新增 `tools/pipeline/audit-material-mapping.mjs`（逐模型逐子材质核对）；**检视页**：影棚 HDRI `content/assets/three/env/StudioWhiteUmbrella.exr` 当天空盒+光源并设为默认档、去掉地面网格、解绑右键平移 | 核对结论：**13 个模型里 8 个的子材质贴图全错**（`img=[1,0]` 共用主干贴图）、表面模式全错（`Glass`/`CombinationSwitch2` 应 BLEND，`ElectronicSupermarket2`/`CircuitBreaker_2` 应 MASK），**合计 18 处**；根因是搬运按"同名前缀"收图 → 5 张子材质贴图没搬进来。修复路径见 `DECISIONS.md` §19.4（**未实施**） |
+| 1.18 | **P1-6 模型检视页（审核用，DEC-94）** | 新增 `docs/model-preview/`（与 `ui-mockups/` 同级，**不是产品**）：`serve.mjs`（服务根＝仓库根 + 正确 MIME）、`index.html`、`src/stage.mjs`（四档环境方案 / 光照·IBL·背景·曝光 / 贴图·线框·PBR 覆盖）、`src/main.mjs`（13 个模型可选可旋转 + 证据/实测两栏读数 + `?model=` 深链）；清单读 `content/asset-convert-report.json`，**不另维护第二份**；只消费 `ui-mockups` 令牌与元件 | **13/13 逐个实测通过**：三角面与材质名与清单逐个一致、无 console 错误、切模型后显存回落基线；截图与报告见 `web/tools/smoke/artifacts/model-preview/`（该目录已忽略）；**结论待负责人审阅**（环境与材质取哪一套见 `DECISIONS.md` §19.2） |
 
 ---
 
@@ -261,6 +265,21 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 | 问题 | `web/public/` 下的东西会被 Vite 拷进 `dist` 并进 git；`content/assets/` 不能进 git，但运行时必须能被 Web 服务到 |
 | 方案 | 新增 `tools/pipeline/web-assets.mjs`：构建**前**把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`（`dist` 不进 git）；`pack.mjs` 把它计入发布清单 |
 | 落点 | `tools/pipeline/`、`web/dist/release-manifest.json` 的 `content.assets` 字段 |
+
+> ⚠️ **别把 DEC-94 的审核页当成它**：`docs/model-preview/` 是"从仓库根起静态服务、直读磁盘"的**审核工具**（不起构建、不进产品），
+> 本项要的是**产品链路**（构建前拷进 `web/dist/assets/three/**`，`content/assets/**` 仍然不进 git，DEC-57）。
+> 两件事都做完，才算"浏览器里能看到模型"与"产品里有模型"两回事都成。
+
+### P2-7 步骤系统的收尾（引擎已就位，等业务面）
+
+| # | 事项 | 说明 |
+|---|---|---|
+| a | **Web 侧落地面板** | `ui:request`（tips / ui / question）与 `ui:result` 的回执：契约与 Unity 侧已就绪，页面未实现 —— 期间步骤里的信息/答题条件会走"降级完成"并打告警（不卡流程）。落点：`web/src/`（消息处理与 DOM 面板） |
+| b | **`Tool` / `Drag` 两种条件** | 本期有意不做（DEC-93）：工具面板与拖拽命中都还没有业务面。补的时候按 `ConditionBase` 的三阶段钩子加一个类即可 |
+| c | **连线的手感** | 现在只做"配对状态机 + 常驻线"；**临时线跟随鼠标**、吸附容差、错误提示未做（`ConditionLineConnect`） |
+| d | **步骤树挂进内容场景** | `1_Content` 里还没有 `StepManager` 节点；等 P2-6 内容装配落地时一起接，接法与自查清单见 `docs/design/10` §6 |
+| e | **成绩体系** | `task:completed` 的 `score` 现在恒为 0（不编造分数）；计分规则定了再接 |
+| f | **动画手感复核** | 等播完的护栏阈值现在是 `clip 时长 + 1s`；有真内容后核一遍，顺便确认所有 clip 都关了 Loop（Inspector 会拦） |
 
 ### P2-6 资源包与场景（依赖 P0-1 落地）
 
