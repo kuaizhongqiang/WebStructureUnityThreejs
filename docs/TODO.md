@@ -1,0 +1,42 @@
+# 待办（现在还剩什么）
+
+> 读者：AI 与人｜性质：**活文档**（做完就删条目，并在 [`RECORD.md`](./RECORD.md) 记一行）｜状态：2026-10-13 建立。
+>
+> **为什么有它**：此前"待办"散在四处（`PLAN.md` 的 §2、`DECISIONS.md` 各章末尾的「未闭合」表、
+> `OPEN-QUESTIONS*.md`、`PAGE-WORKLIST.md` / `ui-mockups/TODO.md`），**没人能一眼答出"现在还剩什么"**。
+> 现在合并到这里，做法：**一条索引 + 一句话状态 + 来源链接**（细节仍以原文件为准，不在两处重复写）。
+>
+> **三分**：接下来做什么 → [`PLAN.md`](./PLAN.md)；**待办** → 本文件；做过什么 → [`RECORD.md`](./RECORD.md)。
+>
+> **纪律**：① 每条要能回答"下一步动作是什么、谁拍板"；② 做完立刻从本文件删除、在 `RECORD.md` 加一行；
+> ③ **新增待办只加到这里**（历史遗留的四个来源文件不再各自新增，遇旧条目就搬一条过来）。
+
+## 1 待拍板（需要负责人一句话）
+
+| # | 事项 | 现状 | 要你定什么 |
+|---|---|---|---|
+| T-01 | 检视页**环境取哪一套**（影棚 HDRI / 产品现状 / 灯光 + IBL / 仅环境光；含背景、曝光、色调映射） | 四档都在，默认「影棚 HDRI · Studio White Umbrella」 | 定下来我把默认值写进 `web/src/viewer/Viewer.ts` |
+| T-02 | **材质取值**：无 mask 材质的金属度 / 粗糙度常数定多少；`doubleSided` 保留否；要不要另出 metallicRoughness 贴图 | 有 mask 的已是**贴图驱动**（渲染期按 HDRP 通道重排为 ORM）；无 mask 的（贴花 / 玻璃 / 白件）走规格里的常数 | 常数定成多少、是否重排另出一张图 |
+| T-03 | `CombinationSwitch08` 用哪个材质 | 源工程数据是 `CombinationSwitch2`（白 0.6 半透）；**你的清单写"用原材质"** | 二选一（一条命令的事） |
+| T-04 | `speedRelay` 的 `SpeedRelay01` 是否也改成 Coat | 现为主干 `SpeedRelay`（与你早先清单一致）；你说过"01 也该是 Coat" | 二选一 |
+| T-05 | 预制体**自带的内置图元**（`Cube` / `Cylinder` / `jiexiankong`）要不要搬进 GLB | 现在不含这些几何，它们身上的 `Alpha`（α=0）材质无从应用 | 搬 or 不搬 |
+| T-06 | 微信内置浏览器**真机实测** / 亮色是否作默认主题 / 包体预算门禁脚本 | 分别：待设备、待拍板、待真产物接入 | 逐条定 |
+| T-07 | 文档口径冲突：根 `README.md` 写"第六轮 26 题**待回答**"，而 `DECISIONS.md` 写"六轮问答**全部关闭**" | 两处说法相反（本轮文档拉齐时发现） | 哪句为准 |
+
+来源：T-01 / T-02 → `DECISIONS.md` §19.2；T-03 / T-04 → 本轮对话；T-05 → §19.4；T-06 → `DECISIONS.md` 末尾未闭合表；T-07 → 本轮。
+
+## 2 待做（方向已定，缺实施）
+
+| # | 事项 | 现状 |
+|---|---|---|
+| D-01 | **P1-5 产品侧资产链**：构建前把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`，运行时 URL 走 `/assets/three/**` | **未实现**。检视页是"从仓库根直读磁盘"的审核工具，不等于产品能用 |
+| D-02 | 产品侧**取图链**：DEC-97 的"贴图全部后加载"要随 D-01 一起带进产物（30 张贴图 + `asset-material-textures.json` 查找表） | 未实现（打包时漏了图，产品里会全是缺图） |
+| D-03 | 步骤系统的 **Web 侧落地面板**（`ui:request` / `ui:result` 的 DOM）+ 内容装配 + 面板 `timeoutSeconds` 取值 | Unity 侧已通，Web 侧待做 |
+| D-04 | `PAGE-WORKLIST.md` 里的未完成页面（考核页重做等） | 见 `docs/PAGE-WORKLIST.md` |
+| D-05 | 排版稿层面的待办（组件打磨、页面调整） | 见 `docs/ui-mockups/TODO.md` |
+
+## 3 已做完但没进版本库
+
+| # | 内容 | 说明 |
+|---|---|---|
+| U-01 | **Blender 变换重导**（负责人在 .blend 里改了部分模型的初始角度 / 位置） | 已从 `--from-blend` 重导 8 个 GLB（5 个变化：breaker / contactor / fuse / speedRelay / thermalRelay）；`content/asset-convert-report.json` 的 sha256 / 字节随之变化，**该文件进 git，需提交**；`.blend` 与 GLB 本身按 DEC-57 不进 git |
