@@ -24,6 +24,7 @@
 | 1.5 | 文档 | `design/08`、`design/09`、`research/09`；`design/02/03/04/05` 同步 | — |
 | 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4` + `5f49b62`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:9` | **PR 待人工开**（本机 GitHub 凭据失效） |
 | 1.7 | Unity 侧桥的**传输与分发** | `.jslib` + 信封扫描器 + 4 个 C# 文件；4 个文件 `validate_script` 0 error、Unity console 无编译错误 | git `debea2e`；Plastic `cs:9` |
+| 1.8 | **启动编排 + 任务编排 + 输入闸门** | `StartupFlow`（自检 → 握手 → single 切内容场景 → 待命）、`TaskFlowController`（消息落地 + `assets:ready`/`progress`/`scene:ready`/`scene:exited`）、`InputGate`、`SceneManager` 的三个场景调用；5 个文件 `validate_script` 0 error | git `26488d0`；Plastic `cs:10` |
 
 ---
 
@@ -37,11 +38,16 @@
 |---|---|---|---|---|
 | a | `.jslib`：把 Unity → Web 的消息投到 `window.__WSU3_BRIDGE__`（`onReady` / `post` / `onProgress` 三条通道） | `NewStructureUnity/Assets/Scripts/Web/Plugins/Wsu3Bridge.jslib` | WebGL 构建里能看到握手 | ✅ 代码就位（**WebGL 构建后实测**） |
 | b | 信封解析（`type`/`version`/`seq`/`payload`）+ 分发到 `EventBus<T>`；版本不符 → 错误码 1001 | `Assets/Scripts/Web/{BridgeJson,BridgeProtocol,WebBridgeBehaviour}.cs`、`WebChannelNative.cs`、`WebChannelEditor.cs` | 未知 `type` 只告警；编辑器里 `WebChannel.Sent` 能观察到出站消息 | ✅ `validate_script` 4 个文件 0 error；Unity console 无编译错误 |
-| c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Setup.cs`（新）、`Core/Managers/*` | 日志出现"待命，等待 Web 指令" | ⬜ |
-| d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Assets/Scripts/Managers/*` | `debug:ping` 回 `debug:pong` | ⬜ |
-| e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上 | 切任务时两条就绪都发得出来 | ⬜ |
-| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` | ⬜ |
-| g | 场景接线：`0_Setup` / `1_Content` 各挂什么（`Manager.prefab`、`MainCamera.prefab`） | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜ |
+| c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Managers/StartupFlow.cs`、`Core/Managers/FunctionManager/SceneManager.cs` | 日志出现"已停在 '1_Content' 待命" | ✅ 代码就位（**待场景挂载**，见 g） |
+| d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Assets/Scripts/Managers/TaskFlowController.cs` | 每条消息有日志；`debug:ping` 回 `debug:pong` | ✅ 代码就位 |
+| e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上 | 切任务时两条就绪都发得出来 | ✅ 序列就位；**资源装载/装配是占位**（报非致命码 9001） |
+| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Assets/Scripts/Core/Interactive/*` | 点中物体 → Web 收到 `object:picked` | ⬜（`InputGate` 已就位，拾取本体待做） |
+| g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜（**只有这一步必须动场景**） |
+
+**c/d/e 的实现要点（给下一次续会话）**：
+- `TaskFlowController` 用 `Ensure()` **运行时自建常驻对象**，所以不挂场景也能跑；以后想放进 `Manager.prefab` 也可以（`Ensure` 会复用已有实例）。
+- 资源装卸还是占位：`scene:enter` 会报 `unity:error{code:9001, fatal:false}`（说明"内容包装载尚未实现"），然后照常发 `assets:ready` → `progress` → `scene:ready` —— 这是**故意**的，好让 Web 侧整条流先联调；P2-6 落地后删掉那条占位报错即可。
+- `SceneManager`（Core）是**唯一**碰 Unity 场景 API 的地方：`LoadSceneSingle` / `LoadSceneAdditive` / `UnloadScene`（后者拒绝卸载常驻内容场景）。
 
 **已知实现细节（给下一次续会话）**：
 - `WebBridgeBehaviour` 必须挂在**名叫 `WebBridge` 的 GameObject** 上（Web 侧 `BRIDGE_GAME_OBJECT` 写死了这个名字），收消息方法是 `OnWebMessage(string)`。
@@ -131,6 +137,17 @@
 | 契约三处 | `web/src/contracts/*` ↔ `content/contracts/snapshot.json` ↔ `Assets/Scripts/Contracts/*.cs` |
 | 门禁 | `node tools/check-contracts.mjs`、`node tools/check-content-data.mjs`、`check-large-files`、`check-shell-coupling` |
 | 提交 | git：分支 + PR（`main` 不收直接提交，DEC-78）；Unity 侧：另走 Plastic（`cm add --recursive` + `cm ci`，DEC-60） |
+
+### 3.1 Plastic 的两个坑（2026-10-13 实测）
+
+1. **`cm ci` 传多个路径时**：若列表里有"**已更改但未显式签出**"的文件，会报
+   `The item '…' is not changed in current workspace` 并**整体中止**（一条都没提交）。
+   **解法**：先 `cm co <这些被修改的文件>`，再 `cm ci -c="…" <路径…>`。
+2. **不要用 `cm ci --all` 收尾**（除非确实要提交全部）：工作区里可能有**负责人在编辑器里的在编文件**
+   （场景 / `Core/**` / `EditorBuildSettings`），`--all` 会把它们一起扫进来。按**显式路径**提交更安全。
+
+> 另：MCP 的 `validate_script` **读不懂 `#if`**（同文件两分支同名会被判"重复签名"），且**不接受文件名带点**
+> —— 平台相关实现要拆成两个文件（如 `WebChannelNative.cs` / `WebChannelEditor.cs`）。
 
 ## 4 待负责人拍板（已登记在 `DECISIONS.md` 未闭合表）
 
