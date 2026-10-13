@@ -1,34 +1,33 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using WSU3.Contracts.Events;
-using WSU3.Core.Managers.FunctionManager;
 
 namespace WSU3.Core.Interactive
 {
     /// <summary>
-    /// 三维交互物基类：**自注册 + 指针事件 → 单一出口**（DEC-80 / DEC-84）。
+    /// 三维交互物基类：**自注册 + 被动接收交互**。
     ///
-    /// 体系（Q-R6-S1 = A）：`EventSystem + StandaloneInputModule + PhysicsRaycaster`，
-    /// **不建 Canvas、不用 GraphicRaycaster** —— 拾取的是三维 Collider，不是 UI。
-    /// 派生类只要挂 `Collider` + 本组件（或它的子类），就会自动登记进
-    /// <see cref="InteractiveManager"/>（`GlobalManager.InteractiveManager`）并参与拾取。
+    /// 检测在谁手里：**在 <see cref="Managers.FunctionManager.InteractiveManager"/> 的 `CoreUpdate()` 里**
+    /// —— 每帧一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，命中后按需调本类的
+    /// <see cref="InvokeEnter"/> / <see cref="InvokeExit"/> / <see cref="InvokeDown"/> / <see cref="InvokeUp"/> / <see cref="InvokeClick"/>。
+    ///
+    /// 因此本类**不实现** Unity 的 `IPointer*Handler`：注册表的意义就是"由管理器统一检测、统一派发"，
+    /// 若再让物体去接 EventSystems 的指针回调，检测权就回到 EventSystem，注册表也就没有意义了。
     ///
     /// 三条纪律：
-    ///   ① **单一出口**：悬停/按下/抬起/点击都汇成 `EventBus&lt;GlobalInteractionEventData&gt;` 一条事件，
+    ///   ① **单一出口**：上面五个入口最终都汇成 `EventBus&lt;GlobalInteractionEventData&gt;` 一条事件，
     ///      业务只订阅一条，不去各自实现 `OnMouse*`；
-    ///   ② **受闸门约束**：`InputGate` 关掉（模态面板打开 / 容器不可见）时**直接忽略**指针事件；
+    ///   ② **受闸门约束**：`InputGate` 关掉（模态面板打开 / 容器不可见）时管理器连射线都不做，
+    ///      并把悬停态清掉（见 `InteractiveManager.CoreUpdate`）；
     ///   ③ **不做文字标签**：Web 侧用侧栏列表联动（Q-R6-2 = C），这里只上报 key 与交互类型。
     ///
-    /// 高亮**不做实现**：基类只维护"是否高亮"这个状态，表现由派生类重写
-    /// <see cref="OnHighlightChanged"/> 自己写（材质描边 / 自发光 / 后处理都行）。
+    /// 高亮**只留状态与钩子**：`SetHighlight(bool)` 由 `view:focus` 调用，表现由派生类重写
+    /// <see cref="OnHighlightChanged"/> 自己写；悬停**不碰**高亮 —— 要不要悬停高亮由业务决定。
     ///
-    /// 未实现（本期有意留空，见 docs/PLAN.md P2-6）：右键（`ClickRight`）与双击（`ClickDouble`）
-    /// —— 契约里已有这两个类型值，需要时在交互管理器里补判定即可。
+    /// 未实现（本期有意留空，见 docs/PLAN.md P2-6）：右键（`ClickRight`）与双击（`ClickDouble`）。
     /// </summary>
     [DisallowMultipleComponent]
-    public abstract class InteractiveObjBase : MonoBehaviour,
-        IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
+    public abstract class InteractiveObjBase : MonoBehaviour
     {
         [Tooltip("契约 key（资源登记表的主键，DEC-42）。留空则用 GameObject 名。view:focus 与 object:picked 都用它。")]
         [SerializeField] private string objectKey;
@@ -48,6 +47,7 @@ namespace WSU3.Core.Interactive
 
         public bool IsInteractable => isInteractable;
 
+        /// <summary>指针是否停在它身上（由管理器维护）。</summary>
         public bool IsHovered => hovered;
 
         /// <summary>是否处于高亮态（状态在基类，表现在派生类）。</summary>
@@ -56,12 +56,12 @@ namespace WSU3.Core.Interactive
         protected virtual void Awake()
         {
             guid = Guid.NewGuid();
-            InteractiveManager.Register(this);
+            Managers.FunctionManager.InteractiveManager.Register(this);
         }
 
         protected virtual void OnDestroy()
         {
-            InteractiveManager.Unregister(this);
+            Managers.FunctionManager.InteractiveManager.Unregister(this);
         }
 
         /// <summary>运行时开关（禁用态部件）。</summary>
@@ -71,15 +71,11 @@ namespace WSU3.Core.Interactive
             if (!value && hovered)
             {
                 hovered = false;
-                SetHighlight(false);
-                Publish(GlobalInteractionType.Exit);
+                Publish(GlobalInteractionType.Exit); // 收尾：别让悬停态卡在禁用件上
             }
         }
 
-        /// <summary>
-        /// 高亮开关：悬停与 `view:focus` 都会调用它。
-        /// 基类只切状态并回调钩子 —— **具体表现请重写 <see cref="OnHighlightChanged"/>**。
-        /// </summary>
+        /// <summary>高亮开关（`view:focus` 调它）。基类只切状态并回调钩子。</summary>
         public void SetHighlight(bool on)
         {
             if (highlighted == on) return;
@@ -95,8 +91,47 @@ namespace WSU3.Core.Interactive
         {
         }
 
-        /// <summary>指针事件统一入口判据：可交互 **且** 输入闸门打开。</summary>
-        protected bool CanInteract()
+        // ── 由 InteractiveManager 调用的入口（业务不要直接调）────────────────
+
+        /// <summary>指针移入（悬停）。</summary>
+        public void InvokeEnter()
+        {
+            if (!CanInteract() || hovered) return;
+            hovered = true;
+            Publish(GlobalInteractionType.Enter);
+        }
+
+        /// <summary>指针移出。**即使闸门此刻被关上也要能收尾**，否则悬停态会卡住。</summary>
+        public void InvokeExit()
+        {
+            if (!hovered) return;
+            hovered = false;
+            Publish(GlobalInteractionType.Exit);
+        }
+
+        /// <summary>左键按下。</summary>
+        public void InvokeDown()
+        {
+            if (!CanInteract()) return;
+            Publish(GlobalInteractionType.Down);
+        }
+
+        /// <summary>左键抬起。</summary>
+        public void InvokeUp()
+        {
+            if (!CanInteract()) return;
+            Publish(GlobalInteractionType.Up);
+        }
+
+        /// <summary>点击（左键：按下与抬起落在同一个物体上）。</summary>
+        public void InvokeClick()
+        {
+            if (!CanInteract()) return;
+            Publish(GlobalInteractionType.Click);
+        }
+
+        /// <summary>能否交互：可交互 **且** 输入闸门打开。</summary>
+        public bool CanInteract()
         {
             return isInteractable && InputGate.ShouldProcessInput;
         }
@@ -107,45 +142,6 @@ namespace WSU3.Core.Interactive
             GlobalInteractionEventData data = GlobalInteractionEventData.Get(this, type, delta);
             EventBus<GlobalInteractionEventData>.Publish(data);
             data.Release();
-        }
-
-        // ── EventSystems 指针回调（物理射线命中 Collider 后由 PhysicsRaycaster 派发）──
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!CanInteract()) return;
-            hovered = true;
-            SetHighlight(true);
-            Publish(GlobalInteractionType.Enter);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (!hovered) return;
-            hovered = false;
-            SetHighlight(false);
-            // 退出要能"收尾"：即使此刻闸门被关上，也把 Exit 发出去，避免高亮卡住
-            Publish(GlobalInteractionType.Exit);
-        }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            if (!CanInteract()) return;
-            Publish(GlobalInteractionType.Down);
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            if (!CanInteract()) return;
-            Publish(GlobalInteractionType.Up);
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (!CanInteract()) return;
-            // 只处理左键：右键在本期不实现（见类注释）
-            if (eventData.button != PointerEventData.InputButton.Left) return;
-            Publish(GlobalInteractionType.Click);
         }
     }
 }

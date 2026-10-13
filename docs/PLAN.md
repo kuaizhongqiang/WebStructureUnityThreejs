@@ -42,19 +42,23 @@
 | c | 启动编排：`0_Setup` 自检 → single 切 `1_Content` → **待命**（不装配） | `Assets/Scripts/Managers/StartupFlow.cs`、`Core/Managers/FunctionManager/SceneManager.cs` | 日志出现"已停在 '1_Content' 待命" | ✅ 代码就位（**待场景挂载**，见 g） |
 | d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`） | 每条消息有日志；`debug:ping` 回 `debug:pong` | ✅ 代码就位 |
 | e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上（只发意图事件，上网在桥里） | 切任务时两条就绪都发得出来 | ✅ 序列就位；**资源装载/装配是占位**（报非致命码 9001） |
-| f | 拾取体系：`EventSystem + StandaloneInputModule + PhysicsRaycaster`（**不建 Canvas**）+ 交互物自注册 + `object:picked` | `Core/Interactive/InteractiveObjBase.cs`、`Core/Managers/FunctionManager/InteractiveManager.cs`（含注册表，**不另建脚本/manager**）、`GlobalManager.Update`、`Web/WebBridgeBehaviour.cs`（上报） | 点中物体 → Web 收到 `object:picked`；点空白 → 一条 `Target=null` 的 Click | ✅ 代码就位（**待场景里有交互物可点**，见 g） |
+| f | 拾取体系：**检测全在 `InteractiveManager.CoreUpdate()`**（自建 `ScreenPointToRay` + `Physics.Raycast`，不建 Canvas、物体不实现 `IPointer*`）+ 交互物自注册 + `object:picked` | `Core/Interactive/InteractiveObjBase.cs`、`Core/Managers/FunctionManager/InteractiveManager.cs`（含注册表与检测，**不另建脚本/manager**）、`GlobalManager.Update`、`Web/WebBridgeBehaviour.cs`（上报） | 点中物体 → Web 收到 `object:picked`；点空白 → 一条 `Target=null` 的 Click | ✅ 代码就位（**待场景里有交互物可点**，见 g） |
 | g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜（**只有这一步必须动场景**） |
 
 **f 的实现要点**：
-- **只有一个管理点**：拾取与交互登记都在 `Core/Managers/FunctionManager/InteractiveManager.cs`（即 `GlobalManager.InteractiveManager`），**不另建 manager、不另建注册表脚本**。
-- **驱动**：它不是 MonoBehaviour，逐帧由 `GlobalManager.Update()` → `InteractiveManager.CoreUpdate()` 驱动；`Init/OnDespose` 挂在管理器链上，与其它 FunctionManager 一致。
+- **检测在管理器里**（负责人 2026-10-13 明确）：`InteractiveManager.CoreUpdate()` 每帧一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，
+  命中后调物体的 `InvokeEnter / InvokeExit / InvokeDown / InvokeUp / InvokeClick`；**物体不实现 `IPointer*Handler`**
+  —— 注册表的意义就是"管理器统一检测、统一派发"，否则检测权又回到 EventSystem，注册表就白建了。
+- **只有一个管理点**：拾取 + 登记都在 `Core/Managers/FunctionManager/InteractiveManager.cs`（`GlobalManager.InteractiveManager`），**不另建 manager、不另建注册表脚本**。
+- **驱动**：它不是 MonoBehaviour，逐帧由 `GlobalManager.Update()` → `InteractiveManager.CoreUpdate()` 驱动；`Init/OnDespose` 挂在管理器链上。
 - **注册表是 `InteractiveManager` 的 static 字典**（按**契约 key**）：交互物在 `Awake` 里自注册，走静态入口是为了不在管理器链就绪前把 `GlobalManager` 提前创建出来。
-- **就位**：`Init` 时没有 `EventSystem` 就建一个（`EventSystem + StandaloneInputModule`，`DontDestroyOnLoad`，不建 Canvas）；`CoreUpdate` 里兜底给主相机补 `PhysicsRaycaster`（相机可能晚就绪）。
-- **闸门**：`InputGate` 关上时连射线都不做（并把 `PhysicsRaycaster` 一起禁用）。
-- **点空白**：EventSystems 只在命中物体时回调，所以"点空白"由 `InteractiveManager` 自己射线判定后补发一条 `Target = null` 的 Click（取消连线 / 收起浮卡依赖它）。
-- **物体侧**：派生 `InteractiveObjBase` 的组件（配 `Collider`）自动登记；悬停/按下/抬起/点击 → `EventBus<GlobalInteractionEventData>` 单一出口。
-- **高亮不做实现**（负责人 2026-10-13 明确）：基类只维护 `IsHighlighted` 状态并提供 `protected virtual OnHighlightChanged(bool)` 钩子，**表现由业务自己重写**；不引入接口/服务注册。
-- **`view:focus`**：按 key 找物体 → 调 `SetHighlight(true)`（每次只亮一个；`scene:exit` 时清掉）。
+- **`EventSystem` 仍建但只做一件事**：`IsPointerOverGameObject()` 挡住"指针压在原生 UI 上"的情况（防御性）+ 将来真有原生 UI 时派发；
+  **不再加 `PhysicsRaycaster`** —— 射线由本管理器自己发，加了只是白做一遍（与 DEC-80 的早期列法有出入，按本口径为准）。
+- **闸门**：`InputGate` 关上时**连射线都不做**，并把悬停态收尾（`InvokeExit` 不受闸门约束，否则悬停态会卡住）。
+- **点空白**：左键抬起且没命中交互物时补发一条 `Target = null` 的 Click（取消连线 / 收起浮卡依赖它）。
+- **高亮只留状态与钩子**（负责人 2026-10-13 明确）：基类只有 `IsHighlighted` + `protected virtual OnHighlightChanged(bool)`，
+  由 `view:focus` 调 `SetHighlight`；**悬停不碰高亮** —— 要不要悬停高亮由业务自己决定；不引入接口/服务注册。
+- **`view:focus`**：按 key 找物体 → `SetHighlight(true)`（每次只亮一个；`scene:exit` 时清掉）。
 - **未做**（有意）：右键与双击（契约里已有 `ClickRight` / `ClickDouble`，需要时在 `InteractiveManager` 里补判定）。
 
 **c/d/e 的实现要点（给下一次续会话）**：

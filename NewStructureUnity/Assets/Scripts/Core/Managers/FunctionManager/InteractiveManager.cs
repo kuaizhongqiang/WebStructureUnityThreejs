@@ -8,36 +8,38 @@ using WSU3.Core.Interactive;
 namespace WSU3.Core.Managers.FunctionManager
 {
     /// <summary>
-    /// 交互管理器：**三维拾取与交互注册的唯一落点**（DEC-80 / DEC-84）。
+    /// 交互管理器：**三维拾取、交互派发与登记的唯一落点**（DEC-80 / DEC-84）。
     ///
-    /// 体系（Q-R6-S1 = A）：`EventSystem + StandaloneInputModule + PhysicsRaycaster`，
-    /// **不建 Canvas、不用 GraphicRaycaster** —— 拾取的是三维 Collider，不是 UI（界面全部在 Web 的 DOM 层）。
-    /// 由 <see cref="GlobalManager"/> 持有并驱动：`Init` 建体系、`CoreUpdate` 逐帧兜底与补事件。
+    /// 检测就在这里：`CoreUpdate()` 每帧做一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，
+    /// 命中后按需调物体上的 `InvokeEnter / InvokeExit / InvokeDown / InvokeUp / InvokeClick`
+    /// （物体是**被动**的，见 <see cref="InteractiveObjBase"/>）——
+    /// **注册表的意义就是"由管理器统一检测、统一派发"**，所以不再依赖 EventSystems 的指针回调。
     ///
     /// 职责：
-    ///   ① **注册表**：按**契约 key**（字符串）登记交互物，供拾取与 `view:focus` 查询
-    ///      —— 不另建脚本，也不逐帧 `FindObjectsOfType`；
-    ///   ② **就位**：没有 `EventSystem` 就建一个；主相机上没有 `PhysicsRaycaster` 就补上（相机可能晚就绪）；
-    ///   ③ **闸门**：`InputGate` 关上时连射线都不做（模态面板 / 容器不可见）；
-    ///   ④ **补「点空白」**：EventSystems 只在命中物体时回调，而"点空白"是有语义的事件，得自己射线判定后补发；
-    ///   ⑤ **聚焦**：`view:focus` 按 key 找物体并高亮（每次只亮一个，`scene:exit` 时清掉）。
+    ///   ① **注册表**：按**契约 key**（字符串）登记交互物，供 `view:focus` 与诊断查询；
+    ///   ② **检测与派发**：悬停进出、左键按下/抬起/点击、"点空白"（`Target = null` 的 Click）；
+    ///   ③ **闸门**：`InputGate` 关上时连射线都不做，并把悬停态收尾（不发事件、不留残状态）；
+    ///   ④ **聚焦**：`view:focus` 按 key 找物体并高亮（每次只亮一个，`scene:exit` 时清掉）。
     ///
-    /// 注册表是 **static** 的：交互物在 `Awake` 里自注册，走静态入口就不会因为"访问 Instance"而
-    /// 在管理器链就绪之前把 <see cref="GlobalManager"/> 提前创建出来。
-    /// 高亮只有状态、没有表现：表现由派生类重写 `InteractiveObjBase.OnHighlightChanged` 自己写。
+    /// 关于 `EventSystem`：仍然建它，但**只用于"指针是否压在原生 UI 上"这一件事**
+    /// （`IsPointerOverGameObject`，防御性判断）以及将来真有原生 UI 时的派发；
+    /// 三维拾取不经过它，因此**不需要** `PhysicsRaycaster`（射线由本管理器自己发）。
+    ///
+    /// 由 <see cref="GlobalManager"/> 持有并驱动：`Init` 订阅与建体系，`CoreUpdate` 逐帧检测。
     /// 上报给 Web 的 `object:picked` 由 Runtime 侧订阅交互事件完成（Core 不依赖 Web 层）。
     /// </summary>
     public class InteractiveManager : FunctionManagerBase
     {
-        /// <summary>空白点击判定用的最大射线距离。</summary>
+        /// <summary>射线最大距离。</summary>
         private const float RayMaxDistance = 300f;
 
-        /// <summary>按契约 key 登记的交互物（全局唯一，故用 static；见类注释）。</summary>
+        /// <summary>按契约 key 登记的交互物（全局唯一，故 static；见类注释）。</summary>
         private static readonly Dictionary<string, InteractiveObjBase> s_Objects =
             new Dictionary<string, InteractiveObjBase>();
 
         private Camera cam;
-        private PhysicsRaycaster raycaster;
+        private InteractiveObjBase hoverTarget;
+        private InteractiveObjBase downTarget;
         private InteractiveObjBase focused;
 
         // ── 注册表（交互物自注册 / 自注销）────────────────────────────────
@@ -124,24 +126,95 @@ namespace WSU3.Core.Managers.FunctionManager
         {
             EventBus<ViewFocusRequestEvent>.Unsubscribe(OnViewFocus);
             EventBus<SceneExitRequestEvent>.Unsubscribe(OnSceneExit);
+            ClearHover();
             ClearFocus();
             ClearRegistry();
         }
 
-        /// <summary>由 <see cref="GlobalManager"/> 的 Update 驱动（本类不是 MonoBehaviour）。</summary>
+        // ── 检测与派发（本类的核心）───────────────────────────────────────
+
+        /// <summary>由 <see cref="GlobalManager"/> 的 Update 每帧驱动。</summary>
         public void CoreUpdate()
         {
-            EnsureRaycaster();
+            if (!InputGate.ShouldProcessInput)
+            {
+                // 闸门关闭（模态面板打开 / 容器不可见）：不做射线，但要把悬停态收尾
+                ClearHover();
+                downTarget = null;
+                return;
+            }
 
-            bool active = InputGate.ShouldProcessInput;
-            if (raycaster != null && raycaster.enabled != active) raycaster.enabled = active;
-            if (!active) return;
+            InteractiveObjBase hit = RaycastTarget();
 
-            DetectBlankClick();
+            // ① 悬停进出：只有目标变化时才发事件
+            if (hit != hoverTarget)
+            {
+                if (hoverTarget != null) hoverTarget.InvokeExit();
+                hoverTarget = hit;
+                if (hoverTarget != null) hoverTarget.InvokeEnter();
+            }
+
+            // ② 左键：按下 / 抬起 / 点击（同一物体上按下并抬起才算点击）
+            if (Input.GetMouseButtonDown(0))
+            {
+                downTarget = hit;
+                if (hit != null) hit.InvokeDown();
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (hit != null) hit.InvokeUp();
+
+                if (hit != null && hit == downTarget)
+                {
+                    hit.InvokeClick();
+                }
+                else if (hit == null && !IsPointerOverNativeUi())
+                {
+                    // 点空白：有语义的一条事件（取消连线 / 收起浮卡依赖它），Target 为空
+                    PublishBlankClick();
+                }
+
+                downTarget = null;
+            }
         }
 
-        // ── ② 就位 ────────────────────────────────────────────────────────
+        /// <summary>当前指针下的交互物（不可交互的返回 null，等价于"没点到"）。</summary>
+        private InteractiveObjBase RaycastTarget()
+        {
+            if (cam == null) cam = Camera.main;
+            if (cam == null) return null;
 
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            if (!Physics.Raycast(ray, out RaycastHit hit, RayMaxDistance)) return null;
+
+            InteractiveObjBase obj = hit.collider.GetComponentInParent<InteractiveObjBase>();
+            return obj != null && obj.IsInteractable ? obj : null;
+        }
+
+        private void ClearHover()
+        {
+            if (hoverTarget == null) return;
+            hoverTarget.InvokeExit(); // InvokeExit 不受闸门约束：必须能收尾
+            hoverTarget = null;
+        }
+
+        private static bool IsPointerOverNativeUi()
+        {
+            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        }
+
+        private static void PublishBlankClick()
+        {
+            GlobalInteractionEventData data = GlobalInteractionEventData.Get(null, GlobalInteractionType.Click);
+            EventBus<GlobalInteractionEventData>.Publish(data);
+            data.Release();
+        }
+
+        /// <summary>
+        /// 只建 `EventSystem + StandaloneInputModule`（**不建 Canvas**）：它只服务"指针是否压在原生 UI 上"
+        /// 这一件事与将来的原生 UI 派发；三维拾取由本管理器自己射线，所以不加 `PhysicsRaycaster`。
+        /// </summary>
         private static void EnsureEventSystem()
         {
             if (EventSystem.current != null) return;
@@ -153,48 +226,7 @@ namespace WSU3.Core.Managers.FunctionManager
             Debug.Log("[InteractiveMgr] 已创建 EventSystem + StandaloneInputModule（不建 Canvas，DEC-80）。");
         }
 
-        private void EnsureRaycaster()
-        {
-            if (raycaster != null) return;
-
-            if (cam == null) cam = Camera.main;
-            if (cam == null) return;
-
-            raycaster = cam.GetComponent<PhysicsRaycaster>();
-            if (raycaster == null)
-            {
-                raycaster = cam.gameObject.AddComponent<PhysicsRaycaster>();
-                Debug.Log($"[InteractiveMgr] 已给主相机 '{cam.name}' 添加 PhysicsRaycaster。");
-            }
-        }
-
-        // ── ④ 点空白 ──────────────────────────────────────────────────────
-
-        private void DetectBlankClick()
-        {
-            if (!Input.GetMouseButtonUp(0)) return;
-
-            // 指针压在原生 UI 上时不算"点空白"（本期没有 Canvas，这条是防御性判断）
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
-
-            if (cam == null) cam = Camera.main;
-            if (cam == null) return;
-
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, RayMaxDistance))
-            {
-                InteractiveObjBase hitObj = hit.collider.GetComponentInParent<InteractiveObjBase>();
-                // 命中交互物：它的 OnPointerClick 已经发过事件，这里不重复发
-                if (hitObj != null && hitObj.IsInteractable) return;
-            }
-
-            // 目标为空 = 点空白（取消连线 / 收起浮卡依赖这条语义）
-            GlobalInteractionEventData data = GlobalInteractionEventData.Get(null, GlobalInteractionType.Click);
-            EventBus<GlobalInteractionEventData>.Publish(data);
-            data.Release();
-        }
-
-        // ── ⑤ 聚焦 ────────────────────────────────────────────────────────
+        // ── ④ 聚焦 ────────────────────────────────────────────────────────
 
         private void OnViewFocus(ViewFocusRequestEvent e)
         {
