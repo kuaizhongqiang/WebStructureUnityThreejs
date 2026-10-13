@@ -412,6 +412,12 @@
 | 2026-10-12 | 门禁落地（DEC-66） | `tools/check-contracts.mjs`（TS↔快照↔C#，实测通过）、`tools/check-large-files.mjs`（10MB）、`tools/hooks/pre-commit` + 安装脚本（已装）、`.github/workflows/gate.yml` | DEC-41 / DEC-66 / DEC-65 |
 | 2026-10-12 | 移动端策略落地（DEC-70/71） | `web/src/platform/device.ts`（微信识别 + 25s/1 次/可退回）+ 5 条单测通过 | DEC-49 / DEC-70 / DEC-71 |
 | 待执行 | ESLint + Prettier | 已批准未安装（下一批） | DEC-52 / DEC-62 |
+| 2026-10-13 | **第六轮问答关闭**（26 条 + 14 条补充） | 结论固化为 **DEC-80 ~ DEC-88**；新增 `docs/design/08`、`docs/design/09`、`docs/research/09` | R6 / DEC-80~88 |
+| 2026-10-13 | **内容数据全量采用** | 7 份 JSON / 9 个项目 / 73 KB，落**两处**（`web/public/content/data` + `Assets/StreamingAssets/Data`）；新增门禁 `tools/check-content-data.mjs`（结构签名，7 份 · 63/17/6/21/33/12/5 条字段路径），已进 hook 与 CI | DEC-82 / DEC-88 |
+| 2026-10-13 | **契约扩展** | `QuestionType`（0 起、有 `None`）与 `QuestionUsage`（`Exam`/`Step`）+ `BridgeMessageType`（23 条 · 两方向）；TS ↔ 快照 ↔ C# 三处同批改，门禁通过 | DEC-83 / DEC-85 |
+| 2026-10-13 | **git 提交**（DEC-78 渠道①） | `ba2533c`（40 文件）已推分支 `feat/unity-scaffold-bridge`；**PR 尚未开**（本机 GitHub 凭据失效，需人工开） | DEC-78 |
+| 2026-10-13 | **Plastic 提交**（DEC-60 渠道②） | `cs:6 → cs:8`（`cs:7` = `BridgeMessageType.cs` + `StreamingAssets/Data/*`；`cs:8` = `EnumAll.cs`）；**负责人编辑器内的在编文件（`0_Setup`/`1_Content`/`Core/**`/`Resources/`/`EditorBuildSettings`）未纳入**，留给他们自己那一批 | DEC-60 |
+| 2026-10-13 | 门禁本地全绿 | 契约三方（4 组枚举 + 23 条桥消息）、内容数据双份、大文件、壳耦合、`typecheck` / `lint` / `format:check` / **17 项单测** | DEC-66 |
 
 ---
 
