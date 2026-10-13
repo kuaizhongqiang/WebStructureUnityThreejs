@@ -13,6 +13,14 @@
  */
 
 import { BRIDGE_PROTOCOL_VERSION } from '@/contracts'
+import type { BridgeMessageType } from '@/contracts'
+
+/**
+ * 消息名必须在契约里（`web/src/contracts/bridge.ts` 的清单）——
+ * 用 `satisfies` 让 TS 在**编译期**拦住写错的名字，不靠人肉比对字符串。
+ */
+const MSG_UNITY_READY = 'unity:ready' satisfies BridgeMessageType
+const MSG_UNITY_PROGRESS = 'unity:progress' satisfies BridgeMessageType
 
 /** Unity 官方 `createUnityInstance()` 返回对象的最小形状。 */
 export interface UnityInstanceLike {
@@ -56,7 +64,7 @@ export class UnityBridge {
           throw new BridgeProtocolError(`协议版本不匹配：Unity=${version}，Web=${BRIDGE_PROTOCOL_VERSION}`)
         }
         this.ready = true
-        this.dispatch({ type: 'ready', version: incoming, seq: 0 })
+        this.dispatch({ type: MSG_UNITY_READY, version: incoming, seq: 0, payload: { version: incoming } })
       },
       /** Unity 调用：任意业务事件。payload 是 JSON 字符串。 */
       post: (json: string): void => {
@@ -65,10 +73,10 @@ export class UnityBridge {
       /** Unity 调用：加载进度（0~1）。 */
       onProgress: (progress: string): void => {
         this.dispatch({
-          type: 'progress',
+          type: MSG_UNITY_PROGRESS,
           version: BRIDGE_PROTOCOL_VERSION,
           seq: 0,
-          payload: Number(progress),
+          payload: { progress: Number(progress) },
         })
       },
     }
