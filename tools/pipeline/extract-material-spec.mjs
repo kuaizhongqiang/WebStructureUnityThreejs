@@ -157,6 +157,11 @@ function readMaterial(file) {
       metallic: f('_Metallic', 0),
       smoothness: f('_Smoothness', f('_Glossiness', 0.5)),
     },
+    /**
+     * 清漆层强度（`HDRPtoURPLitClearCoatedShader` 的 `_CoatedMask`）。
+     * 实测 `SpeedRelay_Coat.mat` 是 **0.2** —— glTF 用 `KHR_materials_clearcoat` 表达得了，所以要带过去。
+     */
+    clearcoat: f('_CoatedMask', f('_ClearCoatMask', 0)),
     textures: {
       baseColor: baseOf(textures.get('_BaseMap') ?? textures.get('_BaseColorMap')),
       normal: baseOf(textures.get('_NormalMap')),
@@ -270,10 +275,32 @@ function parsePrefab(file) {
     }
   }
 
-  return { root: pathOfObject(renderers[0]?.gameObject)?.split('/')[0] ?? '', nodes, overrides }
+  const sourceGuid = /m_SourcePrefab: \{fileID: -?\d+, guid: ([0-9a-f]{32})/.exec(text)?.[1]
+  const sourcePath = sourceGuid ? pathOf(sourceGuid) : null
+
+  return {
+    root: pathOfObject(renderers[0]?.gameObject)?.split('/')[0] ?? '',
+    nodes,
+    overrides,
+    source: sourcePath ? relative(SOURCE, sourcePath).split('\\').join('/') : null,
+  }
 }
 
 // ── 组装 ───────────────────────────────────────────────────────────────
+
+/**
+ * FBX 内部 **fileID → 节点名**（`content/asset-fbx-node-ids.json`）。
+ *
+ * 为什么必须由 Unity 导出：预制体的 `m_Modifications` 是按 FBX 内部 MeshRenderer 的 fileID 打的，
+ * 而 `*.fbx.meta` 的 `internalIDToNameTable` 是**空的** —— fileID 是按节点路径算的哈希（7 种常见哈希 ×
+ * 6 种输入形态我试过，0 命中），所以只能让编辑器把 `TryGetGUIDAndLocalFileIdentifier` 的结果吐出来。
+ */
+let nodeIdTables = {}
+try {
+  nodeIdTables = JSON.parse(readFileSync(join(root, 'content', 'asset-fbx-node-ids.json'), 'utf8')).files ?? {}
+} catch {
+  console.warn('⚠️ 缺 content/asset-fbx-node-ids.json —— 预制体覆写解不出节点名（该文件由 Unity 编辑器导出）')
+}
 
 const models = join(ASSETS, 'Model', 'Element', 'Show')
 const spec = {
@@ -320,7 +347,7 @@ for (const folder of showFolders) {
 const usedMaterialNames = new Set()
 for (const device of DEVICES) {
   const folder = folderByDevice.get(device)
-  const entry = { sourceFolder: folder ?? null, models: {}, prefabs: {}, overrides: {} }
+  const entry = { sourceFolder: folder ?? null, models: {}, prefabs: {}, prefabSources: {}, overrides: {} }
   if (folder) {
     for (const file of walk(join(models, folder))) {
       if (!file.endsWith('.fbx')) continue
@@ -347,53 +374,60 @@ for (const device of DEVICES) {
     const parsed = parsePrefab(file)
     const key = name.replace(/\.prefab$/, '')
     entry.prefabs[key] = parsed.nodes
+    entry.prefabSources[key] = parsed.source // 该预制体实例的源资产（info 模型这里就是那个 FBX）
     if (parsed.overrides.length > 0) entry.overrides[key] = parsed.overrides
     for (const list of Object.values(parsed.nodes)) for (const material of list) usedMaterialNames.add(material)
     for (const item of parsed.overrides) usedMaterialNames.add(item.material)
   }
 
   /**
-   * **材质归属**（哪个 mesh 用什么材质）—— 这是"必须走预制体"的那一层。
+   * **材质归属**（哪个 mesh 用什么材质）——**这是"必须走预制体"的那一层**。
    *
-   * 规律（从 prefab 数据直接读出来的，不依赖编辑器也不依赖 fileID 哈希）：
-   *   · 结构件 prefab 的 MeshRenderer 是它**自己的组件**，节点名与 **FBX 节点名逐字对应**
-   *     （`…/SpeedRelay/Rotate/SpeedRelay38` 这类，末段就是 FBX 里的对象名）⇒ 它给出**全量**分配；
-   *   · `*_info_model` 用嵌套实例 + `m_Modifications`（按 FBX 内部 fileID）覆写其中几个 ⇒ 是**子集**。
-   * 因此以**结构件 prefab 的"末段名 → 材质"**为准，并用 info 覆写的材质**做交叉校验**（只比材料多重集，
-   * 因为 fileID 推不出名字）：对不上就报警，不静默。
+   * ⚠️ 真源是 **`<器件>_info_model.prefab` 的覆写**，不是结构件预制体（这是我上次踩的坑）：
+   * **Three 渲染的就是 info 模型**。结构件是另一套装配（多 `Rotate` 枢轴、多内置 `Cube` 触点），
+   * 它的分配对 info 模型**不一定成立** —— 实测 `combinationSwitch`：结构件把 `CombinationSwitch08`
+   * 写成 `CombinationSwitch2`，而 info 预制体明确覆写回主干 `CombinationSwitch`
+   * （负责人的逐 mesh 对照也给出同一结论）。speedRelay 两边恰好一致，所以上次没暴露。
+   *
+   * 覆写是按 **FBX 内部 MeshRenderer 的 fileID** 打的，而 `*.fbx.meta` 的 `internalIDToNameTable` 为空
+   * （fileID 是按路径算的哈希），故 fileID → 节点名由 **Unity 编辑器导出**：
+   * `content/asset-fbx-node-ids.json`（生成方式见该文件 `note`）。
    */
-  const structureKey = Object.keys(entry.prefabs).find((k) => k.endsWith('_structure_model'))
   const nodes = {}
-  for (const [prefabKey, mapping] of Object.entries(entry.prefabs)) {
-    if (!prefabKey.endsWith('_structure_model')) continue
-    for (const [path, materials] of Object.entries(mapping)) {
-      const leaf = path.split('/').pop()
-      if (leaf === '__PLACEHOLDER__') continue
-      // 结构件 prefab 有 FBX 里不存在的辅助节点（Rotate 枢轴、内置 Cube 触点）——
-      // 名字对不上 FBX 的，在 Blender 里会自然被跳过，这里照记不误。
-      nodes[leaf] = materials
-    }
-  }
   entry.prefabOverrides = nodes
   entry.overrideChecks = []
-  for (const [prefabKey, list] of Object.entries(entry.overrides)) {
-    const want = {}
-    const got = {}
-    for (const item of list) want[item.material] = (want[item.material] ?? 0) + 1
-    for (const materials of Object.values(nodes)) {
-      for (const material of materials) if (want[material]) got[material] = (got[material] ?? 0) + 1
+  const infoEntry = Object.entries(entry.overrides).find(([key]) => key.endsWith('_info_model'))
+  if (infoEntry) {
+    const [infoKey, list] = infoEntry
+    const sourceFbx = entry.prefabSources?.[infoKey] ?? null
+    const fbxName = sourceFbx ? sourceFbx.split('/').pop() : null
+    const table = fbxName ? nodeIdTables[`NewStructureUnity/Assets/Models/${device.replace(/^[\\/]+/, '')}/${fbxName}`] ?? null : null
+    if (!table) {
+      console.warn(`⚠️ ${device}：info 预制体的 FBX 是 ${sourceFbx ?? '未知'}，但 asset-fbx-node-ids.json 里没有它的节点表 —— 覆写解不出节点名`)
     }
-    // 只要求"结构件里承担该材质的节点不少于 info 覆写的条数"（info 是**子集**，计数天然不等）
-    const ok = Object.keys(want).every((material) => (got[material] ?? 0) >= want[material])
-    entry.overrideChecks.push({ prefab: prefabKey, want, got, ok })
-    if (!ok) console.warn(`⚠️ ${device}/${prefabKey} 的覆写与结构件映射对不上：覆写用 ${JSON.stringify(want)}，结构件里只有 ${JSON.stringify(got)}`)
+    for (const item of list) {
+      const nodeName = table?.[item.fileId] ?? null
+      if (!nodeName) {
+        entry.overrideChecks.push({ prefab: infoKey, fileId: item.fileId, material: item.material, resolved: null })
+        continue
+      }
+      const slot = Number(/data\[(\d+)\]/.exec(item.slot)?.[1] ?? 0)
+      if (!nodes[nodeName]) nodes[nodeName] = []
+      nodes[nodeName][slot] = item.material
+      entry.overrideChecks.push({ prefab: infoKey, fileId: item.fileId, node: nodeName, slot, material: item.material, resolved: 'ok' })
+    }
+    // 结构件映射留作交叉校验（结构件节点名与 FBX 节点名逐字对应，可当"这份解出来的名字像不像"的旁证）
+    entry.structureMappingForCrossCheck = entry.prefabs[Object.keys(entry.prefabs).find((k) => k.endsWith('_structure_model')) ?? ''] ?? null
   }
-  if (structureKey && Object.keys(entry.overrides).length > 0 && Object.keys(nodes).length === 0) {
-    console.warn(`⚠️ ${device}：有覆写却取不到结构件节点映射`)
+  for (const [key, mapping] of Object.entries(entry.prefabs)) {
+    if (!key.endsWith('_structure_model')) continue
+    entry.structureNodeCount = Object.keys(mapping).length
   }
 
   spec.devices[device] = entry
 }
+
+
 
 /**
  * **Three 侧只做 8 个模型**（2026-10-13 负责人口径）：Three 是"简单三维"，每个器件一个模型。
@@ -434,6 +468,33 @@ for (const name of [...usedMaterialNames].sort()) {
 
 mkdirSync(join(root, 'content'), { recursive: true })
 const outPath = join(root, 'content', 'asset-material-spec.json')
+/**
+ * **负责人定的修正**（`content/material-overrides.json`）在这里合并 —— 必须**晚于自动抽取、
+ * 早于写出**。第一次我把它放在器件循环后面，那时 `spec.materials` 还是空的，覆盖静默失效
+ * （`applied=0` 是唯一线索）。这份覆盖要晚于自动抽取，否则下次重抽就把人的判断冲掉了。
+ */
+try {
+  const overrides = JSON.parse(readFileSync(join(root, 'content', 'material-overrides.json'), 'utf8'))
+  let applied = 0
+  for (const [name, patch] of Object.entries(overrides.materials ?? {})) {
+    const material = spec.materials[name]
+    if (!material) {
+      console.warn(`⚠️ 覆盖项 ${name} 在规格里不存在（材质名写错了？）`)
+      continue
+    }
+    for (const [key, value] of Object.entries(patch)) {
+      if (key === 'reason' || key === 'note') continue
+      material[key] = value
+    }
+    material.overriddenByHuman = true
+    applied += 1
+    console.log(`  · 人工修正：${name} → surfaceMode=${material.surfaceMode}`)
+  }
+  spec.humanOverrides = { file: 'content/material-overrides.json', applied }
+} catch (error) {
+  if (error.code !== 'ENOENT') console.warn(`⚠️ 读不了 content/material-overrides.json：${error.message}`)
+}
+
 writeFileSync(outPath, `${JSON.stringify(spec, null, 2)}\n`, 'utf8')
 
 const materialCount = Object.keys(spec.materials).length

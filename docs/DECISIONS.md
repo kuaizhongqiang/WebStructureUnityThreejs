@@ -661,9 +661,10 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 
 | 编号 | 决定 | 选项来源 | 状态 |
 |---|---|---|---|
-| DEC-94 | **模型检视页（审核用）落 `docs/model-preview/`**：与 `docs/ui-mockups/` 同级，静态页、不起构建；**服务根＝仓库根**（`node docs/model-preview/serve.mjs`），直接读磁盘上的 `content/assets/three/**` 与 `web/node_modules/three` —— **不复制、不进 git、不改产品构建链路**；清单**不另维护第二份**（读 `content/asset-convert-report.json`）；**只消费 `ui-mockups` 的令牌与元件**，不新增令牌与产品组件类 | 负责人 2026-10-13（"和 ui-mockups 同级、功能也差不多"） | **生效**（已实测 13 个模型） |
+| DEC-96 | **模型检视页（审核用）落 `docs/model-preview/`**：与 `docs/ui-mockups/` 同级，静态页、不起构建；**服务根＝仓库根**（`node docs/model-preview/serve.mjs`），直接读磁盘上的 `content/assets/three/**` 与 `web/node_modules/three` —— **不复制、不进 git、不改产品构建链路**；清单**不另维护第二份**（读 `content/asset-convert-report.json`）；**只消费 `ui-mockups` 的令牌与元件**，不新增令牌与产品组件类 | 负责人 2026-10-13（"和 ui-mockups 同级、功能也差不多"） | **生效**（已实测 8 个模型） |
+| DEC-97 | **素材口径：GLB 只出网格与材质，一张贴图都不带**；base（含 alpha）/ normal / mask 三张图**全部渲染期后加载** —— 落 `content/assets/three/<器件>/`（共享图落 `_shared/`），由 `content/asset-material-textures.json` 查找表定位，渲染期解算（`docs/model-preview/src/materials.mjs`）是唯一取图入口。理由：贴图正是反复要调的东西 → "改文件即生效"，不必重导；且 mask 是 HDRP 通道语义、glTF 表达不了，最终仍要在渲染期重排，那就不烘。**本条取代 §19.4 `P1-4b` 第 1/2 条**（原计划"重排烘进 GLB"作废） | 负责人 2026-10-13（"glb 只负责提供 mesh 和 mat，其他所有的贴图都后加载，包括 base(alpha) mask 和 normal"） | **生效**（GLB 21.7 → **7.3 MB**，每个 GLB **贴图 0 张**） |
 
-### 19.1 DEC-94 的落地要点
+### 19.1 DEC-96 的落地要点
 
 - **它是审核工具，不是产品**：不起构建、不进门禁、不进打包链路。用途是把 13 个 GLB 逐个挂上 Three.js，当场定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图接没接上）。
 - **跑法**：`node docs/model-preview/serve.mjs` → `http://127.0.0.1:5281/docs/model-preview/index.html`。**服务根必须是仓库根**，因为页面要同时取到三处：自己（`docs/model-preview/`）、13 个 GLB（`content/assets/three/**`，按 DEC-57 **不进 git**，所以不在任何 `dist` 里）、three 库（`web/node_modules/three`，一份库两处用）。
@@ -681,8 +682,8 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 
 | 未闭合 | 原因 | 去向 |
 |---|---|---|
-| **环境取哪一套**（影棚 HDRI / 产品现状 / 灯光+IBL / 仅环境光；以及背景、曝光、色调映射） | DEC-94 落地的正是"让人当场看"的页面，结论要负责人看过再定 | 本页审阅后定；定完改 `web/src/viewer/Viewer.ts` 的默认值 |
-| **材质取什么值**（金属度 / 粗糙度常数，或按通道重排另出 metallicRoughness 贴图；`doubleSided` 是否保留） | 同上；常数兜底是转换期的权宜，重排贴图是另一批工 | 见 §19.4 的 `P1-4b` 增量（已定技术路径） |
+| **环境取哪一套**（影棚 HDRI / 产品现状 / 灯光+IBL / 仅环境光；以及背景、曝光、色调映射） | DEC-96 落地的正是"让人当场看"的页面，结论要负责人看过再定 | 本页审阅后定；定完改 `web/src/viewer/Viewer.ts` 的默认值 |
+| **材质取什么值**（金属度 / 粗糙度常数，或按通道重排另出 metallicRoughness 贴图；`doubleSided` 是否保留） | 同上；常数兜底是转换期的权宜，重排贴图是另一批工 | 见 §19.5（DEC-97 已定：GLB 不出贴图，三张图全部后加载） |
 
 ### 19.3 影棚 HDR 环境贴图（2026-10-13，负责人指定）
 
@@ -754,3 +755,41 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 2. **按材质逐槽位挂钩** + **ORM 重排**（`R←AO(G)`、`G←1−Remap(Smoothness(A))`、`B←Metallic(R)`，区间按规格烘进去）+ **表面模式**（MASK/`alphaCutoff`、BLEND/`baseColorFactor.a`，并把 BaseColor 的 α 接到 BSDF）：改 `tools/pipeline/blender-fbx-to-glb.py`；
 3. **预制体覆写**：先解决"结构件装配"这一层（节点对应关系），再谈 `*_Metal` / `*_Coat`；
 4. 重建 13 个 GLB → 重跑 `audit-material-mapping.mjs`（**问题数要归零**）→ 再跑模型检视页逐个核对。
+
+### 19.5 素材口径改为"GLB 只出 mesh + mat"（DEC-97，2026-10-13，负责人定）
+
+**决定**：GLB **只负责网格与材质**（材质名、槽位、`baseColorFactor`、表面模式），**一张贴图都不带**；
+base（含 alpha）/ normal / mask 三张图**全部渲染期后加载**。**取代 §19.4 `P1-4b` 的第 1/2 条**。
+
+**改了什么（四处）**：
+
+1. **导出层摘贴图**：`blender-blend-to-glb.py` 的 `strip_textures()`（一条龙路径 `blender-fbx-to-glb.py` 同步）——
+   摘掉材质里的 `TEX_IMAGE`/`NORMAL_MAP` 节点，并把规格里的基色/α 写回 BSDF，让 `baseColorFactor` 仍是有意义的常量。
+   ⚠️ 实现坑：`nodes.remove()` 之后该 RNA 立即失效，再读 `node.name` 会抛 `StructRNA ... has been removed`（踩过）。
+2. **搬运脚本改职责**：`import-material-textures.mjs` 不再"补搬 GLB 带不动的"，而是**按材质引用搬齐三张**
+   （取消了"跳过 mask"与"GLB 里已有就跳过"两个分支）。
+3. **mask 并入查找表**：以前 mask 是唯一一个"直读 Unity 侧 `Assets/Models/<器件>/`"的例外 —— 那条路径
+   **在产品里不存在**（打包只带 `content/assets/**`），现在三张图一视同仁走 `content/asset-material-textures.json`。
+4. **渲染期解算成为唯一取图入口**（`materials.mjs`）：按文件名接 base/normal → mask 重排为 ORM（区间烘进像素）
+   → 按规格对齐表面模式/双面。材质里已无 GLB 贴图，所以"名字相同就跳过"的判断自然全部命中"要加载"。
+
+**实测（2026-10-13，8/8）**：GLB **21.7 → 7.3 MB**，每个 GLB **贴图 0 张**、材质 2~3 个逐个保留；
+查找表 **30 条**（base 8 / normal 8 / mask 8 / 其余 6 = 5 张共用贴花 + `White.png`）；
+**41 张贴图全部可解析、0 缺失**；`export_apply` 与贴图无关，三角面与重建前**逐个一致**。
+
+**顺带修掉的一个真问题**：FBX 里有些网格带**全零顶点色**（`COLOR_0` = `(0,0,0,0)`，实测 `SpeedRelay01/04`），
+源工程 Shader 不读它，但 glTF 会把 `COLOR_0` **乘进基色** ⇒ 那两块在 Three 里**全黑**。glTF 没有
+"声明本材质不用顶点色"的开关（顶点色是网格属性），所以导出时把顶点色属性摘掉。
+
+**"贴图后加载"必须自己补的三条约定**（换通路时漏掉就会错，实测踩过）：
+
+- **`flipY = false`**：glTF 的 UV 原点在**左上**，GLTFLoader 从 GLB 取图时一律设 `flipY = false`。改成后加载后，
+  外部用 `TextureLoader` 加载的图必须自己补 —— 否则 base / normal 整张**上下翻转**。
+  典型症状是**"只有 mask 是对的"**（mask 在 `buildOrmTexture` 里显式设过 `flipY = false`）。`wrapS/wrapT` 同理（glTF 默认 REPEAT）。
+- **`baseColorFactor` 必须置白**，不是规格里的 `baseColor`：它是贴图的**乘数**，写 0.79 会把后加载的贴图整体压暗；
+  **但 BLEND 材质的 α 必须带出去**（`Glass` → `[1,1,1,0.2]`）—— 贴图还没进来时 α 没有别的地方可兜底。
+- **`normalStrength`**：以前由 GLB 的 `normalTexture.scale` 带出去，后加载后要按规格自己给（实测规格里全是 1）。
+
+**口径提醒（避免再被误记成"欠账"）**：mask 的通道重排**不是欠账，是既定做法**（DEC-97 明确"后加载"）。
+§19.1 里"13 个 GLB / 13/13 / 22 张贴图"等数字是 DEC-97 之前的快照，保留作历史；**当前口径以本节为准**。
+

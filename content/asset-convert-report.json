@@ -1,28 +1,45 @@
 {
-  "generatedAt": "2026-10-13T06:44:49.693Z",
+  "generatedAt": "2026-10-13T07:55:45.321Z",
   "blender": "D:\\Blender\\blender.exe",
   "models": [
     {
       "device": "breaker",
       "stem": "NewCircuitBreaker",
+      "blend": "content/assets/blend/breaker.blend",
       "glb": "content/assets/three/breaker/NewCircuitBreaker.glb",
-      "bytes": 2164628,
-      "sha256": "4131d9ca17f38788179094d90682b1b5d0897e02678ebda471c551384a86a1ad",
+      "bytes": 649808,
+      "sha256": "f990fba80600ad713bf1836407067628e772641e54a6f1fe0eecff102f037ad0",
       "triangles": 12846,
       "meshes": 1,
       "materials": 2,
       "images": [
+        "ElectronicSupermarket2.png",
         "NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
         "NewCircuitBreaker_NewCircuitBreaker_Normal.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "ElectronicSupermarket2",
+          "blend": "CLIP",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "ElectronicSupermarket2.png"
+          }
+        },
+        {
+          "name": "NewCircuitBreaker",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+            "normal": "NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+            "mask": "NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -31,24 +48,51 @@
     {
       "device": "combinationSwitch",
       "stem": "CombinationSwitch",
+      "blend": "content/assets/blend/combinationSwitch.blend",
       "glb": "content/assets/three/combinationSwitch/CombinationSwitch.glb",
-      "bytes": 2953684,
-      "sha256": "81caa708ec151ef849eee0e8c4f66a577fa39d6e13a3969650e27a5a5c5e73a8",
+      "bytes": 1264256,
+      "sha256": "261cf96efeb2ee94191a22a3c1d52144c29c640c81556d78c831a192c4fc6014",
       "triangles": 36648,
       "meshes": 21,
-      "materials": 2,
+      "materials": 3,
       "images": [
         "CombinationSwitch_CombinationSwitch_Base Color.png",
-        "CombinationSwitch_CombinationSwitch_Normal.png"
+        "CombinationSwitch_CombinationSwitch_Normal.png",
+        "White.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "CombinationSwitch_CombinationSwitch_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "CombinationSwitch",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
+            "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
+            "mask": "CombinationSwitch_CombinationSwitch_M_AO_G.png"
+          }
+        },
+        {
+          "name": "CombinationSwitch2",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "White.png"
+          }
+        },
+        {
+          "name": "CombinationSwitch_Metal",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
+            "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
+            "mask": "CombinationSwitch_CombinationSwitch_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -57,24 +101,41 @@
     {
       "device": "contactor",
       "stem": "NewACContactor",
+      "blend": "content/assets/blend/contactor.blend",
       "glb": "content/assets/three/contactor/NewACContactor.glb",
-      "bytes": 2791840,
-      "sha256": "fe05124700d5984a407fc5168f2ceb4ba4c4610fd4157935a4893f149792916b",
+      "bytes": 1180112,
+      "sha256": "8934bedc737156f22e5e5d8907abf8310398ae720da0f18bf63aaf444409e0eb",
       "triangles": 29673,
       "meshes": 1,
       "materials": 2,
       "images": [
+        "ElectronicSupermarket2.png",
         "NewACContactor_NewACContactor_Base Color.png",
         "NewACContactor_NewACContactor_Normal.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "NewACContactor_NewACContactor_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "ElectronicSupermarket2",
+          "blend": "CLIP",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "ElectronicSupermarket2.png"
+          }
+        },
+        {
+          "name": "NewACContactor",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "NewACContactor_NewACContactor_Base Color.png",
+            "normal": "NewACContactor_NewACContactor_Normal.png",
+            "mask": "NewACContactor_NewACContactor_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -83,24 +144,41 @@
     {
       "device": "fuse",
       "stem": "Fuse",
+      "blend": "content/assets/blend/fuse.blend",
       "glb": "content/assets/three/fuse/Fuse.glb",
-      "bytes": 261644,
-      "sha256": "1345bccbe82d925709b1ed64e913cd42029857ca21bf3b859dd96c55f9e7390c",
+      "bytes": 160584,
+      "sha256": "e00ae15bace44651ea995723551bc620ba52161dd50eb8e2628a1966df4288ef",
       "triangles": 2874,
       "meshes": 1,
       "materials": 2,
       "images": [
+        "ElectronicSupermarket2.png",
         "Fuse_Fuse_Base Color.png",
         "Fuse_Fuse_Normal.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "Fuse_Fuse_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "ElectronicSupermarket2",
+          "blend": "CLIP",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "ElectronicSupermarket2.png"
+          }
+        },
+        {
+          "name": "Fuse",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "Fuse_Fuse_Base Color.png",
+            "normal": "Fuse_Fuse_Normal.png",
+            "mask": "Fuse_Fuse_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -109,24 +187,41 @@
     {
       "device": "masterAppliance",
       "stem": "MasterControlAppliances",
+      "blend": "content/assets/blend/masterAppliance.blend",
       "glb": "content/assets/three/masterAppliance/MasterControlAppliances.glb",
-      "bytes": 3224388,
-      "sha256": "59b8fb54b647e70f85caee867e22a836eaabe4dfe6f6672b06cbf273430ff20f",
+      "bytes": 1136504,
+      "sha256": "80b853d87bf12071ed561b3ab61e2bd8433d654c8f8db7bf8c1802028d4c5561",
       "triangles": 24840,
       "meshes": 2,
       "materials": 2,
       "images": [
         "MasterControlAppliances_MasterControlAppliances_Base Color.png",
-        "MasterControlAppliances_MasterControlAppliances_Normal.png"
+        "MasterControlAppliances_MasterControlAppliances_Normal.png",
+        "White.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "Glass",
+          "blend": "BLEND",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "White.png"
+          }
+        },
+        {
+          "name": "MasterControlAppliances",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "MasterControlAppliances_MasterControlAppliances_Base Color.png",
+            "normal": "MasterControlAppliances_MasterControlAppliances_Normal.png",
+            "mask": "MasterControlAppliances_MasterControlAppliances_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -135,24 +230,52 @@
     {
       "device": "speedRelay",
       "stem": "SpeedRelay",
+      "blend": "content/assets/blend/speedRelay.blend",
       "glb": "content/assets/three/speedRelay/SpeedRelay.glb",
-      "bytes": 5044016,
-      "sha256": "844c33240048615e460564710cbe9f5ed28c486165575036c5f04dae9a14c5f2",
+      "bytes": 1700056,
+      "sha256": "1fb4bf7ec06efdf258fe1445f37447ca0c74f34c2ee42d9c29dc51da146219de",
       "triangles": 47576,
       "meshes": 41,
-      "materials": 1,
+      "materials": 3,
       "images": [
         "SpeedRelay_SpeedRelay_Base Color.png",
         "SpeedRelay_SpeedRelay_Normal.png"
       ],
       "hooked": {
-        "baseColor": 1,
-        "normal": 1
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "SpeedRelay_SpeedRelay_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "SpeedRela_Metal",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+            "normal": "SpeedRelay_SpeedRelay_Normal.png",
+            "mask": "SpeedRelay_SpeedRelay_M_AO_G.png"
+          }
+        },
+        {
+          "name": "SpeedRelay",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+            "normal": "SpeedRelay_SpeedRelay_Normal.png",
+            "mask": "SpeedRelay_SpeedRelay_M_AO_G.png"
+          }
+        },
+        {
+          "name": "SpeedRelay_Coat",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+            "normal": "SpeedRelay_SpeedRelay_Normal.png",
+            "mask": "SpeedRelay_SpeedRelay_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -161,24 +284,41 @@
     {
       "device": "thermalRelay",
       "stem": "NewThermalRelay",
+      "blend": "content/assets/blend/thermalRelay.blend",
       "glb": "content/assets/three/thermalRelay/NewThermalRelay.glb",
-      "bytes": 2699852,
-      "sha256": "3443ca7c3d77703f21c2272f757fddcdcb110f2ac3c47173aefc9ed6f6779ff6",
+      "bytes": 780708,
+      "sha256": "2e30d3884303b3bdc7871e06ac343185996ab7b112e8076f2e8d7b59d6fd03d8",
       "triangles": 18181,
       "meshes": 1,
       "materials": 2,
       "images": [
+        "ElectronicSupermarket2.png",
         "NewThermalRelay_NewThermalRelay_Base Color.png",
         "NewThermalRelay_NewThermalRelay_Normal.png"
       ],
       "hooked": {
-        "baseColor": 2,
-        "normal": 2
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "NewThermalRelay_NewThermalRelay_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "ElectronicSupermarket2",
+          "blend": "CLIP",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "ElectronicSupermarket2.png"
+          }
+        },
+        {
+          "name": "NewThermalRelay",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "NewThermalRelay_NewThermalRelay_Base Color.png",
+            "normal": "NewThermalRelay_NewThermalRelay_Normal.png",
+            "mask": "NewThermalRelay_NewThermalRelay_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],
@@ -187,24 +327,50 @@
     {
       "device": "timeRelay",
       "stem": "NewTimeRelay",
+      "blend": "content/assets/blend/timeRelay.blend",
       "glb": "content/assets/three/timeRelay/NewTimeRelay.glb",
-      "bytes": 866884,
-      "sha256": "a900e40400bd6bad82a6102c1e8c6cd622dd0600b27f9f834241212a2d0c8208",
+      "bytes": 816296,
+      "sha256": "93d153c07a3ec67476d578f464c61a3fd1d4e9fe39e00b23fe804bbcf5bf50bf",
       "triangles": 15980,
       "meshes": 1,
       "materials": 3,
       "images": [
+        "ElectronicSupermarket2.png",
         "NewTimeRelay_NewTimeRelay_Base Color.png",
-        "NewTimeRelay_NewTimeRelay_Normal.png"
+        "NewTimeRelay_NewTimeRelay_Normal.png",
+        "White.png"
       ],
       "hooked": {
-        "baseColor": 3,
-        "normal": 3
+        "baseColor": 0,
+        "normal": 0
       },
-      "unmapped": [
+      "unmapped": [],
+      "materialDetail": [
         {
-          "file": "NewTimeRelay_NewTimeRelay_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
+          "name": "ElectronicSupermarket2",
+          "blend": "CLIP",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "ElectronicSupermarket2.png"
+          }
+        },
+        {
+          "name": "Glass",
+          "blend": "BLEND",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "White.png"
+          }
+        },
+        {
+          "name": "NewTimeRelay",
+          "blend": "OPAQUE",
+          "alphaThreshold": 0.5,
+          "slots": {
+            "baseColor": "NewTimeRelay_NewTimeRelay_Base Color.png",
+            "normal": "NewTimeRelay_NewTimeRelay_Normal.png",
+            "mask": "NewTimeRelay_NewTimeRelay_M_AO_G.png"
+          }
         }
       ],
       "warnings": [],

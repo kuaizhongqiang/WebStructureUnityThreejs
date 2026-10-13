@@ -1,25 +1,26 @@
 /**
- * 渲染期材质解算：把 GLB 里**带不动**的部分按源工程的规格补上。
+ * 渲染期材质解算：**贴图全部后加载 + 按规格解算**。
  *
- * 为什么必须在渲染期做（而不是"转 GLB 时烘进去"）：
- *   · `_MaskMap` 是 HDRP Lit 排布（**R=Metallic、G=AO、B=DetailMask、A=Smoothness**），
- *     glTF 要的是 ORM（**R=AO、G=Roughness、B=Metallic**）—— 通道语义不同，同一张图不能直接用；
- *   · 第二/第三套子材质有自己的贴图（铭牌 / 贴花 / 面板图 / 纯白 × α），
- *     按文件名前缀挂钩会全部套上主干贴图；
- *   · 表面模式（MASK / BLEND）与 `_Cull` 只写在源工程的材质里。
- * 三者都能在加载后按规格修正 —— 所以 GLB 保持现状也能显示正确。
+ * 口径（负责人 2026-10-13 定）：**GLB 只出网格与材质，一张贴图都不带**；
+ * base(含 alpha) / normal / mask 三张图都在渲染期按查找表加载。
+ * 这么定的直接好处：贴图正是反复要调的东西，换成"改文件即生效"，不必重导 GLB。
  *
- * 规格来源：`content/asset-material-spec.json`（`tools/pipeline/extract-material-spec.mjs` 从只读来源工程抽出）。
- * 区间重映射**必须烘进像素**（AO 的下界是 0.5，不是 0），否则画面会整体偏暗。
+ * 加载后要做的三件事（都来自源工程的真值，不是猜）：
+ *   ① 基色 / 法线：按**规格里声明的文件名**接（按 FBX 同名前缀挂钩会把第二/第三套子材质
+ *      全套上主干贴图 —— 贴花显示车身纹理就是这么来的）；
+ *   ② mask → ORM：`*_M_AO_G.png` 是 HDRP Lit 排布（**R=Metallic、G=AO、A=Smoothness**），
+ *      glTF 要 ORM（**R=AO、G=Roughness、B=Metallic**）—— 通道语义不同，必须重排，
+ *      而且区间重映射**要烘进像素**（AO 的下界是 0.5，不是 0），否则画面整体偏暗；
+ *   ③ 表面模式（MASK / BLEND / OPAQUE）与双面：源工程写在材质里，GLB 里也带了一份，
+ *      这里以规格为准做最后一道对齐。
+ *
+ * 规格来源：`content/asset-material-spec.json`；贴图落点与查找表：`content/asset-material-textures.json`
+ * （由 `tools/pipeline/import-material-textures.mjs` 生成）。
  */
 
 import * as THREE from 'three'
 
-/** mask 图已在库内（Unity 侧原地落点），按固定规则读，避免再拷一份 24MB。 */
-const MASK_ROOT = '../../NewStructureUnity/Assets/Models/<device>'
 const REPO_PREFIX = '../../'
-
-const withDevice = (template, device) => template.replace('<device>', device)
 
 async function fetchBitmap(url) {
   const response = await fetch(url)
@@ -43,6 +44,17 @@ async function loadTexture(lookup, device, base, colorSpace) {
   if (!url) throw new Error(`查找表里没有 ${device}/${base}（跑 tools/pipeline/import-material-textures.mjs 补搬）`)
   const texture = await new THREE.TextureLoader().loadAsync(encodeURI(url))
   texture.colorSpace = colorSpace
+  /**
+   * ⚠️ **`flipY` 必须为 false**：glTF 的 UV 原点在**左上**（Blender 导出时按此写 UV），
+   * 所以从 GLB 里取出来的贴图，three 的 GLTFLoader 一律设 `flipY = false`。
+   * 改成"贴图后加载"之后，外部加载的图**必须自己补上这条**，否则整张图上下翻转
+   * （base 与 normal 全错位；而 mask 因为建 ORM 时显式设过 `flipY = false` 反而是对的 ——
+   * "只有 mask 对"就是这条漏了的典型症状）。
+   * `wrap` 同理：glTF 默认 REPEAT，从 GLB 里出来就是 REPEAT，外部加载要保持一致。
+   */
+  texture.flipY = false
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
   texture.name = base
   return texture
 }
@@ -143,10 +155,17 @@ export async function resolveMaterials({ gltf, device, stem, spec, lookup, log }
         }
       }
 
+      // ①b 法线强度：以前由 GLB 的 `normalTexture.scale` 带出去，改成后加载后要自己按规格给
+      material.normalScale.setScalar(entry.normalStrength ?? 1)
+
       // ② mask → ORM（没有 mask 的材质走 `_Metallic` / `_Smoothness` 标量）
       if (entry.textures.mask) {
         try {
-          const orm = await buildOrmTexture(`${withDevice(MASK_ROOT, device)}/${encodeURIComponent(entry.textures.mask)}`, entry.remap)
+          // mask 与 base/normal 走**同一套查找表**（以前它是唯一一个直读 Unity 侧路径的例外，
+          // 那条路径在产品里不存在 —— 现在三张图一视同仁，打包时一起带走即可）
+          const maskUrl = textureUrl(lookup, device, entry.textures.mask)
+          if (!maskUrl) throw new Error(`查找表里没有 ${device}/${entry.textures.mask}`)
+          const orm = await buildOrmTexture(REPO_PREFIX + maskUrl, entry.remap)
           material.aoMap = orm
           material.metalnessMap = orm
           material.roughnessMap = orm

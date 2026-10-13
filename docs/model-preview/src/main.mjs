@@ -401,7 +401,12 @@ function renderEvidence(model) {
       ['大小', `${formatBytes(model.bytes)}${sizeNote(model)}`],
       ['三角面', formatInt(model.triangles)],
       ['网格 / 材质（清单）', `${model.meshes} / ${model.materials}`],
-      ['贴图', model.images.length ? model.images.join('、') : '—'],
+      [
+        '贴图（GLB）',
+        model.images.length
+          ? model.images.join('、')
+          : '0 张 —— 按 DEC-97，贴图全部后加载（见下方"测"栏的贴图行）',
+      ],
       ['磁盘校验', file?.ok ? `HEAD ${file.status} · ${formatBytes(file.bytes)}` : `HEAD ${file?.status ?? '—'}`],
     )
   }
@@ -501,7 +506,12 @@ function renderMaterials() {
     return
   }
   if (unmapped.length === 0) {
-    node.textContent = '未映射项：无。'
+    // DEC-97 之后 GLB 不带贴图，"未映射"这个概念已经不适用 —— 改为如实说明取图口径，
+    // 否则这一栏会显示"未映射项：无"，看起来像什么都没做
+    node.textContent =
+      '贴图口径（DEC-97）：GLB 只出网格与材质，**一张贴图都不带**；base（含 alpha）/ normal / mask 三张图' +
+      '全部在渲染期按 `content/asset-material-textures.json` 查找表加载，mask 按 HDRP 排布' +
+      '（R=Metallic / G=AO / A=Smoothness）重排为 glTF ORM（R←AO、G←1−Smoothness、B←Metallic，区间已烘进像素）。'
     return
   }
   const fallback = materials

@@ -37,7 +37,7 @@
 | `ui-mockups/style.css` | 排版稿的**聚合入口**（14 行，只做 `@import` 三份）；规则不要再写在这里 | — |
 | `ui-mockups/TODO.md` | 排版稿待办（T1 菜单页重做 / T2 题目样式 / T3 考核页 / T4 Unity 页暂不设计）+ 已完成清单 | 活文档 |
 | `ui-mockups/src/*.mjs` | 排版稿生成器（改完重新执行 `node docs/ui-mockups/src/render.mjs`） | — |
-| **`model-preview/index.html`** | **模型检视页（审核用）**：13 个 GLB 逐个挂 Three.js，定**环境**（光照 / IBL / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图）；读数分"证据（转换报告）"与"实测（GLB 现读）" | **待审**（DEC-94） |
+| **`model-preview/index.html`** | **模型检视页（审核用）**：13 个 GLB 逐个挂 Three.js，定**环境**（光照 / IBL / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图）；读数分"证据（转换报告）"与"实测（GLB 现读）" | **待审**（DEC-96） |
 | `model-preview/serve.mjs` | 该页的静态服务器：**服务根＝仓库根**（页面要取 `content/assets/three/**` 与 `web/node_modules/three`），并给 `.mjs` / `.glb` 正确的 MIME | — |
 
 ### 设计草案 `design/`

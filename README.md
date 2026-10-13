@@ -54,7 +54,7 @@
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
-| 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-94）：13 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人本页审阅后定** |
+| 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：13 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人本页审阅后定** |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
 | **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、模型的 URP 材质贴图赋值（P1-4 待办） |
@@ -103,7 +103,7 @@ node src/render.mjs               # 改过样式或页面生成器后重新生�
 
 右上角可切「深色 / 亮色」，单页也可用 `?theme=light`。
 
-### 模型检视页（审核用，DEC-94）
+### 模型检视页（审核用，DEC-96）
 
 ```bash
 # 服务根必须是**仓库根**：页面要同时取到三处 —— docs/model-preview/（自己）、

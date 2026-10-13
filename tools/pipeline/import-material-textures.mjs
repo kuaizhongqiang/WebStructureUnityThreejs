@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * 补搬"渲染期要用、但 GLB 里带不动"的材质贴图。
+ * 搬运**渲染期要用的全部材质贴图**（base / alpha、normal、mask 三张）。
  *
- * 背景（`docs/DECISIONS.md` §19.4 的实测结论）：按 FBX 同名前缀挂钩，第二/第三套子材质
- * 全被套上了主干贴图 —— 因为它们自己的贴图（`铭牌.png` / `ElectronicSupermarket2.png` /
- * `TimeRelayMap.png` / `ThermalOerloadRelay_2.jpg` / `White.png`）**文件名对不上前缀，从没搬进来**。
+ * 口径（负责人 2026-10-13 定）：**GLB 只出 mesh + mat，贴图全部后加载**。
+ * 所以这里不再是"补搬 GLB 带不动的那几张"，而是按**材质引用**把三张图都搬齐：
+ * 改一张贴图只需换文件，不必重导 8 个模型 —— 这正是反复调贴图时最省事的那条路。
  *
- * 本脚本按**材质引用**补搬，落 `content/assets/three/<device>/`（Three 侧大资产，DEC-57 不进 git）；
- * mask 图（`*_M_AO_G.png`）**不拷** —— 它已在库内（Unity 侧 `Assets/Models/<device>/`），
- * 由渲染期原地读，避免 24 MB 重复。
+ * 落点：`content/assets/three/<device>/`（共享图落 `_shared/`；Three 侧大资产，DEC-57 不进 git）。
+ * 渲染期按 `content/material-textures.json` 查找表取图（`<器件>/<文件名>` → 仓库相对路径），
+ * 不做"逐个目录试探"——试探会产生 404（审核页要求零 console 错误），且顺序错了会静默挂错图。
  *
  * 用法：node tools/pipeline/import-material-textures.mjs [--from <来源工程根目录>] [--dry-run]
  */
@@ -76,8 +76,10 @@ for (const model of convert.models) {
     if (!material) continue
     for (const [slot, base] of Object.entries(material.textures)) {
       if (!base) continue
-      if (slot === 'mask' || slot === 'cube') continue // mask 原地读；立方体贴图 glTF 表达不了
-      if (glb.images.has(base.replace(/\.[a-z]+$/i, ''))) continue // GLB 里已经带了（主干 BaseColor / Normal）
+      // 立方体贴图（`CubeSpecular` 反射）glTF 与 Three 都没有对应能力，不搬 —— 它在规格里记着
+      if (slot === 'cube') continue
+      // ⚠️ 以前这里跳过 mask（"Unity 侧原地读"）和"GLB 里已经带的"；
+      // 现在 GLB 不再带任何贴图，三张图全部由查找表提供，所以这两个跳过都取消了。
 
       const source = sourceByBase.get(base)
       // 共享贴图（`Model/Public` 下的，以及多器件共用的纯白图）统一落 `_shared/`，

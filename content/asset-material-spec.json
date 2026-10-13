@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-13T06:44:37.982Z",
+  "generatedAt": "2026-10-13T07:45:54.639Z",
   "note": "从只读来源工程抽出：shader 的贴图通路（mask 通道语义与区间重映射）+ 表面模式 + 预制体的材质覆写。",
   "source": {
     "assets": "Assets/Model/Element/Show/**",
     "prefabs": "Assets/Prefabs/Models/**",
-    "sha256OfScript": "a08330acc9ef1c42e963f5ae03f0226854679175c8f630051fc409dc9d092563"
+    "sha256OfScript": "fe023798a283b38b7ed809563f6551d666f92b9207faa84dd7549bf51066b6bb"
   },
   "runtime": {
     "threeTextures": "content/assets/three/<device>/",
@@ -211,193 +211,15 @@
           ]
         }
       },
-      "overrides": {},
-      "prefabOverrides": {
-        "CircuitBreaker26": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker45": [
-          "CircuitBreaker"
-        ],
-        "Cylinder": [
-          "Alpha"
-        ],
-        "CircuitBreaker52": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker33": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker25": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker57": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker29": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker31": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker10": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker24": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker01": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker28": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker40": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker54": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker60": [
-          "CircuitBreaker_2"
-        ],
-        "CircuitBreaker12": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker09": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker19": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker27": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker05": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker07": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker04": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker50": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker21": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker22": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker47": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker37": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker43": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker11": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker18": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker59": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker53": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker13": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker15": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker36": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker38": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker55": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker03": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker41": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker32": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker08": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker49": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker48": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker17": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker56": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker34": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker58": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker35": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker14": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker16": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker20": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker06": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker51": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker23": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker02": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker44": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker42": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker39": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker30": [
-          "CircuitBreaker"
-        ],
-        "CircuitBreaker46": [
-          "CircuitBreaker"
-        ]
+      "prefabSources": {
+        "breaker_info_model": "Assets/Model/Element/Show/断路器/NewCircuitBreaker.fbx",
+        "breaker_inspection_model": null,
+        "breaker_structure_model": null
       },
-      "overrideChecks": []
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": [],
+      "structureNodeCount": 61
     },
     "combinationSwitch": {
       "sourceFolder": "组合开关",
@@ -477,6 +299,11 @@
           ]
         }
       },
+      "prefabSources": {
+        "combinationSwitch_info_model": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx",
+        "combinationSwitch_inspection_model": null,
+        "combinationSwitch_structure_model": null
+      },
       "overrides": {
         "combinationSwitch_info_model": [
           {
@@ -552,8 +379,38 @@
         ]
       },
       "prefabOverrides": {
+        "CombinationSwitch01": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch17": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch03": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch07": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch21": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch18": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch06": [
+          "CombinationSwitch_Metal"
+        ],
         "CombinationSwitch02": [
           "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch04": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch20": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch05": [
+          "CombinationSwitch"
         ],
         "CombinationSwitch09": [
           "CombinationSwitch_Metal"
@@ -561,75 +418,190 @@
         "CombinationSwitch10": [
           "CombinationSwitch_Metal"
         ],
-        "CombinationSwitch04": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch03": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch06": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch01": [
-          "CombinationSwitch_Metal"
-        ],
         "CombinationSwitch19": [
           "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch14": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch18": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch12": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch11": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch07": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch05": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch20": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch08": [
-          "CombinationSwitch2"
-        ],
-        "CombinationSwitch15": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch17": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch16": [
-          "CombinationSwitch"
-        ],
-        "CombinationSwitch21": [
-          "CombinationSwitch_Metal"
-        ],
-        "CombinationSwitch13": [
-          "CombinationSwitch2"
         ]
       },
       "overrideChecks": [
         {
           "prefab": "combinationSwitch_info_model",
-          "want": {
-            "CombinationSwitch_Metal": 13,
-            "CombinationSwitch": 1
-          },
-          "got": {
-            "CombinationSwitch_Metal": 13,
-            "CombinationSwitch": 6
-          },
-          "ok": true
+          "fileId": "-8889679196930154307",
+          "node": "CombinationSwitch01",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-7244139951790597904",
+          "node": "CombinationSwitch17",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-5213591390820408839",
+          "node": "CombinationSwitch03",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-5024610076966455980",
+          "node": "CombinationSwitch07",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-2624951977302486259",
+          "node": "CombinationSwitch21",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-2044571610428909017",
+          "node": "CombinationSwitch18",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "-1028199821755038854",
+          "node": "CombinationSwitch06",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "2131913717178841095",
+          "node": "CombinationSwitch02",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "2167225073468198331",
+          "node": "CombinationSwitch04",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "2962535263966274654",
+          "node": "CombinationSwitch20",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "5208431728390866341",
+          "node": "CombinationSwitch05",
+          "slot": 0,
+          "material": "CombinationSwitch",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "6564639641323122098",
+          "node": "CombinationSwitch09",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "6873596813732724997",
+          "node": "CombinationSwitch10",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "combinationSwitch_info_model",
+          "fileId": "8839028263014093961",
+          "node": "CombinationSwitch19",
+          "slot": 0,
+          "material": "CombinationSwitch_Metal",
+          "resolved": "ok"
         }
-      ]
+      ],
+      "structureMappingForCrossCheck": {
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch02": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch09": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch10": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch04": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch03": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch06": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch01": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch14": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19/CombinationSwitch18": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch12": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch11": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch07": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch05": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch20": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch08": [
+          "CombinationSwitch2"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch15": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19/CombinationSwitch17": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch16": [
+          "CombinationSwitch"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch21": [
+          "CombinationSwitch_Metal"
+        ],
+        "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch13": [
+          "CombinationSwitch2"
+        ]
+      },
+      "structureNodeCount": 21
     },
     "contactor": {
       "sourceFolder": "接触器",
@@ -704,43 +676,15 @@
           ]
         }
       },
-      "overrides": {},
-      "prefabOverrides": {
-        "ACContactor02": [
-          "ACContactor"
-        ],
-        "ACContactor06": [
-          "ACContactor"
-        ],
-        "ACContactor08": [
-          "ACContactor"
-        ],
-        "ACContactor01": [
-          "ACContactor"
-        ],
-        "ACContactor04": [
-          "ACContactor"
-        ],
-        "ACContactor10": [
-          "ACContactor"
-        ],
-        "ACContactorBase": [
-          "ACContactor"
-        ],
-        "ACContactor03": [
-          "ACContactor"
-        ],
-        "ACContactor09": [
-          "ACContactor"
-        ],
-        "ACContactor07": [
-          "ACContactor"
-        ],
-        "ACContactor05": [
-          "ACContactor"
-        ]
+      "prefabSources": {
+        "contactor_info_model": "Assets/Model/Element/Show/接触器/NewACContactor.fbx",
+        "contactor_inspection_model": "Assets/Prefabs/Models/InspectionPoint.prefab",
+        "contactor_structure_model": null
       },
-      "overrideChecks": []
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": [],
+      "structureNodeCount": 11
     },
     "fuse": {
       "sourceFolder": "熔断器",
@@ -788,40 +732,15 @@
           ]
         }
       },
-      "overrides": {},
-      "prefabOverrides": {
-        "CeramicPlugInFse04": [
-          "CeramicPlugInFse"
-        ],
-        "CeramicPlugInFse02": [
-          "CeramicPlugInFse_Metal"
-        ],
-        "CeramicPlugInFse05": [
-          "CeramicPlugInFse"
-        ],
-        "jiexiankong": [
-          "Alpha"
-        ],
-        "Cube (1)": [
-          "Alpha"
-        ],
-        "Cube (2)": [
-          "Alpha"
-        ],
-        "Cube (3)": [
-          "Alpha"
-        ],
-        "CeramicPlugInFse03": [
-          "CeramicPlugInFse_Metal"
-        ],
-        "CeramicPlugInFse01": [
-          "CeramicPlugInFse"
-        ],
-        "Cube": [
-          "Alpha"
-        ]
+      "prefabSources": {
+        "fuse_info_model": "Assets/Model/Element/Show/熔断器/Fuse.fbx",
+        "fuse_inspection_model": null,
+        "fuse_structure_model": null
       },
-      "overrideChecks": []
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": [],
+      "structureNodeCount": 10
     },
     "masterAppliance": {
       "sourceFolder": "主令电器",
@@ -837,9 +756,15 @@
         },
         "masterAppliance_structure_model": {}
       },
+      "prefabSources": {
+        "masterAppliance_info_model": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx",
+        "masterAppliance_inspection_model": null,
+        "masterAppliance_structure_model": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx"
+      },
       "overrides": {},
       "prefabOverrides": {},
-      "overrideChecks": []
+      "overrideChecks": [],
+      "structureNodeCount": 0
     },
     "speedRelay": {
       "sourceFolder": "速度继电器",
@@ -979,6 +904,11 @@
           ]
         }
       },
+      "prefabSources": {
+        "speedRelay_info_model": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx",
+        "speedRelay_inspection_model": null,
+        "speedRelay_structure_model": null
+      },
       "overrides": {
         "speedRelay_info_model": [
           {
@@ -1004,144 +934,179 @@
         ]
       },
       "prefabOverrides": {
-        "SpeedRelay34": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay25": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay03": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay18": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay19": [
-          "SpeedRelay"
-        ],
         "SpeedRelay07": [
           "SpeedRelay_Coat"
-        ],
-        "SpeedRelay20": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay13": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay33": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay06": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay10": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay36": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay38": [
-          "SpeedRela_Metal"
-        ],
-        "SpeedRelay35": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay24": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay17": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay27": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay08": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay22": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay21": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay16": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay39": [
-          "SpeedRelay"
         ],
         "SpeedRelay04": [
           "SpeedRelay_Coat"
         ],
-        "SpeedRelay01": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay28": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay37": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay41": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay09": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay30": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay31": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay26": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay15": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay23": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay32": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay05": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay12": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay40": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay14": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay11": [
-          "SpeedRelay"
-        ],
-        "SpeedRelay29": [
-          "SpeedRelay"
-        ],
         "SpeedRelay02": [
           "SpeedRelay_Coat"
+        ],
+        "SpeedRelay38": [
+          "SpeedRela_Metal"
         ]
       },
       "overrideChecks": [
         {
           "prefab": "speedRelay_info_model",
-          "want": {
-            "SpeedRelay_Coat": 3,
-            "SpeedRela_Metal": 1
-          },
-          "got": {
-            "SpeedRelay_Coat": 3,
-            "SpeedRela_Metal": 1
-          },
-          "ok": true
+          "fileId": "-2192800027000591268",
+          "node": "SpeedRelay07",
+          "slot": 0,
+          "material": "SpeedRelay_Coat",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "speedRelay_info_model",
+          "fileId": "-1243999019095561720",
+          "node": "SpeedRelay04",
+          "slot": 0,
+          "material": "SpeedRelay_Coat",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "speedRelay_info_model",
+          "fileId": "1065338232695512963",
+          "node": "SpeedRelay02",
+          "slot": 0,
+          "material": "SpeedRelay_Coat",
+          "resolved": "ok"
+        },
+        {
+          "prefab": "speedRelay_info_model",
+          "fileId": "3944035463241107945",
+          "node": "SpeedRelay38",
+          "slot": 0,
+          "material": "SpeedRela_Metal",
+          "resolved": "ok"
         }
-      ]
+      ],
+      "structureMappingForCrossCheck": {
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay34": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay25": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay03": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay18": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay19": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay07": [
+          "SpeedRelay_Coat"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay20": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay13": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay33": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay06": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay10": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay36": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay38": [
+          "SpeedRela_Metal"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay35": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay24": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay17": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay27": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay08": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay22": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay21": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay16": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay39": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay04": [
+          "SpeedRelay_Coat"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay01": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay28": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay37": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay41": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay09": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay30": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay31": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay26": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay15": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay23": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay32": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay05": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay12": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay40": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay14": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay11": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay29": [
+          "SpeedRelay"
+        ],
+        "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay02": [
+          "SpeedRelay_Coat"
+        ]
+      },
+      "structureNodeCount": 41
     },
     "thermalRelay": {
       "sourceFolder": "热继电器",
@@ -1291,142 +1256,15 @@
           ]
         }
       },
-      "overrides": {},
-      "prefabOverrides": {
-        "ThermalOerloadRelay08": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay11": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay42": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay05": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay17": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay18": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay27": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay35": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay20": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay33": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay12": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay43": [
-          "ThermalOerloadRelay_2"
-        ],
-        "ThermalOerloadRelay28": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay09": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay10": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay19": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay36": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay24": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay22": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay39": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay30": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay41": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay21": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay34": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay26": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay02": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay03": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay37": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay25": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay38": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay41 1": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay06": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay32": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay13": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay04": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay15": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay40": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay31": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay29": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay01": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay16": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay23": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay14": [
-          "ThermalOerloadRelay"
-        ],
-        "ThermalOerloadRelay07": [
-          "ThermalOerloadRelay"
-        ]
+      "prefabSources": {
+        "thermalRelay_info_model": "Assets/Model/Element/Show/热继电器/NewThermalRelay.fbx",
+        "thermalRelay_inspection_model": null,
+        "thermalRelay_structure_model": null
       },
-      "overrideChecks": []
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": [],
+      "structureNodeCount": 44
     },
     "timeRelay": {
       "sourceFolder": "时间继电器",
@@ -1443,9 +1281,15 @@
         },
         "timeRelay_structure_model": {}
       },
+      "prefabSources": {
+        "timeRelay_info_model": "Assets/Model/Element/Show/时间继电器/NewTimeRelay.fbx",
+        "timeRelay_inspection_model": null,
+        "timeRelay_structure_model": "Assets/Model/Element/Show/时间继电器/TimeRelay.fbx"
+      },
       "overrides": {},
       "prefabOverrides": {},
-      "overrideChecks": []
+      "overrideChecks": [],
+      "structureNodeCount": 0
     }
   },
   "materials": {
@@ -1490,6 +1334,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "档位.png",
         "normal": null,
@@ -1539,6 +1384,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "表笔红2.png",
         "normal": null,
@@ -1588,6 +1434,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "表笔黑2.png",
         "normal": null,
@@ -1637,6 +1484,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "ACContactor_ACContactor_Base Color.png",
         "normal": "ACContactor_ACContactor_Normal.png",
@@ -1688,6 +1536,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": null,
         "normal": null,
@@ -1737,6 +1586,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": null,
         "normal": null,
@@ -1786,6 +1636,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
         "normal": "CeramicPlugInFse_CeramicPlugInFse_Normal.png",
@@ -1842,6 +1693,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
         "normal": "CeramicPlugInFse_CeramicPlugInFse_Normal.png",
@@ -1893,6 +1745,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "CircuitBreaker_CircuitBreaker_Base Color.png",
         "normal": "CircuitBreaker_CircuitBreaker_Normal.png",
@@ -1944,6 +1797,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "铭牌.png",
         "normal": null,
@@ -1993,6 +1847,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
         "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
@@ -2007,7 +1862,7 @@
       "name": "CombinationSwitch2",
       "sourceFolder": "组合开关",
       "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
-      "surfaceMode": "BLEND",
+      "surfaceMode": "OPAQUE",
       "alphaCutoff": 0.5,
       "doubleSided": true,
       "zWrite": 0,
@@ -2044,6 +1899,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "White.png",
         "normal": null,
@@ -2052,7 +1908,8 @@
       },
       "lostInGltf": [
         "程序化污渍（子图，glTF 无对应能力）"
-      ]
+      ],
+      "overriddenByHuman": true
     },
     "CombinationSwitch_Metal": {
       "name": "CombinationSwitch_Metal",
@@ -2100,6 +1957,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
         "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
@@ -2151,6 +2009,7 @@
         "metallic": 0,
         "smoothness": 0.15
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "ElectronicSupermarket2.png",
         "normal": null,
@@ -2200,6 +2059,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "Fuse_Fuse_Base Color.png",
         "normal": "Fuse_Fuse_Normal.png",
@@ -2251,6 +2111,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "White.png",
         "normal": null,
@@ -2300,6 +2161,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "MasterControlAppliances_MasterControlAppliances_Base Color.png",
         "normal": "MasterControlAppliances_MasterControlAppliances_Normal.png",
@@ -2351,6 +2213,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "NewACContactor_NewACContactor_Base Color.png",
         "normal": "NewACContactor_NewACContactor_Normal.png",
@@ -2402,6 +2265,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
         "normal": "NewCircuitBreaker_NewCircuitBreaker_Normal.png",
@@ -2453,6 +2317,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "NewThermalRelay_NewThermalRelay_Base Color.png",
         "normal": "NewThermalRelay_NewThermalRelay_Normal.png",
@@ -2504,6 +2369,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "NewTimeRelay_NewTimeRelay_Base Color.png",
         "normal": "NewTimeRelay_NewTimeRelay_Normal.png",
@@ -2555,6 +2421,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": null,
         "normal": null,
@@ -2604,6 +2471,7 @@
         "metallic": 0,
         "smoothness": 0.5
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "Room_0609.png",
         "normal": null,
@@ -2658,6 +2526,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
         "normal": "SpeedRelay_SpeedRelay_Normal.png",
@@ -2709,6 +2578,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
         "normal": "SpeedRelay_SpeedRelay_Normal.png",
@@ -2760,6 +2630,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0.2,
       "textures": {
         "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
         "normal": "SpeedRelay_SpeedRelay_Normal.png",
@@ -2811,6 +2682,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
         "normal": "ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
@@ -2862,6 +2734,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "ThermalOerloadRelay_2.jpg",
         "normal": null,
@@ -2918,6 +2791,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
         "normal": "ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
@@ -2969,6 +2843,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "TimeRelay_TimeRelay_Base Color.png",
         "normal": "TimeRelay_TimeRelay_Normal.png",
@@ -3020,6 +2895,7 @@
         "metallic": 0,
         "smoothness": 0.14142135
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "TimeRelayMap.png",
         "normal": null,
@@ -3071,6 +2947,7 @@
         "metallic": 0,
         "smoothness": 0
       },
+      "clearcoat": 0,
       "textures": {
         "baseColor": "WYB.png",
         "normal": null,
@@ -3117,5 +2994,9 @@
         "fbx": "Assets/Model/Element/Show/时间继电器/NewTimeRelay.fbx"
       }
     }
+  },
+  "humanOverrides": {
+    "file": "content/material-overrides.json",
+    "applied": 1
   }
 }

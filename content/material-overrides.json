@@ -1,0 +1,10 @@
+{
+  "note": "负责人对着模型检视页（docs/model-preview/）定下的材质修正，**覆盖「源工程自动抽取」的规格**。extract-material-spec.mjs 会在写出规格前合并这里的值，因此这份文件是这类修正的唯一落点（不会被重抽覆盖）；每加一条要同步 docs/DECISIONS.md。",
+  "keys": "键=材质名（与 GLB 里的材质名一致）；值=规格里同名字段的覆盖（surfaceMode / alphaCutoff / scalars / clearcoat / baseColor …）；reason 只作说明，不写进规格。",
+  "materials": {
+    "CombinationSwitch2": {
+      "surfaceMode": "OPAQUE",
+      "reason": "组合开关第 13 片是**不透明**的白色件。源工程材质写的是 BLEND + α0.6（半透），与实物/观感不符 —— 负责人 2026-10-13 在检视页上定为不透明白。"
+    }
+  }
+}
