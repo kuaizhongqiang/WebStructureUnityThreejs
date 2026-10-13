@@ -25,7 +25,9 @@
 | 1.6 | 双渠道提交 | git `ba2533c` + `10a74f4` + `5f49b62`（分支 `feat/unity-scaffold-bridge`）；Plastic `cs:6 → cs:9` | **PR 待人工开**（本机 GitHub 凭据失效） |
 | 1.7 | Unity 侧桥的**传输与分发** | `.jslib` + 信封扫描器 + 4 个 C# 文件；4 个文件 `validate_script` 0 error、Unity console 无编译错误 | git `debea2e`；Plastic `cs:9` |
 | 1.8 | **启动编排 + 任务编排 + 输入闸门** | `StartupFlow`（自检 → 握手 → single 切内容场景 → 待命）、`TaskFlowController`（消息落地 + `assets:ready`/`progress`/`scene:ready`/`scene:exited`）、`InputGate`、`SceneManager` 的三个场景调用；5 个文件 `validate_script` 0 error | git `26488d0`；Plastic `cs:10` |
-| 1.9 | **拾取体系 + 任务流程收进 GlobalManager** | `InteractiveObjBase`（真基类：自注册 + 指针事件单一出口 + `OnHighlightChanged` 虚方法钩子，**无接口/服务**）、`InteractiveManager`（注册表 + EventSystem + PhysicsRaycaster + 点空白 + view:focus 全在一个文件里）、`TaskFlowManager`（流程 + 自驱协程泵）、`WebBridgeBehaviour`（意图事件 → 上网）、`Contracts/Events/BridgeEvents.cs`（入站事件 + 出站意图）；`WSU3.Core` 加 `UnityEngine.UI`（只为 EventSystems，DEC-80） | 全量重编译后 console 无 error（期间抓到并修掉一处缺 `using`） |
+| 1.9 | **拾取体系 + 任务流程收进 GlobalManager** | `InteractiveObjBase`（真基类：自注册 + 单一出口 + `OnHighlightChanged` 虚方法钩子，**无接口/服务**）、`InteractiveManager`（注册表 + 检测射线 + 点空白 + view:focus 全在一个文件里）、`TaskFlowManager`（流程 + 自驱协程泵）、`WebBridgeBehaviour`（意图事件 → 上网）、`Contracts/Events/BridgeEvents.cs`（入站事件 + 出站意图）；`WSU3.Core` 加 `UnityEngine.UI`（只为 EventSystems，DEC-80） | 全量重编译后 console 无 error（期间抓到并修掉一处缺 `using`） |
+| 1.10 | **检测权收归管理器** | 物体不再实现 `IPointer*Handler`，改由 `InteractiveManager.CoreUpdate()` 每帧射线后调 `Invoke*`；去掉 `PhysicsRaycaster`；悬停不再碰高亮 | git `f8399e1`；Plastic `cs:14` |
+| 1.11 | **`0_Setup` 场景接线（P0-1 g）** | 加 `WebBridge`（`WebBridgeBehaviour`）与 `Setup`（`StartupFlow`）；用附加加载改场景，未触碰负责人在编的 `1_Content` | git `64526b7`；Plastic `cs:15` |
 
 ---
 
@@ -43,7 +45,7 @@
 | d | Web → Unity 消息落地：订阅 `app:init` / `preload:task` / `preload:cancel` / `scene:enter` / `scene:exit` / `input:enable` / `runtime:resume`（`debug:ping` 已在桥里成对处理） | `Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`） | 每条消息有日志；`debug:ping` 回 `debug:pong` | ✅ 代码就位 |
 | e | 就绪语义：`assets:ready` → `unity:progress`×N → `scene:ready`（内容包装卸见 P2-6） | 同上（只发意图事件，上网在桥里） | 切任务时两条就绪都发得出来 | ✅ 序列就位；**资源装载/装配是占位**（报非致命码 9001） |
 | f | 拾取体系：**检测全在 `InteractiveManager.CoreUpdate()`**（自建 `ScreenPointToRay` + `Physics.Raycast`，不建 Canvas、物体不实现 `IPointer*`）+ 交互物自注册 + `object:picked` | `Core/Interactive/InteractiveObjBase.cs`、`Core/Managers/FunctionManager/InteractiveManager.cs`（含注册表与检测，**不另建脚本/manager**）、`GlobalManager.Update`、`Web/WebBridgeBehaviour.cs`（上报） | 点中物体 → Web 收到 `object:picked`；点空白 → 一条 `Target=null` 的 Click | ✅ 代码就位（**待场景里有交互物可点**，见 g） |
-| g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/*`、`Assets/Resources/*` | 编辑器里能 Play 起来 | ⬜（**只有这一步必须动场景**） |
+| g | 场景接线：`0_Setup` 挂 `StartupFlow` + `WebBridge`；`Manager.prefab` 上放常驻对象 | `Assets/Scenes/0_Setup.unity` | 编辑器里能 Play 起来 | ✅ 已改好（用 Unity MCP，见下）；**Play 验收待做**（需先把负责人的场景存盘） |
 
 **f 的实现要点**：
 - **检测在管理器里**（负责人 2026-10-13 明确）：`InteractiveManager.CoreUpdate()` 每帧一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，
@@ -60,6 +62,16 @@
   由 `view:focus` 调 `SetHighlight`；**悬停不碰高亮** —— 要不要悬停高亮由业务自己决定；不引入接口/服务注册。
 - **`view:focus`**：按 key 找物体 → `SetHighlight(true)`（每次只亮一个；`scene:exit` 时清掉）。
 - **未做**（有意）：右键与双击（契约里已有 `ClickRight` / `ClickDouble`，需要时在 `InteractiveManager` 里补判定）。
+
+**g 的实现要点（2026-10-13 已做）**：
+- `0_Setup` 现场（用 Unity MCP 改的）：`Manager`（`GlobalManager` + 子物体 `EventSystem`、`MainCamera`）、**`WebBridge`（`WebBridgeBehaviour`）**、**`Setup`（`StartupFlow`）**；
+- `Manager` 里**已经有** `EventSystem + StandaloneInputModule`，所以 `InteractiveManager.EnsureEventSystem()` 不会重复创建；
+- 改场景时用的是**附加加载**（`load additive` + `set_active_scene` + `save` + 关掉 + 切回），**没有碰负责人正在编辑的 `1_Content`**（它当时是 dirty 状态）；
+- ⚠️ **Play 验收还没做**：进入 Play 模式会要求保存已修改的场景，而 `1_Content` 是负责人的在编文件（未存盘），所以先不擅自 Play。负责人存盘后，验收看这几条日志：
+  1. `[StartupFlow] 管理器自检通过。`
+  2. `[StartupFlow] 切换到常驻内容场景 '1_Content' …`
+  3. `[StartupFlow] 已停在 '1_Content' 待命，等待 Web 指令（preload:task / scene:enter）。`
+  编辑器里没有页面桥，握手与消息只在 WebGL 构建里才真正上网（`WebChannel.Sent` 事件是编辑器/单测的观察点）。
 
 **c/d/e 的实现要点（给下一次续会话）**：
 - **流程管理点只有一处**：`Core/Managers/FunctionManager/TaskFlowManager.cs`（`GlobalManager.TaskFlowManager`），**不另建 controller/MonoBehaviour**；`Init` 订阅入站事件，逐帧由 `GlobalManager.Update` → `CoreUpdate` 推进。
