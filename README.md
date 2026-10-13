@@ -12,19 +12,20 @@
 |---|---|
 | `docs/requirement/raw/raw-requirement.md` | **原始需求，唯一权威来源**（只读，不得改写） |
 | `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 79 条（DEC-01 ~ DEC-79，五轮问答的结论），**只增不改** |
-| `docs/OPEN-QUESTIONS*.md` | 前四轮问答清单原文保留（第一轮 32 题 / 第二轮 28 题 / 第三轮 10 题），答案已固化进 `DECISIONS.md`；第四、五轮以追加条目形式直接落在 `DECISIONS.md` |
+| `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留：第一轮 32 题 / 第二轮 28 题 / 第三轮 10 题（答案已固化进 `DECISIONS.md`），**第六轮 26 题待回答**（Unity 脚手架的 UI 形态与启动阶段事件）；第四、五轮以追加条目形式直接落在 `DECISIONS.md` |
 | `docs/requirement/requirement-analysis.md` | 需求分析：原始需求条目化（R-1~R-8）、红线、需求→交付物映射、缺口闭合表 |
-| `docs/research/01~08` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测** |
-| `docs/design/01~07` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则** |
+| `docs/research/01~09` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘** |
+| `docs/design/01~09` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
+| `docs/PLAN.md` | **执行计划（活文档）**：接下来要做什么、落点与验收、"待办"的唯一维护点 |
 | `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用），`style.css` 是聚合入口 |
 | `docs/README.md` | 文档总索引与写作约定 |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
 | `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
 | `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
-| `content/` | 内容与契约：`contracts/snapshot.json` 为契约校验的**基准快照** |
-| `tools/` | 门禁与流水线：契约一致性 / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存、校验、打包） |
+| `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**）；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
+| `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存、校验、打包） |
 | `.github/workflows/gate.yml` | 合并门禁（CI） |
 
 ## 2 架构红线（不可违背）
@@ -43,17 +44,18 @@
 
 | 部分 | 状态 |
 |---|---|
-| 文档与决策 | 五轮问答**全部关闭**，**79 条决策生效**；需求分析 v1 定稿；设计文档 7 篇 |
+| 文档与决策 | 六轮问答**全部关闭**，**88 条决策生效**（DEC-01 ~ DEC-88）；需求分析 v1 定稿；设计文档 9 篇 |
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
 | Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动，article 与 list 端到端）/ 骨架自检页；样式只走设计系统令牌；**ESLint + Prettier** 已进 hook 与 CI |
 | Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟 20 项**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |
-| Unity 工程 | 程序集分层 `WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode` + 契约枚举 `Assets/Scripts/Contracts/EnumAll.cs` + **WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）+ 契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始** |
+| Unity 工程 | 程序集分层 `WSU3.Contracts` / `WSU3.Core` / `WSU3.Runtime` / `WSU3.Editor` / `WSU3.Tests.EditMode` + 契约（`EnumAll.cs` 的 `SceneState` / `TaskType` / `QuestionType` / `QuestionUsage` + `BridgeMessageType.cs`）+ **WebGL 基线构建工具**（菜单 `WSU3/Build/WebGL Baseline`）+ 契约冻结单测 `ContractIntegrityTests`；**业务逻辑尚未开始**（场景骨架 `0_Setup` / `1_Content` 正在编辑器里搭，见 DEC-81） |
+| 内容数据 | ✅ **已全量采用既有实训软件的数据**（DEC-88）：7 份 JSON / 9 个项目 / 73 KB，Web 与 Unity **各一份**（DEC-82），`tools/check-content-data.mjs` 在 hook 与 CI 里比对结构 |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
-| 门禁 | pre-commit hook + CI（契约、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
+| 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始** | Unity 业务逻辑与真实场景、内容资源交付（`content/projects/*.json` 仍为内置演示数据）、协议桥的 Unity 侧实现（`.jslib`，DEC-07 未落地） |
+| **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、模型的 URP 材质贴图赋值（P1-4 待办） |
 
 ## 4 怎么跑
 
@@ -121,22 +123,36 @@ npm run dist                  # 打包 → release/WSU3-Shell-<version>-portable
 ```bash
 # ① Unity 编辑器里构建（菜单 WSU3/Build/WebGL Baseline，构建前必须关编辑器）
 # ② 暂存 + 校验（产物进 unity/builds/，不进 git；逐文件 sha256 写进清单）
-node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl-baseline --key training --task-type 5
+node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl --key main --task-types 4,5,8,9
 # ③ 一键打包（校验 → web build → 发布清单 release-manifest.json → exe）
 node tools/pipeline/pack.mjs
 ```
 
-- 没有真 Unity 时也能验流水线：`node tools/pipeline/make-stub-unity.mjs --key training --task-type 5 --stage`。
+- 没有真 Unity 时也能验流水线：`node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --stage`。
 - 发布清单 `web/dist/release-manifest.json` 会随包发布，写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与服务端约定。
 - **Unity 缺席不影响 Web 侧打包，但界面上会明确写"Unity 产物未包含"**（Unity 类任务不再假装能进）。
 - `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
 
 细节与取舍见 [`electron/README.md`](./electron/README.md)（为什么用本机服务器而不是 `file://`、安全边界、对接预留点）。
 
+### 三维资产搬运（P1-4，细则见 [`docs/design/03`](./docs/design/03-layout-and-assets.md) §5.1）
+
+```bash
+# ① 从既有实训软件搬 FBX + 贴图 + 原理图（只读来源工程；先加 --dry-run 看要搬什么）
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录> --dry-run
+node tools/pipeline/import-adopted-assets.mjs --from <来源工程根目录>
+# ② Blender 批量把 FBX 转成 GLB（Three 侧用；每个模型一个独立进程）
+node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe 路径>
+```
+
+- 两份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项）：`content/asset-import-report.json`、`content/asset-convert-report.json`。
+- 落点：`Assets/Models/`（Plastic 管）、`web/public/content/sprites/`（进 git）、`content/assets/three/`（不进 git，DEC-57）。
+
 ### 提交门禁
 
 ```bash
-node tools/check-contracts.mjs        # 双端契约：TS ↔ 基准快照 ↔ C#
+node tools/check-contracts.mjs        # 双端契约：TS ↔ 基准快照 ↔ C#（枚举 + 桥消息类型）
+node tools/check-content-data.mjs     # 内容数据双份：Web 与 Unity 两份同名文件的结构签名
 node tools/check-large-files.mjs      # 大文件阈值 10 MB
 node tools/check-shell-coupling.mjs   # 业务代码零 import electron（DEC-20）
 powershell -File tools/install-hooks.ps1   # 安装 pre-commit hook（一次性）

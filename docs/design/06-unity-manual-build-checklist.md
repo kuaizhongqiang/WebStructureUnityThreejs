@@ -62,7 +62,7 @@ Addressables 1.22.3 已装（DEC-45）。**默认远端 LoadPath 是 `ServerData
 
 ```bash
 node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/<name> \
-  --key <key> --task-type <n> --extra NewStructureUnity/ServerData/WebGL
+  --key main --task-types 4,5,8,9 --extra NewStructureUnity/ServerData/WebGL
 ```
 
 （`--extra` 会把该目录复制到暂存产物的**根**下；用 B 方案则不需要它。）
@@ -77,7 +77,7 @@ node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/<name> \
 4. 暂存进仓库（**不要手工拷进 `web/public/`**）：
 
 ```bash
-node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/<name> --key <key> --task-type <n>
+node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/<name> --key main --task-types 4,5,8,9 --bridge
 node tools/pipeline/unity-verify.mjs      # 逐文件重算 sha256
 node tools/pipeline/pack.mjs --skip-web   # 只重打包（web 产物没变时）
 ```

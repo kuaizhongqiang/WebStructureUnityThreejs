@@ -1,0 +1,654 @@
+{
+  "languageClips": [
+    {
+      "clips": [
+        "退出",
+        "Exit"
+      ],
+      "id": "ui.function.exit",
+      "displayName": "ui.function.exit",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "返回",
+        "Back"
+      ],
+      "id": "ui.function.back",
+      "displayName": "ui.function.back",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "设置",
+        "Settings"
+      ],
+      "id": "ui.function.setting",
+      "displayName": "ui.function.setting",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "静音",
+        "Mute"
+      ],
+      "id": "ui.function.mute",
+      "displayName": "ui.function.mute",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "资源",
+        "Resources"
+      ],
+      "id": "ui.function.resource",
+      "displayName": "ui.function.resource",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "提交",
+        "Submit"
+      ],
+      "id": "ui.function.submit",
+      "displayName": "ui.function.submit",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "记录",
+        "Records"
+      ],
+      "id": "ui.function.record",
+      "displayName": "ui.function.record",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "学生登录",
+        "Student Login"
+      ],
+      "id": "ui.login.title.student",
+      "displayName": "ui.login.title.student",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "教师登录",
+        "Teacher Login"
+      ],
+      "id": "ui.login.title.teacher",
+      "displayName": "ui.login.title.teacher",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "管理员登录",
+        "Administrator Login"
+      ],
+      "id": "ui.login.title.admin",
+      "displayName": "ui.login.title.admin",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "游客登录",
+        "Guest Login"
+      ],
+      "id": "ui.login.title.guest",
+      "displayName": "ui.login.title.guest",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "{0} 加载中...",
+        "{0} Loading..."
+      ],
+      "id": "ui.loading.progress",
+      "displayName": "ui.loading.progress",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "确认",
+        "Confirm"
+      ],
+      "id": "ui.dialog.confirm",
+      "displayName": "ui.dialog.confirm",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "取消",
+        "Cancel"
+      ],
+      "id": "ui.dialog.cancel",
+      "displayName": "ui.dialog.cancel",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "开始",
+        "Start"
+      ],
+      "id": "ui.start.button",
+      "displayName": "ui.start.button",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "登 录",
+        "Log In"
+      ],
+      "id": "ui.login.button",
+      "displayName": "ui.login.button",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "用户名：",
+        "Username:"
+      ],
+      "id": "ui.login.username",
+      "displayName": "ui.login.username",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "密  码：",
+        "Password:"
+      ],
+      "id": "ui.login.password",
+      "displayName": "ui.login.password",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "进入漫游",
+        "Enter Roaming"
+      ],
+      "id": "ui.menu.roaming",
+      "displayName": "ui.menu.roaming",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "关 闭",
+        "Close"
+      ],
+      "id": "ui.common.close",
+      "displayName": "ui.common.close",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "预览成绩",
+        "Preview Result"
+      ],
+      "id": "ui.menu.result",
+      "displayName": "ui.menu.result",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "AI 对话",
+        "AI Chat"
+      ],
+      "id": "ui.ai.title",
+      "displayName": "ui.ai.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "本次token",
+        "Tokens Used"
+      ],
+      "id": "ui.ai.token",
+      "displayName": "ui.ai.token",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "模型列表",
+        "Model List"
+      ],
+      "id": "ui.ai.models",
+      "displayName": "ui.ai.models",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "画面质量",
+        "Display Quality"
+      ],
+      "id": "ui.quality.title",
+      "displayName": "ui.quality.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "标清质量",
+        "Standard"
+      ],
+      "id": "ui.quality.low",
+      "displayName": "ui.quality.low",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "高清质量",
+        "High"
+      ],
+      "id": "ui.quality.medium",
+      "displayName": "ui.quality.medium",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "超清质量",
+        "Ultra"
+      ],
+      "id": "ui.quality.high",
+      "displayName": "ui.quality.high",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "提 交",
+        "Submit"
+      ],
+      "id": "ui.common.submit",
+      "displayName": "ui.common.submit",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "项目进程",
+        "Process"
+      ],
+      "id": "ui.step.title",
+      "displayName": "ui.step.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "小测验",
+        "Quiz"
+      ],
+      "id": "ui.exam.title",
+      "displayName": "ui.exam.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "操作步骤",
+        "Steps"
+      ],
+      "id": "ui.tips.step",
+      "displayName": "ui.tips.step",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "操作提示",
+        "Tips"
+      ],
+      "id": "ui.tips.operation",
+      "displayName": "ui.tips.operation",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "简 介",
+        "Intro"
+      ],
+      "id": "ui.task.intro",
+      "displayName": "ui.task.intro",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "结 构",
+        "Structure"
+      ],
+      "id": "ui.task.structure",
+      "displayName": "ui.task.structure",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "原 理",
+        "Principle"
+      ],
+      "id": "ui.task.principle",
+      "displayName": "ui.task.principle",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "测 量",
+        "Measurement"
+      ],
+      "id": "ui.task.measure",
+      "displayName": "ui.task.measure",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "简介",
+        "Introduction"
+      ],
+      "id": "ui.taskinfo.intro",
+      "displayName": "ui.taskinfo.intro",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "当前操作",
+        "Current Operation"
+      ],
+      "id": "ui.inspection.title",
+      "displayName": "ui.inspection.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "AI 问答",
+        "AI Q&A"
+      ],
+      "id": "ui.function.ai",
+      "displayName": "ui.function.ai",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "元器件种类",
+        "Component Types"
+      ],
+      "id": "ui.taskinfo.category",
+      "displayName": "ui.taskinfo.category",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "当前版本仅供投标及演示使用",
+        "For bidding and demonstration only"
+      ],
+      "id": "ui.common.copyright",
+      "displayName": "ui.common.copyright",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "加载中",
+        "Loading"
+      ],
+      "id": "ui.loading.title",
+      "displayName": "ui.loading.title",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "正在加载资源，请稍候...",
+        "Loading resources, please wait..."
+      ],
+      "id": "ui.loading.content",
+      "displayName": "ui.loading.content",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "系统初始化中，请稍候…",
+        "Initializing, please wait..."
+      ],
+      "id": "ui.ai.initializing",
+      "displayName": "ui.ai.initializing",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "学生",
+        "Student"
+      ],
+      "id": "ui.login.type.student",
+      "displayName": "ui.login.type.student",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "教师",
+        "Teacher"
+      ],
+      "id": "ui.login.type.teacher",
+      "displayName": "ui.login.type.teacher",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "管理员",
+        "Administrator"
+      ],
+      "id": "ui.login.type.admin",
+      "displayName": "ui.login.type.admin",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "未知",
+        "Unknown"
+      ],
+      "id": "ui.login.type.unknown",
+      "displayName": "ui.login.type.unknown",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "系统：{0}",
+        "OS: {0}"
+      ],
+      "id": "ui.quality.hw.os",
+      "displayName": "ui.quality.hw.os",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "CPU：{0}",
+        "CPU: {0}"
+      ],
+      "id": "ui.quality.hw.cpu",
+      "displayName": "ui.quality.hw.cpu",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "内存：{0} GB",
+        "Memory: {0} GB"
+      ],
+      "id": "ui.quality.hw.memory",
+      "displayName": "ui.quality.hw.memory",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "显卡：{0}",
+        "GPU: {0}"
+      ],
+      "id": "ui.quality.hw.gpu",
+      "displayName": "ui.quality.hw.gpu",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "显存：{0} GB",
+        "VRAM: {0} GB"
+      ],
+      "id": "ui.quality.hw.vram",
+      "displayName": "ui.quality.hw.vram",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "<color=#FFC53D>建议使用【{0}】质量</color>",
+        "<color=#FFC53D>Recommended: {0} quality</color>"
+      ],
+      "id": "ui.quality.hw.suggest",
+      "displayName": "ui.quality.hw.suggest",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "标清",
+        "Standard"
+      ],
+      "id": "ui.quality.name.low",
+      "displayName": "ui.quality.name.low",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "高清",
+        "High"
+      ],
+      "id": "ui.quality.name.medium",
+      "displayName": "ui.quality.name.medium",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "超清",
+        "Ultra"
+      ],
+      "id": "ui.quality.name.high",
+      "displayName": "ui.quality.name.high",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "AI 服务初始化失败，请稍后重试。",
+        "AI service failed to initialize, please try again later."
+      ],
+      "id": "ui.ai.failed",
+      "displayName": "ui.ai.failed",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "正在思考中，请稍候…",
+        "Thinking, please wait..."
+      ],
+      "id": "ui.ai.thinking",
+      "displayName": "ui.ai.thinking",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "请输入内容后再发送",
+        "Please enter something before sending"
+      ],
+      "id": "ui.ai.empty",
+      "displayName": "ui.ai.empty",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "正在连接 AiServer…(剩余重试 {0})",
+        "Connecting to AiServer... ({0} retries left)"
+      ],
+      "id": "ui.ai.connecting",
+      "displayName": "ui.ai.connecting",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "出错了：{0}",
+        "Error: {0}"
+      ],
+      "id": "ui.ai.error",
+      "displayName": "ui.ai.error",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "",
+        ""
+      ],
+      "id": "ui.TaskNameText",
+      "displayName": "TaskNameText",
+      "displayNameEn": "",
+      "description": ""
+    },
+    {
+      "clips": [
+        "项目菜单",
+        "PROJECT MENU"
+      ],
+      "id": "ui.function.enterui",
+      "displayName": "TaskNameText",
+      "displayNameEn": "",
+      "description": ""
+    }
+  ]
+}

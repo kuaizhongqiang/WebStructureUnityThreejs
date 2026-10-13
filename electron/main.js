@@ -64,7 +64,8 @@ function readUnityManifest() {
       included: builds.length > 0,
       builds: builds.map((b) => ({
         key: b.key,
-        taskType: b.taskType,
+        // DEC-81：新清单写 taskTypes[]；旧清单的单值 taskType 仍认（兼容已打出去的包）
+        taskTypes: Array.isArray(b.taskTypes) ? b.taskTypes : b.taskType != null ? [b.taskType] : [],
         totalBytes: b.totalBytes,
         // 是否声明实现了协议桥：决定冒烟"要不要握手成功才算通过"（docs/design/06 §5）
         bridge: b.bridge === true,
@@ -237,7 +238,8 @@ async function smokeUnity() {
     // 画面照样能挂上但永远不会握手 —— 那是已知缺口（docs/design/06 §5），不该把打包判成坏的；
     // 但**也不能掩盖**：日志与报告里 handshake 字段照实写。
     const taskType = 5
-    const build = (unityManifest?.builds || []).find((item) => item.taskType === taskType)
+    // DEC-81：按"声明包含该 taskType 的构建"选件，与页面侧 `declaresTaskType` 同一口径
+    const build = (unityManifest?.builds || []).find((item) => item.taskTypes.includes(taskType))
     const bridgeRequired = Boolean(build && build.bridge)
     const mounted = state.hasCanvas && (!bridgeRequired || state.handshake)
     const mode = mounted ? 'mounted' : state.absent ? 'absent' : 'unclear'
@@ -370,7 +372,10 @@ if (!app.requestSingleInstanceLock()) {
     if (unityManifest.included) {
       log(`Unity 目录：${UNITY_ROOT} → ${serverInfo.url}unity/`)
       for (const build of unityManifest.builds) {
-        log(`  · ${build.key}（taskType=${build.taskType}，${(build.totalBytes / 1024 / 1024).toFixed(1)} MB）`)
+        log(
+          `  · ${build.key}（承载 taskTypes=${build.taskTypes.join(',')}，` +
+            `${(build.totalBytes / 1024 / 1024).toFixed(1)} MB）`,
+        )
       }
     }
     registerShellIpc()

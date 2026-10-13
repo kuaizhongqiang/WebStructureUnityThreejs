@@ -2,8 +2,16 @@
   "version": 1,
   "_note": "契约校验基准（不是真源）。纪律见 docs/DECISIONS.md DEC-67：只能与某一侧同批修改；门禁比对 TS ↔ 快照 与 C# ↔ 快照，两侧同时被改错时由本文件兜住。",
   "_sources": {
-    "typescript": ["web/src/contracts/scene-state.ts", "web/src/contracts/task-type.ts"],
-    "csharp": ["NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs"]
+    "typescript": [
+      "web/src/contracts/scene-state.ts",
+      "web/src/contracts/task-type.ts",
+      "web/src/contracts/question-type.ts",
+      "web/src/contracts/bridge.ts"
+    ],
+    "csharp": [
+      "NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs",
+      "NewStructureUnity/Assets/Scripts/Contracts/BridgeMessageType.cs"
+    ]
   },
   "enums": [
     {
@@ -32,6 +40,54 @@
         { "name": "Inspection", "ordinal": 9, "label": "检测" },
         { "name": "Exam", "ordinal": 10, "label": "考核" }
       ]
+    },
+    {
+      "name": "QuestionType",
+      "values": [
+        { "name": "None", "ordinal": 0, "label": "空类型" },
+        { "name": "SingleChoice", "ordinal": 1, "label": "单选" },
+        { "name": "MultipleChoice", "ordinal": 2, "label": "多选" },
+        { "name": "TrueFalse", "ordinal": 3, "label": "判断" },
+        { "name": "FillInBlank", "ordinal": 4, "label": "填空" }
+      ]
+    },
+    {
+      "name": "QuestionUsage",
+      "values": [
+        { "name": "Exam", "ordinal": 0, "label": "考核" },
+        { "name": "Step", "ordinal": 1, "label": "步骤" }
+      ]
     }
-  ]
+  ],
+  "messageTypes": {
+    "name": "BridgeMessageType",
+    "_note": "顺序与拼写是契约；内容 JSON 与桥消息里的枚举一律写**名字**，不写序号（docs/design/08-content-data-adoption.md）。",
+    "fromWeb": [
+      "app:init",
+      "preload:task",
+      "preload:cancel",
+      "scene:enter",
+      "scene:exit",
+      "view:focus",
+      "ui:set-locale",
+      "ui:set-quality",
+      "input:enable",
+      "runtime:resume",
+      "debug:ping"
+    ],
+    "fromUnity": [
+      "unity:ready",
+      "unity:progress",
+      "assets:ready",
+      "scene:ready",
+      "scene:exited",
+      "step:changed",
+      "task:completed",
+      "score:report",
+      "object:picked",
+      "ui:request",
+      "unity:error",
+      "debug:pong"
+    ]
+  }
 }

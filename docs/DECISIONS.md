@@ -412,6 +412,12 @@
 | 2026-10-12 | 门禁落地（DEC-66） | `tools/check-contracts.mjs`（TS↔快照↔C#，实测通过）、`tools/check-large-files.mjs`（10MB）、`tools/hooks/pre-commit` + 安装脚本（已装）、`.github/workflows/gate.yml` | DEC-41 / DEC-66 / DEC-65 |
 | 2026-10-12 | 移动端策略落地（DEC-70/71） | `web/src/platform/device.ts`（微信识别 + 25s/1 次/可退回）+ 5 条单测通过 | DEC-49 / DEC-70 / DEC-71 |
 | 待执行 | ESLint + Prettier | 已批准未安装（下一批） | DEC-52 / DEC-62 |
+| 2026-10-13 | **第六轮问答关闭**（26 条 + 14 条补充） | 结论固化为 **DEC-80 ~ DEC-88**；新增 `docs/design/08`、`docs/design/09`、`docs/research/09` | R6 / DEC-80~88 |
+| 2026-10-13 | **内容数据全量采用** | 7 份 JSON / 9 个项目 / 73 KB，落**两处**（`web/public/content/data` + `Assets/StreamingAssets/Data`）；新增门禁 `tools/check-content-data.mjs`（结构签名，7 份 · 63/17/6/21/33/12/5 条字段路径），已进 hook 与 CI | DEC-82 / DEC-88 |
+| 2026-10-13 | **契约扩展** | `QuestionType`（0 起、有 `None`）与 `QuestionUsage`（`Exam`/`Step`）+ `BridgeMessageType`（23 条 · 两方向）；TS ↔ 快照 ↔ C# 三处同批改，门禁通过 | DEC-83 / DEC-85 |
+| 2026-10-13 | **git 提交**（DEC-78 渠道①） | `ba2533c`（40 文件）已推分支 `feat/unity-scaffold-bridge`；**PR 尚未开**（本机 GitHub 凭据失效，需人工开） | DEC-78 |
+| 2026-10-13 | **Plastic 提交**（DEC-60 渠道②） | `cs:6 → cs:8`（`cs:7` = `BridgeMessageType.cs` + `StreamingAssets/Data/*`；`cs:8` = `EnumAll.cs`）；**负责人编辑器内的在编文件（`0_Setup`/`1_Content`/`Core/**`/`Resources/`/`EditorBuildSettings`）未纳入**，留给他们自己那一批 | DEC-60 |
+| 2026-10-13 | 门禁本地全绿 | 契约三方（4 组枚举 + 23 条桥消息）、内容数据双份、大文件、壳耦合、`typecheck` / `lint` / `format:check` / **17 项单测** | DEC-66 |
 
 ---
 
@@ -522,14 +528,86 @@ fallbackToBlock  = true     // 若真机实测体验不可接受，允许改为�
 - **已执行（2026-10-12，PR #4）**：`tools/pipeline/{unity-stage,unity-verify,make-stub-unity,pack}.mjs`；`electron/server.js` 新增 `/unity/**` 路由（独立根目录，`/unity` 下缺文件一律 404，不回退成 HTML）与 COOP/COEP 开关 `WSU3_COOP_COEP`；`electron/package.json` 把 `../unity/builds` 打进 `resources/unity`；`web/src/unity/UnityLoader.ts`（注入 loader → `createUnityInstance` → 交桥握手 → 退出 `Quit()`，超时 25s、重试 1 次）+ `stores/runtime.ts` 落地；壳冒烟新增"Unity 页"取证。
 - **验证**：用**桩构建**（`make-stub-unity.mjs`，文件形状与真产物一致，并会走一遍握手）跑通全链 —— 打包版报告 `unityManifest.included=true`、`unityPage.mode="mounted"`（画布已建 + 桥已握手）、`consoleErrors=[]`。**真 Unity 产物接入后不需要改代码**，只是把桩目录换成真目录。
 
+---
+
+# 第六轮决策（Unity 脚手架：UI 形态 / 启动事件 / 内容数据，2026-10-13）
+
+> 来源：`OPEN-QUESTIONS-R6.md`（**26 条已答 + 14 条补充已答**）。本轮结论落在下面 9 条里。
+> 其中 **DEC-80 取代 DEC-14 的 UI 部分**（"Unity 侧 UI 用 uGUI + TMP"不再有效；TMP 中文烘焙的 WebGL 红线随之退场）；
+> 其余条目是**新增**，不改旧条目全文。
+
+| 编号 | 决定 | 来源 | 状态 |
+|---|---|---|---|
+| DEC-80 | **Unity 侧不做界面**：全部 UI 在 Web 的 DOM 层；三维世界内**不做跟随文字标签**；输入走 `EventSystem + StandaloneInputModule + PhysicsRaycaster`；TMP / uGUI 包**保留不删**但只当输入底座 | R6-1/2/3/4/5 + S1/S2 | 生效 |
+| DEC-81 | **Unity 构建粒度 = 单构建多任务**；**实例首次启动后永不卸载**；`0_Setup` 自检后 single 切 `1_Content` 并常驻；漫游在 `1_Content` 上 additive；任务之间**只装卸资源包** | R6-6/7/8/9 + S4/S5 | 生效（清单与加载器语义**待实现**） |
+| DEC-82 | **内容数据两份同名文件 + 门禁报不一致**（两份都手写、无权威侧）；门禁比对**结构签名**（字段路径 + 类型，`null` 是真实类型） | R6-17/19/20/21 + S10 | 生效 |
+| DEC-83 | **内容数据里的枚举写"名字"不写序号**；`QuestionType` 取 `None/SingleChoice/MultipleChoice/TrueFalse/FillInBlank`，`QuestionUsage` 取 `Exam/Step`（照被采纳数据的形状） | R6-20 + S11 | 生效 |
+| DEC-84 | **启动与运行期语义**：preload = 延迟启动 + 自检后停在内容场景待命；`assets:ready` 与 `scene:ready` 分两条；进度两段合成；预加载失败静默；不可见时"全透明父画布 + 交互提前返回 + 资产卸净"，恢复用 `runtime:resume`；模态用 `input:enable`；移动端不预加载 | R6-10~16 + S3/S5/S6/S7 | 生效 |
+| DEC-85 | **桥消息类型入契约**（23 条，分 Web→Unity / Unity→Web 两组；**分组、顺序、拼写**都要三方比对） | R6-25 + S13 | 生效（已落地） |
+| DEC-86 | **程序集依赖**：`WSU3.Core → WSU3.Contracts` 允许（唯一一条下行依赖）；`WSU3.Contracts` 保持零依赖；`docs/design/03` 的目录与依赖表随之更新（**删除 `UIs/` 目录**） | R6-24 + S | 生效 |
+| DEC-87 | **资源加载三条链路都做**（AB 为主 / AA 管场景 / 内置 `Resources`）；包登记表落 `Resources/Config`，包产物落 `Assets/StreamingAssets`；**不采用**被采纳工程的第三方表现插件与自制 ShaderGraph（材质改用 URP + 贴图通道映射） | R6-22 + S12 | 生效 |
+| DEC-88 | **全量采用既有"低压电气实训"仿真软件的内容数据**（7 份 JSON）作为本工程测试数据，并按其需要**复制三维资产**（允许 Blender 转换）；来源工程**只读**；采纳范围与剔除项见 `research/09` | 负责人 2026-10-13 追加 | 数据**已采纳**；资产搬运进行中 |
+
+## 17 第六轮决策的落地要点
+
+### 17.1 DEC-80：UI 形态（取代 DEC-14 的 UI 部分）
+
+- **取代关系**：DEC-14 原文不动，但其"Unity 侧 UI 用 uGUI + TMP"与"TMP 中文烘焙包体"两条结论**不再作为本工程做法**。
+- **三维世界内的文字**：不做跟随标签；文字全在 Web 侧栏 / 浮卡。点击物体仍回 `object:picked`，由 Web 决定弹什么。
+- **引线 / 箭头 / 标注**：属于**三维几何**（`LineRenderer` 等），仍由 Unity 画 —— 与"没有 UI"不矛盾。
+- **输入**：`EventSystem + StandaloneInputModule + PhysicsRaycaster`；**不建 Canvas**、不使用 `GraphicRaycaster`（它必须挂在 Canvas 上 —— 这是 Q-R6-S1 的关键澄清）。
+- **包与依赖**：`com.unity.ugui` / `com.unity.textmeshpro` **保留在 manifest 里**（`EventSystem` 来自 uGUI 包），但**不作为界面方案**；这条写进 `docs/design/03` §2，避免以后有人往 Canvas 里塞界面。
+- **输入边界**：常态由 CSS `pointer-events` 决定；模态态由 Web 发 `input:enable{false}` 显式关闭三维输入。
+
+### 17.2 DEC-81：构建粒度与实例生命周期
+
+- **一个构建承载全部 Unity 类任务**（`LineConnection` / `Training` / `Structure` / `Inspection`）；换任务 = `scene:exit` → `scene:enter`，**不重建实例**。
+- **实例永不卸载**（直到用户关闭页面）；切到 Three 类任务或离开内容页时**只让容器不可见**。
+- **场景**：`0_Setup`（自检）→ single 切 `1_Content`（常驻）；两者**都进构建**；漫游场景在 `1_Content` 之上 **additive**。
+- **⚠️ 待实现**：`unity-stage.mjs --task-types`、清单 `taskTypes[]`、`stores/runtime.ts` 的匹配口径（对照表见 `docs/design/05` §3.2）。
+
+### 17.3 DEC-82 / DEC-83：内容数据的双份与枚举口径
+
+- **两份落点**：`web/public/content/data/*.json`（随 `web/dist`）与 `NewStructureUnity/Assets/StreamingAssets/Data/*.json`（随 Unity 构建）。
+- **权威侧**：负责人选 **C —— 两边都手写，门禁只报"不一致"**。⚠️ 已记录的取舍：这与 DEC-08「单一真源」有张力，因此门禁**在提交与合并两处都跑**，且不一致时**一律先看两侧 diff 再决定改哪边**，不允许"谁红改谁"。
+- **比对粒度**（由 AI 定）：**结构签名**（字段路径 + 值类型）；`null` 是真实类型；**不比对值**。
+- **枚举写名字**：`"questionType": "SingleChoice"`、`"usage": "Step"`、`"contentType": "UI"`；名字是契约，三处同批改。
+- **`QuestionType` 最终取值**（由 AI 定，照被采纳数据）：`None=0 / SingleChoice=1 / MultipleChoice=2 / TrueFalse=3 / FillInBlank=4`；`QuestionUsage`：`Exam=0 / Step=1`。**`docs/design/04` 原写的"1 单选 … 5 排序"作废**（草案且与数据不符）。
+- **已落地**：`tools/check-content-data.mjs`（7 份文件、结构签名）+ 进 pre-commit 与 CI。
+
+### 17.4 DEC-84：启动链与运行期语义
+
+- **preload 的定义**（负责人口径）：**延迟启动 Unity → 自检通过后停在内容场景待命**；此时**没有装配任何任务**（不违反 DEC-08）。
+- **启动链**：`unity:ready` → `app:init`（握手后立刻发）→（可选 `preload:task`）→ `scene:enter` → `assets:ready` → `unity:progress`×N → `scene:ready`。
+- **两条就绪**：`assets:ready` = 资源包装完（Web 开始渲染界面）；`scene:ready` = 可交互（Web 结束 loading）。**由 AI 定**（Q-R6-S6）。
+- **进度合成**：0~0.6 引擎、0.6~1.0 装配，**权重写在 Web 侧常量**。
+- **失败**：进入超时 25s / 重试 1 次（沿用 DEC-71）；**预加载失败静默**；清单说"未包含 Unity"时**绝不预加载**；**移动端不预加载**。
+- **不可见**：用一个**全透明父层画布**让内核继续跑，Unity 侧在交互与更新链路**提前 return**，并**把资产卸干净**；恢复用 `runtime:resume`。动机：`display:none` 会让 `rAF` 暂停，回来后状态不可预期。
+
+### 17.5 DEC-85：桥消息入契约（已落地）
+
+- 23 条消息分两组，写在 `web/src/contracts/bridge.ts`、`NewStructureUnity/Assets/Scripts/Contracts/BridgeMessageType.cs`、`content/contracts/snapshot.json`。
+- 门禁额外校验：两组顺序、拼写，以及 **C# 常量声明顺序 = Web 组 ++ Unity 组**。
+
+### 17.6 DEC-87 / DEC-88：资源与资产的采纳
+
+- 三条链路的分工、包登记表与产物落点写进 `docs/design/03` §7；**四条例律**（一项目一包 / 实例登记 / WebGL 的 StreamingAssets 是 HTTP / bundle 名小写）来自被采纳工程的实际踩坑。
+- **不采用**其第三方表现插件（后处理 / 高亮 / 屏幕空间反射）与自制 ShaderGraph；材质改用 URP 标准光照 + 贴图通道直接映射（BaseColor / Normal / AO-Gloss），**画面降级已确认可接受**。
+- **剔除项**：PSD 设计稿、演示帧、未压缩背景大图、旧代模型、TMP 字体 SDF（理由与体积见 `research/09` §5）。
+- **落点**：大资产源文件放 `content/assets/unity/`（不进 git，DEC-57）；Three 侧所需 glTF/GLB 放 `content/assets/three/`。
+
 | 未闭合 | 原因 | 去向 |
 |---|---|---|
+| **接下来要做什么**（步骤 / 落点 / 验收） | 唯一维护点已独立成文，避免上下文被压缩后丢失 | **`PLAN.md`** |
+| **Unity 侧协议桥实现**（`.jslib` + 消息接收 + 启动编排） | DEC-85 已定清单，尚未写代码 | `PLAN.md` P0-1；落点 `Assets/Scripts/Web/` |
+| **流水线与加载器的"单构建多任务"语义**（DEC-81） | ✅ **已实现（2026-10-13）**：`--task-types` + 清单 `taskTypes[]` + `pickUnityBuild` + 壳侧同口径；验收＝桩构建 → 打包 → 壳冒烟 `mounted` | 见 `docs/PLAN.md` 已完成 1.13 |
+| **Unity 侧"编辑期 SO → 导出 JSON"链路**（DEC-82 / DEC-88） | 本期先采用"JSON 手写" | 数据面稳定后接入 |
+| **Web 侧内容层改用 `content/data/*.json`** | 当前仍走 `content/projects/` 的演示数据 | 与 Unity 桥同批做 |
+| **三维资产搬运与格式转换**（DEC-88） | 范围、体积与取舍已测绘（`research/09`） | 分批：8 器件新代模型 → 原理图 →（需要时）Blender 转 GLB |
 | 微信内置浏览器的**真机实测**结果 | 需要真机 | 待设备可用 |
 | CI 是否已在 GitHub 仓库启用 | ✅ 已闭合（PR #1 起两项检查持续为绿） | 见 `.github/workflows/gate.yml` |
 | WebGL 基线体积 | ✅ 已闭合（8.40 MiB / 空 URP 场景） | 见 `research/08-webgl-baseline.md` |
 | WebGL 的**首屏加载时间与帧率** | 尚未测（只统计了体积） | 下一步：把真 Unity 产物挂静态服务器实测 |
 | 运行环境的最终形态（在线 / 离线 / 局域网、目标静态托管） | DEC-05 / DEC-35 先不定 | 实现按"服务器可控"推进，目标托管与 COOP/COEP、缓存头一并定 |
-| 协议桥的 **Unity 侧实现**（`.jslib` + `WebBridge` 接收脚本） | DEC-07 已定协议，尚未落地 | 首次真实构建后接；落地前 Unity 类任务只验"画面挂上"（`docs/design/06` §5） |
 | **亮色是否作为默认主题** | 两套主题都已支持，默认仍是深色 | 负责人拍板；改动点只有 `stores/theme` 的默认值 |
-| **内容侧交付形态**（`content/projects/*.json` 的真实内容） | 尚未交付，当前为内置演示数据 | 内容侧交付后放 `content/projects/`，加载器已按此路径实现（`stores/content.ts`） |
 | **包体预算门禁** | DEC-02 的 250~360 MB 预算只有文字，无脚本 | 真产物接入后加门禁脚本（现有门禁只管单文件 10 MB） |

@@ -1,47 +1,71 @@
 {
-  "id": "demo-temperature",
-  "title": "温度传感器特性测量",
-  "summary": "以温度传感器为对象，覆盖「认识仪器 → 理解原理 → 接线 → 仿真操作 → 测验考核」的完整链路。",
-  "minutes": 45,
-  "tasks": [
+  "_note": "兜底演示内容：**与 content/data/ProjectData.json 同形状**（只保留少量槽位），因此走同一条适配路径（web/src/domain/adopted-content.ts）。真实内容数据到位时不会被读到 —— 它只保证「数据没随包发布」时页面仍可跑通而不是白屏（DEC-21 本期无后端）。",
+  "clips": [
     {
-      "taskType": 1,
-      "title": "任务目的",
-      "paragraphs": [
-        "本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，并掌握万用表的正确使用方法与数据记录规范。",
-        "实验前请先确认仪器完好、连线无破损；测量时注意量程档位与被测物理量一致。若读数长时间不稳定，请检查接线是否松动，并确认加热台温度已稳定后再记录数据。"
-      ],
-      "steps": [
-        { "id": "p1", "text": "确认实验台通电、仪器归位" },
-        { "id": "p2", "text": "记录当前室温作为基准点" }
-      ]
-    },
-    {
-      "taskType": 2,
-      "title": "实验仪器",
-      "paragraphs": [
-        "本任务需要以下仪器：数字万用表、直流稳压电源、温度传感器、加热台与连接线。",
-        "所有仪器均以三维模型展示，可旋转查看接口位置；点击条目可高亮对应模型。"
-      ],
-      "steps": [
-        { "id": "e1", "text": "认识万用表的档位与插孔" },
-        { "id": "e2", "text": "确认电源输出电压范围" }
-      ]
-    },
-    {
-      "taskType": 3,
-      "title": "实验原理",
-      "paragraphs": [
-        "温度传感器的输出电压与温度近似线性：U ≈ U0 + k·(T − T0)。其中 k 为灵敏度，由器件决定。",
-        "因此测量两点的温度与电压即可反推 k；实验用加热台提供稳定温场，用万用表读取电压。"
-      ],
-      "steps": [{ "id": "r1", "text": "观看原理讲解（约 3 分钟）" }]
-    },
-    {
-      "taskType": 6,
-      "title": "小测验",
-      "paragraphs": ["共 4 题，覆盖量程选择、接线规范与数据记录。答完即可查看解析。"],
-      "steps": [{ "id": "t1", "text": "选择题 1~4" }]
+      "id": "demo-temperature",
+      "displayName": "温度传感器特性测量（兜底演示）",
+      "description": "内容数据未就位时的兜底项目：结构完整、可跑通站点线，用来验证内容层与页面而不假装有真实内容。",
+      "displayNameEn": "Temperature Sensor Characteristics (fallback demo)",
+      "descriptionEn": "Fallback project used only when the adopted content data is absent.",
+      "taskPurposeData": {
+        "id": "demo_temperature_purpose",
+        "displayName": "任务目的",
+        "taskActive": true,
+        "contentText": "本实验以温度传感器为对象，通过测量其在不同温度下的输出，理解测温原理与温度—电压的对应关系，并掌握万用表的正确使用方法与数据记录规范。实验前请确认仪器完好、连线无破损；测量时注意量程档位与被测物理量一致。"
+      },
+      "taskEquipmentData": {
+        "id": "demo_temperature_equipment",
+        "displayName": "实验仪器",
+        "taskActive": true,
+        "contentText": "本任务需要以下仪器：数字万用表、直流稳压电源、温度传感器、加热台与连接线。",
+        "prefabKey": "demo_temperature_equipment_model",
+        "images": []
+      },
+      "taskPrincipleData": {
+        "id": "demo_temperature_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "测温原理",
+            "contentText": "温度传感器的输出随温度单调变化，通过标定曲线即可由电信号反推温度。",
+            "videoName": ""
+          }
+        ]
+      },
+      "taskInfoData": {
+        "id": "demo_temperature_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "温度传感器是工业测量中最常见的敏感元件之一，广泛用于过程控制与设备保护。",
+        "prefabKey": "demo_temperature_info_model",
+        "imageKey": "",
+        "images": []
+      },
+      "taskExamData": {
+        "id": "demo_temperature_exam",
+        "displayName": "小测验",
+        "taskActive": true,
+        "questionClips": [
+          {
+            "id": "demo_temperature_quiz",
+            "displayName": "小测验",
+            "questions": [
+              {
+                "id": "demo_q1",
+                "questionText": "测量温度传感器输出时，万用表应拨到哪个挡位？",
+                "questionType": "SingleChoice",
+                "options": [
+                  { "itemText": "直流电压挡", "isCorrect": true },
+                  { "itemText": "电阻挡", "isCorrect": false },
+                  { "itemText": "交流电流挡", "isCorrect": false },
+                  { "itemText": "电容挡", "isCorrect": false }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

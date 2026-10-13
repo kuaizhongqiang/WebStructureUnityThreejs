@@ -6,7 +6,12 @@
  *   2) WebGL 上下文可用（不是降级失败）；
  *   3) 渲染循环真的在跑（帧数递增、draw call > 0）—— 这是"不是白屏"的程序化证据；
  *   4) 页面无 JS 异常 / console.error；
- *   5) Unity 类 TaskType 显示占位提示（证明 DEC-06 的分流生效）。
+ *   5) Unity 类 TaskType 显示 Unity 视口骨架（证明 DEC-06 的分流生效）；
+ *   6) **内容层吃到真实数据**（第 7 节）：菜单出 9 个项目、进项目出真实正文、
+ *      未启用的槽位显示"本项目未启用"而不是空白、小测验出题目。
+ *
+ * 说明：三维断言用 `#/task/8`（结构）而不是 `#/task/2`（实验仪器）—— 采纳数据里
+ * 接触器启用了结构槽位，"实验仪器"的槽位是 `null`（会正确地显示"本项目未启用"）。
  *
  * 产物：tools/smoke/artifacts/*.png（截图，供人工核对）。
  * 用法：npm run smoke
@@ -138,8 +143,10 @@ try {
     if (message.type() === 'error') pageErrors.push(message.text())
   })
 
-  // ---------- 1. Three.js 任务页（TaskType.Equipment = 2 → Three 栈 + 三维视口）----------
-  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
+  // ---------- 1. Three.js 任务页（TaskType.Equipment = 2 → list 骨架 + Three 三维视口）----------
+  // ⚠️ 用**兜底演示项目**：采纳数据里 8 个器件都没有填 `taskEquipmentData` 槽位
+  //    （内容侧缺口，见第 7 节），所以今天只有兜底项目能走到这条 Three 路径。
+  await page.goto(`${base}/#/task/2?project=demo-temperature`, { waitUntil: 'load' })
   await page.waitForSelector('canvas', { timeout: 20000 })
   await page.waitForTimeout(1500) // 让渲染循环跑几帧
 
@@ -193,23 +200,23 @@ try {
   }
 
   // ---------- 2. Unity 类任务页（TaskType.Training = 5 → Unity 栈）----------
-  await page.goto(`${base}/#/task/5`, { waitUntil: 'load' })
+  await page.goto(`${base}/#/task/5?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(800)
   const unity = await page.evaluate(() => {
     const canvas = document.querySelector('canvas')
-    return { hasCanvas: Boolean(canvas), bodyText: document.body.innerText.slice(0, 400) }
+    return { hasCanvas: Boolean(canvas), bodyText: document.body.innerText.slice(0, 600) }
   })
 
   check(!unity.hasCanvas, 'Unity 页：未创建 three 画布（不越权渲染）')
   check(
-    unity.bodyText.includes('Unity WebGL'),
-    'Unity 页：显示 Unity 占位提示',
+    unity.bodyText.includes('三维视口（Unity）'),
+    'Unity 页：显示 Unity 视口骨架（DEC-06 分流生效）',
     unity.bodyText.replace(/\s+/g, ' ').slice(0, 80),
   )
   await page.screenshot({ path: resolve(artifactsDir, 'task-unity-placeholder.png'), fullPage: false })
 
   // ---------- 3. 回到 Three 页（覆盖 Unity → Three 的重建路径）----------
-  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
+  await page.goto(`${base}/#/task/2?project=demo-temperature`, { waitUntil: 'load' })
   await page.waitForSelector('canvas', { timeout: 20000 })
   await page.waitForTimeout(1200)
   const back = await page.evaluate(() => {
@@ -259,7 +266,7 @@ try {
   await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
 
   // ---------- 5. 站点线：11 站、契约标签、技术栈标注 ----------
-  await page.goto(`${base}/#/task/2`, { waitUntil: 'load' })
+  await page.goto(`${base}/#/task/8?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(600)
   const route = await page.evaluate(() => {
     const stops = [...document.querySelectorAll('.ui-route__stop')]
@@ -282,6 +289,72 @@ try {
   await page.waitForTimeout(500)
   const debugText = await page.evaluate(() => document.body.innerText)
   check(debugText.includes('真源读数') || debugText.includes('骨架自检'), '骨架自检页（/#/debug）可访问')
+
+  // ---------- 7. 内容层：真的吃到了被采纳的数据 ----------
+  await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
+  await page.waitForTimeout(900)
+  const menu = await page.evaluate(() => {
+    const tiles = [...document.querySelectorAll('.ui-tile-grid .ui-tile')]
+    return {
+      count: tiles.length,
+      names: tiles.map((el) => el.querySelector('.ui-tile__name')?.textContent?.trim() ?? ''),
+      text: document.body.innerText,
+    }
+  })
+  check(menu.count >= 9, '菜单页：项目卡片 ≥ 9 个（来自 content/data/MenuData.json）', `count=${menu.count}`)
+  check(
+    menu.names.some((name) => name.includes('接触器')) && menu.names.some((name) => name.includes('小测验')),
+    '菜单页：出现了真实项目名（器件 + 小测验）',
+    menu.names.join(' / ').slice(0, 120),
+  )
+  check(!menu.text.includes('内容数据未就位'), '内容层：没退化到兜底内容（说明真实数据读到了）')
+  await page.screenshot({ path: resolve(artifactsDir, 'menu.png'), fullPage: false })
+
+  // 7b. 进项目能出真实正文（TaskType.Info = 7 → article，接触器启用了简介槽位）
+  await page.goto(`${base}/#/task/7?project=clip_contactor`, { waitUntil: 'load' })
+  await page.waitForTimeout(600)
+  const article = await page.evaluate(() => {
+    const paragraphs = [...document.querySelectorAll('.ui-article p')].map(
+      (el) => el.textContent?.trim() ?? '',
+    )
+    return { text: document.body.innerText, longest: Math.max(0, ...paragraphs.map((item) => item.length)) }
+  })
+  check(
+    article.longest > 20,
+    '项目任务页：正文来自内容数据（不是占位文字）',
+    `最长段落 ${article.longest} 字`,
+  )
+  check(article.text.includes('接触器'), '项目任务页：面包屑显示项目名（内容数据里的 displayName）')
+  await page.screenshot({ path: resolve(artifactsDir, 'task-article.png'), fullPage: false })
+
+  // 7c. 未启用的槽位要说清，而不是给个空白页（"实验仪器"(2) 在接触器里是 null）
+  await page.goto(`${base}/#/task/2?project=clip_contactor`, { waitUntil: 'load' })
+  await page.waitForTimeout(500)
+  const disabled = await page.evaluate(() => document.body.innerText)
+  check(disabled.includes('本项目未启用'), '未启用槽位：显示“本项目未启用”的明确状态（不是空白正文）')
+
+  // 7d. 小测验项目出题目（TaskType.Exam = 10 → 项目自备题组）
+  await page.goto(`${base}/#/task/10?project=clip_quiz`, { waitUntil: 'load' })
+  await page.waitForTimeout(600)
+  const quiz = await page.evaluate(() => {
+    const badge = document.querySelector('.ui-panel__right .ui-badge')?.textContent ?? ''
+    return { badge, text: document.body.innerText }
+  })
+  const questionCount = Number(/共\s*(\d+)\s*题/.exec(quiz.badge)?.[1] ?? 0)
+  check(questionCount > 0, '小测验页：题目来自内容数据（项目题组）', `badge=${quiz.badge.trim()}`)
+  await page.screenshot({ path: resolve(artifactsDir, 'task-quiz.png'), fullPage: false })
+
+  // 7e. 坏链接（项目 id 不存在）：换成兜底内容并**明说**，而且不能把目录也换掉
+  //     （页面是 SPA，hash 跳转不重载 —— 曾经这里把整个菜单也换成了兜底，被本节抓到）
+  await page.goto(`${base}/#/task/7?project=does-not-exist`, { waitUntil: 'load' })
+  await page.waitForTimeout(600)
+  const stale = await page.evaluate(() => document.body.innerText)
+  check(stale.includes('找不到项目'), '坏链接：状态条明说“找不到项目”并退到兜底内容（不静默）')
+
+  await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
+  await page.waitForTimeout(500)
+  const menuAfter = await page.evaluate(() => document.querySelectorAll('.ui-tile-grid .ui-tile').length)
+  check(menuAfter >= 9, '坏链接之后目录仍然是完整的（一次坏链接不能污染全局状态）', `count=${menuAfter}`)
 
   check(pageErrors.length === 0, '全程无 JS 异常 / console.error', pageErrors.slice(0, 3).join(' | '))
 } finally {

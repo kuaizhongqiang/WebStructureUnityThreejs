@@ -17,7 +17,16 @@ import { TaskType } from '@/contracts'
 
 export interface UnityBuildEntry {
   key: string
-  taskType: number | null
+  /**
+   * 这个构建**声明能承载哪些 TaskType**（DEC-81：一个 Unity 构建承载全部 Unity 类任务）。
+   * 选件口径见 `declaresTaskType` —— 不再要求 `key` 等于任务名。
+   */
+  taskTypes?: number[]
+  /**
+   * 旧清单的单值字段（DEC-81 之前的形状）。
+   * @deprecated 新清单只写 `taskTypes`；这里只为兼容已经打出去的包。
+   */
+  taskType?: number | null
   entry?: string
   loader?: string | null
   /** 是否声明实现了协议桥（DEC-07）；false/缺失时页面会说明"该构建未声明桥支持" */
@@ -33,7 +42,7 @@ export interface ReleaseManifest {
   version: number
   generatedAt: string
   web?: { files: number; bytes: number }
-  content?: { projects: string[] }
+  content?: { projects: string[]; data?: string[] }
   unity?: { included: boolean; builds: UnityBuildEntry[]; reason?: string }
   serving?: Record<string, unknown>
   shell?: Record<string, unknown>
@@ -41,6 +50,35 @@ export interface ReleaseManifest {
 
 /** 本机静态服务器与壳都从根路径给清单；加时间戳避免缓存。 */
 const MANIFEST_URL = `${import.meta.env.BASE_URL}release-manifest.json`
+
+/**
+ * 一个构建是否声明承载这个 TaskType（DEC-81 的选件判据）。
+ *
+ * 口径：新清单写 `taskTypes[]`，命中即算；为兼容已经打出去的旧包，旧清单的单值 `taskType` 仍然认。
+ * **两代都为空则不认** —— 没声明承载范围的构建永远不会被选中。这是故意的：
+ * 宁可明确显示"产物未就位"，也不要挂上一个不知道能不能干活的东西。
+ *
+ * 同一判据在壳（`electron/main.js` 读清单时）有一份等价实现 —— 那边是独立进程，不共享本模块。
+ */
+export function declaresTaskType(build: UnityBuildEntry, taskType: TaskType): boolean {
+  if (Array.isArray(build.taskTypes) && build.taskTypes.length > 0) {
+    return build.taskTypes.includes(taskType)
+  }
+  return build.taskType === taskType
+}
+
+/**
+ * 选件：**清单里第一个声明包含该 taskType 的构建**（顺序即清单顺序 = `unity-stage` 按 `key` 排序的结果）。
+ *
+ * 为什么"第一个"就够：DEC-81 之后正常情况下只有一个构建（`main`）承载全部 Unity 类任务；
+ * 保留"多个候选取第一个"是为了将来真需要第二个构建（例如漫游单独一份）时不改调用方。
+ */
+export function pickUnityBuild(
+  builds: readonly UnityBuildEntry[],
+  taskType: TaskType,
+): UnityBuildEntry | null {
+  return builds.find((build) => declaresTaskType(build, taskType)) ?? null
+}
 
 export const useRuntimeStore = defineStore('runtime', () => {
   const manifest = ref<ReleaseManifest | null>(null)
@@ -51,9 +89,12 @@ export const useRuntimeStore = defineStore('runtime', () => {
 
   const unityBuilds = computed<UnityBuildEntry[]>(() => manifest.value?.unity?.builds ?? [])
 
-  /** 该 TaskType 是否有可挂载的 Unity 构建。 */
+  /**
+   * 该 TaskType 该挂哪个构建：**清单里第一个声明包含它的构建**（DEC-81）。
+   * 找不到就是 `null` —— 页面据此显示"产物未就位"，而不是假装在加载（DEC-53 §11.6）。
+   */
   function unityBuildFor(taskType: TaskType): UnityBuildEntry | null {
-    return unityBuilds.value.find((build) => build.taskType === taskType) ?? null
+    return pickUnityBuild(unityBuilds.value, taskType)
   }
 
   async function load(): Promise<void> {

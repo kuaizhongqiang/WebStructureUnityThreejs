@@ -1,0 +1,677 @@
+{
+  "clips": [
+    {
+      "id": "clip_contactor",
+      "displayName": "接触器",
+      "description": "利用电磁吸力实现远距离、频繁接通与断开主电路的自动控制电器。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_contactor_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "电磁吸合与触头动作",
+            "contentText": "线圈通电产生电磁吸力，吸引衔铁下移，带动主触头闭合、辅助触头随之动作；线圈断电后靠反力弹簧复位，触头断开。主触头断开的瞬间产生电弧，灭弧罩将电弧冷却并分割成多段短弧，使电弧迅速熄灭。",
+            "videoName": "01jcq_yl",
+            "titleEn": "Electromagnetic Pull-in and Contact Action",
+            "contentTextEn": "When the coil is energised it produces an electromagnetic attraction that pulls the armature downwards, driving the main contacts to close and the auxiliary contacts to operate accordingly. When the coil is de-energised the return spring resets the armature and the contacts open. An electric arc appears at the instant the main contacts open; the arc chute cools the arc and splits it into several short arcs so that the arc is extinguished quickly."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_contactor_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "接触器是利用线圈通电产生电磁吸力、使触头闭合或断开的自动控制电器，可远距离且频繁地接通和断开主电路，广泛用于电动机的起停控制。",
+        "prefabKey": "contactor_info_model",
+        "imageKey": "contactor_info_image",
+        "images": [
+          "contactor_info_01",
+          "contactor_info_02",
+          "contactor_info_03",
+          "contactor_info_04",
+          "contactor_info_05",
+          "contactor_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A contactor is an automatic control apparatus that uses an energised coil to produce electromagnetic attraction, closing or opening its contacts. It can connect and disconnect the main circuit remotely and frequently, and is widely used for start-stop control of motors."
+      },
+      "taskStructureData": {
+        "id": "clip_contactor_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "contactor_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_contactor_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "contactor_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Contactor",
+      "descriptionEn": "An automatic control apparatus that uses electromagnetic attraction to connect and disconnect the main circuit remotely and frequently."
+    },
+    {
+      "id": "clip_thermalRelay",
+      "displayName": "热继电器",
+      "description": "利用电流热效应实现电动机过载保护的电器。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_thermalRelay_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "双金属片受热弯曲",
+            "contentText": "过载电流流过发热元件，双金属片受热后向一侧弯曲，推动导板位移。导板推动常闭触头断开，切断控制回路，接触器线圈失电，电动机停转，实现过载保护。",
+            "videoName": "02rjdq_yl",
+            "titleEn": "Bimetallic Strip Bends When Heated",
+            "contentTextEn": "The overload current flows through the heating element, and the bimetallic strip bends to one side when heated, pushing the guide plate to move. The guide plate pushes the normally closed contact open and cuts off the control circuit; the contactor coil is de-energised, the motor stops, and overload protection is achieved."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_thermalRelay_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "热继电器利用电流的热效应工作，当电动机长期过载时自动切断控制回路，是最常用的过载保护电器。",
+        "prefabKey": "thermalRelay_info_model",
+        "imageKey": "thermalRelay_info_image",
+        "images": [
+          "thermalRelay_info_01",
+          "thermalRelay_info_02",
+          "thermalRelay_info_03",
+          "thermalRelay_info_04",
+          "thermalRelay_info_05",
+          "thermalRelay_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "The thermal relay works by the thermal effect of current. When a motor is overloaded for a long period it automatically cuts off the control circuit. It is the most commonly used overload protection apparatus."
+      },
+      "taskStructureData": {
+        "id": "clip_thermalRelay_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "thermalRelay_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_thermalRelay_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "thermalRelay_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Thermal Relay",
+      "descriptionEn": "An apparatus that uses the thermal effect of current to provide overload protection for motors."
+    },
+    {
+      "id": "clip_timeRelay",
+      "displayName": "时间继电器",
+      "description": "通电或断电后按设定时间延时动作的继电器。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_timeRelay_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "延时原理",
+            "contentText": "线圈通电后，通过空气阻尼、电磁阻尼或电子计时电路延迟一段设定时间，再驱动触头动作。到达设定延时后，延时触头（常开闭合、常闭断开）动作，用于按时间顺序控制电路。",
+            "videoName": "03sjjdq_yl",
+            "titleEn": "Time-Delay Principle",
+            "contentTextEn": "After the coil is energised, a set delay is produced by air damping, electromagnetic damping or an electronic timing circuit before the contacts are driven to operate. When the preset delay is reached the time-delay contacts operate (normally open closes, normally closed opens), providing time-sequence control of the circuit."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_timeRelay_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "时间继电器是通电或断电后延时动作的继电器，用于按时间顺序控制电路，例如电动机的延时起动与顺序切换。",
+        "prefabKey": "timeRelay_info_model",
+        "imageKey": "timeRelay_info_image",
+        "images": [
+          "timeRelay_info_01",
+          "timeRelay_info_02",
+          "timeRelay_info_03",
+          "timeRelay_info_04",
+          "timeRelay_info_05",
+          "timeRelay_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A time relay operates after a time delay following energisation or de-energisation. It is used for time-sequence control of circuits, for example delayed starting and sequential switching of motors."
+      },
+      "taskStructureData": {
+        "id": "clip_timeRelay_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "timeRelay_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_timeRelay_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "timeRelay_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Time Relay",
+      "descriptionEn": "A relay that operates after a preset time delay following energisation or de-energisation."
+    },
+    {
+      "id": "clip_masterAppliance",
+      "displayName": "主令电器",
+      "description": "用于发出控制指令的低压电器，如按钮、行程开关、转换开关等。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_masterAppliance_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "指令发出与触头通断",
+            "contentText": "操作按钮帽或机械挡块，压迫触头使常闭断开、常开闭合，向控制电路发出指令信号。松开按钮后，靠复位弹簧使触头恢复到原始状态。",
+            "videoName": "04zldq_yl",
+            "titleEn": "Command Issuing and Contact Making and Breaking",
+            "contentTextEn": "Operating the button cap or a mechanical stop presses the contacts so that the normally closed contact opens and the normally open contact closes, sending a command signal to the control circuit. When the button is released the return spring restores the contacts to their original state."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_masterAppliance_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "主令电器用于发出控制指令，控制电路的通断与切换，常见类型有按钮、行程开关、万能转换开关等。",
+        "prefabKey": "masterAppliance_info_model",
+        "imageKey": "masterAppliance_info_image",
+        "images": [
+          "masterAppliance_info_01",
+          "masterAppliance_info_02",
+          "masterAppliance_info_03",
+          "masterAppliance_info_04",
+          "masterAppliance_info_05",
+          "masterAppliance_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "Master appliances are used to issue control commands and to make, break and switch control circuits. Common types include push buttons, limit switches and universal selector switches."
+      },
+      "taskStructureData": {
+        "id": "clip_masterAppliance_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "masterAppliance_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_masterAppliance_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "masterAppliance_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Master Appliance",
+      "descriptionEn": "A low-voltage apparatus used to issue control commands, such as push buttons, limit switches and selector switches."
+    },
+    {
+      "id": "clip_fuse",
+      "displayName": "熔断器",
+      "description": "利用熔体熔化切断电路，实现短路保护的电器。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_fuse_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "过流熔断",
+            "contentText": "电流超过熔体额定值后，熔体发热急剧增加并熔化，自动切断电路。短路电流极大，熔体瞬间熔断，从而保护线路与设备。",
+            "videoName": "05rdq_yl",
+            "titleEn": "Overcurrent Melting",
+            "contentTextEn": "When the current exceeds the rated value of the fuse element, the heating of the element increases sharply and it melts, automatically cutting off the circuit. The short-circuit current is extremely large, so the element melts instantly, protecting the lines and the equipment."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_fuse_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "熔断器是最简单的保护电器，串接在电路中，当电流超过规定值时熔体熔断，用于短路保护。",
+        "prefabKey": "fuse_info_model",
+        "imageKey": "fuse_info_image",
+        "images": [
+          "fuse_info_01",
+          "fuse_info_02",
+          "fuse_info_03",
+          "fuse_info_04",
+          "fuse_info_05",
+          "fuse_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A fuse is the simplest protective apparatus. It is connected in series in the circuit, and when the current exceeds the specified value the fuse element melts. It is used for short-circuit protection."
+      },
+      "taskStructureData": {
+        "id": "clip_fuse_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "fuse_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_fuse_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "fuse_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Fuse",
+      "descriptionEn": "An apparatus that cuts off the circuit by melting its fuse element, providing short-circuit protection."
+    },
+    {
+      "id": "clip_breaker",
+      "displayName": "断路器",
+      "description": "能接通、承载和分断正常及故障电流，兼具短路与过载保护的开关电器。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_breaker_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "过载与短路脱扣",
+            "contentText": "过载时热脱扣器延时动作，短路时电磁脱扣器瞬时动作，推动自由脱扣机构分断主触头。触头分断产生的电弧在灭弧室中被拉长、冷却并熄灭，保证电路可靠分断。",
+            "videoName": "06dlq_yl",
+            "titleEn": "Overload and Short-Circuit Tripping",
+            "contentTextEn": "On overload the thermal trip unit operates after a time delay; on short circuit the electromagnetic trip unit operates instantaneously, driving the free-trip mechanism to open the main contacts. The arc produced when the contacts open is stretched, cooled and extinguished in the arc chamber, ensuring reliable breaking of the circuit."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_breaker_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "断路器是能够接通、承载和分断正常及故障电流的开关电器，具备短路保护与过载保护功能，故障排除后可手动合闸恢复供电。",
+        "prefabKey": "breaker_info_model",
+        "imageKey": "breaker_info_image",
+        "images": [
+          "breaker_info_01",
+          "breaker_info_02",
+          "breaker_info_03",
+          "breaker_info_04",
+          "breaker_info_05",
+          "breaker_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A circuit breaker is a switching apparatus able to make, carry and break normal and fault currents. It provides short-circuit protection and overload protection, and after the fault is cleared it can be closed manually to restore the power supply."
+      },
+      "taskStructureData": {
+        "id": "clip_breaker_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "breaker_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_breaker_inspection",
+        "displayName": "测量",
+        "taskActive": true,
+        "prefabKey": "breaker_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Circuit Breaker",
+      "descriptionEn": "A switching apparatus capable of making, carrying and breaking normal and fault currents, providing both short-circuit and overload protection."
+    },
+    {
+      "id": "clip_speedRelay",
+      "displayName": "速度继电器",
+      "description": "检测电动机转速的继电器，常用于反接制动控制。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_speedRelay_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "感应转矩产生",
+            "contentText": "转子随电动机旋转，永久磁铁定子切割磁力线产生感应转矩，使定子偏转。转速升高到一定值时触头动作；转速降低到接近零时，反力弹簧使触头复位，切断反接制动回路。",
+            "videoName": "07sdjdq_yl",
+            "titleEn": "Generation of Inductive Torque",
+            "contentTextEn": "The rotor turns with the motor, and the permanent-magnet stator cutting the lines of magnetic force produces an inductive torque that deflects the stator. When the speed rises to a certain value the contacts operate; when the speed falls to near zero the return spring resets the contacts and cuts off the plugging braking circuit."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_speedRelay_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "速度继电器通过检测电动机转速实现触头动作，主要用于电动机反接制动控制，在转速接近零时自动切断制动电源。",
+        "prefabKey": "speedRelay_info_model",
+        "imageKey": "speedRelay_info_image",
+        "images": [
+          "speedRelay_info_01",
+          "speedRelay_info_02",
+          "speedRelay_info_03",
+          "speedRelay_info_04",
+          "speedRelay_info_05",
+          "speedRelay_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A speed relay operates its contacts by detecting the rotational speed of the motor. It is mainly used for plugging braking control of motors, automatically cutting off the braking supply when the speed approaches zero."
+      },
+      "taskStructureData": {
+        "id": "clip_speedRelay_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "speedRelay_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_speedRelay_inspection",
+        "displayName": "测量",
+        "taskActive": false,
+        "prefabKey": "speedRelay_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Speed Relay",
+      "descriptionEn": "A relay that detects the rotational speed of a motor, commonly used for plugging braking control."
+    },
+    {
+      "id": "clip_combinationSwitch",
+      "displayName": "组合开关",
+      "description": "多档位手动开关，可在多条电路之间切换。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": {
+        "id": "clip_combinationSwitch_principle",
+        "displayName": "原理",
+        "taskActive": true,
+        "principleStructs": [
+          {
+            "title": "旋转切换",
+            "contentText": "旋转手柄带动转轴与凸轮，按预定顺序压合或断开各层触头。定位机构使手柄停留在各档位，保证触头状态稳定。",
+            "videoName": "08zhkg_yl",
+            "titleEn": "Rotary Switching",
+            "contentTextEn": "Rotating the handle drives the shaft and the cams, closing or opening the contacts of each layer in a preset sequence. The detent mechanism holds the handle at each position and keeps the contact state stable."
+          }
+        ],
+        "displayNameEn": "Principle"
+      },
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": null,
+      "taskInfoData": {
+        "id": "clip_combinationSwitch_info",
+        "displayName": "简介",
+        "taskActive": true,
+        "contentText": "组合开关是多档位手动开关电器，通过旋转手柄切换多条电路，常用于电源引入与电路转换。",
+        "prefabKey": "combinationSwitch_info_model",
+        "imageKey": "combinationSwitch_info_image",
+        "images": [
+          "combinationSwitch_info_01",
+          "combinationSwitch_info_02",
+          "combinationSwitch_info_03",
+          "combinationSwitch_info_04",
+          "combinationSwitch_info_05",
+          "combinationSwitch_info_06"
+        ],
+        "displayNameEn": "Introduction",
+        "contentTextEn": "A combination switch is a multi-position manual switching apparatus that switches several circuits by rotating its handle. It is commonly used for power supply entry and circuit changeover."
+      },
+      "taskStructureData": {
+        "id": "clip_combinationSwitch_structure",
+        "displayName": "结构",
+        "taskActive": true,
+        "prefabKey": "combinationSwitch_structure_model",
+        "displayNameEn": "Structure"
+      },
+      "taskInspectionData": {
+        "id": "clip_combinationSwitch_inspection",
+        "displayName": "测量",
+        "taskActive": false,
+        "prefabKey": "combinationSwitch_inspection_model",
+        "displayNameEn": "Measurement"
+      },
+      "displayNameEn": "Combination Switch",
+      "descriptionEn": "A multi-position manual switch that can switch between several circuits."
+    },
+    {
+      "id": "clip_quiz",
+      "displayName": "小测验",
+      "description": "低压电器基础知识小测验。",
+      "taskPurposeData": null,
+      "taskEquipmentData": null,
+      "taskPrincipleData": null,
+      "taskLineConnectionData": null,
+      "taskTrainingData": null,
+      "taskTestData": null,
+      "taskExamData": {
+        "id": "clip_quiz_test",
+        "displayName": "小测验",
+        "taskActive": true,
+        "questionClips": [
+          {
+            "id": "quiz_basic",
+            "displayName": "低压电器基础",
+            "description": "",
+            "questions": [
+              {
+                "id": "q_contactor",
+                "displayName": "",
+                "description": "",
+                "questionText": "用于远距离、频繁接通和断开主电路的电器是？",
+                "questionType": "SingleChoice",
+                "options": [
+                  {
+                    "itemText": "熔断器",
+                    "isCorrect": false,
+                    "itemTextEn": "Fuse"
+                  },
+                  {
+                    "itemText": "接触器",
+                    "isCorrect": true,
+                    "itemTextEn": "Contactor"
+                  },
+                  {
+                    "itemText": "热继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Thermal Relay"
+                  },
+                  {
+                    "itemText": "断路器",
+                    "isCorrect": false,
+                    "itemTextEn": "Circuit Breaker"
+                  }
+                ],
+                "displayNameEn": "",
+                "descriptionEn": "",
+                "questionTextEn": "Which apparatus is used to connect and disconnect the main circuit remotely and frequently?"
+              },
+              {
+                "id": "q_overload",
+                "displayName": "",
+                "description": "",
+                "questionText": "实现电动机过载保护的电器是？",
+                "questionType": "SingleChoice",
+                "options": [
+                  {
+                    "itemText": "熔断器",
+                    "isCorrect": false,
+                    "itemTextEn": "Fuse"
+                  },
+                  {
+                    "itemText": "接触器",
+                    "isCorrect": false,
+                    "itemTextEn": "Contactor"
+                  },
+                  {
+                    "itemText": "热继电器",
+                    "isCorrect": true,
+                    "itemTextEn": "Thermal Relay"
+                  },
+                  {
+                    "itemText": "组合开关",
+                    "isCorrect": false,
+                    "itemTextEn": "Combination Switch"
+                  }
+                ],
+                "displayNameEn": "",
+                "descriptionEn": "",
+                "questionTextEn": "Which apparatus provides overload protection for a motor?"
+              },
+              {
+                "id": "q_short",
+                "displayName": "",
+                "description": "",
+                "questionText": "实现短路保护、熔断后需要更换的电器是？",
+                "questionType": "SingleChoice",
+                "options": [
+                  {
+                    "itemText": "熔断器",
+                    "isCorrect": true,
+                    "itemTextEn": "Fuse"
+                  },
+                  {
+                    "itemText": "热继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Thermal Relay"
+                  },
+                  {
+                    "itemText": "时间继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Time Relay"
+                  },
+                  {
+                    "itemText": "速度继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Speed Relay"
+                  }
+                ],
+                "displayNameEn": "",
+                "descriptionEn": "",
+                "questionTextEn": "Which apparatus provides short-circuit protection and must be replaced after it melts?"
+              },
+              {
+                "id": "q_timeRelay",
+                "displayName": "",
+                "description": "",
+                "questionText": "按设定时间延时动作、用于时间顺序控制的电器是？",
+                "questionType": "SingleChoice",
+                "options": [
+                  {
+                    "itemText": "时间继电器",
+                    "isCorrect": true,
+                    "itemTextEn": "Time Relay"
+                  },
+                  {
+                    "itemText": "主令电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Master Appliance"
+                  },
+                  {
+                    "itemText": "断路器",
+                    "isCorrect": false,
+                    "itemTextEn": "Circuit Breaker"
+                  },
+                  {
+                    "itemText": "熔断器",
+                    "isCorrect": false,
+                    "itemTextEn": "Fuse"
+                  }
+                ],
+                "displayNameEn": "",
+                "descriptionEn": "",
+                "questionTextEn": "Which apparatus operates after a preset time delay and is used for time-sequence control?"
+              },
+              {
+                "id": "q_breaker",
+                "displayName": "",
+                "description": "",
+                "questionText": "同时具备短路保护与过载保护、故障排除后可手动恢复供电的电器是？",
+                "questionType": "SingleChoice",
+                "options": [
+                  {
+                    "itemText": "熔断器",
+                    "isCorrect": false,
+                    "itemTextEn": "Fuse"
+                  },
+                  {
+                    "itemText": "热继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Thermal Relay"
+                  },
+                  {
+                    "itemText": "断路器",
+                    "isCorrect": true,
+                    "itemTextEn": "Circuit Breaker"
+                  },
+                  {
+                    "itemText": "速度继电器",
+                    "isCorrect": false,
+                    "itemTextEn": "Speed Relay"
+                  }
+                ],
+                "displayNameEn": "",
+                "descriptionEn": "",
+                "questionTextEn": "Which apparatus provides both short-circuit protection and overload protection and can restore the power supply manually after the fault is cleared?"
+              }
+            ],
+            "displayNameEn": "Fundamentals of Low-Voltage Electrical Apparatus",
+            "descriptionEn": ""
+          }
+        ],
+        "displayNameEn": "Quiz"
+      },
+      "taskInfoData": null,
+      "taskStructureData": null,
+      "taskInspectionData": null,
+      "displayNameEn": "Quiz",
+      "descriptionEn": "A quiz on the fundamentals of low-voltage electrical apparatus."
+    }
+  ]
+}

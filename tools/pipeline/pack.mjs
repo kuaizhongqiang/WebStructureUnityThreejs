@@ -96,6 +96,10 @@ async function buildReleaseManifest() {
   const contentProjects = webFiles
     .filter((file) => /^content\/projects\/.+\.json$/.test(file))
     .map((file) => basename(file))
+  // 内容数据（DEC-82）：与 web/dist 一起发布的那一份，Unity 侧另有一份同名文件（随 Unity 构建发布）
+  const contentData = webFiles
+    .filter((file) => /^content\/data\/.+\.json$/.test(file))
+    .map((file) => basename(file))
 
   let unity = { included: false, builds: [], reason: '本机没有 Unity 暂存产物' }
   if (existsSync(join(unityStage, 'manifest.json'))) {
@@ -105,7 +109,12 @@ async function buildReleaseManifest() {
       const files = (build.files || []).map((f) => f.path)
       builds.push({
         key: build.key,
-        taskType: build.taskType,
+        // DEC-81：一个构建承载多个 TaskType；旧清单的单值 taskType 仍兼容
+        taskTypes: Array.isArray(build.taskTypes)
+          ? build.taskTypes
+          : build.taskType != null
+            ? [build.taskType]
+            : [],
         entry: build.entry,
         loader: build.loader,
         // 是否声明实现了协议桥：壳冒烟据此决定"要不要握手成功才算通过"（docs/design/06 §5）
@@ -129,7 +138,7 @@ async function buildReleaseManifest() {
     version: 1,
     generatedAt: new Date().toISOString(),
     web: { files: webFiles.length, bytes: await dirBytes(distRoot, webFiles) },
-    content: { projects: contentProjects },
+    content: { projects: contentProjects, data: contentData },
     unity,
     // 服务端约定：把 DEC-22 的"MIME/压缩/缓存清单"写进产物，部署方照抄
     serving: {
@@ -160,7 +169,10 @@ function summary(manifest, exePath) {
   console.log(`内容项目：   ${manifest.content.projects.length ? manifest.content.projects.join('、') : '（无）'}`)
   if (manifest.unity.included) {
     for (const build of manifest.unity.builds) {
-      console.log(`Unity 构建： ${build.key}（taskType=${build.taskType}）${mb(build.totalBytes)} MB，指纹 ${build.treeSha256.slice(0, 12)}…`)
+      console.log(
+        `Unity 构建： ${build.key}（承载 taskTypes=${build.taskTypes.join(',') || '未声明'}）` +
+          `${mb(build.totalBytes)} MB，指纹 ${build.treeSha256.slice(0, 12)}…`,
+      )
     }
   } else {
     console.log('Unity 构建： **未包含** —— ' + manifest.unity.reason)

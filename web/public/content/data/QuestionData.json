@@ -1,0 +1,331 @@
+{
+  "id": "questionData",
+  "displayName": "问题集",
+  "description": "低压电器仿真实训题库（唯一题库）：8 道考核题（原始需求 Sheet 10「4、小测验」，考核 Exam 只抽 usage=Exam 的题、随机抽 5 题）+ 步骤答题的题（usage=Step，由 ConditionQuestion 按 usingId 取用，不进考核池）。",
+  "questions": [
+    {
+      "id": "1",
+      "displayName": "保护电器辨识",
+      "description": "",
+      "questionText": "下列电器中，属于保护电器的是（  ）。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "热继电器",
+          "isCorrect": true,
+          "itemTextEn": "Thermal Relay"
+        },
+        {
+          "itemText": "时间继电器",
+          "isCorrect": false,
+          "itemTextEn": "Time Relay"
+        },
+        {
+          "itemText": "按钮",
+          "isCorrect": false,
+          "itemTextEn": "Push Button"
+        },
+        {
+          "itemText": "行程开关",
+          "isCorrect": false,
+          "itemTextEn": "Travel Switch"
+        }
+      ],
+      "displayNameEn": "Identifying Protective Appliances",
+      "descriptionEn": "",
+      "questionTextEn": "Among the following appliances, the one that is a protective appliance is (  )."
+    },
+    {
+      "id": "2",
+      "displayName": "主令电器辨识",
+      "description": "",
+      "questionText": "下列电器中，属于主令电器的是（  ）。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "刀开关",
+          "isCorrect": false,
+          "itemTextEn": "Knife Switch"
+        },
+        {
+          "itemText": "接触器",
+          "isCorrect": false,
+          "itemTextEn": "Contactor"
+        },
+        {
+          "itemText": "热继电器",
+          "isCorrect": false,
+          "itemTextEn": "Thermal Relay"
+        },
+        {
+          "itemText": "按钮",
+          "isCorrect": true,
+          "itemTextEn": "Push Button"
+        }
+      ],
+      "displayNameEn": "Identifying Master Appliances",
+      "descriptionEn": "",
+      "questionTextEn": "Among the following appliances, the one that is a master appliance is (  )."
+    },
+    {
+      "id": "3",
+      "displayName": "交流接触器触点动作顺序",
+      "description": "",
+      "questionText": "交流接触器通电时触点的动作顺序是（  ）。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "动合触点先断开，动断触点后闭合",
+          "isCorrect": false,
+          "itemTextEn": "The normally-open contact opens first, and the normally-closed contact closes afterwards"
+        },
+        {
+          "itemText": "动合触点先闭合，动断触点后断开",
+          "isCorrect": false,
+          "itemTextEn": "The normally-open contact closes first, and the normally-closed contact opens afterwards"
+        },
+        {
+          "itemText": "动断触点先断开，动合触点后闭合",
+          "isCorrect": true,
+          "itemTextEn": "The normally-closed contact opens first, and the normally-open contact closes afterwards"
+        },
+        {
+          "itemText": "动合触点闭合，动断触点不动作",
+          "isCorrect": false,
+          "itemTextEn": "The normally-open contact closes, and the normally-closed contact does not operate"
+        }
+      ],
+      "displayNameEn": "Contact Operation Sequence of an AC Contactor",
+      "descriptionEn": "",
+      "questionTextEn": "When an AC contactor is energized, the operation sequence of its contacts is (  )."
+    },
+    {
+      "id": "4",
+      "displayName": "热继电器保护类型",
+      "description": "",
+      "questionText": "热继电器在电动机控制电路中只能做（  ）保护。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "短路",
+          "isCorrect": false,
+          "itemTextEn": "Short Circuit"
+        },
+        {
+          "itemText": "过载",
+          "isCorrect": true,
+          "itemTextEn": "Overload"
+        },
+        {
+          "itemText": "失压",
+          "isCorrect": false,
+          "itemTextEn": "Loss of Voltage"
+        },
+        {
+          "itemText": "欠压",
+          "isCorrect": false,
+          "itemTextEn": "Undervoltage"
+        }
+      ],
+      "displayNameEn": "Protection Type of a Thermal Relay",
+      "descriptionEn": "",
+      "questionTextEn": "In a motor control circuit, a thermal relay can only provide (  ) protection."
+    },
+    {
+      "id": "5",
+      "displayName": "速度继电器的作用",
+      "description": "",
+      "questionText": "速度继电器的主要作用是实现对电动机的（  ）。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "调速控制",
+          "isCorrect": false,
+          "itemTextEn": "Speed regulation control"
+        },
+        {
+          "itemText": "运行速度限制",
+          "isCorrect": false,
+          "itemTextEn": "Operating speed limitation"
+        },
+        {
+          "itemText": "反接制动控制",
+          "isCorrect": true,
+          "itemTextEn": "Plugging (reverse-connection braking) control"
+        },
+        {
+          "itemText": "速度计量",
+          "isCorrect": false,
+          "itemTextEn": "Speed measurement"
+        }
+      ],
+      "displayNameEn": "Function of the Speed Relay",
+      "descriptionEn": "",
+      "questionTextEn": "The main function of a speed relay is to realize (  ) of the motor."
+    },
+    {
+      "id": "6",
+      "displayName": "时间继电器延时方式翻转",
+      "description": "",
+      "questionText": "将 TS7-A 系列通电延时型时间继电器的电磁机构翻转（  ）安装，即可成为断电延时型继电器。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "120度",
+          "isCorrect": false,
+          "itemTextEn": "120 degrees"
+        },
+        {
+          "itemText": "180度",
+          "isCorrect": true,
+          "itemTextEn": "180 degrees"
+        },
+        {
+          "itemText": "90度",
+          "isCorrect": false,
+          "itemTextEn": "90 degrees"
+        },
+        {
+          "itemText": "60度",
+          "isCorrect": false,
+          "itemTextEn": "60 degrees"
+        }
+      ],
+      "displayNameEn": "Reversing the Delay Mode of a Time Relay",
+      "descriptionEn": "",
+      "questionTextEn": "Turn the electromagnetic mechanism of a TS7-A series on-delay time relay over by (  ) before installing it, and it becomes an off-delay relay."
+    },
+    {
+      "id": "7",
+      "displayName": "低压电器的电压定义",
+      "description": "",
+      "questionText": "低压电器的电路电压为（  ）。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "交、直流电压 1200V 及以上",
+          "isCorrect": false,
+          "itemTextEn": "AC or DC voltage of 1200 V and above"
+        },
+        {
+          "itemText": "交、直流电压 3000V 及以下",
+          "isCorrect": false,
+          "itemTextEn": "AC or DC voltage of 3000 V and below"
+        },
+        {
+          "itemText": "交、直流电压 500V 及以上",
+          "isCorrect": false,
+          "itemTextEn": "AC or DC voltage of 500 V and above"
+        },
+        {
+          "itemText": "交流 50Hz 或 60Hz，额定电压 1200V 及以下，直流额定电压 1500V 及以上",
+          "isCorrect": true,
+          "itemTextEn": "AC 50 Hz or 60 Hz with a rated voltage of 1200 V and below, or DC with a rated voltage of 1500 V and above"
+        }
+      ],
+      "displayNameEn": "Voltage Definition of Low-voltage Electrical Appliances",
+      "descriptionEn": "",
+      "questionTextEn": "The circuit voltage of a low-voltage electrical appliance is (  )."
+    },
+    {
+      "id": "8",
+      "displayName": "热继电器的复位方式",
+      "description": "",
+      "questionText": "热继电器的复位方式有（  ）两种。",
+      "questionType": "SingleChoice",
+      "options": [
+        {
+          "itemText": "瞬时、自动",
+          "isCorrect": false,
+          "itemTextEn": "Instantaneous, automatic"
+        },
+        {
+          "itemText": "自动、半自动",
+          "isCorrect": false,
+          "itemTextEn": "Automatic, semi-automatic"
+        },
+        {
+          "itemText": "自动、手动",
+          "isCorrect": true,
+          "itemTextEn": "Automatic, manual"
+        },
+        {
+          "itemText": "手动、半自动",
+          "isCorrect": false,
+          "itemTextEn": "Manual, semi-automatic"
+        }
+      ],
+      "displayNameEn": "Reset Modes of a Thermal Relay",
+      "descriptionEn": "",
+      "questionTextEn": "A thermal relay has two reset modes: (  )."
+    },
+    {
+      "id": "contactor_q_mainContact",
+      "displayName": "主触点与辅助常开触点辨识",
+      "description": "接触器测量步骤题（Step_6）；题干由项目方给定，选项按 A/B/C/D 顺序，正确答案 C。注：本模型可测的辅助常开触点只有 53NO-54NO、83NO-84NO（常闭为 61NC-62NC、71NC-72NC），模型上不存在 13NO-14NO。",
+      "questionText": "根据测量结果，主触点对与辅助常开触点对分别是（  ）。",
+      "questionType": "SingleChoice",
+      "usage": "Step",
+      "options": [
+        {
+          "itemText": "主触点对：1L1-3L2、5L3-2T1、4T2-6T3；辅助常开触点对：13NO-14NO",
+          "isCorrect": false,
+          "itemTextEn": "Main contact pair: 1L1-3L2, 5L3-2T1, 4T2-6T3; auxiliary normally-open contact pair: 13NO-14NO"
+        },
+        {
+          "itemText": "主触点对：1L1-5L3、3L2-2T1、4T2-6T3；辅助触点对：13NO-14NO、61NC-62NC",
+          "isCorrect": false,
+          "itemTextEn": "Main contact pairs: 1L1-5L3, 3L2-2T1, 4T2-6T3; auxiliary contact pairs: 13NO-14NO, 61NC-62NC"
+        },
+        {
+          "itemText": "主触点对：1L1-2T1、3L2-4T2、5L3-6T3；辅助常开触点对：13NO-14NO、53NO-54NO、83NO-84NO",
+          "isCorrect": true,
+          "itemTextEn": "Main contact pairs: 1L1-2T1, 3L2-4T2, 5L3-6T3; auxiliary normally-open contact pairs: 13NO-14NO, 53NO-54NO, 83NO-84NO"
+        },
+        {
+          "itemText": "主触点对：1L1-3L2、5L3-6T3、4T2-2T1；辅助触点对：13NO-14NO",
+          "isCorrect": false,
+          "itemTextEn": "Main contact pairs: 1L1-3L2, 5L3-6T3, 4T2-2T1; auxiliary contact pair: 13NO-14NO"
+        }
+      ],
+      "displayNameEn": "Identifying Main Contacts and Auxiliary Normally-open Contacts",
+      "descriptionEn": "Contactor measurement step question (Step_6); the question stem is given by the project side, the options follow the A/B/C/D order, and the correct answer is C. Note: the only auxiliary normally-open contacts measurable on this model are 53NO-54NO and 83NO-84NO (the normally-closed ones are 61NC-62NC and 71NC-72NC); 13NO-14NO does not exist on the model.",
+      "questionTextEn": "According to the measurement results, the main contact pair and the auxiliary normally-open contact pair are (  )."
+    },
+    {
+      "id": "contactor_q_coil",
+      "displayName": "线圈电阻判断",
+      "description": "接触器测量步骤题（Step_6b）；题干由项目方给定，原稿的 O/0 按 Ω 归一（8500 → 850Ω），正确答案 A。注：C/D 本身是自洽的解释规则，故题干写成“本次测量的结果及判断”，以 A 为唯一正确项。",
+      "questionText": "用万用表测量接触器线圈 A1-A2 的电阻，本次测量的结果及判断是（  ）。",
+      "questionType": "SingleChoice",
+      "usage": "Step",
+      "options": [
+        {
+          "itemText": "线圈电阻在 850Ω 左右，线圈正常",
+          "isCorrect": true,
+          "itemTextEn": "The coil resistance is about 850 Ω, so the coil is normal"
+        },
+        {
+          "itemText": "线圈电阻在 850kΩ 左右，线圈正常",
+          "isCorrect": false,
+          "itemTextEn": "The coil resistance is about 850 kΩ, so the coil is normal"
+        },
+        {
+          "itemText": "线圈电阻为 0，线圈短路",
+          "isCorrect": false,
+          "itemTextEn": "The coil resistance is 0, so the coil is short-circuited"
+        },
+        {
+          "itemText": "线圈电阻无穷大，线圈开路",
+          "isCorrect": false,
+          "itemTextEn": "The coil resistance is infinite, so the coil is open-circuited"
+        }
+      ],
+      "displayNameEn": "Judging the Coil Resistance",
+      "descriptionEn": "Contactor measurement step question (Step_6b); the question stem is given by the project side, the O/0 in the original draft is normalized to Ω (8500 -> 850 Ω), and the correct answer is A. Note: C and D are self-consistent interpretation rules in themselves, so the question stem is written as the result and judgement of this measurement, making A the only correct option.",
+      "questionTextEn": "Use a multimeter to measure the resistance of the contactor coil A1-A2; the result and judgement of this measurement are (  )."
+    }
+  ],
+  "displayNameEn": "Question Set",
+  "descriptionEn": "Low-voltage electrical appliance simulation training question bank (the only question bank): 8 assessment questions (original requirement Sheet 10, \"4. Quiz\"; the Exam only draws questions with usage=Exam, randomly picking 5 questions) + step-answer questions (usage=Step, retrieved by ConditionQuestion through usingId, not included in the exam pool)."
+}

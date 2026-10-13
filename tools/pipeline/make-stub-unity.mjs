@@ -8,9 +8,11 @@
  *   · `createUnityInstance` 的行为与官方 loader 同形（返回实例、上报进度、可 Quit）；
  *   · 启动时会调 `window.__WSU3_BRIDGE__.onReady('1')` —— 正好把 DEC-07 的握手也走一遍。
  *
- * 用法：node tools/pipeline/make-stub-unity.mjs --key training --task-type 5
- *       （生成到 NewStructureUnity/Builds/stub-webgl，再按 design/05 用 unity-stage 暂存）
- *       node tools/pipeline/make-stub-unity.mjs --key training --task-type 5 --stage   # 直接暂存
+ * 用法：node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9
+ *       （生成到 NewStructureUnity/Builds/stub-main，再按 design/05 用 unity-stage 暂存）
+ *       node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --stage   # 直接暂存
+ *
+ * 默认承载 4,5,8,9（电路连接 / 仿真实验 / 结构 / 检测）—— DEC-81：一个构建承载全部 Unity 类任务。
  */
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
@@ -18,12 +20,19 @@ import { fileURLToPath } from 'node:url'
 
 const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 
-const args = { key: 'training', taskType: 5, stage: false, out: '' }
+/** Unity 类任务的 TaskType 序号（与契约一致：4 电路连接 / 5 仿真实验 / 8 结构 / 9 检测）。 */
+const DEFAULT_TASK_TYPES = '4,5,8,9'
+
+const args = { key: 'main', taskTypes: DEFAULT_TASK_TYPES, stage: false, out: '' }
 const argv = process.argv.slice(2)
 for (let i = 0; i < argv.length; i += 1) {
   if (argv[i] === '--key') args.key = argv[++i]
-  else if (argv[i] === '--task-type') args.taskType = Number(argv[++i])
-  else if (argv[i] === '--out') args.out = argv[++i]
+  else if (argv[i] === '--task-types') args.taskTypes = argv[++i]
+  else if (argv[i] === '--task-type') {
+    // 已废弃（DEC-81）：保留是为不打断肌肉记忆，会转成 --task-types 单值
+    console.warn('[stub] ⚠️ --task-type 已废弃，请改用 --task-types 4,5,8,9')
+    args.taskTypes = argv[++i]
+  } else if (argv[i] === '--out') args.out = argv[++i]
   else if (argv[i] === '--stage') args.stage = true
 }
 
@@ -127,14 +136,16 @@ async function main() {
         outDir,
         '--key',
         args.key,
-        '--task-type',
-        String(args.taskType),
+        '--task-types',
+        args.taskTypes,
       ],
       { stdio: 'inherit' },
     )
     if (result.status !== 0) process.exitCode = result.status ?? 1
   } else {
-    console.log(`下一步：node tools/pipeline/unity-stage.mjs --from ${outDir} --key ${args.key} --task-type ${args.taskType}`)
+    console.log(
+      `下一步：node tools/pipeline/unity-stage.mjs --from ${outDir} --key ${args.key} --task-types ${args.taskTypes}`,
+    )
   }
 }
 

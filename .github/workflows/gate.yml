@@ -16,8 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: 双端契约一致性（TS <-> 快照 <-> C#）
+      - name: 双端契约一致性（TS <-> 快照 <-> C#，含桥消息类型）
         run: node tools/check-contracts.mjs
+      - name: 内容数据双份一致性（Web 与 Unity 两份同名数据）
+        run: node tools/check-content-data.mjs
       - name: 大文件门禁（已跟踪文件，10MB 阈值）
         run: node tools/check-large-files.mjs --tracked
       - name: 业务代码零 import electron（DEC-20）

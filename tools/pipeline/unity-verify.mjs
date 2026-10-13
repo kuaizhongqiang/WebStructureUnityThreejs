@@ -76,7 +76,12 @@ async function main() {
     for (const rule of [/\.loader\.js$/, /\.wasm(\.br|\.gz)?$/, /\.data(\.br|\.gz)?$/]) {
       if (!names.some((name) => rule.test(name))) problems.push(`${build.key}: 缺少关键文件（${rule}）`)
     }
-    builds.push({ key: build.key, taskType: build.taskType, files: checked, bytes })
+    // 兼容两代清单：新清单写 taskTypes[]，旧清单写单值 taskType（DEC-81 之后不再生成旧形状）
+    const taskTypes = Array.isArray(build.taskTypes) ? build.taskTypes : build.taskType != null ? [build.taskType] : []
+    if (taskTypes.length === 0) {
+      problems.push(`${build.key}: 清单没有声明 taskTypes[] —— 该构建永远不会被选中（DEC-81）`)
+    }
+    builds.push({ key: build.key, taskTypes, files: checked, bytes })
   }
 
   const result = {
@@ -103,7 +108,7 @@ function report(result) {
   }
   for (const build of result.builds) {
     const mb = (build.bytes / 1024 / 1024).toFixed(1)
-    console.log(`[unity] ✓ ${build.key}（taskType=${build.taskType}）${build.files} 个文件 / ${mb} MB`)
+    console.log(`[unity] ✓ ${build.key}（承载 taskTypes=${build.taskTypes.join(',')}）${build.files} 个文件 / ${mb} MB`)
   }
   for (const problem of result.problems) console.error(`[unity] ✗ ${problem}`)
   console.log(result.ok ? '[unity] 校验通过：暂存区与清单一致。' : '[unity] 校验失败。')

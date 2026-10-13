@@ -69,6 +69,17 @@ docs/ui-mockups/shots/
 unity/builds/*
 !unity/builds/README.md
 
+# ---------- 内容大资产（DEC-57：模型 / 贴图 / 视频不进 git） ----------
+# Three.js 侧：落点 content/assets/three/（构建前由流水线拷进 web/dist）
+# 与 unity/builds/ 同款处理：整目录忽略，只放行那份说明文件，保证新克隆的仓库里目录仍在。
+content/assets/**
+!content/assets/README.md
+
+# Unity 侧源资产（FBX / 贴图 / 预制体）：必须放在 Unity 自己的 Assets/ 下才能导入，
+# 由 Plastic 渠道管理（DEC-60）；git 侧一律忽略，避免大文件进门禁（DEC-57/65）。
+NewStructureUnity/Assets/Models/
+NewStructureUnity/Assets/Sounds/
+
 # ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/
 /web/public/unity-build-*/
@@ -94,3 +105,6 @@ nul
 # 注意用通配：pack.mjs 支持 --out release-xxx 换输出目录（上一次的 exe 被占用时），那些也要忽略
 electron/release/
 electron/release-*/
+
+# 壳冒烟报告（`npm run smoke` 每次运行都会重写：机器名/时间/IP 全在里头，是产物不是源码）
+electron/wsu3-shell-smoke.json

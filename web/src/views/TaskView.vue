@@ -33,13 +33,22 @@ const progress = useProgressStore()
 const content = useContentStore()
 const runtime = useRuntimeStore()
 
+/** URL 里的项目（`?project=clip_contactor`）；缺省时用菜单第一项 —— 这样 `#/task/8` 也能落到真实项目上 */
+const projectId = computed(() => (typeof route.query.project === 'string' ? route.query.project : undefined))
 const taskType = computed<TaskType>(() => {
   const raw = Number(route.params.taskType)
   return TASK_TYPES.includes(raw as TaskType) ? (raw as TaskType) : TaskType.Purpose
 })
 const meta = computed(() => metaOf(taskType.value))
+/**
+ * 当前任务在**本项目**里的内容。`undefined` = 这个项目没启用这个任务
+ * （采纳数据里每个 clip 只有一部分槽位非空，见 `domain/adopted-content.ts`）。
+ */
 const task = computed(() => content.taskOf(taskType.value))
 const unity = computed(() => isUnityTask(taskType.value))
+/** 本项目启用的任务（契约顺序）—— 上一/下一站、可达性都按它走，不按全局契约顺序 */
+const enabledTypes = computed(() => content.enabledTypesOf())
+const questions = computed(() => content.questionsOf(taskType.value))
 
 // —— 三维视口：按容器比例自适应（页面不写死宽高，DEC-73）——
 const viewport = ref<HTMLElement | null>(null)
@@ -70,14 +79,30 @@ function syncViewer(): void {
   else unmountViewer()
 }
 
-onMounted(() => {
+/**
+ * 内容可能**晚于**导航到位：SPA 里换 `?project=` 只更新 URL，项目数据是异步取的。
+ * 在它到达之前，页面会先落到"本项目未启用"分支（没有视口容器），
+ * 所以内容到位时**必须再同步一次**，否则视口永远挂不上（`mountViewer` 拿不到容器就静默返回）。
+ */
+const viewerSignal = computed(() => `${meta.value.kind}:${task.value ? 'on' : 'off'}`)
+watch(viewerSignal, () => void nextTick(syncViewer))
+
+onMounted(async () => {
   session.switchTaskType(taskType.value)
-  void content.load().then(syncViewer)
+  // 内容先到位再挂视口：菜单 → 项目 → 题库，全部幂等（内容层自己缓存）
+  await content.ensureCatalog()
+  await content.ensureProject(projectId.value)
+  await content.loadBank()
   syncViewer()
+  void runtime.load().then(syncUnity)
+  syncUnity()
 })
-watch(taskType, (next) => {
+watch([taskType, projectId], ([next], [previous]) => {
   session.switchTaskType(next)
-  void nextTick(syncViewer)
+  if (next !== previous) void nextTick(syncViewer)
+  // URL 里的项目变了要**重新取项目**：hash 跳转不会重载页面，不重取就会一直用上一个项目
+  // （`ensureProject` 幂等：目标项目已在手上时直接返回）
+  void content.ensureProject(projectId.value)
 })
 onBeforeUnmount(unmountViewer)
 
@@ -86,9 +111,14 @@ function back(): void {
   void router.push({ name: 'menu' })
 }
 
+/** 切任务时**带上当前项目**，否则会悄悄回到菜单第一个项目。 */
 function goTo(next: TaskType): void {
   unmountViewer()
-  void router.push({ name: 'task', params: { taskType: String(next) } })
+  void router.push({
+    name: 'task',
+    params: { taskType: String(next) },
+    query: content.project ? { project: content.project.id } : {},
+  })
 }
 
 // —— Unity 承载的任务（DEC-12：按需挂载 + 退出必须销毁）
@@ -163,16 +193,21 @@ function syncUnity(): void {
   else void unmountUnityView()
 }
 
-onMounted(() => {
-  void runtime.load().then(syncUnity)
-  syncUnity()
-})
+// 挂载/卸载 Unity 的时机：任务变化、或发布清单读完（清单决定"有没有构建"）——
+// 首次进入的调用在主 `onMounted` 里（那时才保证内容已到位）。
 watch([taskType, () => runtime.unityState], () => void nextTick(syncUnity))
 onBeforeUnmount(() => void unmountUnityView())
 
+/**
+ * 下一站 = **本项目启用的任务**里的下一个（契约顺序），不是全局 `TASK_TYPES`。
+ * 采纳数据里每个器件只启用一部分槽位（例：接触器只有 原理/简介/结构/测量），
+ * 按全局顺序走会一路撞上"本项目未启用"。
+ */
 const nextTask = computed<TaskType | null>(() => {
-  const index = TASK_TYPES.indexOf(taskType.value)
-  return index >= 0 && index < TASK_TYPES.length - 1 ? TASK_TYPES[index + 1] : null
+  const types = enabledTypes.value
+  if (types.length === 0) return null
+  const index = types.indexOf(taskType.value)
+  return index < 0 ? (types[0] ?? null) : (types[index + 1] ?? null)
 })
 
 function finish(): void {
@@ -184,7 +219,7 @@ function finish(): void {
 
 <template>
   <AppShell
-    :crumb="`目录 / ${content.project.title}`"
+    :crumb="`目录 / ${content.project?.title ?? '未选择项目'}`"
     :badges="[
       `已完成 ${progress.completedCount} / ${progress.total}`,
       stackOf(taskType) === ViewerStack.Unity ? 'Unity' : 'Three',
@@ -193,7 +228,7 @@ function finish(): void {
     route
     :active-task="taskType"
     actions
-    :status-left="`[ ${labelOf(taskType)} ] ${meta.hint}`"
+    :status-left="content.projectError ?? `[ ${labelOf(taskType)} ] ${meta.hint}`"
     :status-right="
       unity
         ? `桥协议 v${BRIDGE_PROTOCOL_VERSION} · ` +
@@ -204,8 +239,40 @@ function finish(): void {
     @back="back"
   >
     <div class="app-task">
-      <!-- article：正文 + 步骤侧栏 -->
-      <div v-if="meta.kind === 'article'" class="app-split">
+      <!--
+        本项目未启用该任务（采纳数据里该槽位是 `null`）—— 这是个**明确状态**，
+        不是"加载失败"：直接说清并给出本项目真正可去的任务。
+        Unity 类任务不走这里：它的内容由 Unity 侧自己带（见下面的 practice 分支）。
+      -->
+      <div v-if="!task && !unity" class="app-split">
+        <div class="ui-panel">
+          <div class="ui-panel__head">
+            {{ labelOf(taskType) }}
+            <span class="ui-panel__right">
+              <span class="ui-badge ui-badge--warn">本项目未启用</span>
+            </span>
+          </div>
+          <div class="ui-panel__body ui-col">
+            <div class="ui-article">
+              <p>
+                内容数据里，项目「{{ content.project?.title ?? '—' }}」没有为
+                <b>{{ labelOf(taskType) }}</b> 提供内容（槽位为 <code>null</code>）。 这不是加载失败 ——
+                采纳数据的每个器件只启用一部分任务。
+              </p>
+            </div>
+            <div class="ui-row" style="flex-wrap: wrap">
+              <button v-for="type in enabledTypes" :key="type" class="ui-btn ui-btn--sm" @click="goTo(type)">
+                {{ labelOf(type) }}
+              </button>
+            </div>
+            <div class="app-grow" />
+            <button class="ui-btn ui-btn--block" @click="back()">返回项目目录</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- article：正文 + 本项目任务 -->
+      <div v-else-if="meta.kind === 'article'" class="app-split">
         <div class="ui-panel">
           <div class="ui-panel__head">
             {{ content.titleOf(taskType) }}
@@ -215,8 +282,16 @@ function finish(): void {
           </div>
           <div class="ui-panel__body ui-col" style="overflow: auto">
             <div class="ui-article">
-              <p v-for="(paragraph, index) in task?.paragraphs ?? []" :key="index">{{ paragraph }}</p>
-              <p v-if="!task">本任务的内容尚未交付（`content/projects/*.json`）。</p>
+              <p v-for="(paragraph, index) in task?.paragraphs ?? []" :key="`p${index}`">{{ paragraph }}</p>
+              <template v-for="(section, index) in task?.sections ?? []" :key="`s${index}`">
+                <p v-if="section.title">
+                  <b>{{ section.title }}</b>
+                </p>
+                <p>{{ section.text }}</p>
+              </template>
+              <p v-if="!(task?.paragraphs.length || task?.sections.length)">
+                该任务在内容数据里没有文字（由三维或 Unity 侧承担）。
+              </p>
             </div>
             <div class="app-grow" />
             <button class="ui-btn ui-btn--primary ui-btn--block" @click="finish">
@@ -227,13 +302,26 @@ function finish(): void {
         </div>
 
         <div class="ui-panel">
-          <div class="ui-panel__head">当前步骤</div>
+          <div class="ui-panel__head">
+            本项目任务
+            <span class="ui-panel__right">
+              <span class="ui-badge">{{ enabledTypes.length }} 站</span>
+            </span>
+          </div>
           <div class="ui-panel__body ui-col">
-            <div v-for="(step, index) in task?.steps ?? []" :key="step.id" class="ui-row">
-              <span class="ui-badge">{{ index + 1 }}</span>
-              <span>{{ step.text }}</span>
+            <button
+              v-for="type in enabledTypes"
+              :key="type"
+              class="ui-btn ui-btn--sm"
+              :class="{ 'ui-btn--primary': type === taskType }"
+              @click="goTo(type)"
+            >
+              {{ content.titleOf(type) }}
+              <span class="ui-muted">{{ labelOf(type) }}</span>
+            </button>
+            <div class="ui-muted" style="font-size: var(--fs-11)">
+              步骤内容由 Unity 侧提供，本页不假装有步骤（见 `docs/design/09`）。
             </div>
-            <div v-if="!task?.steps?.length" class="ui-muted">暂无步骤内容。</div>
           </div>
         </div>
       </div>
@@ -297,10 +385,21 @@ function finish(): void {
           </div>
           <div class="ui-panel__body ui-col">
             <div class="ui-article" style="font-size: var(--fs-14)">
-              <p v-for="(paragraph, index) in task?.paragraphs ?? []" :key="index">{{ paragraph }}</p>
+              <p v-for="(paragraph, index) in task?.paragraphs ?? []" :key="`p${index}`">{{ paragraph }}</p>
+              <template v-for="(section, index) in task?.sections ?? []" :key="`s${index}`">
+                <p v-if="section.title">
+                  <b>{{ section.title }}</b>
+                </p>
+                <p>{{ section.text }}</p>
+              </template>
               <p>
-                该任务由 Unity WebGL 承载（DEC-12/DEC-06）。当前 Unity 产物尚未接入（Phase 4），
-                因此这里先占用同一块视口位置，接口与桥协议已就位（v{{ BRIDGE_PROTOCOL_VERSION }}）。
+                该任务由 <b>Unity WebGL</b> 承载（DEC-06/DEC-12）：画面在右侧视口，桥协议 v{{
+                  BRIDGE_PROTOCOL_VERSION
+                }}。
+              </p>
+              <p v-if="!task" class="ui-muted">
+                内容数据里没有该任务的槽位 —— Unity 类任务的**操作内容由 Unity 侧自带**
+                （它读自己那份数据），所以这里没有文字是正常的。
               </p>
             </div>
             <div class="ui-alert ui-alert--info">
@@ -335,8 +434,8 @@ function finish(): void {
                   这是一个<b>明确状态</b>，不是"加载中卡住"：发布清单（release-manifest.json）里没有该任务的构建。
                   接入方式见 <code>docs/design/05-unity-packaging-pipeline.md</code>：<br />
                   <code
-                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key
-                    {{ unityBuild?.key ?? 'training' }} --task-type {{ taskType }}</code
+                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key main --task-types
+                    4,5,8,9</code
                   >
                 </div>
                 <div v-if="runtime.unityState === 'unknown'" class="ui-muted" style="font-size: var(--fs-11)">
@@ -372,20 +471,86 @@ function finish(): void {
         </div>
       </div>
 
-      <!-- 其余骨架（video / quiz / exam）：Phase 3 交付，但外壳与站点线已经是真实导航 -->
+      <!-- quiz / exam：题目（项目自备题组优先，考核回落到题库的 Exam 池）—— 真实数据 -->
+      <div v-else-if="meta.kind === 'quiz' || meta.kind === 'exam'" class="app-split">
+        <div class="ui-panel">
+          <div class="ui-panel__head">
+            {{ content.titleOf(taskType) }}
+            <span class="ui-panel__right">
+              <span class="ui-badge ui-badge--info">共 {{ questions.length }} 题</span>
+            </span>
+          </div>
+          <div class="ui-panel__body ui-col" style="overflow: auto">
+            <div
+              v-for="(question, index) in questions"
+              :key="question.id"
+              class="ui-col"
+              style="gap: var(--sp-2); border-bottom: 1px solid var(--border-2); padding-bottom: var(--sp-3)"
+            >
+              <div class="ui-row">
+                <span class="ui-badge">{{ index + 1 }}</span>
+                <span>{{ question.text }}</span>
+              </div>
+              <div
+                v-for="option in question.options"
+                :key="option.text"
+                class="ui-row"
+                style="padding-left: var(--sp-7)"
+              >
+                <span class="ui-muted">{{ option.text }}</span>
+              </div>
+            </div>
+            <div v-if="questions.length === 0" class="ui-muted">
+              这道任务既没有项目题组，题库里也没有可用题目。
+            </div>
+            <div class="ui-alert ui-alert--info">
+              <span class="ui-alert__icon">i</span>
+              <span>作答、判分与成绩单在后续交付（DEC-40）；本页先确认**题库与题组被真实读到**。</span>
+            </div>
+            <button class="ui-btn ui-btn--primary ui-btn--block" @click="finish">
+              <Check :size="14" />
+              {{ nextTask !== null ? `完成并前往：${labelOf(nextTask)}` : '完成全部任务' }}
+            </button>
+          </div>
+        </div>
+        <div class="ui-panel">
+          <div class="ui-panel__head">本项目任务</div>
+          <div class="ui-panel__body ui-col">
+            <button
+              v-for="type in enabledTypes"
+              :key="type"
+              class="ui-btn ui-btn--sm"
+              :class="{ 'ui-btn--primary': type === taskType }"
+              @click="goTo(type)"
+            >
+              {{ content.titleOf(type) }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 其余骨架（video）：Phase 3 交付，但外壳与站点线已经是真实导航 -->
       <div v-else class="app-split">
         <div class="ui-panel">
           <div class="ui-panel__head">{{ content.titleOf(taskType) }}</div>
           <div class="ui-panel__body ui-col">
             <div class="ui-article" style="font-size: var(--fs-14)">
-              <p>{{ meta.hint }} —— 该骨架（{{ meta.kind }}）在 Phase 3 交付。</p>
-              <p>
-                现在这一页的意义是：站点线、进度记录、技术栈分流已经能真实走通；
-                换掉中间的主体容器即可，外壳与导航不需要动。
+              <template v-for="(section, index) in task?.sections ?? []" :key="`s${index}`">
+                <p v-if="section.title">
+                  <b>{{ section.title }}</b>
+                </p>
+                <p>{{ section.text }}</p>
+              </template>
+              <p v-if="!task?.sections.length">
+                {{ meta.hint }} —— 该骨架（{{ meta.kind }}）在 Phase 3 交付。
               </p>
             </div>
-            <div class="ui-row">
-              <span class="ui-badge ui-badge--info"> <Play :size="12" /> {{ meta.kind }} </span>
+            <div class="ui-row" style="flex-wrap: wrap">
+              <span v-for="section in task?.sections ?? []" :key="`v${section.title}`">
+                <span v-if="section.videoName" class="ui-badge ui-badge--info">
+                  <Play :size="12" /> {{ section.videoName }}
+                </span>
+              </span>
               <span class="ui-badge">{{ unity ? 'Unity' : 'Three' }}</span>
             </div>
             <button class="ui-btn ui-btn--primary ui-btn--block" @click="finish">
@@ -394,10 +559,10 @@ function finish(): void {
           </div>
         </div>
         <div class="ui-panel">
-          <div class="ui-panel__head">下一步</div>
+          <div class="ui-panel__head">本项目后续任务</div>
           <div class="ui-panel__body ui-col">
             <div
-              v-for="type in TASK_TYPES.slice(TASK_TYPES.indexOf(taskType) + 1)"
+              v-for="type in enabledTypes.slice(Math.max(enabledTypes.indexOf(taskType), -1) + 1)"
               :key="type"
               class="ui-row"
             >
