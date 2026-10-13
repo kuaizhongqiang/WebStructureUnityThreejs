@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-10-13T06:44:58.483Z",
+  "note": "渲染期贴图查找表（由 import-material-textures.mjs 生成）：GLB 里没带的那几张在哪。",
+  "textures": {
+    "breaker/ElectronicSupermarket2.png": "content/assets/three/breaker/ElectronicSupermarket2.png",
+    "_shared/White.png": "content/assets/three/_shared/White.png",
+    "contactor/ElectronicSupermarket2.png": "content/assets/three/contactor/ElectronicSupermarket2.png",
+    "fuse/ElectronicSupermarket2.png": "content/assets/three/fuse/ElectronicSupermarket2.png",
+    "thermalRelay/ElectronicSupermarket2.png": "content/assets/three/thermalRelay/ElectronicSupermarket2.png",
+    "timeRelay/ElectronicSupermarket2.png": "content/assets/three/timeRelay/ElectronicSupermarket2.png"
+  }
+}

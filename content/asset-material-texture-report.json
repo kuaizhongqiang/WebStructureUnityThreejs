@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-10-13T06:44:58.483Z",
+  "dryRun": false,
+  "note": "补搬渲染期贴图（按材质引用，而不是按文件名前缀）",
+  "entries": [
+    {
+      "device": "breaker",
+      "material": "ElectronicSupermarket2",
+      "slot": "baseColor",
+      "base": "ElectronicSupermarket2.png",
+      "source": "Assets\\Model\\Element\\Show\\接触器\\ElectronicSupermarket2.png",
+      "target": "content\\assets\\three\\breaker\\ElectronicSupermarket2.png",
+      "status": "exists",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653"
+    },
+    {
+      "device": "combinationSwitch",
+      "material": "CombinationSwitch2",
+      "slot": "baseColor",
+      "base": "White.png",
+      "source": "Assets\\Model\\Public\\White.png",
+      "target": "content\\assets\\three\\_shared\\White.png",
+      "status": "exists",
+      "bytes": 2219,
+      "sha256": "8a7fd93a1a58fdafa7fca08a5968cbdd265d81878a7df74ab8726af13bcdf761"
+    },
+    {
+      "device": "contactor",
+      "material": "ElectronicSupermarket2",
+      "slot": "baseColor",
+      "base": "ElectronicSupermarket2.png",
+      "source": "Assets\\Model\\Element\\Show\\接触器\\ElectronicSupermarket2.png",
+      "target": "content\\assets\\three\\contactor\\ElectronicSupermarket2.png",
+      "status": "exists",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653"
+    },
+    {
+      "device": "fuse",
+      "material": "ElectronicSupermarket2",
+      "slot": "baseColor",
+      "base": "ElectronicSupermarket2.png",
+      "source": "Assets\\Model\\Element\\Show\\接触器\\ElectronicSupermarket2.png",
+      "target": "content\\assets\\three\\fuse\\ElectronicSupermarket2.png",
+      "status": "exists",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653"
+    },
+    {
+      "device": "thermalRelay",
+      "material": "ElectronicSupermarket2",
+      "slot": "baseColor",
+      "base": "ElectronicSupermarket2.png",
+      "source": "Assets\\Model\\Element\\Show\\接触器\\ElectronicSupermarket2.png",
+      "target": "content\\assets\\three\\thermalRelay\\ElectronicSupermarket2.png",
+      "status": "exists",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653"
+    },
+    {
+      "device": "timeRelay",
+      "material": "ElectronicSupermarket2",
+      "slot": "baseColor",
+      "base": "ElectronicSupermarket2.png",
+      "source": "Assets\\Model\\Element\\Show\\接触器\\ElectronicSupermarket2.png",
+      "target": "content\\assets\\three\\timeRelay\\ElectronicSupermarket2.png",
+      "status": "exists",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653"
+    }
+  ]
+}

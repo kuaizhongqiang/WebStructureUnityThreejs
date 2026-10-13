@@ -29,10 +29,27 @@ import bpy
 argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
 if len(argv) < 2:
     print("用法：blender --background --python blender-fbx-to-glb.py -- <in.fbx> <out.glb> [texdir ...]")
+    print("      [--spec <材质规格.json> --model-key <器件>/<名字>]  # 带这两项才应用预制体覆写层")
     sys.exit(2)
 
-fbx_path, out_path = argv[0], argv[1]
-texture_dirs = argv[2:] or [os.path.dirname(fbx_path)]
+# 选项先摘出来，剩下的位置参数才是贴图搜索目录（不传 --spec 时行为与以前完全一致）
+spec_path = None
+model_key = None
+positional = []
+index = 0
+while index < len(argv):
+    if argv[index] == "--spec" and index + 1 < len(argv):
+        spec_path = argv[index + 1]
+        index += 2
+    elif argv[index] == "--model-key" and index + 1 < len(argv):
+        model_key = argv[index + 1]
+        index += 2
+    else:
+        positional.append(argv[index])
+        index += 1
+
+fbx_path, out_path = positional[0], positional[1]
+texture_dirs = positional[2:] or [os.path.dirname(fbx_path)]
 stem = os.path.splitext(os.path.basename(fbx_path))[0].lower()
 
 warnings = []
@@ -168,6 +185,83 @@ if "aoGloss" in candidates:
     )
 
 # --------------------------------------------------------------------------
+# 4b. 预制体覆写层：**哪个 mesh 用哪个材质**（这一层只在预制体里，按 FBX 转必丢）
+# --------------------------------------------------------------------------
+# 规律（`docs/DECISIONS.md` §19.4，从原工程 prefab 数据直接读出）：
+#   · 结构件 prefab 的 MeshRenderer 节点名与 **FBX 节点名逐字对应**，给出全量材质分配；
+#   · `*_info_model` 用嵌套实例 + `m_Modifications`（按 FBX 内部 fileID）覆写其中几个，是**子集**。
+# 所以规格里 `devices[<器件>].prefabOverrides` 就是"末段名 → 材质名"。
+overrides_applied = {"applied": 0, "missing": [], "materials": [], "created": []}
+
+if spec_path and model_key:
+    with open(spec_path, "r", encoding="utf-8") as handle:
+        spec = json.load(handle)
+    device_key, _, stem = model_key.partition("/")
+    device_entry = spec.get("devices", {}).get(device_key, {})
+    mapping = device_entry.get("prefabOverrides", {})
+    materials_spec = spec.get("materials", {})
+
+    def object_by_node(name):
+        """按节点名找对象（Blender 对重名会加 `.001` 后缀，所以退化到前缀匹配）。"""
+        if name in bpy.data.objects:
+            return bpy.data.objects[name]
+        for obj in bpy.data.objects:
+            if obj.name.split(".")[0] == name:
+                return obj
+        return None
+
+    # ⚠️ 同名覆写材质**只建一次**并复用：`material.copy()` 会自动改名成 `X.001`/`X.002`，
+    # 而渲染期是按**材质名**对规格的 —— 名字带后缀就会全部落空（实测踩过）。
+    override_cache = {}
+
+    def override_material(target, name):
+        """覆写材质：能克隆就克隆（外观与主干一致，身份正确），`Alpha` 这类自己造。"""
+        if name in override_cache:
+            return override_cache[name], False
+        entry = materials_spec.get(name, {})
+        source = target.material_slots[0].material if len(target.material_slots) else None
+        base_color = entry.get("baseColor") or [1, 1, 1, 1]
+        has_base_texture = bool(entry.get("textures", {}).get("baseColor"))
+        if source is not None and has_base_texture:
+            clone = source.copy()
+            clone.name = name
+            override_cache[name] = clone
+            return clone, False
+        # 没有基色贴图的（如 `Alpha`：无贴图 + 基色 α=0 ⇒ 原工程里就是"看不见"）
+        material = bpy.data.materials.new(name)
+        material.use_nodes = True
+        bsdf = first_principled(material)
+        bsdf.inputs["Base Color"].default_value = (base_color[0], base_color[1], base_color[2], 1.0)
+        bsdf.inputs["Alpha"].default_value = base_color[3]
+        bsdf.inputs["Metallic"].default_value = (entry.get("scalars") or {}).get("metallic", 0.0)
+        bsdf.inputs["Roughness"].default_value = 1.0 - (entry.get("scalars") or {}).get("smoothness", 0.5)
+        if entry.get("surfaceMode") == "MASK":
+            material.blend_method = "CLIP"
+            material.alpha_threshold = entry.get("alphaCutoff", 0.5)
+        elif entry.get("surfaceMode") == "BLEND":
+            material.blend_method = "BLEND"
+        override_cache[name] = material
+        return material, True
+
+    for node_name, names in mapping.items():
+        target = object_by_node(node_name)
+        if target is None:
+            overrides_applied["missing"].append(node_name)
+            continue
+        for slot_index, material_name in enumerate(names):
+            if slot_index >= len(target.material_slots):
+                continue
+            current = target.material_slots[slot_index].material
+            if current is not None and current.name == material_name:
+                continue
+            material, created = override_material(target, material_name)
+            target.material_slots[slot_index].material = material
+            overrides_applied["applied"] += 1
+            overrides_applied["materials"].append(f"{node_name}[{slot_index}]={material_name}")
+            if created:
+                overrides_applied["created"].append(material_name)
+
+# --------------------------------------------------------------------------
 # 5. 导出 + 摘要
 # --------------------------------------------------------------------------
 os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
@@ -197,5 +291,7 @@ summary = {
     "hooked": hooked,
     "unmapped": unmapped,
     "warnings": warnings,
+    # 预制体覆写层：applied=真正换掉的材质槽数；missing=prefab 里有但 FBX 里没有的节点（如内置 Cube 触点）
+    "overrides": overrides_applied,
 }
 print("WSU3_GLB_SUMMARY " + json.dumps(summary, ensure_ascii=False))

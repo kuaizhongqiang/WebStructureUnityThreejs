@@ -19,6 +19,7 @@
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
 | `docs/PLAN.md` | **执行计划（活文档）**：接下来要做什么、落点与验收、"待办"的唯一维护点 |
 | `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用），`style.css` 是聚合入口 |
+| `docs/model-preview/` | **模型检视页（审核用）**：把 `content/assets/three/**` 的 13 个 GLB 逐个挂上 Three.js，用来定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（金属度、粗糙度、贴图接没接上）。自带 `serve.mjs`（服务根＝仓库根，见 §4） |
 | `docs/README.md` | 文档总索引与写作约定 |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
 | `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
@@ -53,6 +54,7 @@
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁）。**Unity 侧协议桥尚未实现**，真实构建首次接入表现为"画面挂上、待握手" |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；框体规则见 `docs/design/07-frame-style-rules.md` |
+| 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-94）：13 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人本页审阅后定** |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
 | **尚未开始** | Unity 侧协议桥（`.jslib` + 消息接收 + 启动编排，DEC-85 已定清单）、Unity 侧 **steps**（步骤机与场景装配，负责人进行中）、模型的 URP 材质贴图赋值（P1-4 待办） |
@@ -100,6 +102,31 @@ node src/render.mjs               # 改过样式或页面生成器后重新生�
 ```
 
 右上角可切「深色 / 亮色」，单页也可用 `?theme=light`。
+
+### 模型检视页（审核用，DEC-94）
+
+```bash
+# 服务根必须是**仓库根**：页面要同时取到三处 —— docs/model-preview/（自己）、
+# content/assets/three/**（13 个 GLB，不进 git，只在本机磁盘上）、web/node_modules/three（three 库）
+node docs/model-preview/serve.mjs
+# → http://127.0.0.1:5281/docs/model-preview/index.html
+```
+
+- 左侧按器件列出 13 个 GLB（中文名取内容数据 `content/data/ProjectData.json`），点开即加载、可旋转；
+  深链 `?model=<器件>/<名字>`（如 `?model=contactor/NewACContactor`）可直接把"就是这一个"发给别人。
+- 本页要定的两件事：**环境**（产品现状 / 灯光+IBL / 仅 IBL / 仅环境光四档，加背景与曝光）与
+  **材质**（贴图开关、线框、金属度与粗糙度覆盖滑块 —— GLB 里现在是 `0.0 / 0.5` 常数兜底）。
+- 读数分两栏："证据"来自 `content/asset-convert-report.json`，"实测"是从 GLB 现读的 —— 两边不一致就说明清单漂了。
+- 清单**不另维护第二份**（避免"同一件事两处写、两处漂"）；本页只消费 `docs/ui-mockups` 的令牌与元件，
+  **不新增设计令牌、不新增产品组件类**。
+- 本页**不是产品**，也不属于 §4 的打包链路：产品要用的资产链仍是 `docs/PLAN.md` 的 **P1-5**
+  （构建前把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`），**尚未实现**。
+- **环境默认是影棚 HDRI**：`content/assets/three/env/StudioWhiteUmbrella.exr`（5.65 MB，不进 git）
+  **同时**当天空盒（背景）与光源（IBL）。页面上**没有地面网格**，**右键不再平移**（左键旋转 / 滚轮缩放）。
+- 材质通路有**两个可重跑的工具**（结论见 `docs/DECISIONS.md` §19.4）：
+  - `node tools/pipeline/extract-material-spec.mjs` → `content/asset-material-spec.json`
+    （从**只读**来源工程抽 shader 的贴图通路、mask 通道语义与区间重映射、表面模式、预制体覆写）；
+  - `node tools/pipeline/audit-material-mapping.mjs` → 逐模型**逐子材质**核对"规格要求的"与"GLB 里实际接的"。
 
 ### 应用壳（Electron）
 

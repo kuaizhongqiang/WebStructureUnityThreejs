@@ -1,33 +1,7 @@
 {
-  "generatedAt": "2026-10-13T05:18:50.469Z",
+  "generatedAt": "2026-10-13T06:44:49.693Z",
   "blender": "D:\\Blender\\blender.exe",
   "models": [
-    {
-      "device": "breaker",
-      "stem": "CircuitBreaker",
-      "glb": "content/assets/three/breaker/CircuitBreaker.glb",
-      "bytes": 4490244,
-      "sha256": "8da345a0bef60adfb049fd66539b0443fab5c90ec7fea18a9a34d98996595a12",
-      "triangles": 113957,
-      "meshes": 60,
-      "materials": 2,
-      "images": [
-        "CircuitBreaker_CircuitBreaker_Base Color.png",
-        "CircuitBreaker_CircuitBreaker_Normal.png"
-      ],
-      "hooked": {
-        "baseColor": 2,
-        "normal": 2
-      },
-      "unmapped": [
-        {
-          "file": "CircuitBreaker_CircuitBreaker_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
-        }
-      ],
-      "warnings": [],
-      "status": "converted"
-    },
     {
       "device": "breaker",
       "stem": "NewCircuitBreaker",
@@ -58,8 +32,8 @@
       "device": "combinationSwitch",
       "stem": "CombinationSwitch",
       "glb": "content/assets/three/combinationSwitch/CombinationSwitch.glb",
-      "bytes": 2953348,
-      "sha256": "4d873dd70a99040ac54cb6f67e429fdcd9dac555b96a6cea1f817227b410c924",
+      "bytes": 2953684,
+      "sha256": "81caa708ec151ef849eee0e8c4f66a577fa39d6e13a3969650e27a5a5c5e73a8",
       "triangles": 36648,
       "meshes": 21,
       "materials": 2,
@@ -74,32 +48,6 @@
       "unmapped": [
         {
           "file": "CombinationSwitch_CombinationSwitch_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
-        }
-      ],
-      "warnings": [],
-      "status": "converted"
-    },
-    {
-      "device": "contactor",
-      "stem": "ACContactor",
-      "glb": "content/assets/three/contactor/ACContactor.glb",
-      "bytes": 2396020,
-      "sha256": "9b59ea75b48e95558a10fe7099d7e296f47eb3ba3fac20dc001e230c376735ed",
-      "triangles": 51856,
-      "meshes": 11,
-      "materials": 1,
-      "images": [
-        "ACContactor_ACContactor_Base Color.png",
-        "ACContactor_ACContactor_Normal.png"
-      ],
-      "hooked": {
-        "baseColor": 1,
-        "normal": 1
-      },
-      "unmapped": [
-        {
-          "file": "ACContactor_ACContactor_M_AO_G.png",
           "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
         }
       ],
@@ -126,32 +74,6 @@
       "unmapped": [
         {
           "file": "NewACContactor_NewACContactor_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
-        }
-      ],
-      "warnings": [],
-      "status": "converted"
-    },
-    {
-      "device": "fuse",
-      "stem": "CeramicPlugInFse",
-      "glb": "content/assets/three/fuse/CeramicPlugInFse.glb",
-      "bytes": 1651692,
-      "sha256": "32490fd59615a3473efcd666886ba3456260e7489f84f41dcf92450d123b5e7a",
-      "triangles": 18016,
-      "meshes": 5,
-      "materials": 1,
-      "images": [
-        "CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
-        "CeramicPlugInFse_CeramicPlugInFse_Normal.png"
-      ],
-      "hooked": {
-        "baseColor": 1,
-        "normal": 1
-      },
-      "unmapped": [
-        {
-          "file": "CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
           "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
         }
       ],
@@ -214,8 +136,8 @@
       "device": "speedRelay",
       "stem": "SpeedRelay",
       "glb": "content/assets/three/speedRelay/SpeedRelay.glb",
-      "bytes": 5043360,
-      "sha256": "6d25f1e66bd196ba3923e0beb64ddc6394a574d5716e0d336c1ce87fa9de734a",
+      "bytes": 5044016,
+      "sha256": "844c33240048615e460564710cbe9f5ed28c486165575036c5f04dae9a14c5f2",
       "triangles": 47576,
       "meshes": 41,
       "materials": 1,
@@ -263,32 +185,6 @@
       "status": "converted"
     },
     {
-      "device": "thermalRelay",
-      "stem": "ThermalOerloadRelay",
-      "glb": "content/assets/three/thermalRelay/ThermalOerloadRelay.glb",
-      "bytes": 1115932,
-      "sha256": "3e089569c6069990129d69d4fea944c0fcde6f56ad27a7a10cbf0832446017a5",
-      "triangles": 18722,
-      "meshes": 44,
-      "materials": 2,
-      "images": [
-        "ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
-        "ThermalOerloadRelay_ThermalOerloadRelay_Normal.png"
-      ],
-      "hooked": {
-        "baseColor": 2,
-        "normal": 2
-      },
-      "unmapped": [
-        {
-          "file": "ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
-        }
-      ],
-      "warnings": [],
-      "status": "converted"
-    },
-    {
       "device": "timeRelay",
       "stem": "NewTimeRelay",
       "glb": "content/assets/three/timeRelay/NewTimeRelay.glb",
@@ -308,32 +204,6 @@
       "unmapped": [
         {
           "file": "NewTimeRelay_NewTimeRelay_M_AO_G.png",
-          "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
-        }
-      ],
-      "warnings": [],
-      "status": "converted"
-    },
-    {
-      "device": "timeRelay",
-      "stem": "TimeRelay",
-      "glb": "content/assets/three/timeRelay/TimeRelay.glb",
-      "bytes": 3733504,
-      "sha256": "a6e6c3681c996b866bbbd521bde3e4a8711df50f614ff0a913f267603cf87977",
-      "triangles": 35262,
-      "meshes": 6,
-      "materials": 2,
-      "images": [
-        "TimeRelay_TimeRelay_Base Color.png",
-        "TimeRelay_TimeRelay_Normal.png"
-      ],
-      "hooked": {
-        "baseColor": 2,
-        "normal": 2
-      },
-      "unmapped": [
-        {
-          "file": "TimeRelay_TimeRelay_M_AO_G.png",
           "reason": "HDRP mask map（R=金属度/G=AO/A=光泽度）与 glTF（occlusion 读 R、roughness 读 G）通道语义不符"
         }
       ],

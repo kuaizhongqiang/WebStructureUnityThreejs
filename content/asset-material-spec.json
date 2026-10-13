@@ -1,0 +1,3121 @@
+{
+  "generatedAt": "2026-10-13T06:44:37.982Z",
+  "note": "从只读来源工程抽出：shader 的贴图通路（mask 通道语义与区间重映射）+ 表面模式 + 预制体的材质覆写。",
+  "source": {
+    "assets": "Assets/Model/Element/Show/**",
+    "prefabs": "Assets/Prefabs/Models/**",
+    "sha256OfScript": "a08330acc9ef1c42e963f5ae03f0226854679175c8f630051fc409dc9d092563"
+  },
+  "runtime": {
+    "threeTextures": "content/assets/three/<device>/",
+    "unityMasks": "NewStructureUnity/Assets/Models/<device>/",
+    "sharedTextures": "content/assets/three/_shared/"
+  },
+  "devices": {
+    "breaker": {
+      "sourceFolder": "断路器",
+      "models": {
+        "CircuitBreaker": true,
+        "NewCircuitBreaker": true
+      },
+      "prefabs": {
+        "breaker_info_model": {},
+        "breaker_inspection_model": {
+          "breaker_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "breaker_structure_model": {
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker26": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker45": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker59/Cylinder": [
+            "Alpha"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker52": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker33": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker25": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker57": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker29": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker31": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker10": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker24": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker01": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker28": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker40": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker54": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker59/CircuitBreaker60": [
+            "CircuitBreaker_2"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker12": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker09": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker19": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker27": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker05": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker01/CircuitBreaker07": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker04": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker50": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker21": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker22": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker47": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker37": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker43": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker11": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker16/CircuitBreaker18": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker59": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker53": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker13": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker13/CircuitBreaker15": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker36": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker38": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker55": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker03": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker41": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker32": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker01/CircuitBreaker08": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker49": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker48": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker16/CircuitBreaker17": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker56": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker34": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker58": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker35": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker13/CircuitBreaker14": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker16": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker20": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker06": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker51": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker23": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker02": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker44": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker42": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker39": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker30": [
+            "CircuitBreaker"
+          ],
+          "breaker_structure_model/Scale/CircuitBreaker/CircuitBreaker46": [
+            "CircuitBreaker"
+          ]
+        }
+      },
+      "overrides": {},
+      "prefabOverrides": {
+        "CircuitBreaker26": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker45": [
+          "CircuitBreaker"
+        ],
+        "Cylinder": [
+          "Alpha"
+        ],
+        "CircuitBreaker52": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker33": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker25": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker57": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker29": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker31": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker10": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker24": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker01": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker28": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker40": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker54": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker60": [
+          "CircuitBreaker_2"
+        ],
+        "CircuitBreaker12": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker09": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker19": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker27": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker05": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker07": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker04": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker50": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker21": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker22": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker47": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker37": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker43": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker11": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker18": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker59": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker53": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker13": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker15": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker36": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker38": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker55": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker03": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker41": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker32": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker08": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker49": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker48": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker17": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker56": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker34": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker58": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker35": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker14": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker16": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker20": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker06": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker51": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker23": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker02": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker44": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker42": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker39": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker30": [
+          "CircuitBreaker"
+        ],
+        "CircuitBreaker46": [
+          "CircuitBreaker"
+        ]
+      },
+      "overrideChecks": []
+    },
+    "combinationSwitch": {
+      "sourceFolder": "组合开关",
+      "models": {
+        "CombinationSwitch": true
+      },
+      "prefabs": {
+        "combinationSwitch_info_model": {},
+        "combinationSwitch_inspection_model": {
+          "combinationSwitch_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "combinationSwitch_structure_model": {
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch02": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch09": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch10": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch04": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch03": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch06": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch01": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch14": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19/CombinationSwitch18": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch12": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch11": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch07": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch05": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch20": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch08": [
+            "CombinationSwitch2"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch15": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch19/CombinationSwitch17": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch16": [
+            "CombinationSwitch"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch21": [
+            "CombinationSwitch_Metal"
+          ],
+          "combinationSwitch_structure_model/Scale/CombinationSwitch/CombinationSwitch13": [
+            "CombinationSwitch2"
+          ]
+        }
+      },
+      "overrides": {
+        "combinationSwitch_info_model": [
+          {
+            "fileId": "-8889679196930154307",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-7244139951790597904",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-5213591390820408839",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-5024610076966455980",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-2624951977302486259",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-2044571610428909017",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "-1028199821755038854",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "2131913717178841095",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "2167225073468198331",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "2962535263966274654",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "5208431728390866341",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch"
+          },
+          {
+            "fileId": "6564639641323122098",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "6873596813732724997",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          },
+          {
+            "fileId": "8839028263014093961",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "CombinationSwitch_Metal"
+          }
+        ]
+      },
+      "prefabOverrides": {
+        "CombinationSwitch02": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch09": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch10": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch04": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch03": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch06": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch01": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch19": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch14": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch18": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch12": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch11": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch07": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch05": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch20": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch08": [
+          "CombinationSwitch2"
+        ],
+        "CombinationSwitch15": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch17": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch16": [
+          "CombinationSwitch"
+        ],
+        "CombinationSwitch21": [
+          "CombinationSwitch_Metal"
+        ],
+        "CombinationSwitch13": [
+          "CombinationSwitch2"
+        ]
+      },
+      "overrideChecks": [
+        {
+          "prefab": "combinationSwitch_info_model",
+          "want": {
+            "CombinationSwitch_Metal": 13,
+            "CombinationSwitch": 1
+          },
+          "got": {
+            "CombinationSwitch_Metal": 13,
+            "CombinationSwitch": 6
+          },
+          "ok": true
+        }
+      ]
+    },
+    "contactor": {
+      "sourceFolder": "接触器",
+      "models": {
+        "ACContactor": true,
+        "NewACContactor": true
+      },
+      "prefabs": {
+        "contactor_info_model": {},
+        "contactor_inspection_model": {
+          "contactor_inspection_model/BG": [
+            "Room_0609"
+          ],
+          "contactor_inspection_model/LineParent/RedLine": [
+            "RedLine"
+          ],
+          "contactor_inspection_model/Multimeter/Knob": [
+            "\"\\u6863\\u4F4D\""
+          ],
+          "contactor_inspection_model/Multimeter/Main": [
+            "WYB"
+          ],
+          "ContactorSwitch/Cube": [
+            "RedLine"
+          ],
+          "contactor_inspection_model/Multimeter/ProbeParent/BlackProbeDrag/BlackProbe/Scale/ProbeMain": [
+            "\"\\u8868\\u7B14\\u9ED12\""
+          ],
+          "contactor_inspection_model/LineParent/BlackLine": [
+            "BlackLine"
+          ],
+          "contactor_inspection_model/Multimeter/ProbeParent/RedProbeDrag/RedProbe/Scale/ProbeMain": [
+            "\"\\u8868\\u7B14\\u7EA22\""
+          ],
+          "contactor_inspection_model/MovePanel": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "contactor_structure_model": {
+          "contactor_structure_model/Scale/ACContactor/ACContactor02": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase/ACContactor06": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase/ACContactor08": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/ACContactor01": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/ACContactor04": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase/ACContactor10": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/ACContactor03": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase/ACContactor09": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/Rotate/ACContactorBase/ACContactor07": [
+            "ACContactor"
+          ],
+          "contactor_structure_model/Scale/ACContactor/ACContactor05": [
+            "ACContactor"
+          ]
+        }
+      },
+      "overrides": {},
+      "prefabOverrides": {
+        "ACContactor02": [
+          "ACContactor"
+        ],
+        "ACContactor06": [
+          "ACContactor"
+        ],
+        "ACContactor08": [
+          "ACContactor"
+        ],
+        "ACContactor01": [
+          "ACContactor"
+        ],
+        "ACContactor04": [
+          "ACContactor"
+        ],
+        "ACContactor10": [
+          "ACContactor"
+        ],
+        "ACContactorBase": [
+          "ACContactor"
+        ],
+        "ACContactor03": [
+          "ACContactor"
+        ],
+        "ACContactor09": [
+          "ACContactor"
+        ],
+        "ACContactor07": [
+          "ACContactor"
+        ],
+        "ACContactor05": [
+          "ACContactor"
+        ]
+      },
+      "overrideChecks": []
+    },
+    "fuse": {
+      "sourceFolder": "熔断器",
+      "models": {
+        "CeramicPlugInFse": true,
+        "Fuse": true
+      },
+      "prefabs": {
+        "fuse_info_model": {},
+        "fuse_inspection_model": {
+          "fuse_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "fuse_structure_model": {
+          "fuse_structure_model/Scale/CeramicPlugInFse/Rotate/CeramicPlugInFse04": [
+            "CeramicPlugInFse"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/Rotate/CeramicPlugInFse02": [
+            "CeramicPlugInFse_Metal"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/Rotate/CeramicPlugInFse05": [
+            "CeramicPlugInFse"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/Rotate/jiexiankong": [
+            "Alpha"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/CeramicPlugInFse01/dongchudian/Cube (1)": [
+            "Alpha"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/CeramicPlugInFse01/dongchudian/Cube (2)": [
+            "Alpha"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/CeramicPlugInFse01/dongchudian/Cube (3)": [
+            "Alpha"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/Rotate/CeramicPlugInFse03": [
+            "CeramicPlugInFse_Metal"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/CeramicPlugInFse01": [
+            "CeramicPlugInFse"
+          ],
+          "fuse_structure_model/Scale/CeramicPlugInFse/CeramicPlugInFse01/dongchudian/Cube": [
+            "Alpha"
+          ]
+        }
+      },
+      "overrides": {},
+      "prefabOverrides": {
+        "CeramicPlugInFse04": [
+          "CeramicPlugInFse"
+        ],
+        "CeramicPlugInFse02": [
+          "CeramicPlugInFse_Metal"
+        ],
+        "CeramicPlugInFse05": [
+          "CeramicPlugInFse"
+        ],
+        "jiexiankong": [
+          "Alpha"
+        ],
+        "Cube (1)": [
+          "Alpha"
+        ],
+        "Cube (2)": [
+          "Alpha"
+        ],
+        "Cube (3)": [
+          "Alpha"
+        ],
+        "CeramicPlugInFse03": [
+          "CeramicPlugInFse_Metal"
+        ],
+        "CeramicPlugInFse01": [
+          "CeramicPlugInFse"
+        ],
+        "Cube": [
+          "Alpha"
+        ]
+      },
+      "overrideChecks": []
+    },
+    "masterAppliance": {
+      "sourceFolder": "主令电器",
+      "models": {
+        "MasterControlAppliances": true
+      },
+      "prefabs": {
+        "masterAppliance_info_model": {},
+        "masterAppliance_inspection_model": {
+          "masterAppliance_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "masterAppliance_structure_model": {}
+      },
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": []
+    },
+    "speedRelay": {
+      "sourceFolder": "速度继电器",
+      "models": {
+        "SpeedRelay": true
+      },
+      "prefabs": {
+        "speedRelay_info_model": {},
+        "speedRelay_inspection_model": {
+          "speedRelay_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "speedRelay_structure_model": {
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay34": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay25": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay03": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay18": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay19": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay07": [
+            "SpeedRelay_Coat"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay20": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay13": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay33": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay06": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay10": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay36": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay38": [
+            "SpeedRela_Metal"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay35": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay24": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay17": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay27": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay08": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay22": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay21": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay16": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay39": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay04": [
+            "SpeedRelay_Coat"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay01": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay28": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay37": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay41": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay09": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay30": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay31": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay26": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay15": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay23": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay32": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay05": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay12": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay40": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay14": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay11": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay29": [
+            "SpeedRelay"
+          ],
+          "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay02": [
+            "SpeedRelay_Coat"
+          ]
+        }
+      },
+      "overrides": {
+        "speedRelay_info_model": [
+          {
+            "fileId": "-2192800027000591268",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "SpeedRelay_Coat"
+          },
+          {
+            "fileId": "-1243999019095561720",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "SpeedRelay_Coat"
+          },
+          {
+            "fileId": "1065338232695512963",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "SpeedRelay_Coat"
+          },
+          {
+            "fileId": "3944035463241107945",
+            "slot": "m_Materials.Array.data[0]",
+            "material": "SpeedRela_Metal"
+          }
+        ]
+      },
+      "prefabOverrides": {
+        "SpeedRelay34": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay25": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay03": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay18": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay19": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay07": [
+          "SpeedRelay_Coat"
+        ],
+        "SpeedRelay20": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay13": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay33": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay06": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay10": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay36": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay38": [
+          "SpeedRela_Metal"
+        ],
+        "SpeedRelay35": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay24": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay17": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay27": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay08": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay22": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay21": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay16": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay39": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay04": [
+          "SpeedRelay_Coat"
+        ],
+        "SpeedRelay01": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay28": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay37": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay41": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay09": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay30": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay31": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay26": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay15": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay23": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay32": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay05": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay12": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay40": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay14": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay11": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay29": [
+          "SpeedRelay"
+        ],
+        "SpeedRelay02": [
+          "SpeedRelay_Coat"
+        ]
+      },
+      "overrideChecks": [
+        {
+          "prefab": "speedRelay_info_model",
+          "want": {
+            "SpeedRelay_Coat": 3,
+            "SpeedRela_Metal": 1
+          },
+          "got": {
+            "SpeedRelay_Coat": 3,
+            "SpeedRela_Metal": 1
+          },
+          "ok": true
+        }
+      ]
+    },
+    "thermalRelay": {
+      "sourceFolder": "热继电器",
+      "models": {
+        "NewThermalRelay": true,
+        "ThermalOerloadRelay": true
+      },
+      "prefabs": {
+        "thermalRelay_info_model": {},
+        "thermalRelay_inspection_model": {
+          "thermalRelay_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "thermalRelay_structure_model": {
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay08": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay11": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay42": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay05": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay17": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay18": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay27": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay35": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay20": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay33": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay12": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay43": [
+            "ThermalOerloadRelay_2"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay28": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay09": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay10": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay19": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay36": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay24": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay22": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay39": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay30": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay41": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay21": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay34": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay26": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay02": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay03": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay37": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay25": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay38": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay41 1": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay06": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay32": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay04": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay15": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay40": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay31": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay29": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay01": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay16": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay23": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay13/ThermalOerloadRelay14": [
+            "ThermalOerloadRelay"
+          ],
+          "thermalRelay_structure_model/Scale/ThermalOerloadRelay/ThermalOerloadRelay07": [
+            "ThermalOerloadRelay"
+          ]
+        }
+      },
+      "overrides": {},
+      "prefabOverrides": {
+        "ThermalOerloadRelay08": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay11": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay42": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay05": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay17": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay18": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay27": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay35": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay20": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay33": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay12": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay43": [
+          "ThermalOerloadRelay_2"
+        ],
+        "ThermalOerloadRelay28": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay09": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay10": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay19": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay36": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay24": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay22": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay39": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay30": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay41": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay21": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay34": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay26": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay02": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay03": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay37": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay25": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay38": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay41 1": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay06": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay32": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay13": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay04": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay15": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay40": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay31": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay29": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay01": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay16": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay23": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay14": [
+          "ThermalOerloadRelay"
+        ],
+        "ThermalOerloadRelay07": [
+          "ThermalOerloadRelay"
+        ]
+      },
+      "overrideChecks": []
+    },
+    "timeRelay": {
+      "sourceFolder": "时间继电器",
+      "models": {
+        "NewTimeRelay": true,
+        "TimeRelay": true
+      },
+      "prefabs": {
+        "timeRelay_info_model": {},
+        "timeRelay_inspection_model": {
+          "timeRelay_inspection_model/__PLACEHOLDER__": [
+            "未知材质(31321ba15b8f8eb4c954353edc038b1d)"
+          ]
+        },
+        "timeRelay_structure_model": {}
+      },
+      "overrides": {},
+      "prefabOverrides": {},
+      "overrideChecks": []
+    }
+  },
+  "materials": {
+    "\"\\u6863\\u4F4D\"": {
+      "name": "\"\\u6863\\u4F4D\"",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": "档位.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "\"\\u8868\\u7B14\\u7EA22\"": {
+      "name": "\"\\u8868\\u7B14\\u7EA22\"",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": "表笔红2.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "\"\\u8868\\u7B14\\u9ED12\"": {
+      "name": "\"\\u8868\\u7B14\\u9ED12\"",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": "表笔黑2.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "ACContactor": {
+      "name": "ACContactor",
+      "sourceFolder": "接触器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "ACContactor_ACContactor_Base Color.png",
+        "normal": "ACContactor_ACContactor_Normal.png",
+        "mask": "ACContactor_ACContactor_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "Alpha": {
+      "name": "Alpha",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": null,
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "BlackLine": {
+      "name": "BlackLine",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.16037738,
+        0.16037738,
+        0.16037738,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": null,
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "CeramicPlugInFse": {
+      "name": "CeramicPlugInFse",
+      "sourceFolder": "熔断器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+        "normal": "CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+        "mask": "CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "CeramicPlugInFse_Metal": {
+      "name": "CeramicPlugInFse_Metal",
+      "sourceFolder": "熔断器",
+      "shader": "HDRPtoURPShader_CubeSpecular.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": [
+        1,
+        0.667,
+        0,
+        0
+      ],
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+        "normal": "CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+        "mask": "CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+        "cube": "Chrome05.cubemap"
+      },
+      "lostInGltf": [
+        "立方体反射贴图 Chrome05.cubemap + 染色 [1,0.667,0,0]"
+      ]
+    },
+    "CircuitBreaker": {
+      "name": "CircuitBreaker",
+      "sourceFolder": "断路器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "CircuitBreaker_CircuitBreaker_Base Color.png",
+        "normal": "CircuitBreaker_CircuitBreaker_Normal.png",
+        "mask": "CircuitBreaker_CircuitBreaker_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "CircuitBreaker_2": {
+      "name": "CircuitBreaker_2",
+      "sourceFolder": "断路器",
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          0
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "铭牌.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "CombinationSwitch": {
+      "name": "CombinationSwitch",
+      "sourceFolder": "组合开关",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
+        "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
+        "mask": "CombinationSwitch_CombinationSwitch_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "CombinationSwitch2": {
+      "name": "CombinationSwitch2",
+      "sourceFolder": "组合开关",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "BLEND",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 0,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          0.2
+        ],
+        "metallic": [
+          0,
+          0
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        0.6
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "White.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "CombinationSwitch_Metal": {
+      "name": "CombinationSwitch_Metal",
+      "sourceFolder": "组合开关",
+      "shader": "HDRPtoURPShader_CubeSpecular.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": [
+        1,
+        0.6698078,
+        0,
+        0
+      ],
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "CombinationSwitch_CombinationSwitch_Base Color.png",
+        "normal": "CombinationSwitch_CombinationSwitch_Normal.png",
+        "mask": "CombinationSwitch_CombinationSwitch_M_AO_G.png",
+        "cube": "Chrome05.cubemap"
+      },
+      "lostInGltf": [
+        "立方体反射贴图 Chrome05.cubemap + 染色 [1,0.6698078,0,0]"
+      ]
+    },
+    "ElectronicSupermarket2": {
+      "name": "ElectronicSupermarket2",
+      "sourceFolder": "接触器",
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.15
+      },
+      "textures": {
+        "baseColor": "ElectronicSupermarket2.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "Fuse": {
+      "name": "Fuse",
+      "sourceFolder": "熔断器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "Fuse_Fuse_Base Color.png",
+        "normal": "Fuse_Fuse_Normal.png",
+        "mask": "Fuse_Fuse_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "Glass": {
+      "name": "Glass",
+      "sourceFolder": "主令电器",
+      "shader": "HDRPtoURPLitTransShader.shadergraph",
+      "surfaceMode": "BLEND",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 0,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          0
+        ]
+      },
+      "baseColor": [
+        0.79058963,
+        0.79058963,
+        0.79058963,
+        0.19999999
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "White.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "MasterControlAppliances": {
+      "name": "MasterControlAppliances",
+      "sourceFolder": "主令电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "MasterControlAppliances_MasterControlAppliances_Base Color.png",
+        "normal": "MasterControlAppliances_MasterControlAppliances_Normal.png",
+        "mask": "MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "NewACContactor": {
+      "name": "NewACContactor",
+      "sourceFolder": "接触器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "NewACContactor_NewACContactor_Base Color.png",
+        "normal": "NewACContactor_NewACContactor_Normal.png",
+        "mask": "NewACContactor_NewACContactor_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "NewCircuitBreaker": {
+      "name": "NewCircuitBreaker",
+      "sourceFolder": "断路器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+        "normal": "NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+        "mask": "NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "NewThermalRelay": {
+      "name": "NewThermalRelay",
+      "sourceFolder": "热继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "NewThermalRelay_NewThermalRelay_Base Color.png",
+        "normal": "NewThermalRelay_NewThermalRelay_Normal.png",
+        "mask": "NewThermalRelay_NewThermalRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "NewTimeRelay": {
+      "name": "NewTimeRelay",
+      "sourceFolder": "时间继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        0.8962264,
+        0.8962264,
+        0.8962264,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "NewTimeRelay_NewTimeRelay_Base Color.png",
+        "normal": "NewTimeRelay_NewTimeRelay_Normal.png",
+        "mask": "NewTimeRelay_NewTimeRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "RedLine": {
+      "name": "RedLine",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        0,
+        0,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": null,
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "Room_0609": {
+      "name": "Room_0609",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.2264151,
+        0.2264151,
+        0.2264151,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.5
+      },
+      "textures": {
+        "baseColor": "Room_0609.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    },
+    "SpeedRela_Metal": {
+      "name": "SpeedRela_Metal",
+      "sourceFolder": "速度继电器",
+      "shader": "HDRPtoURPShader_CubeSpecular.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": [
+        1,
+        0.46264225,
+        0,
+        0
+      ],
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+        "normal": "SpeedRelay_SpeedRelay_Normal.png",
+        "mask": "SpeedRelay_SpeedRelay_M_AO_G.png",
+        "cube": "Chrome05.cubemap"
+      },
+      "lostInGltf": [
+        "立方体反射贴图 Chrome05.cubemap + 染色 [1,0.46264225,0,0]"
+      ]
+    },
+    "SpeedRelay": {
+      "name": "SpeedRelay",
+      "sourceFolder": "速度继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+        "normal": "SpeedRelay_SpeedRelay_Normal.png",
+        "mask": "SpeedRelay_SpeedRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "SpeedRelay_Coat": {
+      "name": "SpeedRelay_Coat",
+      "sourceFolder": "速度继电器",
+      "shader": "HDRPtoURPLitClearCoatedShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          0.8
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "SpeedRelay_SpeedRelay_Base Color.png",
+        "normal": "SpeedRelay_SpeedRelay_Normal.png",
+        "mask": "SpeedRelay_SpeedRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "清漆层（可用 KHR_materials_clearcoat 表达，本期不接）"
+      ]
+    },
+    "ThermalOerloadRelay": {
+      "name": "ThermalOerloadRelay",
+      "sourceFolder": "热继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+        "normal": "ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+        "mask": "ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "ThermalOerloadRelay_2": {
+      "name": "ThermalOerloadRelay_2",
+      "sourceFolder": "热继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          0
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "ThermalOerloadRelay_2.jpg",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "ThermalOerloadRelay_Metal": {
+      "name": "ThermalOerloadRelay_Metal",
+      "sourceFolder": "热继电器",
+      "shader": "HDRPtoURPShader_CubeSpecular.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": [
+        1,
+        0.667,
+        0,
+        0
+      ],
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+        "normal": "ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+        "mask": "ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+        "cube": "Chrome05.cubemap"
+      },
+      "lostInGltf": [
+        "立方体反射贴图 Chrome05.cubemap + 染色 [1,0.667,0,0]"
+      ]
+    },
+    "TimeRelay": {
+      "name": "TimeRelay",
+      "sourceFolder": "时间继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "TimeRelay_TimeRelay_Base Color.png",
+        "normal": "TimeRelay_TimeRelay_Normal.png",
+        "mask": "TimeRelay_TimeRelay_M_AO_G.png",
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "TimeRelayMap": {
+      "name": "TimeRelayMap",
+      "sourceFolder": "时间继电器",
+      "shader": "HDRPtoURPCustomDirtLitShader.shadergraph",
+      "surfaceMode": "OPAQUE",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0.5,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          0
+        ]
+      },
+      "baseColor": [
+        0.79073066,
+        0.79073066,
+        0.79073066,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        0
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0.14142135
+      },
+      "textures": {
+        "baseColor": "TimeRelayMap.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": [
+        "程序化污渍（子图，glTF 无对应能力）"
+      ]
+    },
+    "WYB": {
+      "name": "WYB",
+      "sourceFolder": null,
+      "shader": "builtin",
+      "surfaceMode": "MASK",
+      "alphaCutoff": 0.5,
+      "doubleSided": true,
+      "zWrite": 1,
+      "renderQueue": -1,
+      "remap": {
+        "occlusion": [
+          0,
+          1
+        ],
+        "smoothness": [
+          0,
+          1
+        ],
+        "metallic": [
+          0,
+          1
+        ]
+      },
+      "baseColor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseColorMultiple": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cubeColor": null,
+      "normalStrength": 1,
+      "scalars": {
+        "metallic": 0,
+        "smoothness": 0
+      },
+      "textures": {
+        "baseColor": "WYB.png",
+        "normal": null,
+        "mask": null,
+        "cube": null
+      },
+      "lostInGltf": []
+    }
+  },
+  "threeSide": {
+    "note": "Three 侧只产出这些模型（判据＝ InfoObjs/<器件>_info_model.prefab 实例的 FBX，非按文件名猜）",
+    "count": 8,
+    "models": {
+      "breaker/NewCircuitBreaker": {
+        "infoPrefab": "breaker_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/断路器/NewCircuitBreaker.fbx"
+      },
+      "combinationSwitch/CombinationSwitch": {
+        "infoPrefab": "combinationSwitch_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx"
+      },
+      "contactor/NewACContactor": {
+        "infoPrefab": "contactor_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/接触器/NewACContactor.fbx"
+      },
+      "fuse/Fuse": {
+        "infoPrefab": "fuse_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/熔断器/Fuse.fbx"
+      },
+      "masterAppliance/MasterControlAppliances": {
+        "infoPrefab": "masterAppliance_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx"
+      },
+      "speedRelay/SpeedRelay": {
+        "infoPrefab": "speedRelay_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx"
+      },
+      "thermalRelay/NewThermalRelay": {
+        "infoPrefab": "thermalRelay_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/热继电器/NewThermalRelay.fbx"
+      },
+      "timeRelay/NewTimeRelay": {
+        "infoPrefab": "timeRelay_info_model.prefab",
+        "fbx": "Assets/Model/Element/Show/时间继电器/NewTimeRelay.fbx"
+      }
+    }
+  }
+}

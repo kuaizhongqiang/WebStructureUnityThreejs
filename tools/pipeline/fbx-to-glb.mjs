@@ -34,6 +34,8 @@ const MODELS_ROOT = join(repoRoot, 'NewStructureUnity/Assets/Models')
 const SHARED_DIR = join(MODELS_ROOT, '_shared')
 const OUT_ROOT = join(repoRoot, 'content/assets/three')
 const REPORT = join(repoRoot, 'content/asset-convert-report.json')
+/** 材质规格（`tools/pipeline/extract-material-spec.mjs` 生成）：预制体覆写层的唯一依据 */
+const SPEC = join(repoRoot, 'content/asset-material-spec.json')
 const PER_MODEL_TIMEOUT_MS = 180_000
 
 function parseArgs(argv) {
@@ -111,11 +113,33 @@ async function main() {
   /** 本次真正转换的个数（报告的"累计"里也含之前几轮的记录） */
   let convertedNow = 0
 
+  /**
+   * Three 侧只做规格里列的 8 个（`content/asset-material-spec.json` 的 `threeSide.models`，
+   * 由 `InfoObjs/<器件>_info_model.prefab` 实例的 FBX 判出来）。
+   * 规格不存在／读不出时退回"全都转"，不把管线卡住。
+   */
+  let threeSideKeys = null
+  if (existsSync(SPEC)) {
+    try {
+      const spec = JSON.parse(await readFile(SPEC, 'utf8'))
+      const models = spec.threeSide?.models ?? {}
+      if (Object.keys(models).length > 0) threeSideKeys = new Set(Object.keys(models))
+    } catch {
+      threeSideKeys = null
+    }
+  }
+  if (threeSideKeys) console.log(`[glb] Three 侧清单：${threeSideKeys.size} 个模型（其余不产出）`)
+
   for (const fbx of fbxFiles) {
     const device = basename(dirname(fbx))
     const stem = basename(fbx, extname(fbx))
     const out = join(OUT_ROOT, device, `${stem}.glb`)
     const label = `${device}/${stem}`
+
+    if (threeSideKeys && !threeSideKeys.has(label)) {
+      console.log(`  · ${label.padEnd(42)} 跳过（不在 Three 侧清单里）`)
+      continue
+    }
 
     if (existsSync(out) && !args.force) {
       const size = (await stat(out)).size
@@ -142,6 +166,9 @@ async function main() {
         out,
         dirname(fbx),
         ...(existsSync(SHARED_DIR) ? [SHARED_DIR] : []),
+        // 材质规格 + 模型键 ⇒ 让 Blender 应用**预制体覆写层**（哪个 mesh 用哪个材质）。
+        // 规格不存在时照旧转换（不带覆写），不会把管线卡住。
+        ...(existsSync(SPEC) ? ['--spec', SPEC, '--model-key', `${device}/${stem}`] : []),
       ],
       { encoding: 'utf8', timeout: PER_MODEL_TIMEOUT_MS, maxBuffer: 32 * 1024 * 1024 },
     )
@@ -180,6 +207,12 @@ async function main() {
     )
     for (const item of summary.unmapped ?? []) console.log(`      ⚠ 未映射：${item.file}（${item.reason}）`)
     for (const item of summary.warnings ?? []) console.log(`      ⚠ ${item}`)
+  }
+
+  // 报告只描述**还在的产物**：已移除的模型（如 Three 侧不再产出的旧代）必须从累计里剔掉，
+  // 否则清单会永远留着一堆磁盘上不存在的 GLB，`audit-material-mapping.mjs` 这类工具会去读不存在的文件。
+  for (const item of [...byKey.values()]) {
+    if (!item.glb || !existsSync(join(repoRoot, item.glb))) byKey.delete(`${item.device}/${item.stem}`)
   }
 
   report.models = [...byKey.values()].sort((a, b) =>
