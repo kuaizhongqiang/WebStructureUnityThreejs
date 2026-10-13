@@ -118,10 +118,14 @@
 
 /* ① 让 body 内部的高 z 元素（模态框）能盖过浮卡 */
 .board > .board__body { z-index: auto; }
-/* 外壳里的顶栏 = 浮卡 + 钉在左上角 */
+/* 外壳里的顶栏 = 浮卡 + 钉在左上角
+   ⚠️ 上移到与**右上按钮组上边缘平齐**（负责人 2026-10-13）：`.ui-topright` 是 `top: 22px`
+   （从 layout 算：它挂在 `.board__body` 上，而 board__body 顶边 = 画布顶边，所以两者可比值）。
+   实测：浮卡原 40px → 22px 即平齐（`--shell-top-y` 50 − 28 = 22）。
+   只动**这里**的 top，不去改 `--shell-top-y` 令牌 —— 那个令牌还被 `.ui-company` 的 `calc()` 用着。 */
 .board > .ui-titlebar {
   position: absolute;
-  top: var(--shell-top-y);
+  top: calc(var(--shell-top-y) - 28px);
   left: var(--shell-top-x);
   right: auto;
   z-index: 40;

@@ -932,6 +932,16 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 
 /* ④ 横贯条让位：左给浮卡、右给页面按钮组 */
 .ui-route { padding-left: var(--shell-reserve-top-left); padding-right: var(--shell-reserve-top-right); }
+
+/* ⑤ 站点线**去底**（负责人 2026-10-13）：原来是半透明玻璃底（`--glass-bar` + `backdrop-filter`），
+      压在三维画布上会糊住画面 —— 直接不要背景，只留底部分隔线。
+      ⚠️ `backdrop-filter` 要一起清：只清 background 会留下"模糊了但看不见底"的脏效果。 */
+.ui-route {
+  background: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: none;   /* 连同那条描边一起去掉（负责人："有一个描边也移除掉"） */
+}
 .ui-route--narrow { padding-left: 24px; padding-right: 24px; }   /* 窄屏变体保持紧凑 */
 
 /* ---- 若站点线仍嫌紧，最直接的办法是缩卡：调小 --shell-card-max-w（例如 420px，

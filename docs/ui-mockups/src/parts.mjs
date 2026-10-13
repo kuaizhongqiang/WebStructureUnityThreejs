@@ -83,18 +83,39 @@ export function topRight(extra = '') {
         </div>`
 }
 
-/** 三维视口占位（网格底纹表示画布）。 */
-export function viewport(stack, label) {
+/**
+ * 三维视口。
+ *
+ * · 不传 `liveSrc`：**占位**（网格底纹表示画布）—— 排版稿的常规做法。
+ * · 传 `liveSrc`：里面装一个 **iframe 指向 `docs/model-preview/index.html?embed=1&model=…`**，
+ *   于是这里显示的是**真实渲染**（同一套环境 / 贴图后加载 / 材质解算），而不是占位块。
+ *   叠层（左上标技术栈、右上工具组）保留在 iframe 之上，但 `pointer-events:none` ——
+ *   否则它们会挡住画布的旋转/缩放手势。
+ */
+export function viewport(stack, label, liveSrc = null) {
+  /**
+   * 真实画布（`liveSrc`）：**只留画布**。
+   *
+   * 左上技术栈标（`.ui-viewport__hint`）与右上工具组（`.ui-viewport__tools`）是**占位态**的叠层 ——
+   * 它们的作用是"说明这里将来会有一块画布"，真画布进来后既多余（占位文案会与真实画面打架），
+   * 又会压在手势区上。自己也**不要底与描边**：框由外层 `.ui-panel` 给（见 `pages-c.mjs`），
+   * 这里再画一层就是两层半透明叠加，会比旁边的框明显深。
+   */
+  if (liveSrc) {
+    return `<div class="ui-viewport" style="position:absolute;inset:0;background:none;border:0">
+         <iframe class="ui-viewport__live" src="${liveSrc}" title="${stack} 实时渲染（模型检视页 · 嵌入模式）" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+       </div>`
+  }
   return `<div class="ui-viewport" style="position:absolute;inset:0">
-          <div class="ui-viewport__hint">${stack} · ${label}</div>
-          <div class="ui-viewport__tools">
-            <div class="ui-viewport__tool">${icon('rotate-cw', 16)}</div>
-            <div class="ui-viewport__tool">${icon('expand', 16)}</div>
-            <div class="ui-viewport__tool">${icon('maximize', 16)}</div>
-            <div class="ui-viewport__tool">${icon('crosshair', 16)}</div>
-          </div>
-          <div class="ui-viewport__center">三维画布区域 —— 由 ${stack} 承载，本稿只表示占位与叠层 UI 的位置</div>
-        </div>`
+         <div class="ui-viewport__hint">${stack} · ${label}</div>
+         <div class="ui-viewport__tools">
+           <div class="ui-viewport__tool">${icon('rotate-cw', 16)}</div>
+           <div class="ui-viewport__tool">${icon('expand', 16)}</div>
+           <div class="ui-viewport__tool">${icon('maximize', 16)}</div>
+           <div class="ui-viewport__tool">${icon('crosshair', 16)}</div>
+         </div>
+         <div class="ui-viewport__center">三维画布区域 —— 由 ${stack} 承载，本稿只表示占位与叠层 UI 的位置</div>
+       </div>`
 }
 
 /* ------------------------------------------------- 以下为旧组件（仅 C8~C11 使用） */

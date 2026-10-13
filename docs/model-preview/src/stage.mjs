@@ -72,11 +72,12 @@ export const ENV_PRESETS = {
   },
 }
 
-/** `hdr` 不是颜色，是"用环境贴图当天空盒"，故单独处理。 */
+/** `hdr` 不是颜色，是"用环境贴图当天空盒"，故单独处理。`ui` = 画布透明，交给宿主 UI 的底。 */
 const BACKGROUNDS = {
   dark: 0x1b1f27,
   mid: 0x6b7078,
   light: 0xf0f2f5,
+  ui: null,
 }
 
 const TEXTURE_SLOTS = [
@@ -109,7 +110,7 @@ export class Stage {
   constructor(container) {
     this.container = container
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     this.renderer.shadowMap.enabled = false
     container.appendChild(this.renderer.domElement)
@@ -232,9 +233,17 @@ export class Stage {
   }
 
   async loadModel(url) {
+    /**
+     * 加载代次：切模型快的时候，慢的那次 `loadAsync` 会**晚到**，把新模型刚建好的状态搅乱
+     * （材质、快照、读数全混）—— 这就是"偶现 base/normal 加载不出来"的来源之一。
+     * 每次加载/清空都 +1，await 回来发现代次变了就直接放弃。
+     */
+    const generation = (this.loadGeneration ?? 0) + 1
+    this.loadGeneration = generation
     const started = performance.now()
     const gltf = await this.loader.loadAsync(url)
     const elapsed = performance.now() - started
+    if (generation !== this.loadGeneration) return null
     this.currentUrl = url
 
     this.clearModel()
@@ -262,7 +271,21 @@ export class Stage {
     this.controls.update()
   }
 
+  /**
+   * 解算层每接上一张贴图就**立刻写进快照**。
+   *
+   * 为什么必须立刻写：`apply()`（曝光 / 环境 / 贴图开关…任何控件一动都会调）会把快照里的槽位**写回**材质。
+   * 而快照是 `loadModel` 里建的，那一刻 GLB 里没有贴图 ⇒ 全是 null。于是解算还没跑完就碰上一次 `apply()`，
+   * 先接上的贴图会被**清回 null** —— 表现就是"偶现 base/normal 加载不出来"。
+   */
+  commitTexture(material, slot, texture) {
+    material[slot] = texture
+    const slots = this.textureSlots.get(material)
+    if (slots) slots[slot] = texture
+  }
+
   clearModel() {
+    this.loadGeneration = (this.loadGeneration ?? 0) + 1
     if (!this.model) return
     this.scene.remove(this.model)
     disposeSubtree(this.model)
@@ -338,13 +361,25 @@ export class Stage {
   }
 
   #applyRenderer() {
-    const wantSkybox = this.options.background === 'hdr'
+    // 嵌入模式（`?embed=1`，见 index.html 的 `body[data-embed]`）：
+    // **背景交给宿主 UI**（画布透明 ⇒ 露出 `docs/ui-mockups` 自己的 `--bg-0` 与网格底纹）。
+    // 为什么不在 three 里画一遍 UI 底：那要把令牌值抄进来，深浅主题一换就漂；透明则自动跟随。
+    // 灯不管 —— 环境贴图（IBL）照旧，只把"背景"这一项让出去。
+    // ⚠️ 现读 DOM，不要在构造时缓存 `embedded`：`main.mjs` 是在 init 里写 `body[data-embed]` 的，
+    // 构造那一刻可能还没写（缓存下来会一直拿到 false，背景就还是天空盒）
+    const wantUi = this.options.background === 'ui' || document.body.dataset.embed === '1'
+    const wantSkybox = !wantUi && this.options.background === 'hdr'
     if (wantSkybox && this.exrSource) {
       this.scene.background = this.exrSource
       this.scene.backgroundIntensity = 1
+      this.renderer.setClearAlpha(1)
+    } else if (wantUi) {
+      this.scene.background = null
+      this.renderer.setClearAlpha(0)
     } else {
       // 天空盒未就绪（或选了纯色）时退回深色，避免出现白底/黑底这种"看起来像坏了"的画面
       this.scene.background = new THREE.Color(BACKGROUNDS[this.options.background] ?? BACKGROUNDS.dark)
+      this.renderer.setClearAlpha(1)
     }
     this.renderer.toneMapping =
       this.options.toneMapping === 'aces' ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping
