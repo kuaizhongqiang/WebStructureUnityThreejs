@@ -25,6 +25,43 @@
 <style>
 /* 仅本页布局；颜色/间距/字号一律取令牌 */
 .mp-page { max-width: 1680px; }
+/**
+ * 嵌入模式（`?embed=1`）：**只留三维画布**，页壳（标题 / 模型列表 / 环境面板 / 读数）全部收起。
+ * 用途：`docs/ui-mockups` 的排版稿要真实画布而不是占位块（见 `pages/c6-info.html`）。
+ * 连面板头一起收掉 —— 画布外的框与标题由排版稿自己给，否则会套两层框。
+ */
+body[data-embed] { overflow: hidden; }
+/* ⚠️ 嵌入时**页面自身不能有底色**：iframe 的 html/body 一旦不透明，画布即使透明也露不出宿主的毛玻璃框。
+   实测症状：左边的模型框像一块"实心深蓝"，与右侧 `.ui-panel` 的毛玻璃明显不同色。 */
+html[data-embed],
+html[data-embed] body { background: transparent !important; }
+body[data-embed] .spec-page { max-width: none; margin: 0; padding: 0; }
+/* ⚠️ 必须 `!important`：读数面板与视口面板带着**行内** `style="display:flex"`，
+   行内样式的优先级高于作者样式，不写 `!important` 就压不住（实测：读数面板没被藏掉）。 */
+body[data-embed] .spec-head,
+body[data-embed] #banner,
+body[data-embed] .mp-side,
+body[data-embed] .mp-main > .ui-panel:not(.mp-split),
+body[data-embed] .mp-split > .ui-panel:has(#evidence),
+body[data-embed] .mp-split > .ui-panel > .ui-panel__head,
+body[data-embed] .mp-hint { display: none !important; }
+body[data-embed] .mp-layout { grid-template-columns: minmax(0, 1fr); height: 100vh; min-height: 0; gap: 0; }
+/* ⚠️ `.mp-split` 本来是两列（`1fr 336px`，右列放读数）。读数面板被藏掉后**那一列还在**，
+   空列会露出页面底色 —— 就是"画布右边一道黑"。嵌入时把列收成一列。 */
+body[data-embed] .mp-split { grid-template-columns: minmax(0, 1fr) !important; gap: 0; height: 100%; }
+body[data-embed] .mp-stage { min-height: 0; }
+/* 嵌入时**页内的容器必须去底去描边**：宿主（ui-mockups 的排版稿）已经给了那个毛玻璃框，
+   页内再叠一层半透明就会"两层叠加"（0.55 + 0.55 ≈ 0.8）—— 表现就是**左框明显比右边的框深**。
+   这一条连 `.spec-page` 一起管：它是页面的外层容器，自己带底色（曾把宿主的毛玻璃整个挡住）。 */
+html[data-embed] .spec-page,
+html[data-embed] .ui-panel,
+html[data-embed] .ui-panel__body {
+  background: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
 .mp-layout { display: grid; grid-template-columns: 296px minmax(0, 1fr); gap: var(--sp-4); align-items: stretch; height: calc(100vh - 260px); min-height: 620px; }
 .mp-side, .mp-main { display: flex; flex-direction: column; min-height: 0; }
 .mp-side .ui-panel__body { padding: var(--sp-2); }

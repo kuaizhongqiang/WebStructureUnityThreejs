@@ -22,10 +22,33 @@ import * as THREE from 'three'
 
 const REPO_PREFIX = '../../'
 
-async function fetchBitmap(url) {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`HTTP ${response.status}`)
-  return createImageBitmap(await response.blob())
+/** 取图重试次数（本地服务偶发抖动、解码未就绪都能被这一两次重试救回来）。 */
+const TEXTURE_RETRIES = 3
+
+/**
+ * 取图 → ImageBitmap，**带重试**。
+ *
+ * 为什么不直接用 `TextureLoader`：它内部是 `<img>` + `onerror`，失败时只给一个"图裂"式的结果，
+ * HTTP 状态、解码失败、0×0 都**报不出来**；改成 fetch 之后每一步都能给出人话错误。
+ * base / normal / mask 三条路都走这一个函数，行为一致（以前 ORM 用 fetch、base/normal 用 TextureLoader，两套）。
+ */
+async function fetchBitmap(url, label = url) {
+  let lastError = null
+  for (let attempt = 1; attempt <= TEXTURE_RETRIES; attempt += 1) {
+    try {
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      const bitmap = await createImageBitmap(await response.blob())
+      if (!bitmap.width || !bitmap.height) throw new Error('解出来是 0×0')
+      return bitmap
+    } catch (error) {
+      lastError = error
+      if (attempt < TEXTURE_RETRIES) {
+        await new Promise((resolve) => setTimeout(resolve, 120 * attempt))
+      }
+    }
+  }
+  throw new Error(`${label} 取不到（试了 ${TEXTURE_RETRIES} 次）：${lastError?.message ?? lastError}`)
 }
 
 /**
@@ -42,7 +65,11 @@ function textureUrl(lookup, device, base) {
 async function loadTexture(lookup, device, base, colorSpace) {
   const url = textureUrl(lookup, device, base)
   if (!url) throw new Error(`查找表里没有 ${device}/${base}（跑 tools/pipeline/import-material-textures.mjs 补搬）`)
-  const texture = await new THREE.TextureLoader().loadAsync(encodeURI(url))
+  // 与 mask 同一条取图路（fetch + 重试 + 明确报错），只是这里要用这张图做材质贴图，所以不 close 它
+  const bitmap = await fetchBitmap(encodeURI(REPO_PREFIX + url), base)
+  const texture = new THREE.Texture(bitmap)
+  // ⚠️ 从 ImageBitmap 直接建纹理必须自己标脏，否则永远不上传（`TextureLoader` 会替你标，现在得自己来）
+  texture.needsUpdate = true
   texture.colorSpace = colorSpace
   /**
    * ⚠️ **`flipY` 必须为 false**：glTF 的 UV 原点在**左上**（Blender 导出时按此写 UV），
@@ -116,7 +143,7 @@ const sameName = (a, b) =>
  *
  * ⚠️ 这里**不**动几何、不重建材质：只在原材质上就地改（DEC-87 的降级口径）。
  */
-export async function resolveMaterials({ gltf, device, stem, spec, lookup, log }) {
+export async function resolveMaterials({ gltf, device, stem, spec, lookup, log, commit }) {
   const records = []
   const materials = []
   gltf.scene.traverse((child) => {
@@ -138,22 +165,28 @@ export async function resolveMaterials({ gltf, device, stem, spec, lookup, log }
     }
 
     if (entry) {
-      // ① 基色 / 法线：GLB 里那份是"按前缀错挂"的，按规格换掉
-      for (const [slot, base, colorSpace] of [
+      // ① 基色 / 法线：库里那份是"按前缀错挂"的（或 GLB 根本没带），按规格接上。
+      //    两张**并行**取（省一趟往返），各自独立报错、互不拖累。
+      const wanted = [
         ['map', entry.textures.baseColor, THREE.SRGBColorSpace],
         ['normalMap', entry.textures.normal, THREE.NoColorSpace],
-      ]) {
-        if (!base) continue
-        if (sameName(material[slot]?.name, base)) continue
-        try {
-          const previous = material[slot]
-          material[slot] = await loadTexture(lookup, device, base, colorSpace)
-          previous?.dispose?.()
-          record.swapped.push(slot === 'map' ? base : `N:${base}`)
-        } catch (error) {
-          record.errors.push(String(error.message ?? error))
-        }
-      }
+      ].filter(([slot, base]) => base && !sameName(material[slot]?.name, base))
+      await Promise.all(
+        wanted.map(async ([slot, base, colorSpace]) => {
+          try {
+            const texture = await loadTexture(lookup, device, base, colorSpace)
+            const previous = material[slot]
+            // ⚠️ 走 `commit` 而不是直接赋值：解算途中只要有一次 `apply()`（控件一动就会调），
+            //    直接写在材质上的值会被快照里的 null 覆盖回去 —— 这就是"偶现加载不出来"。
+            if (commit) commit(material, slot, texture)
+            else material[slot] = texture
+            previous?.dispose?.()
+            record.swapped.push(slot === 'map' ? base : `N:${base}`)
+          } catch (error) {
+            record.errors.push(String(error.message ?? error))
+          }
+        }),
+      )
 
       // ①b 法线强度：以前由 GLB 的 `normalTexture.scale` 带出去，改成后加载后要自己按规格给
       material.normalScale.setScalar(entry.normalStrength ?? 1)
@@ -166,9 +199,16 @@ export async function resolveMaterials({ gltf, device, stem, spec, lookup, log }
           const maskUrl = textureUrl(lookup, device, entry.textures.mask)
           if (!maskUrl) throw new Error(`查找表里没有 ${device}/${entry.textures.mask}`)
           const orm = await buildOrmTexture(REPO_PREFIX + maskUrl, entry.remap)
-          material.aoMap = orm
-          material.metalnessMap = orm
-          material.roughnessMap = orm
+          // 同样要 commit：否则解算途中的 apply() 会把 ORM 一起清掉（症状同 base/normal）
+          if (commit) {
+            commit(material, 'aoMap', orm)
+            commit(material, 'metalnessMap', orm)
+            commit(material, 'roughnessMap', orm)
+          } else {
+            material.aoMap = orm
+            material.metalnessMap = orm
+            material.roughnessMap = orm
+          }
           material.aoMapIntensity = 1
           material.metalness = 1
           material.roughness = 1

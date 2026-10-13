@@ -93,7 +93,15 @@ async function boot() {
   renderList()
   renderStaticReadouts()
 
-  const wanted = new URLSearchParams(location.search).get('model')
+  const params = new URLSearchParams(location.search)
+  // 嵌入模式（`?embed=1`）：只留画布，给 `docs/ui-mockups` 的排版稿当真实三维区用
+  // （样式见 index.html 的 `body[data-embed]`；深链仍用 `?model=<器件>/<名字>`）
+  if (params.get('embed')) {
+    document.body.dataset.embed = '1'
+    // html 上也要标：`html`/`body` 只要有底色，透明画布就露不出宿主的毛玻璃（见 index.html 的嵌入段）
+    document.documentElement.dataset.embed = '1'
+  }
+  const wanted = params.get('model')
   const initial = state.models.find((model) => model.key === wanted) ?? state.models[0]
   select(initial.key)
 }
@@ -332,6 +340,8 @@ async function load(model) {
   let result = null
   try {
     result = await state.stage.loadModel(model.url)
+    // 过期请求直接丢掉（`loadModel` 返回 null 表示"我已经不是最新那一次了"）
+    if (!result) return
     // 渲染期材质解算：GLB 里带不动的（mask 通道语义 / 子材质贴图 / 表面模式）在这里补上
     if (state.solveEnabled && state.spec) {
       state.solveRecords = await resolveMaterials({
@@ -341,7 +351,11 @@ async function load(model) {
         spec: state.spec,
         lookup: state.textures,
         log: warn,
+        // 每接上一张贴图立刻提交到快照，避免解算途中 `apply()` 把已接的图清掉（见 stage.commitTexture）
+        commit: (material, slot, texture) => state.stage.commitTexture(material, slot, texture),
       })
+      // 解算期间若又切了模型，这次的解算结果作废（否则会把旧贴图挂到新模型上）
+      if (state.stage.currentUrl !== model.url) return
       state.solve = new Map(state.solveRecords.map((record) => [record.name, record]))
       // 改过材质必须重新快照，否则"贴图开关 / 覆盖 PBR"会把解算结果还原回旧值
       state.stage.refreshMaterialSnapshot()

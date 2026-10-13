@@ -47,7 +47,7 @@ export const pagesC = [
     statusbar: false,
     body: `${route('Purpose', ['Purpose'])}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:20px">
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:20px">
         <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">设备展示<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js · 循环动画</span></span></div>
           <div class="ui-panel__body ui-panel__body--flush" style="position:relative;height:100%">
@@ -80,7 +80,7 @@ ${viewport('Three.js', 'ObjectShowElement')}
     statusbar: false,
     body: `${route('Equipment', ['Purpose', 'Equipment'])}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
         <div class="ui-panel" style="width:330px">
           <div class="ui-panel__head">仪器清单<span class="ui-panel__right"><span class="ui-badge">5 件</span></span></div>
           <div class="ui-panel__body ui-panel__body--flush" style="padding:14px">
@@ -149,7 +149,7 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
     statusbar: false,
     body: `${route('Principle', ['Purpose'])}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
         <div style="flex:1;display:flex;flex-direction:column">
           <div class="ui-player">
             <div class="ui-player__stage">
@@ -199,7 +199,7 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
     body: `<div class="todo-mark">题目样式待重做（TODO.md T2）</div>
       ${route('Test', ['Purpose']) }
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
         <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">小测验<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js</span></span></div>
           <div class="ui-panel__body ui-question">
@@ -242,11 +242,10 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
     statusbar: false,
     body: `${route('Info')}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:20px">
-        <div class="ui-panel" style="flex:1">
-          <div class="ui-panel__head">三维模型<span class="ui-panel__right"><span class="ui-badge ui-badge--info">Three.js · 可旋转</span></span></div>
-          <div class="ui-panel__body ui-panel__body--flush" style="position:relative;height:100%">
-${viewport('Three.js', '整机 / 场景模型')}
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:20px">
+        <div class="ui-panel" style="flex:1;display:flex;flex-direction:column;min-width:0">
+          <div class="ui-panel__body ui-panel__body--flush" style="position:relative;flex:1;min-height:0">
+${viewport('Three.js', '整机 / 场景模型', '../../model-preview/index.html?embed=1&model=contactor/NewACContactor')}
           </div>
         </div>
         <div class="ui-panel" style="width:380px">
@@ -263,8 +262,7 @@ ${viewport('Three.js', '整机 / 场景模型')}
             </div>
           </div>
         </div>
-      </div>
-      <div class="note">C6 · <b>简介（已调整）</b> · 左侧主体改为<b>三维模型展示</b>，右侧一段文字（原来是左图右目录，理解错了）</div>`,
+      </div>`,
   },
 
   // ------------------------------------------------------------- C7 Exam（待重做）
@@ -279,7 +277,7 @@ ${viewport('Three.js', '整机 / 场景模型')}
     body: `<div class="todo-mark">考核样式待重做（TODO.md T3）</div>
       ${route('Exam', ['Purpose'])}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:20px 24px;display:flex;gap:18px">
+      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
         <div class="ui-panel" style="flex:1">
           <div class="ui-panel__head">考核<span class="ui-panel__right"><span class="ui-badge ui-badge--warn">计时 12:36</span></span></div>
           <div class="ui-panel__body ui-question">
