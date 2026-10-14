@@ -376,8 +376,13 @@ function unityDevServe(): Plugin {
         // 越界（`../`）一律当作不存在：dev 服务器也不该能被读出仓库外的文件
         if (target !== UNITY_DEV_ROOT && !target.startsWith(UNITY_DEV_ROOT + sep)) return next()
         if (!existsSync(target) || !statSync(target).isFile()) {
-          // 产物缺席是常态（`unity/builds/` 不进 git，DEC-57）—— 交给后面的处理器去 404
-          return next()
+          // ⚠️ 这里**必须**自己回 404，不能 `next()`：交给后面的处理器会命中 Vite 的 SPA 兜底，
+          // 于是 `/unity/main/Build/x.loader.js` 拿到一份 **200 的 index.html** ——
+          // 浏览器报的是"语法错误"而不是"404"，排查时会被带到完全错误的方向。
+          // 壳的静态服务器（electron/server.js）在这里也是回 404，两边行为对齐。
+          response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+          response.end(`404 /unity/${relativePath}\n`)
+          return
         }
         sendAsset(request, response, target)
       })
