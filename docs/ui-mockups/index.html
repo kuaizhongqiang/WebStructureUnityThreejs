@@ -803,8 +803,79 @@
         </div></div>
         <div class="spec-item__meta">
           <div class="spec-item__name">播放列表</div>
-          <div class="spec-item__desc">原理页可有多段视频；当前段高亮</div>
+          <div class="spec-item__desc">原理页**多段视频**时放在右栏顶部，当前段高亮；数据里只有一段视频时整块不出现（见下面两条）</div>
           <div class="spec-item__cls">.ui-playlist / __item / __thumb</div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div class="ui-videopage ui-videopage--single" style="position:static;inset:auto;padding:0;width:100%;height:240px;gap:10px">
+          <div class="ui-videopage__main">
+            <div class="ui-player">
+              <div class="ui-player__stage"><div class="ui-player__play" style="width:36px;height:36px;font-size:14px"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></div></div>
+              <div class="ui-player__ctrl" style="height:28px;gap:6px;padding:0 8px">
+                <span class="ui-player__btn" style="font-size:11px"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
+                <div class="ui-player__track"><div class="ui-player__progress" style="width:42%"></div></div>
+                <span class="ui-player__time" style="font-size:9px">01:18</span>
+              </div>
+            </div>
+          </div>
+          <aside class="ui-videopage__side" style="width:168px;gap:10px">
+            <div class="ui-panel ui-videopage__list">
+              <div class="ui-panel__head" style="height:26px;font-size:11px">视频列表</div>
+              <div class="ui-panel__body ui-playlist" style="padding:6px"><div class="ui-playlist__item ui-playlist__item--active"><span class="ui-playlist__name">1 · 测温原理</span></div></div>
+            </div>
+            <div class="ui-panel ui-videopage__notes">
+              <div class="ui-panel__head" style="height:26px;font-size:11px">原理说明</div>
+              <div class="ui-panel__body" style="padding:8px">
+                <div class="ui-article" style="font-size:11px;line-height:1.6">
+                  <h3 style="font-size:12px;margin:0 0 4px">电磁吸合与触头动作</h3>
+                  <p>线圈通电产生电磁吸力，带动主触头闭合。</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">原理页 · 单段视频（列表隐藏）</div>
+          <div class="spec-item__desc"><b>数据里只有一段视频时用这一档</b>：右栏的"视频列表"整块不出现，右栏只放本段说明，播放器自动占满让出来的宽度。采纳数据里 8 个器件项目<b>各只有 1 段视频</b>，所以这一档才是常态；产品侧靠条件渲染（<code>v-if</code>），排版稿靠 <code>--single</code> 这个类</div>
+          <div class="spec-item__cls">.ui-videopage / __main / __side / __notes + .ui-videopage--single</div>
+        </div>
+      </div>
+      <div class="spec-item">
+        <div class="spec-item__stage"><div class="ui-videopage" style="position:static;inset:auto;padding:0;width:100%;height:240px;gap:10px">
+          <div class="ui-videopage__main">
+            <div class="ui-player">
+              <div class="ui-player__stage"><div class="ui-player__play" style="width:36px;height:36px;font-size:14px"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></div></div>
+              <div class="ui-player__ctrl" style="height:28px;gap:6px;padding:0 8px">
+                <span class="ui-player__btn" style="font-size:11px"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
+                <div class="ui-player__track"><div class="ui-player__progress" style="width:42%"></div></div>
+                <span class="ui-player__time" style="font-size:9px">01:18</span>
+              </div>
+            </div>
+          </div>
+          <aside class="ui-videopage__side" style="width:168px;gap:10px">
+            <div class="ui-panel ui-videopage__list">
+              <div class="ui-panel__head" style="height:26px;font-size:11px">视频列表<span class="ui-panel__right"><span class="ui-badge">2 段</span></span></div>
+              <div class="ui-panel__body ui-playlist" style="padding:6px">
+                <div class="ui-playlist__item ui-playlist__item--active"><span class="ui-playlist__name">1 · 测温原理</span></div>
+                <div class="ui-playlist__item"><span class="ui-playlist__name">2 · 电路模型</span></div>
+              </div>
+            </div>
+            <div class="ui-panel ui-videopage__notes">
+              <div class="ui-panel__head" style="height:26px;font-size:11px">原理说明</div>
+              <div class="ui-panel__body" style="padding:8px">
+                <div class="ui-article" style="font-size:11px;line-height:1.6">
+                  <h3 style="font-size:12px;margin:0 0 4px">电磁吸合与触头动作</h3>
+                  <p>线圈通电产生电磁吸力，带动主触头闭合。</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">原理页 · 多段视频（列表出现）</div>
+          <div class="spec-item__desc">数据里<b>有多段视频</b>时才用这一档：右栏顶部出现"视频列表"，当前段高亮，播放器缩回左区。<b>两档的差别只有右栏第一块面板在不在</b>，播放器与说明面板本身不变 —— 所以不要为"多段"再写一套布局</div>
+          <div class="spec-item__cls">.ui-videopage（不带 --single）</div>
         </div>
       </div>
       <div class="spec-item">

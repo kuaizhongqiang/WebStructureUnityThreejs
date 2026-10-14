@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-10-14T01:14:01.832Z",
+  "dryRun": false,
+  "from": "F:\\Project\\Low-voltageElectricalSimulationSoftware",
+  "videos": [
+    {
+      "clip": "clip_contactor",
+      "device": "contactor",
+      "videoName": "01jcq_yl",
+      "from": "Assets/StreamingAssets/Video/01jcq_yl.mp4",
+      "path": "content/assets/video/01jcq_yl.mp4",
+      "bytes": 5323070,
+      "sha256": "601cb02c060446b960f37febab3aef40d04830cd5f8a84a2794cec87209aad27",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_thermalRelay",
+      "device": "thermalRelay",
+      "videoName": "02rjdq_yl",
+      "from": "Assets/StreamingAssets/Video/02rjdq_yl.mp4",
+      "path": "content/assets/video/02rjdq_yl.mp4",
+      "bytes": 10281099,
+      "sha256": "f7886f2c1fec14dddc4333604c9ec9b30236e04af826ae1995dac1d19d1d4603",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_timeRelay",
+      "device": "timeRelay",
+      "videoName": "03sjjdq_yl",
+      "from": "Assets/StreamingAssets/Video/03sjjdq_yl.mp4",
+      "path": "content/assets/video/03sjjdq_yl.mp4",
+      "bytes": 5462830,
+      "sha256": "f4a938e400ecedfaec193cb67f8618b9781fefbef230ec67477e6d981b8ccfe1",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_masterAppliance",
+      "device": "masterAppliance",
+      "videoName": "04zldq_yl",
+      "from": "Assets/StreamingAssets/Video/04zldq_yl.mp4",
+      "path": "content/assets/video/04zldq_yl.mp4",
+      "bytes": 2190885,
+      "sha256": "56ad46b743a4ee7c93db8c1b1b417a2b392d2c33b30afaa54b8bd6a71a2d8c86",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_fuse",
+      "device": "fuse",
+      "videoName": "05rdq_yl",
+      "from": "Assets/StreamingAssets/Video/05rdq_yl.mp4",
+      "path": "content/assets/video/05rdq_yl.mp4",
+      "bytes": 4424811,
+      "sha256": "e8dfbabb7a09c337661ff553bfcf0f39b288d1297655d14a16df5b2432edc429",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_breaker",
+      "device": "breaker",
+      "videoName": "06dlq_yl",
+      "from": "Assets/StreamingAssets/Video/06dlq_yl.mp4",
+      "path": "content/assets/video/06dlq_yl.mp4",
+      "bytes": 6918781,
+      "sha256": "1e1f3cc4ef827c7511095e802fe21d13fe5acfac81614c2fffaedccb428efbc6",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_speedRelay",
+      "device": "speedRelay",
+      "videoName": "07sdjdq_yl",
+      "from": "Assets/StreamingAssets/Video/07sdjdq_yl.mp4",
+      "path": "content/assets/video/07sdjdq_yl.mp4",
+      "bytes": 32055767,
+      "sha256": "00e23085e8f98f6e92eb932e7bfe7ad8bc46d7a17493d7563ced8eb57018314f",
+      "status": "copied"
+    },
+    {
+      "clip": "clip_combinationSwitch",
+      "device": "combinationSwitch",
+      "videoName": "08zhkg_yl",
+      "from": "Assets/StreamingAssets/Video/08zhkg_yl.mp4",
+      "path": "content/assets/video/08zhkg_yl.mp4",
+      "bytes": 2446860,
+      "sha256": "18a33533d552bb90e63bb42e3c09e63f36ed2035f1281b09ae86b5af7c76e3f0",
+      "status": "copied"
+    }
+  ],
+  "missing": []
+}

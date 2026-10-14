@@ -10,7 +10,7 @@
 | `None` 空类型 | 0 | Three | 占位页 | 轨道 | 无 | `task:enter` | — | 允许 |
 | `Purpose` 任务目的 | 1 | Three | 图文 + 单模型 | 轨道旋转 | 单 GLB | `purpose:enter` | `purpose:done` | 允许 |
 | `Equipment` 实验仪器 | 2 | Three | 仪器清单 + 模型切换 | 轨道旋转 | 多 GLB（按需） | `equipment:enter` | `equipment:done` | 允许 |
-| `Principle` 实验原理 | 3 | Three | 图文/动画示意 | 轨道旋转 | GLB / 贴图 | `principle:enter` | `principle:done` | 允许 |
+| `Principle` 实验原理 | 3 | Three | 视频 + 说明（**单段视频时右栏列表隐藏**，多段时才出现；与排版稿 C4 同构，DEC-99） | — | 视频（每项目 1 段，落 `content/assets/video/**`） | `principle:enter` | `principle:done`（**当前不发**，见 DEC-99 未闭合 b） | 允许 |
 | `Test` 小测验 | 6 | Three | 题目表单（可带小模型） | 轨道（可选） | 可选 GLB | `test:enter` | `test:submit` | 允许 |
 | `Info` 简介 | 7 | Three | 左三维 + 右图文（DEC-98：与排版稿 C6 同构） | 轨道（右键不平移） | 单 GLB + base/normal/mask 后加载 | `info:enter` | — | 允许 |
 | `Exam` 考核 | 10 | Three | 题目表单 | 可选 | 无 | `exam:enter` | `exam:submit` | 允许 |

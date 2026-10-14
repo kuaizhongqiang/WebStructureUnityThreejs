@@ -35,6 +35,8 @@
 - [x] AI 思考气泡 —— `style.css` §16.6，见 `pages/a10-ai.html`
 - [x] 图标优先的仪器列表 —— `style.css` §16.7，见 `pages/c3-equipment.html`
 - [x] 实验原理改视频播放器 + 播放列表 —— `style.css` §16.5，见 `pages/c4-principle.html`
+- [x] **实验原理：单段视频的形态（列表隐藏）**（2026-10-14，DEC-99）—— `components.css` §16.5b 的 `.ui-videopage` / `--single`；
+      C4 页改为**单段形态**（右栏 = 原理说明，与采纳数据一致），多段形态在样式成果页**第八节两档并列**（单段 = 列表隐藏 / 多段 = 列表出现）
 - [x] 任务目的简化为"一段文字" —— 见 `pages/c2-purpose.html`
 - [x] 简介改为"左三维 + 右文字" —— 见 `pages/c6-info.html`
 - [x] **样式单一来源拆分（DEC-74）** —— `style.css` → `tokens.css`（令牌 381 行）+ `components.css`（组件 1041 行）+ `mockup-shell.css`（评审外壳 129 行）；`style.css` 变为 14 行聚合入口。

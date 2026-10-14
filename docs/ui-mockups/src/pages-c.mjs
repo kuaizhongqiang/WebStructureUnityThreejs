@@ -5,6 +5,8 @@
  *   - C2 任务目的：内容只有一段文字 → 大幅简化（三维 + 一段文字 + 跳过）
  *   - C3 实验仪器：列表改成"图标优先"，右侧说明文字放大
  *   - C4 实验原理：改为视频播放器 + 播放列表（原理解有误）
+ *   - C4 第三轮修订（2026-10-14）：**数据只有一个视频时列表隐藏** —— 采纳数据里
+ *     8 个项目各只有 1 段视频，故本页改为"单段形态"（右栏 = 原理说明），多段形态见样式成果页第八节
  *   - C6 简介：改为"左三维模型 + 右一段文字"
  *   - C5 / C7：样式待重做，页面上带 TODO 标记（见 TODO.md T2 / T3）
  *   - C8~C11：Unity 侧，UI 暂不设计（保留第一轮样式，仅作占位）
@@ -138,22 +140,26 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
       <div class="note">C3 · <b>实验仪器（已调整）</b> · 列表改为<b>图标优先</b>（46px 图标 + 名称 16px）；右栏说明字号从 12px 提到 14/18px</div>`,
   },
 
-  // -------------------------------------------------------- C4 Principle（视频播放器）
+  // ------------------------------- C4 Principle（视频 + 说明；单段视频时列表隐藏）
+  // 2026-10-14 修订（负责人意见）：**数据里只有一个视频时，列表必须隐藏** ——
+  // 采纳数据里 8 个器件项目各只有 1 条 `principleStructs`（1 段视频 + 1 段说明），
+  // 所以本页画的是**单段形态**：右栏没有"视频列表"，只有"原理说明"；
+  // 多段形态（列表出现）在样式成果页第八节有两档对照。类名见 `components.css` §16.5b。
   {
     id: 'C4',
     file: 'c4-principle.html',
-    title: 'C4 实验原理（Principle）— 改为视频播放器',
+    title: 'C4 实验原理（Principle）— 单段视频 · 列表隐藏',
     state: 'UI · TaskType.Principle',
     crumb: CRUMB,
     right: RIGHT,
     statusbar: false,
     body: `${route('Principle', ['Purpose'])}
       ${topRight('')}
-      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
-        <div style="flex:1;display:flex;flex-direction:column">
+      <div class="ui-videopage ui-videopage--single">
+        <div class="ui-videopage__main">
           <div class="ui-player">
             <div class="ui-player__stage">
-              <div class="ui-player__badge"><span class="ui-badge ui-badge--info">原理讲解</span><span class="ui-badge">03:24</span></div>
+              <div class="ui-player__badge"><span class="ui-badge ui-badge--info">原理讲解</span><span class="ui-badge">01jcq_yl</span></div>
               <div class="ui-player__play">${icon('play', 16)}</div>
               <div class="ui-muted ui-small" style="position:absolute;bottom:14px">视频区域（真实播放时由 video 元素承载；微信内需点击后播放，DEC-70）</div>
             </div>
@@ -166,25 +172,38 @@ ${viewport('Three.js', 'ObjectShowElement（可交互）')}
             </div>
           </div>
         </div>
-        <div class="ui-panel" style="width:360px">
-          <div class="ui-panel__head">视频列表<span class="ui-panel__right"><span class="ui-badge">3 段</span></span></div>
-          <div class="ui-panel__body ui-playlist">
-            <div class="ui-playlist__item ui-playlist__item--active">
-              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
-              <span><span class="ui-playlist__name">1 · 测温原理</span><br><span class="ui-playlist__meta">03:24 · 已看完 0:00</span></span>
-            </div>
-            <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
-              <span><span class="ui-playlist__name">2 · 电路模型与接线</span><br><span class="ui-playlist__meta">04:10</span></span>
-            </div>
-            <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb">${icon('play', 16)}</span>
-              <span><span class="ui-playlist__name">3 · 误差来源分析</span><br><span class="ui-playlist__meta">02:45</span></span>
+        <aside class="ui-videopage__side">
+          <!-- 视频列表：**只有多段视频时才出现**；本页数据是单段 ⇒ 被 --single 隐藏 -->
+          <div class="ui-panel ui-videopage__list">
+            <div class="ui-panel__head">视频列表<span class="ui-panel__right"><span class="ui-badge">3 段</span></span></div>
+            <div class="ui-panel__body ui-playlist">
+              <div class="ui-playlist__item ui-playlist__item--active">
+                <span class="ui-playlist__thumb">${icon('play', 16)}</span>
+                <span><span class="ui-playlist__name">1 · 测温原理</span><br><span class="ui-playlist__meta">03:24 · 已看完 0:00</span></span>
+              </div>
+              <div class="ui-playlist__item">
+                <span class="ui-playlist__thumb">${icon('play', 16)}</span>
+                <span><span class="ui-playlist__name">2 · 电路模型与接线</span><br><span class="ui-playlist__meta">04:10</span></span>
+              </div>
+              <div class="ui-playlist__item">
+                <span class="ui-playlist__thumb">${icon('play', 16)}</span>
+                <span><span class="ui-playlist__name">3 · 误差来源分析</span><br><span class="ui-playlist__meta">02:45</span></span>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="ui-panel ui-videopage__notes">
+            <div class="ui-panel__head">原理说明</div>
+            <div class="ui-panel__body">
+              <div class="ui-article">
+                <h3>电磁吸合与触头动作</h3>
+                <p>线圈通电产生电磁吸力，吸引衔铁下移，带动主触头闭合、辅助触头随之动作；线圈断电后靠反力弹簧复位，触头断开。</p>
+                <p>主触头断开的瞬间产生电弧，灭弧罩将电弧冷却并分割成多段短弧，使电弧迅速熄灭。</p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
-      <div class="note">C4 · <b>实验原理（已改正）</b> · 主体是<b>视频播放器</b> + 右侧<b>视频列表</b>（原第一轮理解成图文+动画，是错的）</div>`,
+      <div class="note">C4 · <b>实验原理</b> · <b>单段视频</b>（本项目数据只有 1 段）⇒ <b>视频列表隐藏</b>，播放器占满左区，右栏放<b>本段说明</b>；多段时右栏才出现列表（见样式成果页第八节）</div>`,
   },
 
   // ------------------------------------------------------------- C5 Test（待重做）

@@ -42,6 +42,9 @@ const MIME = {
   '.glb': 'model/gltf-binary',
   '.gltf': 'model/gltf+json',
   '.exr': 'image/x-exr',
+  // 原理视频（DEC-99）：MIME 写错 <video> 直接拒播；`.mp4` 还必须能发 Range（见 sendFile）
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
   // Unity WebGL
   '.wasm': 'application/wasm',
   '.data': 'application/octet-stream',
@@ -137,23 +140,60 @@ async function startStaticServer({ root, unityRoot = null, port = 0, host = '127
     }
 
     const ext = extname(file.replace(/\.(br|gz)$/, ''))
+    const stats = statSync(file)
+    // 缓存口径（按 **URL** 判，别看文件系统的分隔符）：
+    //   · 指纹资源（vite 的 /assets/<name>-<hash>.js、Unity 的 /Build/**）—— 名字里带哈希，可长缓存；
+    //   · **不带指纹的资产树**（/assets/three/**、/assets/video/**）—— 名字固定（`NewACContactor.glb`、
+    //     `01jcq_yl.mp4`），标 immutable 会让"换了资产但包更新了"的机器一直吃旧文件；
+    //     改成 no-cache + ETag/Last-Modified：**每次请求都会来问一句，答案没变就回 304**，
+    //     既不会读到旧文件，也不会把 30 MB 的视频每次重下一遍。
+    const isTreeAsset = pathname.startsWith('/assets/three/') || pathname.startsWith('/assets/video/')
+    const isFingerprinted = (isUnity && pathname.startsWith('/Build/')) ||
+      (!isUnity && pathname.startsWith('/assets/') && !isTreeAsset)
+    const etag = `"${stats.size.toString(16)}-${Math.floor(stats.mtimeMs).toString(16)}"`
     const headers = {
       'Content-Type': MIME[ext] || 'application/octet-stream',
-      'Content-Length': statSync(file).size,
-      // 指纹资源（vite 的 assets/、Unity 的 Build/）可长缓存；页面与清单一律不缓存
-      'Cache-Control':
-        file.includes(`${sep}assets${sep}`) || file.includes(`${sep}Build${sep}`)
-          ? 'public, max-age=31536000, immutable'
-          : 'no-cache',
+      'Cache-Control': isFingerprinted ? 'public, max-age=31536000, immutable' : 'no-cache',
+      'Accept-Ranges': 'bytes',
+      ETag: etag,
+      'Last-Modified': stats.mtime.toUTCString(),
       'X-Content-Type-Options': 'nosniff',
     }
     if (encoding) headers['Content-Encoding'] = encoding
     if (coopCoep) {
       headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+      // 视频跨源不可用时也不该被 COEP 拦下（本地同源，这里只是把口径写清）
       headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
     }
 
-    res.writeHead(200, headers)
+    // 校验器命中：内容没变就只回一个 304，不带正文
+    if (!encoding && req.headers['if-none-match'] === etag) {
+      res.writeHead(304, headers)
+      return res.end()
+    }
+
+    // Range：视频拖进度条靠它（Safari 缺了直接拖不动，Chrome 会退化成整段重下）。
+    // 预压缩产物（.br/.gz）不做 Range —— 字节范围是相对**编码后**的实体算的，混在一起容易算错。
+    const rawRange = req.headers.range
+    const range = encoding ? null : /^bytes=(\d*)-(\d*)$/.exec(rawRange || '')
+    if (range && (range[1] !== '' || range[2] !== '')) {
+      const size = stats.size
+      const start = range[1] === '' ? Math.max(0, size - Number(range[2])) : Number(range[1])
+      const end = range[1] === '' || range[2] === '' ? size - 1 : Math.min(Number(range[2]), size - 1)
+      if (start > end || start >= size) {
+        res.writeHead(416, { 'Content-Range': `bytes */${size}` })
+        return res.end()
+      }
+      res.writeHead(206, {
+        ...headers,
+        'Content-Range': `bytes ${start}-${end}/${size}`,
+        'Content-Length': end - start + 1,
+      })
+      if (req.method === 'HEAD') return res.end()
+      return createReadStream(file, { start, end }).pipe(res)
+    }
+
+    res.writeHead(200, { ...headers, 'Content-Length': stats.size })
     if (req.method === 'HEAD') return res.end()
     createReadStream(file).pipe(res)
   })

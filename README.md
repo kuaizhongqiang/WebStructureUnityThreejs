@@ -27,7 +27,7 @@
 | `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
 | `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
-| `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**）；材质规格与人工修正：`asset-material-spec.json` / `asset-material-textures.json` / `material-overrides.json`；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
+| `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**：`three/` 模型、`video/` 原理视频）；材质规格与人工修正：`asset-material-spec.json` / `asset-material-textures.json` / `material-overrides.json`；搬运清单：`asset-import-report.json` / `asset-convert-report.json` / **`asset-video-report.json`**；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
 | `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存校验打包、三维资产搬运与 Blender 转换） |
 | `.github/workflows/gate.yml` | 合并门禁（CI） |
 
@@ -62,9 +62,10 @@
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：8 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人审阅后定**（见 `TODO.md` T-01 / T-02） |
 | **Info 页（产品侧）** | ✅ **左三维 + 右图文**（DEC-98，与排版稿 C6 同构）：三维由产品自持的 `web/src/viewer/ModelStage.ts` 承载（影棚 HDRI 当 IBL、无灯、画布透明、base/normal/mask **渲染期后加载** + mask→ORM）；**资产发布链已落地**（原 P1-5）：dev 由 vite 中间件直读 `content/assets/three`、build 拷进 `dist/assets/three/**`，发布清单记 `content.assets`。冒烟：`triangles=29673` 与转换报告逐个一致、材质解算 0 错误 |
+| **Principle 页（产品侧）** | ✅ **左视频 + 右说明**（DEC-99，与排版稿 C4 同构）：8 段讲解视频 **65.9 MB** 落 `content/assets/video/**`（**不进 git**），与三维资产同一套发布链（同一插件服务多棵树：`/assets/three/` + `/assets/video/`），视频另有 `_meta/index.json` 清单当**唯一判据**（缺了显示"未包含"，不打 404）；**数据只有一段视频时右栏"视频列表"整块不出现**（规则在 `web/src/domain/principle.ts`，有单测）；`.mp4` 的 MIME 与 `Range` 在 dev 中间件与壳的静态服务器都实现。冒烟：`readyState=4 1920x1080 81s`、列表 `rows=0`、右栏只有"原理说明"、console 0 错误；**壳里（打包产物）同组读数通过** |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
-| Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始 / 欠** | ① Web 侧步骤系统的**落地面板**（`ui:request`/`ui:result` 的 DOM）与内容装配；② 其余 C 组页面骨架（C2/C3/C4/C7）仍与排版稿不同构；③ 材质解算在产品与审核页各一份（`TODO.md` D-09）、包体核算（D-10）；④ 待负责人拍板项见 `TODO.md` §1 |
+| Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟**四段**（挂载 + Unity 页 + Info 页三维区 + **原理页视频**），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
+| **尚未开始 / 欠** | ① Web 侧步骤系统的**落地面板**（`ui:request`/`ui:result` 的 DOM）与内容装配；② 其余 C 组页面骨架（C2/C3/C7）仍与排版稿不同构；③ 材质解算在产品与审核页各一份（`TODO.md` D-09）、包体核算（D-10，已加 65.9 MB 视频）；④ 待负责人拍板项见 `TODO.md` §1 |
 
 ## 4 怎么跑
 
@@ -139,10 +140,19 @@ node tools/pipeline/fbx-to-glb.mjs --blender <blender.exe> --from-blend      # .
 
 # ④ 贴图搬运（**按材质引用**搬齐 base / normal / mask，写查找表）
 node tools/pipeline/import-material-textures.mjs
+
+# ⑤ 原理视频搬运（8 段 / 65.9 MB → content/assets/video/，**不进 git**）
+node tools/pipeline/import-principle-videos.mjs --from <来源工程根目录> --dry-run
+node tools/pipeline/import-principle-videos.mjs --from <来源工程根目录>
 ```
 
-- 两份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项 / 每个材质的接线）：
-  `content/asset-import-report.json`、`content/asset-convert-report.json`。
+- 三份清单是**证据**（来源 / 目标 / 字节 / sha256 / 三角面 / 未映射项 / 每个材质的接线）：
+  `content/asset-import-report.json`、`content/asset-convert-report.json`、`content/asset-video-report.json`。
+- 视频**专门一个脚本**、不并进 ①：那条链服务两条线共用的资产（要带 `.meta`、要过 Blender、有"单图 ≥10 MB 剔除"规则），
+  而视频只服务 Web 侧，且最大一段就是 **30.57 MB** —— 套用"≥10 MB 剔除"会把视频全剔掉。
+- `content/assets/three/**` 与 `content/assets/video/**` 的发布链是**同一个插件**（`web/vite.config.ts`）：
+  dev 走中间件直读、build 拷进 `dist/assets/<树>/**`；视频额外发一份 `_meta/index.json`（**构建时按目录内容现算**），
+  原理页只认它 —— 没有视频的包，页面显示"讲解视频未包含在本次发布里"，而不是打一个 404。
 - 落点：`Assets/Models/`（Plastic 管）、`web/public/content/sprites/`（进 git）、
   `content/assets/three/`（GLB 与贴图，**不进 git**，DEC-57）、`content/assets/blend/`（中间仓，同）。
 - ⚠️ `--prepare-blend --force` 会**覆盖** .blend，把手工调整丢掉 —— 加这个组合前先想清楚。

@@ -4,13 +4,13 @@
  *
  * 关键设计：**不是每个 TaskType 写一个页面**，而是"登记表驱动 + 少数几种骨架"
  * （见 `domain/registry.ts` 的 TaskPageKind 与 `docs/design/01-tasktype-registry.md`）：
- *   article  —— 一段正文（目的 / 原理 / 简介）
+ *   article  —— 一段正文（目的 / 简介）
  *   list     —— 条目 + 三维展示（仪器 / 结构）
- *   video    —— 视频 + 播放列表（原理）
+ *   video    —— 视频 + 说明（原理；DEC-99：单段视频时不出现列表）
+ *   model    —— 左三维 + 右图文（简介；DEC-98）
  *   quiz/exam—— 题目控件（小测验 / 考核）
  *   practice —— 仿真操作（Unity 承载）
- * 本期把 `article` 与 `list` 做实（含 Three 视口按容器比例自适应），其余给一致的占位骨架，
- * 这样站点线、进度、栈切换这些**框架能力**现在就能被真实走一遍。
+ * 每做实一种骨架，站点线、进度、栈切换这些**框架能力**就被真实走一遍。
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -18,6 +18,7 @@ import { Check, ChevronRight, Move3d, Play, TriangleAlert, LoaderCircle } from '
 import AppShell from '@/components/AppShell.vue'
 import { TaskType, TASK_TYPES, BRIDGE_PROTOCOL_VERSION, ViewerStack } from '@/contracts'
 import { labelOf, metaOf, stackOf, isUnityTask } from '@/domain/registry'
+import { showsPlaylist, videoNameAt, videoSectionsOf } from '@/domain/principle'
 import { useSessionStore } from '@/stores/session'
 import { useProgressStore } from '@/stores/progress'
 import { useContentStore } from '@/stores/content'
@@ -25,6 +26,7 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { Viewer } from '@/viewer/Viewer'
 import { ModelStage } from '@/viewer/ModelStage'
 import { deviceOfProject, loadSceneTables, modelOfDevice } from '@/viewer/scene-assets'
+import { loadVideoIndex, videoFileOf, videoUrlOf } from '@/viewer/video-assets'
 import { UnityBridge } from '@/unity/UnityBridge'
 import { mountUnity, type UnityFailure, type UnityHandle } from '@/unity/UnityLoader'
 
@@ -82,6 +84,9 @@ function syncViewer(): void {
   // 「左三维 + 右图文」（Info，DEC-98）用的是另一个舞台：要环境、要渲染期后加载贴图
   if (meta.value.kind === 'model') void nextTick(mountModelStage)
   else unmountModelStage()
+  // 原理页（video，DEC-99）：要先去清单里确认"这段视频在不在这次产物里"
+  if (meta.value.kind === 'video') void nextTick(mountVideo)
+  else unmountVideo()
 }
 
 // —— Info 页的三维区（DEC-98）：影棚 HDRI 当 IBL + 画布透明 + 贴图后加载 ——
@@ -150,6 +155,120 @@ function unmountModelStage(): void {
   modelError.value = null
 }
 
+// —— 原理页（video，DEC-99）：左视频 + 右说明；**单段视频时不出现列表** ——
+// 取件口径与三维资产同源：数据里的 `videoName`（`01jcq_yl`）→ 产物里的 `/assets/video/01jcq_yl.mp4`。
+// **判据是产物里的清单**（`_meta/index.json`），不是"试着去播"：缺了就显示明确状态，
+// 不让 `<video>` 去打一个必然 404 的请求（冒烟要求 console 零错误）。
+const videoSections = computed(() => videoSectionsOf(task.value))
+const playlistVisible = computed(() => showsPlaylist(videoSections.value))
+/** 当前段（多段视频时列表可切；单段时恒为 0）。 */
+const currentSection = ref(0)
+const videoPhase = ref<'idle' | 'loading' | 'ready' | 'absent' | 'failed'>('idle')
+const videoError = ref<string | null>(null)
+const videoSrc = ref<string | null>(null)
+const videoEl = ref<HTMLVideoElement | null>(null)
+/** 已经挂上的那段（同名不重挂，避免同步函数反复触发时把正在播的视频重置回 0 秒）。 */
+let mountedVideoName: string | null = null
+
+/** 当前要播的那一段的 `videoName`（单段时恒为第 0 段）。 */
+const currentVideoName = computed(() => videoNameAt(task.value, currentSection.value))
+/** 右栏"原理说明"显示的就是**当前段**的标题与正文（换段要跟着换）。 */
+const currentSectionTitle = computed(() => videoSections.value[currentSection.value]?.title ?? '')
+const currentSectionText = computed(() => videoSections.value[currentSection.value]?.text ?? '')
+
+/** 冒烟探针：与 `__WSU3_VIEWER__` / `__WSU3_MODEL__` 同一约定。 */
+type VideoProbe = Window & {
+  __WSU3_VIDEO__?: {
+    phase: typeof videoPhase.value
+    src: string | null
+    sections: number
+    playlist: boolean
+    name: string | null
+  } | null
+}
+
+function publishVideoProbe(): void {
+  ;(window as VideoProbe).__WSU3_VIDEO__ =
+    meta.value.kind === 'video'
+      ? {
+          phase: videoPhase.value,
+          src: videoSrc.value,
+          sections: videoSections.value.length,
+          playlist: playlistVisible.value,
+          name: currentVideoName.value,
+        }
+      : null
+}
+
+async function mountVideo(): Promise<void> {
+  if (meta.value.kind !== 'video') return
+  const name = currentVideoName.value
+  if (!name) {
+    videoPhase.value = 'absent'
+    videoError.value = '本项目的「原理」里没有讲解视频（数据里没有 videoName）。'
+    publishVideoProbe()
+    return
+  }
+  if (mountedVideoName === name && videoPhase.value === 'ready') {
+    publishVideoProbe()
+    return
+  }
+  videoPhase.value = 'loading'
+  videoError.value = null
+  videoSrc.value = null
+  mountedVideoName = null
+  publishVideoProbe()
+  let index: Awaited<ReturnType<typeof loadVideoIndex>>
+  try {
+    index = await loadVideoIndex()
+  } catch (cause) {
+    // 清单读不到 = **视频没随这次发布走**（不进 git 的大资产，干净 checkout 上就是没有）。
+    // 这是"明确状态"，不是"播放失败" —— 两者文案不同，冒烟也按它判。
+    videoPhase.value = 'absent'
+    videoError.value = cause instanceof Error ? cause.message : String(cause)
+    publishVideoProbe()
+    return
+  }
+  const url = videoUrlOf(name, index)
+  if (!url) {
+    videoPhase.value = 'absent'
+    videoError.value = `本次产物里没有讲解视频「${videoFileOf(name)}」。`
+    publishVideoProbe()
+    return
+  }
+  // 过期保护：await 期间可能又切了任务 / 切了项目（与 ModelStage 的同类保护一个道理）
+  if (meta.value.kind !== 'video' || currentVideoName.value !== name) return
+  mountedVideoName = name
+  videoSrc.value = url
+  videoPhase.value = 'ready'
+  publishVideoProbe()
+}
+
+function unmountVideo(): void {
+  ;(window as VideoProbe).__WSU3_VIDEO__ = null
+  videoEl.value?.pause()
+  videoSrc.value = null
+  mountedVideoName = null
+  currentSection.value = 0
+  videoPhase.value = 'idle'
+  videoError.value = null
+}
+
+/** 列表里换一段：换的是**播放对象**，所以要把视频重新挂上（不保留旧的播放位置）。 */
+function selectSection(index: number): void {
+  if (index === currentSection.value) return
+  currentSection.value = index
+  void mountVideo()
+}
+
+/** `<video>` 自己报错（例如文件在清单里但读盘失败）—— 这是"播放失败"，不是"未包含"。 */
+function onVideoError(): void {
+  if (meta.value.kind !== 'video') return
+  videoPhase.value = 'failed'
+  videoError.value = `视频文件读不出来：${videoSrc.value ?? '—'}`
+  publishVideoProbe()
+}
+
 /**
  * 内容可能**晚于**导航到位：SPA 里换 `?project=` 只更新 URL，项目数据是异步取的。
  * 在它到达之前，页面会先落到"本项目未启用"分支（没有视口容器），
@@ -171,8 +290,10 @@ onMounted(async () => {
   void runtime.load().then(syncUnity)
   syncUnity()
 })
-watch([taskType, projectId], ([next], [previous]) => {
+watch([taskType, projectId], ([next, nextProject], [previous, previousProject]) => {
   session.switchTaskType(next)
+  // 换项目 = 换内容：原理页的"当前段"要回到第一段（否则会拿着上一个项目的段号）
+  if (nextProject !== previousProject) currentSection.value = 0
   if (next !== previous) void nextTick(syncViewer)
   // URL 里的项目变了要**重新取项目**：hash 跳转不会重载页面，不重取就会一直用上一个项目
   // （`ensureProject` 幂等：目标项目已在手上时直接返回）
@@ -180,6 +301,7 @@ watch([taskType, projectId], ([next], [previous]) => {
 })
 onBeforeUnmount(unmountViewer)
 onBeforeUnmount(unmountModelStage)
+onBeforeUnmount(unmountVideo)
 
 function back(): void {
   unmountViewer()
@@ -654,7 +776,88 @@ function finish(): void {
         </div>
       </div>
 
-      <!-- 其余骨架（video）：Phase 3 交付，但外壳与站点线已经是真实导航 -->
+      <!-- video：原理页（DEC-99）—— 左视频 + 右说明；**单段视频时不出现列表**
+           （采纳数据里 8 个项目各只有 1 段，所以"没有列表"这一档才是常态）
+           形态对着排版稿 C4 与样式成果页第八节的两档对照。 -->
+      <div v-else-if="meta.kind === 'video'" class="app-split">
+        <div class="ui-panel app-video">
+          <div class="ui-panel__head">
+            {{ content.titleOf(taskType) }}
+            <span class="ui-panel__right">
+              <span class="ui-badge ui-badge--info">Three.js</span>
+              <span v-if="currentVideoName" class="ui-badge">{{ currentVideoName }}</span>
+            </span>
+          </div>
+          <div class="ui-panel__body ui-panel__body--flush app-video__body">
+            <video
+              v-if="videoPhase === 'ready' && videoSrc"
+              ref="videoEl"
+              class="app-video__el"
+              :src="videoSrc"
+              controls
+              playsinline
+              preload="metadata"
+              @error="onVideoError"
+            />
+            <div v-if="videoPhase === 'idle' || videoPhase === 'loading'" class="ui-viewport__center">
+              <LoaderCircle :size="18" />
+              <div>正在载入讲解视频…</div>
+            </div>
+            <!-- 缺视频是**明确状态**，不是"一直在转圈"（同三维资产与 Unity 产物的纪律） -->
+            <div v-else-if="videoPhase === 'absent' || videoPhase === 'failed'" class="ui-viewport__center">
+              <div>
+                <div style="color: var(--text-1); font-weight: 600">
+                  {{ videoPhase === 'absent' ? '讲解视频未包含在本次发布里' : '讲解视频没能播放' }}
+                </div>
+                <div style="max-width: 460px; line-height: 1.8">{{ videoError }}</div>
+                <div v-if="videoPhase === 'absent'" class="ui-small ui-muted" style="line-height: 1.8">
+                  接入方式：
+                  <code>node tools/pipeline/import-principle-videos.mjs --from &lt;来源工程根目录&gt;</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="app-video__side">
+          <!-- 视频列表：**只有多段视频才出现** —— 单段时整块不渲染（见 domain/principle.ts 的规则） -->
+          <div v-if="playlistVisible" class="ui-panel">
+            <div class="ui-panel__head">
+              视频列表
+              <span class="ui-panel__right">
+                <span class="ui-badge">{{ videoSections.length }} 段</span>
+              </span>
+            </div>
+            <div class="ui-panel__body ui-playlist">
+              <div
+                v-for="(section, index) in videoSections"
+                :key="`p${index}`"
+                class="ui-playlist__item"
+                :class="{ 'ui-playlist__item--active': index === currentSection }"
+                @click="selectSection(index)"
+              >
+                <span class="ui-playlist__thumb"><Play :size="16" /></span>
+                <span>
+                  <span class="ui-playlist__name"
+                    >{{ index + 1 }} · {{ section.title || `第 ${index + 1} 段` }}</span
+                  >
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="ui-panel">
+            <div class="ui-panel__head">原理说明</div>
+            <div class="ui-panel__body">
+              <div v-if="currentSectionText" class="ui-article">
+                <h3 v-if="currentSectionTitle">{{ currentSectionTitle }}</h3>
+                <p>{{ currentSectionText }}</p>
+              </div>
+              <p v-else class="ui-small ui-muted">本段没有文字说明。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 其余骨架：Phase 3 交付，但外壳与站点线已经是真实导航 -->
       <div v-else class="app-split">
         <div class="ui-panel">
           <div class="ui-panel__head">{{ content.titleOf(taskType) }}</div>

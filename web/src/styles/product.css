@@ -190,6 +190,38 @@
   height: 100% !important;
 }
 
+/* ------------------------------------------------ 原理页（DEC-99）：左视频 + 右说明
+   与排版稿 C4 同构；**单段视频时不出现"视频列表"**（规则在 `domain/principle.ts`），
+   列表不出现时右栏只剩说明面板，播放器自动占满左栏让出来的宽度。
+   画面区固定深色（`--player-bg` 两套主题都是深色）—— 视频内容不跟主题走，这是播放器的物理事实。 */
+.app-video {
+  min-width: 0;
+}
+.app-video__body {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+  background: var(--player-bg);
+}
+.app-video__el {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--player-bg);
+}
+/* 右栏：视频列表（多段时才在）+ 原理说明；说明面板吃掉剩余高度 */
+.app-video__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-height: 0;
+}
+.app-video__side > .ui-panel:last-child {
+  flex: 1;
+  min-height: 0;
+}
+
 /* ------------------------------------------------ 首页（A1）*/
 .app-hero {
   position: relative;

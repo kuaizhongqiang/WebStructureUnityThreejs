@@ -396,6 +396,92 @@ try {
   }
   await page.screenshot({ path: resolve(artifactsDir, 'task-info.png'), fullPage: false })
 
+  // 7b-3. 原理页（DEC-99）：讲解视频真的挂上了；右栏是"说明"；**单段视频时列表不出现**。
+  //
+  // 判据同样是**二择一**（与三维资产、Unity 产物一个口径）：大资产按 DEC-57 不进 git，
+  // 干净 checkout（CI）里没有 `content/assets/video`，那时页面必须明确报告"未包含"；
+  // 本机有视频时则必须**真的读到元数据**（readyState ≥ 1 = 浏览器认这个文件）。
+  // **"卡在载入中"算失败。**
+  await page.goto(`${base}/#/task/3?project=clip_contactor`, { waitUntil: 'load' })
+  await page
+    .waitForFunction(
+      () => {
+        const probe = window.__WSU3_VIDEO__
+        return probe ? probe.phase === 'ready' || probe.phase === 'absent' : false
+      },
+      null,
+      { timeout: 30_000 },
+    )
+    .catch(() => {})
+  // 元数据要真的读出来才算"能播"（对 30 MB 那一段尤其明显）
+  await page
+    .waitForFunction(
+      () => {
+        const probe = window.__WSU3_VIDEO__
+        const element = document.querySelector('video.app-video__el')
+        return Boolean(probe && probe.phase !== 'ready') || Boolean(element && element.readyState >= 1)
+      },
+      null,
+      { timeout: 20_000 },
+    )
+    .catch(() => {})
+  const video = await page.evaluate(() => {
+    const probe = window.__WSU3_VIDEO__ ?? null
+    const element = document.querySelector('video.app-video__el')
+    const text = document.body.innerText
+    return {
+      probe,
+      hasElement: Boolean(element),
+      src: element ? element.currentSrc || element.getAttribute('src') || '' : '',
+      readyState: element ? element.readyState : -1,
+      videoWidth: element ? element.videoWidth : 0,
+      videoHeight: element ? element.videoHeight : 0,
+      duration: element ? Math.round(element.duration || 0) : 0,
+      playlistRows: document.querySelectorAll('.app-video__side .ui-playlist__item').length,
+      panels: [...document.querySelectorAll('.app-video__side .ui-panel__head')].map((n) =>
+        n.textContent.trim(),
+      ),
+      paragraphs: [...document.querySelectorAll('.app-video__side .ui-article p')].map((n) =>
+        n.textContent.trim(),
+      ),
+      reported: text.includes('讲解视频未包含在本次发布里') || text.includes('讲解视频没能播放'),
+    }
+  })
+  const videoReady = Boolean(video.probe && video.probe.phase === 'ready')
+  const videoPlayable = videoReady && video.readyState >= 1 && video.videoWidth > 0
+  check(
+    videoPlayable || video.reported,
+    '原理页：要么真的能播（读到元数据）、要么明确报告"未包含"（卡在载入中算失败）',
+    videoPlayable
+      ? `readyState=${video.readyState} ${video.videoWidth}x${video.videoHeight} ${video.duration}s`
+      : `明确状态=${video.reported}`,
+  )
+  if (videoReady) {
+    check(
+      video.probe.sections === 1 && video.probe.playlist === false && video.playlistRows === 0,
+      '原理页：单段视频 ⇒ 视频列表整块不出现（DEC-99）',
+      `sections=${video.probe.sections} playlist=${video.probe.playlist} rows=${video.playlistRows}`,
+    )
+    check(
+      video.panels.length === 1 && video.panels[0] === '原理说明',
+      '原理页：右栏只有"原理说明"这一个面板',
+      video.panels.join(' + ') || '(空)',
+    )
+    check(
+      video.hasElement && /\/assets\/video\/.*\.mp4/.test(video.src),
+      '原理页：<video> 指向产物里的视频（不是硬编路径）',
+      video.src.slice(-44),
+    )
+    check(
+      video.paragraphs.some((item) => item.length > 10),
+      '原理页：右栏"原理说明"来自内容数据（不是占位文字）',
+      video.paragraphs.map((item) => item.length).join('/'),
+    )
+  } else {
+    console.log('[SKIP] 本 checkout 没有视频资产（DEC-57 不进 git）：按"页面明确报告未包含"通过')
+  }
+  await page.screenshot({ path: resolve(artifactsDir, 'task-principle.png'), fullPage: false })
+
   // 7c. 未启用的槽位要说清，而不是给个空白页（"实验仪器"(2) 在接触器里是 null）
   await page.goto(`${base}/#/task/2?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(500)

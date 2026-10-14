@@ -309,6 +309,72 @@ async function smokeInfo() {
   }
 }
 
+/**
+ * 冒烟第四段：打开 **原理页**（TaskType.Principle = 3）—— 断言讲解视频真的挂上了（DEC-99）。
+ *
+ * 这一段专门验**壳的静态服务器**：`.mp4` 的 MIME 写错、或不发 `Range`，
+ * dev server 下一切正常、打包产物里却会拒播或拖不动进度条 —— 只有在这一段看得出来。
+ * 判据仍是二择一（与 Unity 产物、三维资产同一口径）：
+ * 有视频 ⇒ 必须真读到元数据（`readyState ≥ 1` 且尺寸非 0）；没有（干净 checkout，DEC-57）
+ * ⇒ 页面必须**明确报告**"未包含"。**卡在载入中**算失败。
+ */
+async function smokePrinciple() {
+  try {
+    await win.webContents.executeJavaScript(`location.hash = '#/task/3?project=clip_contactor'`)
+    const started = Date.now()
+    let state = await readPrinciplePage()
+    for (;;) {
+      if (state.phase === 'ready' || state.phase === 'absent' || state.reported) break
+      if (Date.now() - started > 15_000) break
+      await new Promise((done) => setTimeout(done, 300))
+      state = await readPrinciplePage()
+    }
+    if (state.phase === 'ready') {
+      // "挂上了"不等于"能播"：元数据要真的读出来（readyState ≥ 1 = HAVE_METADATA）
+      const metaStarted = Date.now()
+      while (state.readyState < 1 && Date.now() - metaStarted < 8000) {
+        await new Promise((done) => setTimeout(done, 300))
+        state = await readPrinciplePage()
+      }
+    }
+    const playable = state.phase === 'ready' && state.readyState >= 1 && state.videoWidth > 0
+    const ok = playable || state.reported
+    log(
+      `原理页：phase=${state.phase} 段数=${state.sections} 列表=${state.playlist ? '有' : '无'}（行数 ${state.playlistRows}）` +
+        ` 播放器=${state.videoWidth}x${state.videoHeight} ${state.duration}s readyState=${state.readyState}` +
+        ` 右栏=${state.panels.join(' + ')}${playable ? '' : ' → 明确报告未包含（本机没有视频资产）'}`,
+    )
+    return { ok, playable, ...state }
+  } catch (error) {
+    log('原理页取证失败：', String(error))
+    return { ok: false, phase: 'error' }
+  }
+}
+
+/** 读一次原理页状态（页面侧探针 `__WSU3_VIDEO__`，与 `web/tools/render-smoke.mjs` 读同一批事实）。 */
+async function readPrinciplePage() {
+  return win.webContents.executeJavaScript(`(() => {
+    const probe = window.__WSU3_VIDEO__ || null
+    const element = document.querySelector('video.app-video__el')
+    const text = document.body.innerText || ''
+    return {
+      phase: probe ? probe.phase : null,
+      sections: probe ? probe.sections : -1,
+      playlist: probe ? probe.playlist : null,
+      hasElement: Boolean(element),
+      src: element ? element.currentSrc || element.getAttribute('src') || '' : '',
+      readyState: element ? element.readyState : -1,
+      videoWidth: element ? element.videoWidth : 0,
+      videoHeight: element ? element.videoHeight : 0,
+      duration: element ? Math.round(element.duration || 0) : 0,
+      playlistRows: document.querySelectorAll('.app-video__side .ui-playlist__item').length,
+      panels: [...document.querySelectorAll('.app-video__side .ui-panel__head')].map((n) => n.textContent.trim()),
+      reported: text.includes('讲解视频未包含在本次发布里') || text.includes('讲解视频没能播放'),
+      text: text.replace(/\\s+/g, ' ').slice(0, 120),
+    }
+  })()`)
+}
+
 /** 读一次 Info 页的三维区状态（页面侧探针，与 `web/tools/render-smoke.mjs` 读的是同一批事实）。 */
 async function readInfoPage() {
   return win.webContents.executeJavaScript(`(() => {
@@ -358,13 +424,16 @@ async function afterLoad() {
     const unityReport = await smokeUnity()
     // 第三段取证：Info 页的三维区（DEC-98；顺带覆盖 Unity → Three 的切回）
     const infoReport = await smokeInfo()
+    // 第四段取证：原理页的讲解视频（DEC-99；专验壳静态服务器的 `.mp4` MIME 与 Range）
+    const principleReport = await smokePrinciple()
 
     const ok =
       report.mounted &&
       report.shell.isDesktop &&
       consoleErrors.length === 0 &&
       unityReport.ok &&
-      infoReport.ok
+      infoReport.ok &&
+      principleReport.ok
 
     // 打包后的 Windows GUI 程序**不带控制台**，stdout 会被丢掉 —— 所以同时落一份报告文件，
     // 让"能打开"这件事有可读、可留档的证据。
@@ -381,6 +450,7 @@ async function afterLoad() {
       unityManifest,
       unityPage: unityReport,
       infoPage: infoReport,
+      principlePage: principleReport,
       consoleErrors,
       ...report,
       at: new Date().toISOString(),
@@ -401,6 +471,7 @@ async function afterLoad() {
     log('  画布数：', report.canvases)
     log('  正文片段：', report.text)
     log('  Info 页三维区：', infoReport.ok ? '通过' : '未通过')
+    log('  原理页讲解视频：', principleReport.ok ? '通过' : '未通过')
     if (consoleErrors.length) log('  控制台错误：', consoleErrors.slice(0, 3))
     log(ok ? '冒烟通过。' : '冒烟失败。')
     app.exit(ok ? 0 : 1)
