@@ -4,7 +4,10 @@
   "references": [
     "WSU3.Core",
     "WSU3.Contracts",
-    "WSU3.Runtime"
+    "WSU3.Runtime",
+    "Unity.Addressables",
+    "Unity.Addressables.Editor",
+    "Unity.ResourceManager"
   ],
   "includePlatforms": [
     "Editor"

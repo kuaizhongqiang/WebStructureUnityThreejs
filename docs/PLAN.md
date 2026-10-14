@@ -183,6 +183,9 @@
 **范围**（已测绘，见 `research/09` §5）：8 个器件的 **FBX + PBR 贴图** + 8×6 张原理图 Sprite。
 **剔除**：PSD 设计稿、演示帧、未压缩背景大图（单张 ≥10 MB 自动剔除）、TMP 字体 SDF、`.mat` 与自制 ShaderGraph、`.anim`（留给 P2-6d 定）。
 
+> ⚠️ 这条"剔除"**只对本批次（两条线共用的几何）成立**：结构任务（TaskType 8）所需的 `.mat` / 自制 ShaderGraph / `.anim`
+> 已在 **P2-8**（2026-10-14，DEC-102 / DEC-103）另走一条链搬入，见 `design/03` §5.2。
+
 **落点决定（2026-10-13，AI 定）**：
 
 | 用途 | 落点 | 谁管 | git |
@@ -223,7 +226,14 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 2. `_M_AO_G` 的**通道重排**（R=金属度→metallic、A=光泽度→1-roughness、G→occlusion 的 R）需要离屏重排后另出一张图；
 3. 7 个器件的"测量"模型在来源工程里是**内置立方体占位**（只有接触器是真的），需要内容侧补模型。
 
-### P1-4b Unity 侧材质贴图赋值（P1-4 的收尾）—— ⏳ **待办**
+### P1-4b Unity 侧材质贴图赋值（P1-4 的收尾）—— ❌ **已作废（2026-10-14，DEC-102 §4）**
+
+> **为什么作废**：本项的出发点是"Unity 从 FBX 自动抽出的 24 个材质 `_BaseMap` 为空，要按同名前缀接线"。
+> 负责人 2026-10-14 定为**搬来源工程的材质**（"低压电器的材质是对的，那么在当前项目的 Unity 中也应该是对的"），
+> 于是那 24 个占位材质被**同名同址覆盖**（连 `.meta`，GUID 换成源工程的）——
+> 接线这件事由源材质自己带着，**不需要我们再接一遍**；`_M_AO_G` 的通道语义也由源 ShaderGraph 原生读对。
+> 剩下的只是"让 Unity 重导一次 FBX 把材质接上"这一步编辑器动作，见 `TODO.md` D-18。
+> 下面保留原文，只作历史记录。
 
 **问题**（2026-10-13 实测）：Unity 导入 FBX 时按来源工程 `.fbx.meta` 的 `materialLocation: External` 设置，
 已经把 **24 个材质**抽到各器件的 `Models/<器件>/Materials/` 下，且都是 **URP Lit**（`Lit.shader`，**不会紫红**）——
@@ -270,12 +280,30 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 
 | # | 事项 | 说明 |
 |---|---|---|
-| a | 包登记表 + 三条链路（AB / AA / 内置） | `design/03` §7；包配置资产放 `Resources/Config/`，产物落 `Assets/StreamingAssets/` |
-| b | 一个项目一个内容包 + 实例登记 + 卸载纪律（防变粉） | 切任务 = 卸旧项目包 + 装新项目包 |
+| a | 包登记表 + 三条链路（AB / AA / 内置） | ✅ **已完成（2026-10-14，DEC-108~110）**：见 [`design/12-resource-packs-and-ab-build.md`](./design/12-resource-packs-and-ab-build.md)；包配置资产落 `Resources/Config/`、AB 产物落 `Assets/StreamingAssets/`，**一键打 AB 包**已跑通 |
+| b | 一个项目一个内容包 + 实例登记 + 卸载纪律（防变粉） | ✅ **已落地**（同 a）：`AddressableManager.LoadClipRoutine` / `UnloadClip` / `DestroyInstances`；已接进 `scene:enter` / `scene:exit` |
 | c | 漫游场景（additive，走 AA 或同构建内场景） | 入口先不做实现（浮动按钮预留）；**内容不采纳房间场景** |
-| d | 结构拆装动画（`.anim`）是否重建 | 取决于 P1-4 之后的效果评估 |
+| d | 结构拆装动画（`.anim`）是否重建 | ✅ **已关闭（2026-10-14，DEC-102 §2）：不重建，直接搬用来源工程的 46 段旧版 `AnimationClip`**（已落地） |
 | e | Unity 侧"编辑期 SO → 导出 JSON"链路 | 数据面稳定后接入；接入前**必须先备份 `StreamingAssets/Data/*.json`**（空 SO 会覆盖） |
 | f | 桥消息的 Unity 侧单测（EditMode） | 信封解析 / 版本不符 / 未知 type |
+
+### P2-8 结构任务（`Structure` = TaskType 8）落地
+
+**目标**：`clip_contactor` 等 8 个器件的"结构"站真的能在 WebGL 里点零件、播拆装动画、走完步骤、发 `structure:done`。
+
+**现状**：**资产已全部搬入 Unity**（2026-10-14，DEC-102 / DEC-103）—— 预制体 / 46 段动画 / 材质 / Shader / 插件都在位，脚本与清单可复核。
+
+| 步 | 内容 | 待办编号 | 依赖 |
+|---|---|---|---|
+| a | 零件脚本重新承载（`InteractiveObjBase` 派生，字段照留，去掉 HighlightPlus 门面调用） | `TODO.md` D-15 | 无 |
+| b | 决定 HighlightPlus 怎么被业务代码用上 | ✅ **已定（2026-10-14，DEC-106）：给插件补 asmdef，`WSU3.Core` 引用 `HighlightPlus.Runtime`** | a |
+| c | **等负责人给出步骤数据的预制体结构** → 定"步骤数据落哪"（Unity 步骤节点 / 内容数据 JSON） | `TODO.md` D-14 | 负责人 |
+| d | 实例化与初始化：进 `Structure` 站 → 装配预制体 → 相机 / 交互闸门 / 高亮 / 动画驱动 | `TODO.md` D-13。**实例化已落地**（DEC-110）；**初始化未做**（相机 / 闸门 / 高亮）；动画驱动卡在 D-14 的步骤数据落点 |
+| e | AB 打包与装载（`bundleName = Content/clip_<器件>`），接进 `assets:ready` / `scene:ready` | ✅ **已完成（2026-10-14，DEC-108）**：8 个包 / 45.3 MB，包名与 `content/asset-structure-report.json` 逐条一致；装载已接进任务流 |
+| f | 编辑器里复核材质接管（重导 FBX）+ `timeRelay` 的嵌套预制体 | `TODO.md` D-18 | 无 |
+
+**验收**（未定则先按这条）：WebGL 里进结构站 → 点任一零件 → 播对应拆装动画 → 全部走完后 Web 收到 `structure:done`；
+`masterAppliance`（空壳、无步骤数据）**不发** `structure:done`（DEC-105，这是接受的结果）。
 
 ---
 
