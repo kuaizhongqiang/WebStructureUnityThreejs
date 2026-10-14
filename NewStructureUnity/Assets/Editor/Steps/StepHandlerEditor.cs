@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -7,16 +8,20 @@ using WSU3.Core.Steps.Conditions;
 namespace WSU3.Editor
 {
     /// <summary>
-    /// 步骤节点的 Inspector：多态条件（Unity 内建的 `[SerializeReference]` 类型下拉）之外，
-    /// 补两件**光看默认面板看不出来**的事：
-    ///   ① 没配条件时的快捷赋默认条件（不然运行期只会得到一条"按立即完成处理"的告警）；
-    ///   ② 数据校验 —— 尤其是**循环动画**：它会让 Complete 阶段的"等播完"永不成立（`docs/design/10` §2）。
+    /// 步骤节点的 Inspector。除了把条件对象自己的字段照原样画出来（`[SerializeReference]` 多态），
+    /// 补三件**光看默认面板看不出来**的事：
+    ///   ① **条件类型下拉**（"选类型 = 建对象"）—— Unity 的托管引用只在字段为空时给类型下拉，
+    ///      一旦有值就必须先清空才能重选；对"边看边配"的人太绕，所以这里做成一步，
+    ///      并且**显示的类型永远取 `condition` 的实际类**，面板与运行期不可能对不上；
+    ///   ② 没配条件时的提示（不然运行期只会得到一条"按立即完成处理"的告警）；
+    ///   ③ 数据校验 —— 尤其是**循环动画**：它会让 Complete 阶段的"等播完"永不成立（`docs/design/10` §2）。
     /// </summary>
     [CustomEditor(typeof(StepHandler))]
     public class StepHandlerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
+            // conditionType 带 [HideInInspector]，由下面的 DrawConditionSection 画
             DrawDefaultInspector();
 
             var step = (StepHandler)target;
@@ -26,36 +31,85 @@ namespace WSU3.Editor
             DrawValidation(step);
         }
 
+        /// <summary>
+        /// 条件区的**唯一选型入口**：下拉里选类型 → 直接建出对应的条件对象。
+        /// 显示值取 `condition` 的实际类（`conditionType` 字段只在还没有条件时当待选值）。
+        /// </summary>
         private void DrawConditionSection()
         {
             SerializedProperty conditionProperty = serializedObject.FindProperty("condition");
-            bool empty = conditionProperty == null || conditionProperty.managedReferenceValue == null;
+            SerializedProperty typeProperty = serializedObject.FindProperty("conditionType");
+            var current = conditionProperty.managedReferenceValue as ConditionBase;
 
-            if (empty)
+            EditorGUILayout.LabelField("步骤条件", EditorStyles.boldLabel);
+
+            ConditionType selected = current != null
+                ? current.Type
+                : StepConditionFactory.Normalize((ConditionType)typeProperty.intValue);
+
+            EditorGUI.BeginChangeCheck();
+            var picked = (ConditionType)EditorGUILayout.EnumPopup(
+                new GUIContent(
+                    "条件类型",
+                    "选一个类型即创建对应的条件对象。已实现：默认 / 点击 / UI / 问题 / 连线配对 / 结束。" +
+                    "灰掉的：开始（与「默认」同义）、拖拽 / 工具（本期未实现，DEC-93）"),
+                selected,
+                StepConditionFactory.IsImplemented,
+                false);
+            bool typeChanged = EditorGUI.EndChangeCheck();
+
+            bool create = false;
+
+            if (current == null)
             {
                 EditorGUILayout.HelpBox(
-                    "这个步骤还没有配条件：运行时会按「立即完成」处理并告警（通常不是你要的）。",
+                    "这个步骤还没有条件：运行时会按「立即完成」处理并告警（通常不是你要的）。" +
+                    "在上面的下拉里选一个类型即可创建。",
                     MessageType.Warning);
 
-                if (GUILayout.Button("赋予默认条件（无交互，只播动画）"))
-                {
-                    serializedObject.Update();
-                    conditionProperty.managedReferenceValue = new ConditionDefault();
-                    serializedObject.ApplyModifiedProperties();
-                }
-                return;
+                create = typeChanged || GUILayout.Button($"创建「{picked}」条件");
+            }
+            else if (typeChanged && current.Type != picked)
+            {
+                // 换类型 = 换对象：旧条件里填过的字段会跟着对象一起丢掉，先问一句
+                create = EditorUtility.DisplayDialog(
+                    "替换步骤条件",
+                    $"当前条件是「{current.Type}」。\n\n" +
+                    $"换成「{picked}」会新建一个条件对象，旧条件里已填的字段" +
+                    "（显隐表 / 动画槽位 / 提示 id / 点击目标 …）都会丢掉。",
+                    "替换", "取消");
+                // 取消时什么都不用做：下拉的显示值下一帧从 condition 的实际类重新取，不会留下错觉
             }
 
-            var condition = (ConditionBase)conditionProperty.managedReferenceValue;
-            EditorGUILayout.LabelField("条件类型", condition.Type.ToString());
+            if (create)
+            {
+                CreateCondition(typeProperty, conditionProperty, picked);
+                // 条件对象刚被换掉：本帧别再往下画，避免控件数量变化导致布局错位
+                GUIUtility.ExitGUI();
+            }
 
-            if (GUILayout.Button("清空条件（重新选类型）"))
+            if (current != null && GUILayout.Button("清空条件（重新选类型）"))
             {
                 serializedObject.Update();
                 conditionProperty.managedReferenceValue = null;
                 serializedObject.ApplyModifiedProperties();
             }
         }
+
+        /// <summary>按选定类型建对象并回写（类型字段与条件对象一次改完，不会留下不一致的中间态）。</summary>
+        private void CreateCondition(
+            SerializedProperty typeProperty,
+            SerializedProperty conditionProperty,
+            ConditionType type)
+        {
+            serializedObject.Update();
+            typeProperty.intValue = (int)type;
+            conditionProperty.managedReferenceValue = StepConditionFactory.Create(type);
+            serializedObject.ApplyModifiedProperties();
+        }
+
+        // 类型 → 条件类 的映射不在这里：挪到 StepConditionFactory，
+        // 与 StructureStepGenerator 共用同一份（两处各写一份迟早会漂）。
 
         private static void DrawValidation(StepHandler step)
         {

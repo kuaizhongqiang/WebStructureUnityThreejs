@@ -188,7 +188,8 @@ scene:exit
    （`clip_contactor` → `contactor_structure_model`，两条路得到同一个字符串，不会漂）；
 2. `LoadAssetRoutine<GameObject>` 取预制体 → `InstantiatePrefab`（登记实例归属）→ 挂到**结构件挂载根**；
 3. `GetComponentInChildren<StepManager>()` → 有就 `StartExecution()`；**没有就只实例化、不假装跑流程**，
-   并把"步骤数据落点未定"这件事写在 Console 里（`../TODO.md` D-14）。
+   并把原因写在 Console 里。**8 个结构件预制体现在都带 46 步子树**（DEC-111，见 `10-step-system.md` §7），
+   所以这条告警只在"手里的包是旧的"时才会出现 —— ⚠️ 预制体在 2026-10-14 晚变过，**这 8 个包要重打**（`../TODO.md` D-23）。
 
 **挂载根**（`DataStructMapping.GetStructureRoot`）：场景里已有 `StructureRoot` 节点就用它，
 没有就运行期在管理器节点下建一个 —— 工具不替人改场景文件（场景由负责人在编辑器里装配），
@@ -217,8 +218,9 @@ scene:exit
    AA 走默认 profile；`tools/pipeline/unity-stage.mjs` 的 `--extra` 在本工程用不上（留着不影响）。
 4. **没有包体预算门禁**：8 个内容包合计 **45.3 MB**（构建报告里有逐包字节），
    12 MB 反射 cubemap 被卷进 4 个金属材质所在包的依赖里 —— 预算核算见 `../TODO.md` D-10。
-5. **步骤数据落点仍未定**（`../TODO.md` D-14）：结构件预制体里还没有 `StepManager` 子树，
-   所以进结构站**只会实例化、不会跑步骤**（这是当前已知且如实报出的状态）。
+5. **步骤数据已落地**（DEC-111，见 `10-step-system.md` §7）：8 个结构件预制体自带 **46 步** `StepManager` 子树
+   （由 `StructureStepGenerator` 从只读来源工程生成、幂等可重跑）。⚠️ **但包还是旧的** —— 预制体 2026-10-14 晚变过，
+   重打之前进结构站仍会"只实例化、不跑步骤"（`../TODO.md` D-23）。
 6. **结构件的相机 / 交互闸门 / 高亮初始化未接**（`../TODO.md` D-13）：比"实例化"更靠后的那一段。
 
 ## 9 落点速查（本次新增/改动）
