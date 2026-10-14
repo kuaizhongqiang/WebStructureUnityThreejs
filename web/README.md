@@ -1,6 +1,6 @@
 # web/ — Web 侧工程（Three.js 简单三维交互 + 教学外壳）
 
-> 决策依据：`../docs/DECISIONS.md`（技术栈 DEC-15~19 / DEC-33；脚手架 DEC-73 / DEC-75；样式单一来源 DEC-74；资产发布链与 Info 页 DEC-98；原理页与视频 DEC-99；站点线按数据画站 DEC-100）。
+> 决策依据：`../docs/DECISIONS.md`（技术栈 DEC-15~19 / DEC-33；脚手架 DEC-73 / DEC-75；样式单一来源 DEC-74；资产发布链与 Info 页 DEC-98；原理页与视频 DEC-99；站点线按数据画站 DEC-100；**启动流程与游客入口 DEC-101**）。
 > 纪律与落点以 `../AGENT.md` 与根 `../README.md` 为准；本文件只写 **web/ 这一层**的结构、命令与边界。
 
 ## 技术栈
@@ -37,7 +37,7 @@ npm run preview       # 预览生产产物
 |---|---|---|
 | `src/contracts/` | **双端共享契约**（`SceneState` / `TaskType` / 中文标签 / 分流映射 / 协议版本 / 题目枚举） | 只许往后追加；改值必须同批改 C# 与基准快照，且 `contracts.spec.ts` 通过（DEC-09 / DEC-10） |
 | `src/domain/` | **表现层登记表与内容适配**：`registry.ts`（TaskType → 页面骨架）、`adopted-content.ts`（采纳 JSON → 页面模型）、`principle.ts`（原理页规则） | 不复制契约里的标签与顺序；适配层是**纯函数**，坑要用单测锁住 |
-| `src/views/` | 页面：`StartView` / `MenuView` / **`TaskView`（登记表驱动，一种骨架一个分支）** / `DebugView`（骨架自检） / `PlaceholderView` | 新增 TaskType 先改契约与登记表，**不要**新写一页 |
+| `src/views/` | 页面：`StartView` / `LoginView`（**只提供游客入口**，DEC-101） / `MenuView` / **`TaskView`（登记表驱动，一种骨架一个分支）** / `DebugView`（骨架自检） / `PlaceholderView` | 新增 TaskType 先改契约与登记表，**不要**新写一页；启动流程是 `start → login → menu`，改它要同批改 `router/index.ts` 与冒烟（DEC-101） |
 | `src/components/` | 外壳组件：`AppShell` / `ShellCard`（左上浮卡）/ `RouteBar`（站点线） | 样式只走 `@ds`（`tokens.css` + `components.css`），**禁止** import `mockup-shell.css`（DEC-74） |
 | `src/viewer/` | 三维与**大资产取数**：`Viewer`（裸 three 封装）、`ModelStage`（Info 页舞台，DEC-98）、`scene-assets.ts` / `video-assets.ts`（只认产物里的元数据表与清单） | 谁创建谁 `dispose()`；渲染循环由 `Viewer` 独占；**不硬编**资产路径（DEC-57 / DEC-98 / DEC-99） |
 | `src/unity/` | Unity WebGL 桥 | 消息全 JSON、带版本号、不提供状态查询、退出显式 `detach()`（DEC-07 / DEC-08 / DEC-12） |
