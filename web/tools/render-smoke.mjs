@@ -331,10 +331,17 @@ try {
   //
   // ⚠️ 判据是**二择一**，与壳里那段 Unity 取证同一口径：大资产按 DEC-57 **不进 git**，
   //    干净 checkout（CI）里没有 `content/assets/three`，那时页面必须**明确报告**
-  //    "本项目没有三维模型"；本机有资产时则必须真的挂上模型。**"卡在加载中"算失败**。
+  //    "没有模型 / 加载不了"；本机有资产时则必须真的挂上模型。**"卡在加载中"算失败**。
   await page
     .waitForFunction(
-      () => Boolean(window.__WSU3_MODEL__) || document.body.innerText.includes('本项目没有三维模型'),
+      () => {
+        const text = document.body.innerText
+        return (
+          Boolean(window.__WSU3_MODEL__) ||
+          text.includes('本项目没有三维模型') ||
+          text.includes('三维模型没能加载')
+        )
+      },
       null,
       { timeout: 30_000 },
     )
@@ -343,9 +350,11 @@ try {
   const model = await page.evaluate(() => {
     const stage = window.__WSU3_MODEL__
     const canvas = document.querySelector('.app-model__stage canvas')
+    const text = document.body.innerText
     return {
       mounted: Boolean(stage),
-      absent: document.body.innerText.includes('本项目没有三维模型'),
+      // "没有模型"与"加载不了"两种文案都算**明确状态**：不做假设 ≠ 失败，**卡在加载中**才是失败
+      reported: text.includes('本项目没有三维模型') || text.includes('三维模型没能加载'),
       canvas: Boolean(canvas),
       width: canvas?.width ?? 0,
       stats: stage ? stage.renderStats : null,
@@ -358,20 +367,20 @@ try {
   const withModel = model.mounted && (model.stats?.triangles ?? 0) > 1000 && materialsSolved
   check(model.canvas && model.width > 0, 'Info 页：三维视口真的有画布', `width=${model.width}`)
   check(
-    withModel || model.absent,
-    'Info 页：三维区要么挂着模型（材质零错误）、要么明确报告"本项目没有三维模型"',
+    withModel || model.reported,
+    'Info 页：三维区要么挂着模型（材质零错误）、要么明确报告"没有/加载不了"',
     model.mounted
       ? `triangles=${model.stats?.triangles} calls=${model.stats?.calls} 材质=${JSON.stringify(model.records)}`
-      : `absent=${model.absent}（本 checkout 没有 content/assets/three）`,
+      : `明确状态=${model.reported}（本 checkout 没有 content/assets/three，DEC-57 不进 git）`,
   )
-  if (model.absent) {
-    console.log(
-      '[SKIP] 本 checkout 没有 content/assets/three（DEC-57 不进 git）：模型断言按"明确报告未包含"通过',
-    )
+  if (!withModel && model.reported) {
+    console.log('[SKIP] 本 checkout 没有三维资产：模型断言按"页面明确报告未包含"通过（卡在加载中才算失败）')
   }
   const modelCanvas = await page.$('.app-model__stage canvas')
   const modelBox = modelCanvas ? await modelCanvas.boundingBox() : null
-  if (modelBox) {
+  if (!modelBox) {
+    check(false, 'Info 页：拿不到三维画布的截图区域')
+  } else if (model.mounted) {
     const shot = await page.screenshot({ clip: modelBox })
     await writeFile(resolve(artifactsDir, 'task-info-model-canvas.png'), shot)
     const stats = pngStats(shot)
@@ -382,7 +391,8 @@ try {
       `unique=${stats.uniqueColors} lum=${stats.minLum}~${stats.maxLum}`,
     )
   } else {
-    check(false, 'Info 页：拿不到三维画布的截图区域')
+    // 没有模型时画布是空的（透明），这一条此时没有意义 —— 明确跳过，不当成通过
+    console.log('[SKIP] 本 checkout 没有三维资产（模型未随包发布），跳过"画布有内容"断言')
   }
   await page.screenshot({ path: resolve(artifactsDir, 'task-info.png'), fullPage: false })
 

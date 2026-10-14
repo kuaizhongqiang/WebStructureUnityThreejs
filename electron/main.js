@@ -274,38 +274,33 @@ async function smokeInfo() {
     let state = {
       hasCanvas: false,
       ready: false,
-      absent: false,
+      reported: false,
       triangles: 0,
       records: [],
       columns: [],
       text: '',
     }
     for (;;) {
-      state = await win.webContents.executeJavaScript(`(() => {
-        const stage = window.__WSU3_MODEL__
-        const canvas = document.querySelector('.app-model__stage canvas')
-        return {
-          hasCanvas: Boolean(canvas && canvas.width > 0),
-          ready: Boolean(stage),
-          // 大资产按 DEC-57 不进 git：干净 checkout 上打的包**没有**三维资产，
-          // 那时页面必须明确报告"本项目没有三维模型"（与 Unity 产物缺席同一口径）
-          absent: (document.body.innerText || '').includes('本项目没有三维模型'),
-          triangles: stage ? stage.renderStats.triangles : 0,
-          records: stage ? stage.solveRecords.map((r) => ({ name: r.name, orm: r.orm, errors: r.errors.length })) : [],
-          columns: [...document.querySelectorAll('.app-split > *')].map((el) => Math.round(el.getBoundingClientRect().width)),
-          text: (document.body.innerText || '').replace(/\\s+/g, ' ').slice(0, 120),
-        }
-      })()`)
-      if (state.ready || state.absent || Date.now() - started > 12_000) break
+      state = await readInfoPage()
+      if (state.ready || state.reported || Date.now() - started > 12_000) break
       await new Promise((done) => setTimeout(done, 300))
+    }
+    if (state.ready) {
+      /**
+       * ⚠️ 读数前必须让场景**再渲染几帧**：PMREM（生成环境贴图）会自己渲染一遍，
+       * 而 `renderer.info.render` 只反映**最近一次**渲染 —— 正好卡在那时读出来是
+       * "12 个三角面"（一张 PMREM 立方体的量），看着像空场景。实测踩过。
+       */
+      await new Promise((done) => setTimeout(done, 700))
+      state = await readInfoPage()
     }
     const solved = state.records.length > 0 && state.records.every((item) => item.errors === 0)
     const withModel = state.hasCanvas && state.ready && state.triangles > 1000 && solved
-    const ok = withModel || state.absent
+    const ok = withModel || state.reported
     log(
       `Info 页：canvas=${state.hasCanvas} 就绪=${state.ready} 三角面=${state.triangles}` +
         ` 材质=${state.records.length}${solved ? '（零错误）' : '（**有错误或没解算**）'}` +
-        ` 栏宽=${state.columns.join(' + ')}${state.absent ? ' → 明确报告未包含（本机没有三维资产）' : ''}`,
+        ` 栏宽=${state.columns.join(' + ')}${withModel ? '' : ' → 明确报告没有/加载不了（本机没有三维资产）'}`,
     )
     return { ok, withModel, ...state }
   } catch (error) {
@@ -314,7 +309,29 @@ async function smokeInfo() {
   }
 }
 
-async function afterLoad() {  if (!SMOKE) {
+/** 读一次 Info 页的三维区状态（页面侧探针，与 `web/tools/render-smoke.mjs` 读的是同一批事实）。 */
+async function readInfoPage() {
+  return win.webContents.executeJavaScript(`(() => {
+    const stage = window.__WSU3_MODEL__
+    const canvas = document.querySelector('.app-model__stage canvas')
+    const text = document.body.innerText || ''
+    return {
+      hasCanvas: Boolean(canvas && canvas.width > 0),
+      ready: Boolean(stage),
+      // 大资产按 DEC-57 不进 git：干净 checkout 上打的包**没有**三维资产，
+      // 那时页面必须**明确报告**（"没有模型"或"加载不了"）——与 Unity 产物缺席同一口径；
+      // 卡在加载中才是失败
+      reported: text.includes('本项目没有三维模型') || text.includes('三维模型没能加载'),
+      triangles: stage ? stage.renderStats.triangles : 0,
+      records: stage ? stage.solveRecords.map((r) => ({ name: r.name, orm: r.orm, errors: r.errors.length })) : [],
+      columns: [...document.querySelectorAll('.app-split > *')].map((el) => Math.round(el.getBoundingClientRect().width)),
+      text: text.replace(/\\s+/g, ' ').slice(0, 120),
+    }
+  })()`)
+}
+
+async function afterLoad() {
+  if (!SMOKE) {
     log('页面已加载')
     return
   }

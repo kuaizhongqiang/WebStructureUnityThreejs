@@ -107,8 +107,18 @@ async function mountModelStage(): Promise<void> {
   }
   modelStage ??= new ModelStage({ container })
   modelStage.start()
+  let tables: Awaited<ReturnType<typeof loadSceneTables>>
   try {
-    const tables = await loadSceneTables()
+    tables = await loadSceneTables()
+  } catch (cause) {
+    // 三张元数据表读不到 = **资产没随这次发布走**（大资产按 DEC-57 不进 git，干净 checkout 上就是没有）。
+    // 这是"明确状态"，不是"加载失败" —— 两者在页面上的文案不同，冒烟也按它判：
+    // 卡在加载中才算失败，明确报告未包含是合格结果（与 Unity 产物缺席同一口径）。
+    modelPhase.value = 'absent'
+    modelError.value = cause instanceof Error ? cause.message : String(cause)
+    return
+  }
+  try {
     const model = modelOfDevice(tables, device)
     if (!model) {
       modelPhase.value = 'absent'

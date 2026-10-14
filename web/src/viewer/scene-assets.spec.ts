@@ -86,14 +86,26 @@ describe('真实的产物表（content/asset-*.json）结构与磁盘一致', ()
   const lookup = readJson('../../../content/asset-material-textures.json') as {
     textures: Record<string, string>
   }
+  /**
+   * ⚠️ 下面两条比的是**磁盘**，而 `content/assets/three/**` 按 DEC-57 **不进 git** ——
+   * CI 的干净 checkout 上没有它。所以：有资产时逐条真比（本机常态），没有时**明确跳过**
+   * （与冒烟里"要么挂上模型、要么明确报告未包含"同一口径：不许静默通过，也不许无故变红）。
+   */
+  const assetsRoot = repoFile('content/assets/three')
+  const hasAssets = existsSync(assetsRoot)
+  if (!hasAssets) {
+    console.warn(
+      `[scene-assets.spec] 跳过"磁盘存在性"断言：本 checkout 没有 ${assetsRoot}（大资产不进 git，DEC-57）`,
+    )
+  }
 
-  it('每个器件的 GLB 都真的在磁盘上（表漂了就会红，而不是页面缺模型）', () => {
+  it.skipIf(!hasAssets)('每个器件的 GLB 都真的在磁盘上（表漂了就会红，而不是页面缺模型）', () => {
     expect(report.models.length).toBeGreaterThan(0)
     const missing = report.models.filter((model) => !existsSync(repoFile(model.glb)))
     expect(missing.map((model) => model.glb)).toEqual([])
   })
 
-  it('查找表里的每张贴图都真的在磁盘上（DEC-97：三张图全靠它）', () => {
+  it.skipIf(!hasAssets)('查找表里的每张贴图都真的在磁盘上（DEC-97：三张图全靠它）', () => {
     const entries = Object.entries(lookup.textures)
     expect(entries.length).toBeGreaterThan(0)
     const missing = entries.filter(([, path]) => !existsSync(repoFile(path)))
