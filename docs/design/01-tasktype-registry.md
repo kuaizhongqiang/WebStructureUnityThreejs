@@ -12,7 +12,7 @@
 | `Equipment` 实验仪器 | 2 | Three | 仪器清单 + 模型切换 | 轨道旋转 | 多 GLB（按需） | `equipment:enter` | `equipment:done` | 允许 |
 | `Principle` 实验原理 | 3 | Three | 图文/动画示意 | 轨道旋转 | GLB / 贴图 | `principle:enter` | `principle:done` | 允许 |
 | `Test` 小测验 | 6 | Three | 题目表单（可带小模型） | 轨道（可选） | 可选 GLB | `test:enter` | `test:submit` | 允许 |
-| `Info` 简介 | 7 | Three | 纯图文 | 轨道 | 无 | `info:enter` | — | 允许 |
+| `Info` 简介 | 7 | Three | 左三维 + 右图文（DEC-98：与排版稿 C6 同构） | 轨道（右键不平移） | 单 GLB + base/normal/mask 后加载 | `info:enter` | — | 允许 |
 | `Exam` 考核 | 10 | Three | 题目表单 | 可选 | 无 | `exam:enter` | `exam:submit` | 允许 |
 | `LineConnection` 电路连接 | 4 | **Unity** | 全屏画布 + 悬浮工具条 | 正交 / 俯视 | 分包按需 | `line:enter` | `line:complete` | **尝试加载 → 失败提示**（DEC-53） |
 | `Training` 仿真实验 | 5 | **Unity** | 全屏画布 + 步骤面板 | 自由 / 跟随 | 分包按需 | `training:enter` | `training:complete` | 同上 |

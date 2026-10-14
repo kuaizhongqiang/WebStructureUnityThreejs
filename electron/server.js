@@ -37,6 +37,11 @@ const MIME = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
   '.ttf': 'font/ttf',
+  // Three 侧资产（DEC-98）：GLB 与影棚 HDRI。这两类都是按 arrayBuffer 读的，
+  // 但清单里必须写对 —— 部署方照抄 `release-manifest.json` 的 serving.mime，写错只会在运行时才炸。
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json',
+  '.exr': 'image/x-exr',
   // Unity WebGL
   '.wasm': 'application/wasm',
   '.data': 'application/octet-stream',

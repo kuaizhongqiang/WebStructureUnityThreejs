@@ -61,9 +61,10 @@
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁） |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：8 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人审阅后定**（见 `TODO.md` T-01 / T-02） |
+| **Info 页（产品侧）** | ✅ **左三维 + 右图文**（DEC-98，与排版稿 C6 同构）：三维由产品自持的 `web/src/viewer/ModelStage.ts` 承载（影棚 HDRI 当 IBL、无灯、画布透明、base/normal/mask **渲染期后加载** + mask→ORM）；**资产发布链已落地**（原 P1-5）：dev 由 vite 中间件直读 `content/assets/three`、build 拷进 `dist/assets/three/**`，发布清单记 `content.assets`。冒烟：`triangles=29673` 与转换报告逐个一致、材质解算 0 错误 |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟两段（挂载 + Unity 页取证），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始 / 欠** | ① **P1-5 产品侧资产链**：构建前把 `content/assets/three/**`（8 个 GLB + 30 张贴图 + 两张 JSON）拷进产物，运行时走 `/assets/three/**`；② Web 侧步骤系统的**落地面板**（`ui:request`/`ui:result` 的 DOM）与内容装配；③ 待负责人拍板项见 `TODO.md` §1 |
+| **尚未开始 / 欠** | ① Web 侧步骤系统的**落地面板**（`ui:request`/`ui:result` 的 DOM）与内容装配；② 其余 C 组页面骨架（C2/C3/C4/C7）仍与排版稿不同构；③ 材质解算在产品与审核页各一份（`TODO.md` D-09）、包体核算（D-10）；④ 待负责人拍板项见 `TODO.md` §1 |
 
 ## 4 怎么跑
 

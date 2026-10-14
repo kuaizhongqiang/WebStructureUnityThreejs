@@ -327,6 +327,75 @@ try {
   check(article.text.includes('接触器'), '项目任务页：面包屑显示项目名（内容数据里的 displayName）')
   await page.screenshot({ path: resolve(artifactsDir, 'task-article.png'), fullPage: false })
 
+  // 7b-2. Info 页的三维区（DEC-98）：左边真的挂上了模型，不是占位块。
+  //
+  // ⚠️ 判据是**二择一**，与壳里那段 Unity 取证同一口径：大资产按 DEC-57 **不进 git**，
+  //    干净 checkout（CI）里没有 `content/assets/three`，那时页面必须**明确报告**
+  //    "没有模型 / 加载不了"；本机有资产时则必须真的挂上模型。**"卡在加载中"算失败**。
+  await page
+    .waitForFunction(
+      () => {
+        const text = document.body.innerText
+        return (
+          Boolean(window.__WSU3_MODEL__) ||
+          text.includes('本项目没有三维模型') ||
+          text.includes('三维模型没能加载')
+        )
+      },
+      null,
+      { timeout: 30_000 },
+    )
+    .catch(() => {})
+  await page.waitForTimeout(900) // 放开几帧，让 renderStats 里有真实的 draw call / 三角面
+  const model = await page.evaluate(() => {
+    const stage = window.__WSU3_MODEL__
+    const canvas = document.querySelector('.app-model__stage canvas')
+    const text = document.body.innerText
+    return {
+      mounted: Boolean(stage),
+      // "没有模型"与"加载不了"两种文案都算**明确状态**：不做假设 ≠ 失败，**卡在加载中**才是失败
+      reported: text.includes('本项目没有三维模型') || text.includes('三维模型没能加载'),
+      canvas: Boolean(canvas),
+      width: canvas?.width ?? 0,
+      stats: stage ? stage.renderStats : null,
+      records: stage
+        ? stage.solveRecords.map((item) => ({ name: item.name, orm: item.orm, errors: item.errors.length }))
+        : [],
+    }
+  })
+  const materialsSolved = model.records.length > 0 && model.records.every((item) => item.errors === 0)
+  const withModel = model.mounted && (model.stats?.triangles ?? 0) > 1000 && materialsSolved
+  check(model.canvas && model.width > 0, 'Info 页：三维视口真的有画布', `width=${model.width}`)
+  check(
+    withModel || model.reported,
+    'Info 页：三维区要么挂着模型（材质零错误）、要么明确报告"没有/加载不了"',
+    model.mounted
+      ? `triangles=${model.stats?.triangles} calls=${model.stats?.calls} 材质=${JSON.stringify(model.records)}`
+      : `明确状态=${model.reported}（本 checkout 没有 content/assets/three，DEC-57 不进 git）`,
+  )
+  if (!withModel && model.reported) {
+    console.log('[SKIP] 本 checkout 没有三维资产：模型断言按"页面明确报告未包含"通过（卡在加载中才算失败）')
+  }
+  const modelCanvas = await page.$('.app-model__stage canvas')
+  const modelBox = modelCanvas ? await modelCanvas.boundingBox() : null
+  if (!modelBox) {
+    check(false, 'Info 页：拿不到三维画布的截图区域')
+  } else if (model.mounted) {
+    const shot = await page.screenshot({ clip: modelBox })
+    await writeFile(resolve(artifactsDir, 'task-info-model-canvas.png'), shot)
+    const stats = pngStats(shot)
+    // 画布**透明**（底色交给毛玻璃框），所以判据是"颜色有明显分布"而不是"不是纯白"
+    check(
+      stats.uniqueColors > 200 && stats.maxLum - stats.minLum > 40,
+      'Info 页：三维画布画出了内容（透明底 + 模型明暗分布）',
+      `unique=${stats.uniqueColors} lum=${stats.minLum}~${stats.maxLum}`,
+    )
+  } else {
+    // 没有模型时画布是空的（透明），这一条此时没有意义 —— 明确跳过，不当成通过
+    console.log('[SKIP] 本 checkout 没有三维资产（模型未随包发布），跳过"画布有内容"断言')
+  }
+  await page.screenshot({ path: resolve(artifactsDir, 'task-info.png'), fullPage: false })
+
   // 7c. 未启用的槽位要说清，而不是给个空白页（"实验仪器"(2) 在接触器里是 null）
   await page.goto(`${base}/#/task/2?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(500)
