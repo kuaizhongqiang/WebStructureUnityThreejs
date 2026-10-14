@@ -85,6 +85,7 @@ Unity.exe -batchmode -quit -projectPath NewStructureUnity -buildTarget WebGL \
 ② 校验   bundle 名合法性 / 素材存在性与导入类型 / id 与 bundle 名是否被重复占用
 ③ 写配置 {Content|Global}Packages/AB_{id}.asset（先按本次产出清残留）
 ④ 同步   PackageDB_Master（AutoCollect 全量重收 + 本次产出兜底补入 + 回读自检脚本丢失）
+⓪ 自愈   **构建前**：预制体材质绑定体检 —— 有空材质槽就强制重导它依赖的 FBX（见 §4.3）
 ⑤ 构建   一次 BuildAssetBundles → Temp 中转 → 只把 bundle 本体落到 StreamingAssets/{包名首段}/
 ```
 
@@ -94,6 +95,43 @@ Unity.exe -batchmode -quit -projectPath NewStructureUnity -buildTarget WebGL \
 > 本期 `ContentProviders` 只登记 **结构件模型**（`Assets/Prefabs/Models/StructureObjs`）——
 > 简介 / 检测的预制体目录本工程还没有，现在登记它们会让"找不到预制体"变成阻塞构建的 Error。
 > 素材搬入后加一行即可（见 `../TODO.md`）。
+
+### 4.3 构建前的材质绑定自愈（2026-10-14 实测踩出来的，不是预防性设计）
+
+**现象**：进结构站后 `timeRelay` / `masterAppliance` 两个器件的模型**全洋红**。
+
+**根因**（与 AB 机制**无关**，是资产状态）：
+
+`timeRelay` / `masterAppliance` 的零件是**嵌套 FBX 模型实例**（外层预制体只存覆盖项，零件本体与材质绑定
+住在 FBX 里）。DEC-102/103 的"**材质接管**"把 FBX 自动抽出的同名 `.mat` 换成了本工程搬来的材质 ——
+两者 **GUID 不同**，于是 FBX 内部的材质绑定指向一个**已消失的 GUID** ⇒ 实例化后那些
+`MeshRenderer.sharedMaterials` 全是 `null` ⇒ 洋红。
+
+**为什么它会"自己回来"**：对症的办法是 `AssetDatabase.ImportAsset(fbx, ForceUpdate)`（重导后绑定归零），
+但这个修复**只落在本机 `Library/`（派生数据，不进版本库）** —— 任何一次"不强制"的全量重导都会把它打回去，
+最常见的就是**切换 Build Target**。实测：负责人切到 WebGL 之后，`timeRelay` 8 处 / `masterAppliance` 3 处
+重新变空；而当时打的 8 个 AB 包把这个状态**原样打进了产物**（包内实测同样是 8/3 处为 null）。
+**字节数就是铁证**：出问题时总量 37,464,472，修好后 47,500,295 —— 差的 10 MB 正是这两个器件丢掉的
+材质与贴图；而 DEC-108 当时的报告是 47,476,797，几乎一字不差。
+
+**做法**（`Editor/Common/ModelMaterialBindingFixer.cs`）：
+
+| 环节 | 口径 |
+|---|---|
+| 体检 | `PrefabUtility.LoadPrefabContents` 展开预制体，数"材质为 null **或** 材质 shader 为 null"的槽位 |
+| 自愈 | 只在**有坏槽**时才 `ImportAsset(fbx, ForceUpdate)`（幂等；不无谓地触发 importer 警告），FBX 从**依赖树**里取，不按名字猜 |
+| 拦不拦 | 修不好 ⇒ **中止构建**，绝不产出洋红产物（"包打好了但模型是粉的"比"没打包"更贵） |
+| 菜单 | `WSU3/Pack/修复模型材质绑定（嵌套 FBX）`（只重导 FBX，不改任何资产） |
+| 对账 | `对账（dry-run）` 只**告警**不修 —— 那次操作的承诺是"不写盘"，而重导会动 Library |
+
+⚠️ **不要**图省事把体检改成 `AssetDatabase.LoadAssetAtPath<GameObject>()` **直接读预制体资产**：
+嵌套实例里的零件在外层 YAML 是 `stripped` 块（没有名字、没有 Transform），那样读**必然全是 null** ——
+这正是 DEC-111 记下的教训（"对预制体内容里的物体取 id 实测 16/16 失败"）。
+实测两种读法在本工程 8 个预制体上结果完全一致（11/44/8/3/10/61/41/21 个材质槽），所以选了不污染场景的那种。
+
+> ⚠️ **shader 不是这个问题**。曾把 5 个自制 ShaderGraph 挪到 `Assets/Resources/Shaders/` 试图修复 ——
+> 实测**无害也无用**：包内仍然各自包含 shader 副本（8 个包的 shader 来源全部是"包内"），
+> 因为 shader 是通过"材质 → shader"的依赖被隐式卷进包的。见 `../DECISIONS.md` §26。
 
 ### 4.3 三条铁律（都是踩过的坑，别拆）
 
@@ -171,6 +209,33 @@ scene:exit
 
 **顺序不能反**：先卸包会让存活实例的材质引用到已释放资源（变粉）—— 这就是 DEC-87 纪律②。
 
+### 5.2b WebGL 的取包路径**故意与其它平台不同**（2026-10-14，DEC-116）
+
+```csharp
+#if UNITY_WEBGL && !UNITY_EDITOR
+    UnityWebRequest.Get(url) + AssetBundle.LoadFromMemoryAsync(bytes)     // ← WebGL 走这条
+#else
+    UnityWebRequestAssetBundle.GetAssetBundle(url)                        // ← 其它平台
+#endif
+```
+
+**为什么**：`UnityWebRequestAssetBundle.GetAssetBundle` 在 WebGL 上走"IndexedDB 缓存 + `DownloadHandlerAssetBundle`"，
+**缓存键就是 URL** —— 同一个地址换过几次包之后会命中旧条目而加载失败，而且 `request.error` 可能是**空串**。
+实测现场（真 WebGL 产物 + VS Code Live Server）：
+
+| 探针 | 结果 |
+|---|---|
+| 运行日志 `AB 下载失败：Content/clip_contactor ← http://127.0.0.1:5500/StreamingAssets/Content/clip_contactor（）` | 原因字段是**空的** |
+| 同一 URL 的 HTTP 探针 | **200**，`Content-Length 4201911` 与工程里的包逐字节一致，`Accept-Ranges: bytes`，Range → **206** |
+| 把同一份字节下回编辑器解包 | **UnityFS 合法**，`LoadFromMemory` → 资产名 / 预制体逐级可读 |
+
+⇒ 坏的是**那条缓存路**，不是包、不是服务器、也不是 shader。改成"普通 GET + `LoadFromMemoryAsync`"：
+不碰任何缓存，字节到手直接解包；顺带去掉"`using` 把 request 释放掉、而 bundle 归 handler 所有"这层归属歧义。
+同时两处的失败日志都补上了 `result` / `http` / `err` 三个字段 —— 只打 `request.error` 会退化成一句没有原因的 `（ ）`。
+
+> ⚠️ 若将来需要"包缓存在浏览器里、换版本只下差异"，要显式设计（带版本号的 URL + 自己管缓存），
+> 而不是回头依赖这条默认路径。
+
 ### 5.3 实例登记与卸载纪律（DEC-87 纪律②）
 
 - 经本管理器实例化的对象都记在"实例 → 包 id"表里；
@@ -216,12 +281,15 @@ scene:exit
 2. **简介 / 检测的内容 Provider 未登记**：对应素材目录本工程还没有。
 3. **`ServerData/` 这套"内容跑到构建目录之外"的老路径本工程不会出现**：AB 走 `StreamingAssets`，
    AA 走默认 profile；`tools/pipeline/unity-stage.mjs` 的 `--extra` 在本工程用不上（留着不影响）。
-4. **没有包体预算门禁**：8 个内容包合计 **45.3 MB**（构建报告里有逐包字节），
+4. **没有包体预算门禁**：8 个内容包合计 **47.5 MB**（构建报告里有逐包字节），
    12 MB 反射 cubemap 被卷进 4 个金属材质所在包的依赖里 —— 预算核算见 `../TODO.md` D-10。
 5. **步骤数据已落地**（DEC-111，见 `10-step-system.md` §7）：8 个结构件预制体自带 **46 步** `StepManager` 子树
-   （由 `StructureStepGenerator` 从只读来源工程生成、幂等可重跑）。⚠️ **但包还是旧的** —— 预制体 2026-10-14 晚变过，
-   重打之前进结构站仍会"只实例化、不跑步骤"（`../TODO.md` D-23）。
+   （由 `StructureStepGenerator` 从只读来源工程生成、幂等可重跑），**且这 8 个包已按新预制体重打**（`../TODO.md` D-23 已关闭）。
 6. **结构件的相机 / 交互闸门 / 高亮初始化未接**（`../TODO.md` D-13）：比"实例化"更靠后的那一段。
+7. **材质绑定的自愈是"事后补救"而非"根治"**：根因是"材质接管"换了 GUID 导致 FBX 内部绑定悬空（§4.3）。
+   根治要改成**不替换** FBX 自动抽出的材质（只改它的 shader 与属性、保住 GUID）—— 那是一次导入链重做，未做。
+8. **真 WebGL 构建里还验过一次 shader 变体**：本次只在**编辑器**里逐包证实"材质与 shader 都解析得到"
+   （8 个包、199 处引用、0 处为 null）。构建后是否因变体裁剪而洋红，要真产物才说得准 —— 见 `../TODO.md` D-24。
 
 ## 9 落点速查（本次新增/改动）
 
@@ -234,7 +302,7 @@ scene:exit
 | `NewStructureUnity/Assets/Scripts/Core/Managers/GlobalManager.cs` | 驱动 `AddressableManager.CoreUpdate`；`SetCurrentTask` / `CurrentClipId` |
 | `NewStructureUnity/Assets/Scripts/Core/Managers/FunctionManager/SceneManager.cs` | 场景 AA 分流（保持"唯一场景 API 入口"这条口径） |
 | `NewStructureUnity/Assets/Scripts/Core/DataStruct/DataStructMapping.cs` | 结构件挂载根 |
-| `NewStructureUnity/Assets/Editor/Common/*.cs` | 打包内核：路径常量 / 资产工具 / `BundleBuilder` / 包配置写入 / 登记表同步 |
+| `NewStructureUnity/Assets/Editor/Common/*.cs` | 打包内核：路径常量 / 资产工具 / `BundleBuilder` / 包配置写入 / 登记表同步 / **材质绑定自愈（`ModelMaterialBindingFixer`，§4.3）** |
 | `NewStructureUnity/Assets/Editor/BuildTools/BundlePipeline.cs` | **一键**编排 + 菜单 + 构建报告 |
 | `NewStructureUnity/Assets/Editor/BuildTools/ContentProviders/*.cs` | 内容包 Provider 契约 + 通用实现 + 内容数据读取 |
 | `NewStructureUnity/Assets/Editor/BuildTools/GlobalProviders/IGlobalBundleProvider.cs` | 全局包契约（扩展点） |

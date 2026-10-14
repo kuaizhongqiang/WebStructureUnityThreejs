@@ -1413,3 +1413,126 @@ Unity 于是把它编进**预定义程序集** `Assembly-CSharp-firstpass`；而
   仿真用的 `refId` 取**真实内容数据**里的 id，所以顺带把"内容数据 → 面板文案"那一段也验了。
 - **测试隔离**：`unity-stage.mjs` 新增 `--stage-root`，Vite 侧新增 `WSU3_UNITY_DEV_ROOT` ——
   冒烟把桩暂存到**临时目录**验完即删，`unity/builds/`（负责人真打好的产物落点）从头到尾不被碰。
+
+---
+
+## 26 第十三轮（2026-10-14）：结构件"洋红材质"的真因与打包前自愈（DEC-115）
+
+> 背景（负责人 2026-10-14 报障，逐字转述）："因为打 AB 包，所以 mat 的 shader 应该是没加载出来，
+> 我给 shader 挪进 Resources 也没用，需要解决一下。"
+> 追问得到三个关键限定：**现象 = 洋红**、**环境 = 编辑器 Play 模式**、**范围 = 8 个结构件全都这样**。
+
+**查证结论：这不是 AB 的问题，也不是 shader 的问题 —— 是"材质接管"留下的悬空绑定，而且"8 个全中"这条不成立。**
+逐包实测（编辑器内 `AssetBundle.LoadFromFile` + 实例化后读渲染器）：
+
+| 包 | 材质引用为 null | shader 来源 |
+|---|---|---|
+| breaker 61 / combinationSwitch 21 / contactor 11 / fuse 10 / speedRelay 41 / thermalRelay 44 | **0** | 全部"包内" |
+| **timeRelay** | **8** | 包内 0 / 项目 0 |
+| **masterAppliance** | **3** | 包内 0 / 项目 0 |
+
+⇒ 只有 2 个器件坏了（正是 DEC-102 §21.1 记的"两个嵌套 FBX 预制体实例"），另外 6 个的 shader 与材质
+**一直在包里**。而 `ImportAsset(ForceUpdate)` 重导那两个 FBX 之后当场归零（8→0、3→0）。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-115 | **打包前对"预制体材质绑定"体检 + 自愈**：`BundlePipeline` 在 `BuildAssetBundles` **之前**用 `PrefabUtility.LoadPrefabContents` 数空材质槽；有坏槽就**强制重导该预制体依赖树里的 FBX**（幂等，只在坏时才动）；**修不好则中止构建**，绝不产出洋红产物。对账（dry-run）只告警不修（那次操作的承诺是不写盘） | AI 定（依据本轮的实测根因；口径承 DEC-79"缺席必须明说"与 DEC-27"每页有程序化验收"） | 否 | **生效** |
+
+### 26.1 根因与"为什么会自己回来"
+
+- **根因**：`timeRelay` / `masterAppliance` 的零件是**嵌套 FBX 模型实例**（外层预制体只存覆盖项，
+  零件与材质绑定住在 FBX 里）。DEC-102/103 的"材质接管"把 FBX 自动抽出的同名 `.mat` 换成本工程搬来的材质，
+  两者 **GUID 不同** ⇒ FBX 内部绑定指向**已消失的 GUID** ⇒ 实例化后 `MeshRenderer.sharedMaterials` 全是 `null` ⇒ 洋红。
+- **为什么会回来**（这条是本次最有价值的发现）：对症的 `ImportAsset(fbx, ForceUpdate)` **只落在本机
+  `Library/`（派生数据，不进版本库）** —— 任何一次"不强制"的全量重导都会把它打回去，
+  最常见的就是**切换 Build Target**。负责人切到 WebGL 之后它就回来了，而当时打的 8 个 AB 包
+  把这个状态**原样打进了产物**（包内实测同样是 8/3 处为 null）。
+- **字节数铁证**：出问题时 8 个包合计 **37,464,472**；重导并重打后 **47,500,295** —— 差的 10 MB
+  正是这两个器件丢掉的材质与贴图；而 DEC-108 当时的报告是 **47,476,797**，几乎一字不差
+  ⇒ 这次重打回到了回归之前的正确状态。
+
+### 26.2 为什么用 `LoadPrefabContents` 而不是"直接读预制体资产"
+
+嵌套实例里的零件在外层 YAML 是 `stripped` 块（没有名字、没有 Transform），**直接读预制体资产必然全是 null**
+—— 这正是 DEC-111 记下的教训（"对预制体内容里的物体取 id 实测 16/16 失败"）。
+实测 `LoadPrefabContents` 与 `Instantiate` 在 8 个预制体上**结果完全一致**（11/44/8/3/10/61/41/21 个材质槽），
+所以选不污染场景的那一种。
+
+### 26.3 明确否定的一条路（别重复踩）
+
+**把 shader 挪进 `Assets/Resources/Shaders/` 既无用也无害**。实测（重打后逐包读回）：
+8 个包的 shader 来源**全部仍是"包内"** —— 因为 shader 是通过"材质 → shader"的依赖被**隐式卷进包的**，
+与它放在哪个目录无关；而 `Assets/Resources/**` 里的资产本来也会进玩家构建，于是只是**多一份副本**。
+⇒ shader 从来不是这个问题；本轮**没有**把它挪回 `Assets/Shaders/Models/`（负责人的动作保留），
+但若要恢复与 `content/asset-structure-report.json` 记载路径的一致性，挪回去是安全的（GUID 不变）。
+
+> ⚠️ **仍未验证**：构建后的**真 WebGL 产物**里 shader 变体会不会被裁（`Graphics Settings` 的
+> `m_PreloadedShaders` 是空的、`m_AlwaysIncludedShaders` 只有内置默认项）。
+> 编辑器里证明的是"材质与 shader 都解析得到"，不等于构建后一定不洋红 —— 见 `TODO.md` D-24。
+
+---
+
+## 27 第十四轮（2026-10-14）：真 WebGL 产物上 AB 取包失败（DEC-116）
+
+> 背景（负责人 2026-10-14 报障，逐字转述）："我尝试打包 webgl，通过 VSCode liveserver 打开，但是会报错
+> `[AddrMgr] AB 下载失败：Content/clip_contactor ← http://127.0.0.1:5500/StreamingAssets/Content/clip_contactor（）`
+> `[TaskFlow] 装包失败，本次进入 Structure 中止：clip 'clip_contactor' 的第 1/1 个包装载失败：contactor_structure_model`"
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-116 | **WebGL 的取包路径与其它平台分开**：WebGL 上改用 `UnityWebRequest.Get(url)` + `AssetBundle.LoadFromMemoryAsync(bytes)`，**不再走 `UnityWebRequestAssetBundle.GetAssetBundle`**（那条在 WebGL 上带 IndexedDB 缓存）；同时两处失败日志补上 `result` / `http` / `err`。⚠️ **它修的是"原因②"，不是全部**（见 §27.2） | AI 定（依据本轮实测，见下） | 否 | **生效** |
+
+### 27.1 查证过程（每一步都可复核）
+
+| 探针 | 结果 | 排除了什么 |
+|---|---|---|
+| 那条日志的原因字段 | **空串**（`（ ）`） | 说明"只打 `request.error`"这个诊断本身不合格 |
+| `HEAD /StreamingAssets/Content/clip_contactor`（Live Server） | **200**，`Content-Length 4201911`，`application/octet-stream` | 不是 404 / 不是 MIME |
+| 与工程里的包比对字节数 | 8 个包**逐字节同大小**（`clip_timerelay` 7,621,356 / `clip_masterappliance` 4,380,057） | **构建产物是最新的**（含 DEC-115 的材质修复），不是"旧包" |
+| `Range: bytes=0-1023` | **206** + `Accept-Ranges: bytes` | 不是"服务器不支持 Range" |
+| 把同一 URL 的字节下回来 → `AssetBundle.LoadFromMemory` | **OK**：`magic=UnityFS`、资产名 1 个、预制体读得到 | **包本身没坏**、**字节没问题** |
+| `#if UNITY_WEBGL` 分支的 API 核验（`unity_reflect`） | `AssetBundle.LoadFromMemoryAsync(byte[])` ✅、`UnityWebRequest.result` ✅ | 不靠记忆写 API |
+
+⇒ 这**排除了包 / 服务器 / 字节 / 材质 / shader**，把范围压到"WebGL 运行期发起的那个请求本身"。
+⚠️ 但它**还不足以**指出是哪一条 —— 下面 §27.2 是更可能的首要原因。
+
+### 27.2 但还有一条更可能的**首要**原因：明文 HTTP 被 Unity 挡住了
+
+`ProjectSettings` 的 `insecureHttpOption` 在项目里原本是 **0 = `NotAllowed`**（默认值），
+官方口径逐字是："**Determines if plain text HTTP connections are allowed.**"（`PlayerSettings.insecureHttpOption`，
+枚举 `NotAllowed` / `DevelopmentOnly` / `AlwaysAllowed`，已用 `unity_reflect` + `unity_docs` 核验）。
+而 AB 的地址正是明文 `http://127.0.0.1:5500/...`：
+
+- **UnityWebRequest 会被这条策略挡下** ⇒ `result != Success`、`error` 可能为空 —— 与现场完全吻合；
+- 而**播放器自己的文件**（`.data` / `.framework.js` / `.wasm`）是 **JS loader** 拉的、不走 UnityWebRequest
+  ⇒ 所以"播放器起来了、只有 AB 下载失败"也说得通。
+
+**结论（不要只修一个）**：
+
+| 原因 | 现象 | 对策 | 谁改的 |
+|---|---|---|---|
+| **① 明文 HTTP 被挡**（首要嫌疑） | UnityWebRequest 直接失败、`error` 为空 | `Project Settings → WebGL → Publishing Settings → Allow downloads over HTTP = Always allowed`（序列化值 `insecureHttpOption: 2`） | 负责人本轮已改为 **2** |
+| **② `DownloadHandlerAssetBundle` 的 IndexedDB 缓存路** | 同一 URL 换过几次包后命中旧条目而失败 | 本轮改为"普通 GET + `LoadFromMemoryAsync`"（本条决策） | 本轮改 |
+
+另外负责人同批还改了 `webGLCompressionFormat: 0 → 2`（**Disabled**）——
+**这也是本地静态服务器能跑的必要条件**：Live Server 不会对 `.br` / `.gz` 附 `Content-Encoding`，
+用 Brotli 打出来的产物在它上面必然加载失败。改分辨率与 `companyName` 属产品侧取值，与本条无关。
+
+> ⚠️ **所以"改完就一定好了"这句话不成立**：①② 任一都足以造成同一个症状。
+> 本轮只把 ② 修掉并把诊断补全（失败时现在会打 `result` / `http` / `err`），
+> **必须在真 WebGL 产物上复跑一次**才能判定到底是哪一条 —— 见 `TODO.md` D-24。
+> 复跑时若仍失败，看新日志里的 `result`：`ConnectionError` + `http=0` 指向 ①；HTTP 200 却 `DataProcessingError` 指向 ② 之外的解析层。
+
+### 27.3 改法与纪律
+
+- WebGL 分支：普通 `GET` 拿到 `downloadHandler.data` → `AssetBundle.LoadFromMemoryAsync`。
+  代价是大包会多一份内存驻留（最大 10 MB 那档 → 峰值 ~20 MB）；换来的是**不碰任何缓存**、
+  以及去掉"`using` 释放 request、而 bundle 归 handler 所有"这层归属歧义（bundle 现在归调用方，卸载纪律不变）。
+- 两处失败日志都带上 `result` / `http` / `err`：**"原因为空"这件事本身就是本轮最大的排查障碍**，
+  以后同类失败至少能看见 HTTP 码与 Result 枚举。
+- 纪律④（bundle 文件名段强制小写）未受影响，`GetBundleUrl("Content/clip_timeRelay")` 实测仍给出 `…/clip_timerelay`。
+
+> ⚠️ **仍未闭合**：本条只在编辑器侧确证了"包与字节是好的"并给出改法，
+> **改后必须在真 WebGL 产物上复跑一次**才算闭合 —— 见 `TODO.md` D-24。
+> 另：负责人用 VS Code Live Server 复现（`127.0.0.1:5500`），交付形态仍是 WebGL（DEC-12），
+> 与 `docs/design/09` §12.2 的 dev 服务器是两条不同的服务路径，别混。

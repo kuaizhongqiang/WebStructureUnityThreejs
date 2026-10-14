@@ -187,8 +187,8 @@ namespace WSU3.Editor.BuildTools
                 return false;
             }
 
-            BuildOutcome outcome = BuildBundles(plans);
-            WriteBuildReport(plans, outcome, warnings);
+            BuildOutcome outcome = BuildBundles(plans, out List<string> bindingNotes);
+            WriteBuildReport(plans, outcome, warnings.Concat(bindingNotes).ToList());
 
             if (interactive)
             {
@@ -216,7 +216,34 @@ namespace WSU3.Editor.BuildTools
             CollectGlobalPlans(plans, errors, warnings);
 
             Validate(plans, errors);
+            WarnMaterialBindings(plans, warnings);
             return plans;
+        }
+
+        /// <summary>
+        /// 只读体检：预制体里有没有"空材质槽"（嵌套 FBX 的材质绑定退化 ⇒ 洋红）。
+        ///
+        /// 这里**只告警**，真正的自愈在构建前（见 <see cref="BuildBundles"/>）——
+        /// "对账（dry-run）"对外承诺**不写盘**，而强制重导 FBX 会动 Library。
+        /// 于是：对账时能提前看见问题，构建时自动处理，两条路径各自的承诺都不破。
+        /// </summary>
+        private static void WarnMaterialBindings(List<PackPlan> plans, List<string> warnings)
+        {
+            foreach (PackPlan plan in plans)
+            {
+                foreach (PackItem item in plan.items)
+                {
+                    if (item.kind != ContentAssetKind.Prefab) continue;
+
+                    int bad = ModelMaterialBindingFixer.Inspect(item.assetPath);
+                    if (bad > 0)
+                    {
+                        warnings.Add($"{item.id}：{bad} 处材质引用为空" +
+                                     "（嵌套 FBX 的材质绑定退化，画面是洋红）—— 构建时会自动强制重导其 FBX；" +
+                                     "也可先跑菜单 WSU3/Pack/修复模型材质绑定（嵌套 FBX）");
+                    }
+                }
+            }
         }
 
         private static void CollectContentPlans(List<PackPlan> plans, List<string> errors, List<string> warnings)
@@ -425,13 +452,40 @@ namespace WSU3.Editor.BuildTools
 
         // WHY: 传入**已经收集并校验过**的计划，而不是在构建前再收集一次 ——
         //      重复收集会多读一遍内容数据、多跑一遍 Provider，"写配置用的是 A 版、构建用的是 B 版"这种漂移无从察觉。
-        private static BuildOutcome BuildBundles(List<PackPlan> plans)
+        private static BuildOutcome BuildBundles(List<PackPlan> plans, out List<string> bindingNotes)
         {
+            bindingNotes = new List<string>();
+
             // WHY: 编辑器停在"脚本编译失败"状态时构建会秒退（0.x 秒结束），而且 Console 里可能已经看不到红字了 —— 提前拦下
             if (EditorUtility.scriptCompilationFailed)
             {
                 Debug.LogError($"{LogTag} 编辑器处于脚本编译失败状态，已中止构建。" +
                                "处理：清干净 Console 里的脚本报错；若已无报错，执行 Assets > Reimport 清掉残留的失败状态，再重跑。");
+                return default;
+            }
+
+            // ⓪ **材质绑定自愈**，必须排在 BuildAssetBundles 之前 ——
+            //    包里的状态就是"这一刻"的资产状态：空材质槽会被原样打进产物，运行期表现为**洋红**，
+            //    而且包打好了、日志全绿，最难发现。详见 ModelMaterialBindingFixer 的类注释。
+            List<ModelMaterialBindingFixer.FixResult> bindings = ModelMaterialBindingFixer.FixAll(
+                plans.SelectMany(plan => plan.items)
+                     .Where(item => item.kind == ContentAssetKind.Prefab)
+                     .Select(item => item.assetPath));
+
+            bindingNotes = ModelMaterialBindingFixer.Describe(bindings);
+            if (bindingNotes.Count > 0)
+                Debug.Log($"{LogTag} 材质绑定体检（{bindings.Count} 个预制体）：\n   " + string.Join("\n   ", bindingNotes));
+
+            List<ModelMaterialBindingFixer.FixResult> stillBroken =
+                bindings.Where(result => !result.Ok).ToList();
+            if (stillBroken.Count > 0)
+            {
+                // WHY: 这里必须**中止**，不能只告警 —— "包打好了但模型是洋红的"比"没打包"更贵：
+                //      前者会被当成已完成交付出去，后者当场就能看见。
+                Debug.LogError($"{LogTag} {stillBroken.Count} 个预制体仍有空材质槽，**已中止构建**（不产出洋红产物）：\n   " +
+                               string.Join("\n   ", stillBroken.Select(r => System.IO.Path.GetFileName(r.PrefabPath))) +
+                               "\n   处理：跑菜单 WSU3/Pack/修复模型材质绑定（嵌套 FBX）看逐项明细；" +
+                               "依赖树里没有 FBX 的那种只能人工检查零件的材质槽。");
                 return default;
             }
 
