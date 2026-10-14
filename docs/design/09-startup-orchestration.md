@@ -111,3 +111,63 @@
 - 不做 `ui:request` 的具体裁定（Unity 只允许"请求"，由 Web 决定是否响应 —— 沿用 `02-bridge-protocol.md` §5）。
 - 不做心跳（长连接探活）；只在需要时用 `debug:ping/pong` 手动自检。
 - 不做运行期热切换语言/画质之外的多语言动态补字（DEC-14 的 WebGL 字体红线在 Unity 侧随 UGUI 一起退场，本工程的语言切换由 DOM 承担）。
+
+## 11 Web 侧的接线（2026-10-14，DEC-112）
+
+§3 的时序在 Web 侧**收在一个会话对象**里（`web/src/unity/UnitySession.ts`），视图不再自己 `bridge.on(...)`。
+三条必须收在一处、散在视图里必然会漏的纪律：
+
+| 纪律 | 为什么 | 落点 |
+|---|---|---|
+| `app:init` 在**握手之后**发一次 | 收到 `unity:ready` 才是"Unity 可以收指令了"的信号（§3：自检通过才发握手） | `UnitySession.onHandshake` |
+| `scene:enter` **幂等**，且允许"握手前先记意图、握手后补发" | 页面先导航、Unity 懒挂载是常态；而视图的同步函数会被各种响应式信号反复触发 —— 重发会让 Unity 侧一直"先退旧的再进新的" | `UnitySession.enterTask` + `enterDispatched` |
+| `input:enable` 在**握手之前只记状态、不发消息** | ⚠️ Unity 的任务流程管理器是在**管理器自检里**才订阅这些事件的，早于握手发出去的消息**桥收得到、但没有订阅者** ⇒ 静默丢失（表现是"面板关了，三维还是点不动"） | `UnitySession.setInputEnabled` |
+
+入站消息的落点：两条就绪（`assets:ready` / `scene:ready`）进状态位；`step:changed` 直接进进度条
+（**扁平序号**，不用关心"进程"）；`task:completed` 进完成提示（`score` 缺席就只说用时，**不编造 0**）；
+`object:picked` / `unity:error` 如实显示（非致命错误也要显示）；`ui:request` 进步骤面板（见 `10-step-system.md` §9）。
+
+## 12 免 Web 自测与 dev 期联调（2026-10-14，DEC-113 / DEC-114）
+
+### 12.1 为什么需要"免 Web 自测"
+
+§1 的 preload 语义是"Unity 停在内容场景**等 Web 发指令**"，`scene:enter` 也只能由 Web 发（DEC-08）。
+对产品这是对的，对**自测**却是死结：WebGL 产物一旦离开页面，就没有任何人能发指令 ——
+验收时只能看到"停在 `1_Content`、画面里什么都没有"，而且失败时说不清是桥的问题还是装配的问题。
+
+**做法**（`Assets/Scripts/Managers/StartupTestSwitch.cs`，摆在 `0_Setup` 的根物体 `TestSwitch` 上）：
+在"管理器自检通过 + **活动场景已是 `1_Content`** + 当前没有任务"三个条件都满足时，
+发一个与 Web **完全相同**的 `SceneEnterRequestEvent` —— 走的就是 §3 那条装包 → 装配 → `scene:ready` 链路，
+所以它验证的是**产品路径本身**，不是一条平行的假路径。
+
+| 项 | 口径 |
+|---|---|
+| 默认值 | `testEnabled = false` —— **关着时对产品路径零影响**（不发事件、不改状态，只打一条"仍在等 Web"的日志然后自毁） |
+| 指定任务 | Inspector：`taskType`（默认 8 结构）/ `projectClip`（默认 `clip_contactor`） |
+| WebGL 免重打包 | `?wsu3_test=on\|true\|1`（开，沿用 Inspector 取值）／`off\|false\|0`（显式关）／`<数字>`（开并把该数字当 `TaskType`）；`&wsu3_clip=<clip>` 覆盖 clip |
+| 不抢 Web 的决定 | `CurrentTaskType != None`（Web 已先发 `scene:enter`）时自动让位，不重复进入 |
+| 为什么等 `1_Content` | 结构任务的 `StructureTaskManager` 是**场景里的节点**；场景没到就发会走进"内容场景里没有 `StructureTaskManager` 节点"那条错误分支 |
+| 为什么独占一个根物体 | `StartupFlow` 在引导末尾 `Destroy(gameObject)`（§2），会把同物体上的协程在切场景那一帧一起带走 |
+
+### 12.2 为什么 dev 服务器要服务 Unity 产物
+
+`/unity/**` 与 `release-manifest.json` 原本**只有壳的静态服务器**（`electron/server.js`）提供
+⇒ `vite dev` 下点进 Unity 任务永远走"产物未就位"那条分支，人工联调必须先打包，改一行前端都要重来一遍。
+
+`web/vite.config.ts` 的 `unityDevServe` 补上这两样（`apply: 'serve'`，不进产品）：
+
+1. `/unity/<key>/**` → `<暂存根>/<key>/**`（暂存根默认 `unity/builds`，`WSU3_UNITY_DEV_ROOT` 可改道；与 `unity-stage.mjs --stage-root` 配套做**测试隔离**）；
+2. 按**实际暂存内容**合成 `/release-manifest.json` —— 暂存了几个构建就报几个，一个都没有就 `unity.included = false` 并写明原因（DEC-79：缺席必须明说）；
+3. 中间件注册在 Vite 内部中间件**之前**（在 `configureServer` 里直接 `use`）—— 否则 `/release-manifest.json` 会先被 SPA 兜底接走，
+   返回一份 **200 的 index.html**，页面 `response.json()` 解析失败后**静默**退化成"没读到清单"。
+
+### 12.3 桩构建的协议仿真（可选）
+
+`tools/pipeline/make-stub-unity.mjs` 生成的桩默认只是"一块画布 + 一次握手"；
+打开协议仿真（`window.__WSU3_STUB_PROTOCOL__ = true` 或 URL 带 `?wsu3_stub=protocol`）后，它会按契约回消息：
+`scene:enter` → `assets:ready` → `unity:progress` → `scene:ready` → `step:changed` → `ui:request`（tips + ui），
+收到 `ui:result` 后推进，并按 `ConditionQuestion` 的口径"答错重问"。仿真用的 `refId` 取**真实内容数据**里的 id。
+
+于是"桥交互"进了冒烟（真 Chromium，18 条断言，见 `web/tools/render-smoke.mjs` 第 2b 节），
+**不必等真 WebGL 构建**（DEC-59 要求构建前关编辑器，那条路很慢）。
+⚠️ 但要说清：桩证明的是**契约两侧对得上**，**不等于**真 Unity 产物跑得通 —— 后者见 `TODO.md` D-24。

@@ -20,9 +20,11 @@
  * 用法：npm run smoke
  */
 
-import { dirname, resolve } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
+import { tmpdir } from 'node:os'
+import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { inflateSync } from 'node:zlib'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
@@ -113,6 +115,7 @@ function pngStats(buffer) {
 
 const here = dirname(fileURLToPath(import.meta.url))
 const webRoot = resolve(here, '..')
+const repoRoot = resolve(webRoot, '..')
 const artifactsDir = resolve(here, 'smoke', 'artifacts')
 
 const failures = []
@@ -121,6 +124,60 @@ function check(ok, label, detail = '') {
   console.log(`[${ok ? 'PASS' : 'FAIL'}] ${label}${detail ? ` — ${detail}` : ''}`)
   if (!ok) failures.push(label)
 }
+
+// ---------- 0. 冒烟自备的 Unity 桩构建（隔离在临时目录，**绝不**覆盖 unity/builds）----------
+// 为什么需要：`/unity/**` 与 `release-manifest.json` 原本只有壳的静态服务器提供，于是"点进 Unity 任务"
+// 在冒烟里永远走"产物未就位"那条分支 —— 整条桥交互没有任何自动化证据。真 WebGL 构建又要求先关编辑器
+// （DEC-59），不适合放进冒烟。
+//
+// 做法：用 `unity-stage --stage-root` 把桩暂存到**临时目录**，再让 dev 服务器从那里取
+// （`WSU3_UNITY_DEV_ROOT`，见 web/vite.config.ts 的 unityDevServe）。`unity/builds/` 是负责人
+// 真打好的产物落点，冒烟不该碰它。
+const stubRoot = await mkdtemp(join(tmpdir(), 'wsu3-unity-stub-'))
+const stubBuilds = join(stubRoot, 'builds')
+
+function runNode(script, argv) {
+  const result = spawnSync(process.execPath, [resolve(repoRoot, script), ...argv], {
+    stdio: 'pipe',
+    encoding: 'utf8',
+  })
+  if (result.status !== 0) {
+    throw new Error(
+      `${script} 失败（exit ${result.status}）：\n${result.stdout ?? ''}\n${result.stderr ?? ''}`,
+    )
+  }
+}
+
+// 桩**故意只声明 4/5/8**（不含 9 检测）：这样"清单没声明该任务 ⇒ 明确显示产物未就位"那条分支
+// 仍然能被第 2 节验到，而 8（结构）走完整的桥交互。
+runNode('tools/pipeline/make-stub-unity.mjs', [
+  '--key',
+  'main',
+  '--task-types',
+  '4,5,8',
+  '--out',
+  join(stubRoot, 'src'),
+])
+runNode('tools/pipeline/unity-stage.mjs', [
+  '--from',
+  join(stubRoot, 'src'),
+  '--key',
+  'main',
+  '--task-types',
+  '4,5,8',
+  '--bridge',
+  '--stage-root',
+  stubBuilds,
+])
+process.env.WSU3_UNITY_DEV_ROOT = stubBuilds
+
+/** 步骤题 `contactor_q_mainContact` 的正确选项下标 —— **从内容数据算**，不在冒烟里硬编。 */
+const questionBank = JSON.parse(
+  await readFile(resolve(repoRoot, 'web/public/content/data/QuestionData.json'), 'utf8'),
+)
+const stepQuestion = (questionBank.questions ?? []).find((item) => item.id === 'contactor_q_mainContact')
+const correctIndex = (stepQuestion?.options ?? []).findIndex((option) => option.isCorrect === true)
+if (correctIndex < 0) throw new Error('内容数据里找不到 contactor_q_mainContact 的正确选项')
 
 const server = await createServer({
   root: webRoot,
@@ -144,6 +201,11 @@ try {
   page.on('pageerror', (error) => pageErrors.push(String(error)))
   page.on('console', (message) => {
     if (message.type() === 'error') pageErrors.push(message.text())
+  })
+
+  // 让桩构建按契约"回消息"（等价于在地址栏加 `?wsu3_stub=protocol`，见 tools/pipeline/make-stub-unity.mjs）
+  await page.addInitScript(() => {
+    window.__WSU3_STUB_PROTOCOL__ = true
   })
 
   // ---------- 1. Three.js 任务页（TaskType.Equipment = 2 → list 骨架 + Three 三维视口）----------
@@ -202,12 +264,13 @@ try {
     check(false, 'Three 页：画布像素非纯色（不是白屏）', '未取得 canvas 的 boundingBox')
   }
 
-  // ---------- 2. Unity 类任务页（TaskType.Training = 5 → Unity 栈）----------
-  await page.goto(`${base}/#/task/5?project=clip_contactor`, { waitUntil: 'load' })
+  // ---------- 2. Unity 类任务页：**清单没声明**该任务 ⇒ 明确显示"产物未就位" ----------
+  // 用 TaskType.Inspection = 9：桩只声明了 4/5/8，所以这里走的正是"缺席必须明说"那条分支（DEC-79）。
+  await page.goto(`${base}/#/task/9?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(800)
   const unity = await page.evaluate(() => {
     const canvas = document.querySelector('canvas')
-    return { hasCanvas: Boolean(canvas), bodyText: document.body.innerText.slice(0, 600) }
+    return { hasCanvas: Boolean(canvas), bodyText: document.body.innerText.slice(0, 900) }
   })
 
   check(!unity.hasCanvas, 'Unity 页：未创建 three 画布（不越权渲染）')
@@ -216,7 +279,154 @@ try {
     'Unity 页：显示 Unity 视口骨架（DEC-06 分流生效）',
     unity.bodyText.replace(/\s+/g, ' ').slice(0, 80),
   )
+  check(
+    unity.bodyText.includes('Unity 产物未包含在本次发布里') || unity.bodyText.includes('产物未就位'),
+    'Unity 页：清单未声明该任务 → 明说"产物未就位"（不是卡在加载中）',
+    unity.bodyText.replace(/\s+/g, ' ').slice(0, 110),
+  )
   await page.screenshot({ path: resolve(artifactsDir, 'task-unity-placeholder.png'), fullPage: false })
+
+  // ---------- 2b. Web ⇄ Unity **全量交互**（桩仿真 Unity 侧；TaskType.Structure = 8）----------
+  // 这一节是"两线交互跑通"的程序化证据：Web 发出的 app:init / scene:enter / input:enable / ui:result
+  // 与 Unity 发出的 assets:ready / scene:ready / step:changed / ui:request / task:completed
+  // 走的是同一套契约（载荷口径见 docs/design/02 §3）。
+  await page.goto(`${base}/#/task/8?project=clip_contactor`, { waitUntil: 'load' })
+  await page.waitForSelector('.ui-mask .ui-dialog', { timeout: 25000 })
+
+  const opened = await page.evaluate(() => ({
+    title: document.querySelector('.ui-dialog__title')?.innerText ?? '',
+    body: document.querySelector('.ui-dialog__body')?.innerText ?? '',
+    tips: document.querySelector('.ui-tips-float')?.innerText ?? '',
+    stub: window.__WSU3_STUB_STATE__ ?? null,
+    status: document.body.innerText,
+  }))
+  check(
+    opened.stub?.entered?.taskType === 8 && opened.stub?.entered?.projectId === 'clip_contactor',
+    '桥交互：Web 发出 scene:enter{taskType:8, projectId:clip_contactor}',
+    JSON.stringify(opened.stub?.entered ?? null),
+  )
+  check(
+    opened.stub?.appInit?.protocolVersion === 1,
+    '桥交互：握手后发出 app:init（带语言/画质/协议版本）',
+    JSON.stringify(opened.stub?.appInit ?? null),
+  )
+  check(
+    opened.tips.includes('步骤提示') && opened.tips.includes('操作提示'),
+    '桥交互：提示条（tips，无需回执）拿到内容数据里的两行文案',
+    opened.tips.replace(/\s+/g, ' ').slice(0, 70),
+  )
+  check(
+    opened.title.includes('接触器检测'),
+    '桥交互：信息面板标题来自内容数据（StepContentData.json）',
+    opened.title.replace(/\s+/g, ' ').slice(0, 40),
+  )
+  check(
+    opened.body.includes('万用表'),
+    '桥交互：信息面板正文来自内容数据（不是空框）',
+    opened.body.replace(/\s+/g, ' ').slice(0, 50),
+  )
+  check(
+    opened.stub?.inputEnabled === false,
+    '桥交互：模态面板打开 → input:enable{false}（DEC-84 §6：盖住的面板不能被拖）',
+    String(opened.stub?.inputEnabled),
+  )
+  const stepBadge = (opened.status.match(/步骤\s*\d+\s*\/\s*\d+/) ?? [''])[0].replace(/\s+/g, '')
+  check(stepBadge === '步骤1/3', '桥交互：step:changed 落到页面进度（扁平序号）', stepBadge)
+  await page.screenshot({ path: resolve(artifactsDir, 'task-unity-step-panel.png'), fullPage: false })
+
+  // ① 翻完信息面板的几页再确认（关闭即完成 ⇒ success）
+  for (let i = 0; i < 6; i += 1) {
+    const label = await page.evaluate(
+      () => document.querySelector('.ui-dialog__foot .ui-btn--primary')?.innerText?.trim() ?? '',
+    )
+    if (label.includes('确认')) break
+    await page.click('.ui-dialog__foot .ui-btn--primary')
+    await page.waitForTimeout(120)
+  }
+  await page.click('.ui-dialog__foot .ui-btn--primary')
+  await page.waitForFunction(() => (window.__WSU3_STUB_STATE__?.replies?.length ?? 0) >= 1, null, {
+    timeout: 15000,
+  })
+  const afterUi = await page.evaluate(() => window.__WSU3_STUB_STATE__?.replies?.[0] ?? null)
+  check(
+    afterUi?.kind === 'ui' && afterUi?.result === 'success',
+    '桥交互：关信息面板 → ui:result{kind:ui, result:success}（关闭即完成）',
+    JSON.stringify(afterUi),
+  )
+
+  // ② 答题面板：题干来自题库（判定也在 Web 侧）
+  await page.waitForFunction(
+    () => (document.querySelector('.ui-dialog__body')?.innerText ?? '').includes('主触点'),
+    null,
+    { timeout: 15000 },
+  )
+  const questionText = await page.evaluate(() => document.querySelector('.ui-dialog__body')?.innerText ?? '')
+  check(
+    questionText.includes('辅助常开触点对'),
+    '桥交互：答题面板取到题库里的题干（refId=contactor_q_mainContact）',
+    questionText.replace(/\s+/g, ' ').slice(0, 50),
+  )
+
+  // ③ 先**答错**一次：界面层判定（不回 failed，先让人看到错在哪）→ 点"重试"才回 failed
+  const wrongIndex = correctIndex === 0 ? 1 : 0
+  await page.locator('.ui-option').nth(wrongIndex).click()
+  await page.click('.ui-dialog__foot .ui-btn--primary')
+  await page.waitForSelector('.ui-alert--warn', { timeout: 10000 })
+  const wrongJudged = await page.evaluate(() => ({
+    warn: document.querySelector('.ui-alert--warn')?.innerText ?? '',
+    replies: window.__WSU3_STUB_STATE__?.replies?.length ?? 0,
+  }))
+  check(
+    wrongJudged.replies === 1,
+    '桥交互：答错先由**界面层**判定并提示，不立刻回执（判定在 Web 侧）',
+    wrongJudged.warn.replace(/\s+/g, ' ').slice(0, 40),
+  )
+  await page.click('.ui-dialog__foot .ui-btn--primary') // 重试 → 回 failed
+  await page.waitForFunction(() => (window.__WSU3_STUB_STATE__?.replies?.length ?? 0) >= 2, null, {
+    timeout: 15000,
+  })
+  const wrongReply = await page.evaluate(() => window.__WSU3_STUB_STATE__?.replies?.[1] ?? null)
+  check(
+    wrongReply?.kind === 'question' && wrongReply?.result === 'failed',
+    '桥交互：答错 → ui:result{kind:question, result:failed}，由条件层决定"再问一次"',
+    JSON.stringify(wrongReply),
+  )
+  // 重问：面板重新出现且选项回到未作答态（重试上限在 Unity 侧，默认 3 次）
+  await page.waitForFunction(
+    () => document.querySelectorAll('.ui-option--right, .ui-option--wrong').length === 0,
+    null,
+    { timeout: 15000 },
+  )
+  check(true, '桥交互：failed 之后题目被重新弹出（选项回到未作答态）')
+
+  // ④ 答对 → 末步 → task:completed
+  await page.locator('.ui-option').nth(correctIndex).click()
+  await page.click('.ui-dialog__foot .ui-btn--primary')
+  await page.waitForFunction(() => Boolean(window.__WSU3_STUB_STATE__?.completed), null, {
+    timeout: 15000,
+  })
+  await page.waitForTimeout(300)
+  const finished = await page.evaluate(() => ({
+    replies: window.__WSU3_STUB_STATE__?.replies ?? [],
+    body: document.body.innerText,
+    inputEnabled: window.__WSU3_STUB_STATE__?.inputEnabled,
+  }))
+  check(
+    finished.replies[2]?.result === 'success',
+    '桥交互：答对 → ui:result{kind:question, result:success}',
+    JSON.stringify(finished.replies[2] ?? null),
+  )
+  check(
+    finished.body.includes('任务完成'),
+    '桥交互：task:completed 落到页面（用时如实显示，分数不编造）',
+    (finished.body.match(/任务完成[^\n]*/) ?? [''])[0].slice(0, 60),
+  )
+  check(
+    finished.inputEnabled === true,
+    '桥交互：面板全部关闭 → input:enable{true}（输入放回）',
+    String(finished.inputEnabled),
+  )
+  await page.screenshot({ path: resolve(artifactsDir, 'task-unity-completed.png'), fullPage: false })
 
   // ---------- 3. 回到 Three 页（覆盖 Unity → Three 的重建路径）----------
   await page.goto(`${base}/#/task/2?project=demo-temperature`, { waitUntil: 'load' })
@@ -577,6 +787,8 @@ try {
 } finally {
   await browser.close()
   await server.close()
+  // 桩构建在临时目录里，用完就删（`unity/builds/` 从头到尾没被碰过）
+  await rm(stubRoot, { recursive: true, force: true })
 }
 
 console.log(`\n截图产物：${artifactsDir}`)

@@ -10,6 +10,8 @@ export * from './scene-state'
 export * from './task-type'
 export * from './question-type'
 export * from './bridge'
+// 消息名清单在 `bridge.ts`（机器比对）；每个 type 的**载荷形状**在 `bridge-payloads.ts`
+export * from './bridge-payloads'
 
 /** 协议版本：与 Unity 侧握手比对，不匹配要明确报错（DEC-07）。 */
 export const BRIDGE_PROTOCOL_VERSION = 1

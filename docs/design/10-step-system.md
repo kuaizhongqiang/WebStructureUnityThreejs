@@ -220,12 +220,19 @@ SetStep(2, 3)
 
 ## 9 待办
 
-1. **Web 侧落地面板**（`ui:request` / `ui:result`）：契约与 Unity 侧已就绪，页面未实现 ——
-   期间信息/答题条件会走降级（WebGL 里表现为一直等，需要时给条件配 `timeoutSeconds`）；
-   落地时请守两条纪律：**弹不出来也要回 `unavailable`**、**一个请求只回一条回执**；
+1. ~~**Web 侧落地面板**（`ui:request` / `ui:result`）~~ ✅ **已落地（2026-10-14，DEC-112）**：
+   落点 `web/src/unity/UnitySession.ts`（出站/入站与状态）、`web/src/domain/step-panels.ts`（**回执纪律**）、
+   `web/src/domain/step-content.ts`（`StepContentData.json` → 提示条/信息面板两份索引）、
+   `web/src/components/StepPanelHost.vue`（B5 提示浮条 + D2 信息/答题面板）。
+   两条纪律都钉住了并有单测/冒烟：**弹不出来回 `unavailable`**、**一个请求只回一条**；
+   冒烟里真跑了一遍"信息面板 `success` → 答题答错 `failed` → 重问 → 答对 `success` → `task:completed`"。
+   ⚠️ 两个容易写错的地方（都写进代码注释了）：`tips` **不需要回执**（`ShowTip` 发出去就不管，不占 pending）；
+   `input:enable` 在**握手之前只能记状态**（Unity 的任务流程管理器是在管理器自检里才订阅的，早发会静默丢失）。
+   面板 `timeoutSeconds` 的取值口径不变：**默认 0 = 不限时**（见 §5），要兜底就在条件上配；
 2. **`Tool` / `Drag`** 两种条件；
 3. 连线**临时线跟随鼠标**与手感（含吸附容差、点错提示）；
-4. **步骤树挂进内容场景**（等 P2-6 内容装配）+ 一次真机/真构建验收；
+4. **步骤树挂进内容场景**（等 P2-6 内容装配）+ 一次**真 WebGL 构建**的实机验收
+   （本轮的桥交互用桩构建验的：契约两侧对得上 ≠ 真产物跑得通，见 `TODO.md` D-24）；
 5. **成绩体系**：`task:completed` 的 score 现在是恒 0 的占位；
 6. 动画播完的护栏阈值（现在是 `clip 时长 + 1s`）与 `timeoutSeconds` 的实际取值，按真内容复核。
 
