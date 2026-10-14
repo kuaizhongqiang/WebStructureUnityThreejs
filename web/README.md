@@ -1,6 +1,6 @@
 # web/ — Web 侧工程（Three.js 简单三维交互 + 教学外壳）
 
-> 决策依据：`../docs/DECISIONS.md`（技术栈 DEC-15~19 / DEC-33；脚手架 DEC-73 / DEC-75；样式单一来源 DEC-74；资产发布链与 Info 页 DEC-98；原理页与视频 DEC-99）。
+> 决策依据：`../docs/DECISIONS.md`（技术栈 DEC-15~19 / DEC-33；脚手架 DEC-73 / DEC-75；样式单一来源 DEC-74；资产发布链与 Info 页 DEC-98；原理页与视频 DEC-99；站点线按数据画站 DEC-100）。
 > 纪律与落点以 `../AGENT.md` 与根 `../README.md` 为准；本文件只写 **web/ 这一层**的结构、命令与边界。
 
 ## 技术栈
@@ -24,7 +24,7 @@ npm run typecheck     # vue-tsc --noEmit
 npm run lint          # eslint .
 npm run format        # prettier --write（门禁用 format:check）
 npm test              # vitest run
-npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线 / 内容层 / Info 三维区 / 原理页视频（39 项断言）
+npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线按数据画站 / 内容层 / Info 三维区 / 原理页视频（39 项断言）
 npm run build         # 类型检查 + 生产构建 → dist/
 npm run preview       # 预览生产产物
 ```

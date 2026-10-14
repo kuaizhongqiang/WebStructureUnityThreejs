@@ -9,6 +9,7 @@
  *   5) Unity 类 TaskType 显示 Unity 视口骨架（证明 DEC-06 的分流生效）；
  *   6) **内容层吃到真实数据**（第 7 节）：菜单出 9 个项目、进项目出真实正文、
  *      未启用的槽位显示"本项目未启用"而不是空白、小测验出题目。
+ *   7) **站点线跟着数据走**（第 5 节）：只画当前项目启用的任务，换项目即换站。
  *
  * 说明：三维断言用 `#/task/8`（结构）而不是 `#/task/2`（实验仪器）—— 采纳数据里
  * 接触器启用了结构槽位，"实验仪器"的槽位是 `null`（会正确地显示"本项目未启用"）。
@@ -265,7 +266,9 @@ try {
   check(home.theme === 'dark' || home.theme === 'light', '主题属性已设置', home.theme)
   await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
 
-  // ---------- 5. 站点线：11 站、契约标签、技术栈标注 ----------
+  // ---------- 5. 站点线：**只画本项目启用的站**（DEC-100）+ 契约标签 + 技术栈标注 ----------
+  // 站点由**内容数据**决定（不再是"契约里 11 个都画"）：接触器只填了
+  // 实验原理 / 简介 / 结构 / 检测 四个槽位，其余七个在数据里是 `null` ⇒ 不该出现。
   await page.goto(`${base}/#/task/8?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(600)
   const route = await page.evaluate(() => {
@@ -276,13 +279,31 @@ try {
       stacks: [...document.querySelectorAll('.ui-route__stack')].map((el) => el.textContent?.trim() ?? ''),
     }
   })
-  check(route.count === 11, '站点线：11 站（由契约 TASK_TYPES 驱动）', `count=${route.count}`)
+  check(route.count === 4, '站点线：只画本项目启用的 4 站（数据驱动，DEC-100）', `count=${route.count}`)
   check(
-    route.labels.includes('电路连接') && route.labels.includes('考核'),
-    '站点线：标签逐字来自契约',
+    route.labels.join('/') === '实验原理/简介/结构/检测',
+    '站点线：顺序按契约、标签逐字来自契约',
+    route.labels.join('/'),
+  )
+  check(
+    !route.labels.includes('任务目的') && !route.labels.includes('电路连接'),
+    '站点线：数据里没填槽位的任务不出现（不是把 11 个契约任务都画上）',
     route.labels.join('/'),
   )
   check(route.stacks.includes('Unity') && route.stacks.includes('Three'), '站点线：技术栈标注齐全（DEC-06）')
+
+  // 5b. 换一个项目：小测验只启用「考核」一个槽位 ⇒ 站点线只剩 1 站（同一份代码，跟着数据走）
+  await page.goto(`${base}/#/task/10?project=clip_quiz`, { waitUntil: 'load' })
+  await page.waitForTimeout(600)
+  const singleRoute = await page.evaluate(() => ({
+    count: document.querySelectorAll('.ui-route__stop').length,
+    labels: [...document.querySelectorAll('.ui-route__label')].map((el) => el.textContent?.trim() ?? ''),
+  }))
+  check(
+    singleRoute.count === 1 && singleRoute.labels.join('/') === '考核',
+    '站点线：换项目即换站（小测验项目只有「考核」1 站）',
+    `count=${singleRoute.count} ${singleRoute.labels.join('/')}`,
+  )
 
   // ---------- 6. 骨架自检页（原两个演示页的合并版）----------
   await page.goto(`${base}/#/debug`, { waitUntil: 'load' })
