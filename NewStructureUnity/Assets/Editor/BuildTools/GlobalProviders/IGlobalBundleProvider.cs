@@ -34,10 +34,10 @@ namespace WSU3.Editor.BuildTools
         }
     }
 
-    // WHY: 这是"再加一个全局包"的**唯一扩展点** —— 加一个实现 + 在 BundlePipeline.GlobalProviders 里登记一行。
+    // WHY: 这是"再加一个全局包"的**唯一扩展点** —— 加一个实现 + 在 ContentPipeline.GlobalProviders 里登记一行。
     //      它存在的理由：全局包每加一个都要重走"收集 → 校验 → 写配置 → 同步登记表 → 构建 → 清残留"这同一段流程，
     //      让每个包各写一个专用工具等于把这段流程抄 N 份、N 份各自会漂。
-    /// <summary>全局包提供者（编辑器侧契约）：一个 bundle 一组资源，不按项目收集。</summary>
+    /// <summary>全局包提供者（编辑器侧契约）：一个组一组资源，不按项目收集。</summary>
     public interface IGlobalBundleProvider
     {
         /// <summary>对账报告里的来源名与日志 tag（如 <c>UI</c>）。</summary>
@@ -46,9 +46,9 @@ namespace WSU3.Editor.BuildTools
         /// <summary>本包的包配置目录（与内容包分目录，避免"按本次产出清残留"互相误删）。</summary>
         string ConfigDir { get; }
 
-        // WHY: 末段必须全小写 —— 运行期拼 URL 时会把文件名段强制小写，而工具写盘按原样保留，
-        //      两者不一致在 Windows 上看不出问题，在 WebGL / Linux 上必然 404。
-        /// <summary>bundle 名（如 <c>UI/ui</c>）；落盘目录 = 名字的首段，必须是独立段。</summary>
+        // WHY: 直接当 Addressables 分组名用，须以 WSU3_ 开头（清理残留只动这一族，见 ContentNaming.IsManagedGroup）。
+        //      迁 AA 后**不再有"末段必须小写否则 404"那条纪律** —— AA 地址不经文件系统。
+        /// <summary>Addressables 分组名（如 <c>WSU3_UI</c>）。</summary>
         string BundleName { get; }
 
         /// <summary>收集本包的全部资源条目。</summary>

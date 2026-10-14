@@ -90,8 +90,27 @@ NewStructureUnity/Assets/Animation.meta
 # 落 StreamingAssets/{包名首段}/，**是产物不是源**（源是包登记表 Assets/Resources/Config/）。
 # ⚠ 体积 47 MB、单个最大 9.66 MB —— **刚好卡在 10 MB 大文件门禁之下**，门禁抓不到，只能靠这条规则挡。
 # ⚠ 新增别的"包名首段"（如 UI/、CameraBg/）时要同步补规则；判据见 docs/design/12 §4.4。
+# ⚠ 2026-10-14 全量迁 Addressables（DEC-118）后本链路已删除；规则**保留**以防误提交残留的旧产物。
 NewStructureUnity/Assets/StreamingAssets/Content/
 NewStructureUnity/Assets/StreamingAssets/Content.meta
+
+# AA 内容产物（DEC-118）：由 `WSU3/Pack/一键打 AA 包（全部）` 重建。
+# 构建输出落 Library（已忽略），Build Player 时被 Addressables 拷进 StreamingAssets/aa/<平台>/。
+# ⚠ 反过来 `Assets/AddressableAssetsData/**` 是**源**（AA 设置 / 分组 / 分组 schema），**必须提交** ——
+#   所以这里只忽略它**直接下面**的构建输出（`<平台>/` 与 `*.bin*` 内容状态），不整目录忽略。
+NewStructureUnity/Assets/StreamingAssets/aa/
+NewStructureUnity/Assets/StreamingAssets/aa.meta
+NewStructureUnity/Assets/AddressableAssetsData/WebGL/
+NewStructureUnity/Assets/AddressableAssetsData/*/*.bin
+NewStructureUnity/Assets/AddressableAssetsData/*/*.bin.meta
+
+# 编辑器内的诊断截图（Play 模式 / 探针渲染）：**是证据、可随时重拍，不是源**
+NewStructureUnity/Assets/Screenshots/
+NewStructureUnity/Assets/Screenshots.meta
+
+# Scriptable Build Pipeline 的**机器级**设置（缓存服务器地址 / 缓存上限 / hasher 版本等）：
+# 由构建时自动生成，属本机环境配置而非工程契约 —— 提交它会把"我这台机器的构建缓存设置"带给别人。
+NewStructureUnity/ProjectSettings/ScriptableBuildPipeline.json
 
 # ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/

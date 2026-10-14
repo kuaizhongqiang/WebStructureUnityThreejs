@@ -233,7 +233,7 @@ namespace WSU3.Core.Managers.FunctionManager
                 {
                     Code = ErrorContentFlowNotImplemented,
                     Message = $"包登记表里没有 clip '{clipId}' 的资源包（{target}）—— " +
-                              "先跑菜单 WSU3/Pack/一键打 AB 包（全部）生成包与登记表；见 docs/design/12。",
+                              "先跑菜单 WSU3/Pack/一键打 AA 包（全部）生成包与登记表；见 docs/design/12。",
                     Fatal = false,
                 });
             }

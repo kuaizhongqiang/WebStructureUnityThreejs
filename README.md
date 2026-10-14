@@ -18,14 +18,14 @@
 | `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留（答案固化进 `DECISIONS.md`）。**轮次与关闭状态以 `DECISIONS.md` 为准**，本文件不重复维护 |
 | `docs/requirement/requirement-analysis.md` | 需求分析：原始需求条目化（R-1~R-8）、红线、需求→交付物映射、缺口闭合表 |
 | `docs/research/01~10` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘**、**底层操控层的行为规格原文（只读档案）** |
-| `docs/design/01~12` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地**、**步骤系统**、**底层操控层（输入控制器与相机）**、**资源包与 AB 打包流水线** |
+| `docs/design/01~12` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地**、**步骤系统**（含**三种走法：一步一步 / 跳步快进 / 动画运行**）、**底层操控层（输入控制器与相机）**、**资源包与内容打包流水线（全量 Addressables）** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
 | `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用）；`style.css` 是聚合入口 |
 | `docs/model-preview/` | **模型检视页（审核用）**：把 `content/assets/three/**` 的 **8 个 GLB** 逐个挂上 Three.js，用来定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（贴图接没接上、清漆、表面模式）。自带 `serve.mjs`（服务根＝仓库根，见 §4） |
 | `docs/README.md` | 文档总索引与**写作 / 维护纪律** |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
 | `electron/` | **应用壳**：Electron + 只绑 127.0.0.1 的本机静态服务器（含 `/unity/**` 路由），加载 `web/dist`；**打包产出单文件 exe**（DEC-20 / DEC-32 / DEC-77） |
-| `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 + Addressables 1.22.3。资源包链路见 `docs/design/12`：**包登记表**落 `Assets/Resources/Config/**`（`PackageDB_Master` + `ContentPackages/` + `AddressableAssetsData/`，**要提交**）、**AB 产物**落 `Assets/StreamingAssets/Content/**`（**不进版本库**，`ignore.conf` 已加规则、可一键重建） |
+| `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 + Addressables 1.22.3。资源包链路见 `docs/design/12`：**包登记表**落 `Assets/Resources/Config/**`（`PackageDB_Master` + `ContentPackages/AA_*.asset`，**要提交**）、**AA 设置/分组**落 `Assets/AddressableAssetsData/**`（**要提交**）、**AA 产物**落 `Library/com.unity.addressables/aa/<平台>/**`（**不进版本库**，Build Player 时由 Addressables 自动拷进 `Assets/StreamingAssets/aa/<平台>/`、可一键重建） |
 | `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
 | `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**：`three/` 模型、`video/` 原理视频）；材质规格与人工修正：`asset-material-spec.json` / `asset-material-textures.json` / `material-overrides.json`；搬运清单：`asset-import-report.json` / `asset-convert-report.json` / **`asset-video-report.json`** / **`asset-structure-report.json`**（结构任务，DEC-102）；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
 | `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存校验打包、三维资产搬运与 Blender 转换、**原理视频搬运**、发布清单与打包） |
@@ -52,14 +52,14 @@
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
 | Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、**启动流程 `start → login → menu`（DEC-101，登录页只提供游客入口）**、`MenuView` / `TaskView`（登记表驱动）/ 骨架自检页；样式只走设计系统令牌；ESLint + Prettier 已进 hook 与 CI |
 | Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测（**108 passed / 2 skipped**）/ 构建全过；**渲染冒烟**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、**站点线只画数据里有的站**（DEC-100）、**登录页真的点得通且不摆输入框**（DEC-101）、骨架自检页可达、无 console 错误）+ **Web⇄Unity 全量交互 18 条**（DEC-112：`scene:enter` 载荷 / `app:init` / 内容数据落地的提示条与信息面板 / `input:enable` 开合 / `step:changed` 进度 / 信息面板 `success` / 答题答错 `failed` → 重问 → 答对 `success` → `task:completed`） |
-| Unity 工程 | ✅ 程序集分层 + 契约（`SceneState` / `TaskType` / `QuestionType` / `QuestionUsage` / `BridgeMessageType`）+ **协议桥**（`.jslib` + 信封扫描 + 入站分发/出站映射） + **启动编排** + **免 Web 自测开关**（`0_Setup` 的 `StartupTestSwitch`，DEC-113：指定 `taskType` + `projectClip` 自启一个任务，WebGL 可用 `?wsu3_test=8&wsu3_clip=…` 免重打包覆盖）+ **任务编排 + 输入闸门** + **拾取体系** + **步骤系统**（进程 → 步骤 → 条件三级结构、跳转重置与快进、协作式打断）+ **底层操控层**（第一人称 / 第三人称 / 聚焦环绕 / 相机背景；`Core/Controllers/`，DEC-107 —— **代码与资产在位、编译 0 error，但还没进场景接线**）+ **资源包链路**（DEC-87 / DEC-108~110，`docs/design/12`：三条链路 + 包登记表 + **一键打 AB 包**，见 §4）；EditMode **71/71** 通过（既有 49 + 包自带 stub 1 + `StartupTestSwitch` 21） |
+| Unity 工程 | ✅ 程序集分层 + 契约（`SceneState` / `TaskType` / `QuestionType` / `QuestionUsage` / `BridgeMessageType`）+ **协议桥**（`.jslib` + 信封扫描 + 入站分发/出站映射） + **启动编排** + **免 Web 自测开关**（`0_Setup` 的 `StartupTestSwitch`，DEC-113：指定 `taskType` + `projectClip` 自启一个任务，WebGL 可用 `?wsu3_test=8&wsu3_clip=…` 免重打包覆盖）+ **任务编排 + 输入闸门** + **拾取体系** + **步骤系统**（进程 → 步骤 → 条件三级结构、跳转重置与快进、协作式打断；**三种走法**：一步一步 / 跳步快进 / **动画运行**（DEC-121）；显隐只认两张表、点击带**碰撞体闸门**（DEC-119/120））+ **底层操控层**（第一人称 / 第三人称 / 聚焦环绕 / 相机背景；`Core/Controllers/`，DEC-107 —— **代码与资产在位、编译 0 error，但还没进场景接线**）+ **资源包链路**（DEC-87 / DEC-108~110 / **DEC-118 全量迁 Addressables**，`docs/design/12`：两条链路 + 包登记表 + **共享材质组先装** + **一键打 AA 包**，见 §4）；EditMode **71/71** 通过（既有 49 + 包自带 stub 1 + `StartupTestSwitch` 21） |
 | Unity 依赖 | `Cinemachine` **2.10.7** + `Input System` **1.11.2** 已入 `Packages/manifest.json`，输入后端 = **Both**（旧版 Input 的拾取继续可用，DEC-107）；其余沿用脚手架 |
 | 内容数据 | ✅ **已全量采用既有实训软件的数据**（DEC-88）：7 份 JSON / 9 个项目 / 73 KB，Web 与 Unity **各一份**（DEC-82），`tools/check-content-data.mjs` 在 hook 与 CI 里比对结构 |
 | 三维资产（Three 侧） | ✅ **8 个 GLB / 7.3 MB**：**GLB 只出 mesh + mat，一张贴图都不带**，base（含 alpha）/ normal / mask 三张图**全部渲染期后加载**（DEC-97，查找表 `content/asset-material-textures.json`）；材质规格由 `content/asset-material-spec.json` 驱动，人工修正落 `content/material-overrides.json` |
 | 材质通路 | ✅ 逐子材质核对（贴图按**规格声明**接、表面模式 MASK/BLEND、清漆 `_CoatedMask` 带出、全零顶点色剔除）；mask 已按 HDRP 通道在渲染期重排为 glTF ORM ⇒ **金属度 / 粗糙度是贴图驱动**，不再是常数兜底 |
 | Blender 中间内容仓 | ✅ `content/assets/blend/<器件>.blend`（贴图已打包、自包含，**不进 git**）：FBX 载入 → 人在 Blender 里细调 → 从 .blend 导出 GLB（**不重导 FBX**，手工调整全保留） |
-| **结构任务（TaskType 8）资产** | ✅ **已搬入 Unity**（DEC-102 / DEC-103）：8 个结构件预制体（含 1 个空壳）+ **46 段拆装动画 14.6 MB** + 29 个器件材质（**接管**从 FBX 自动抽出的同名材质）+ 4 个自制 ShaderGraph + 1 个 SubGraph + HighlightPlus 插件 + **12 MB 反射 cubemap**（4 个金属材质的依赖）；脚本 `tools/pipeline/import-structure-assets.mjs`、清单 `content/asset-structure-report.json`。**已打成 8 个 AB 包**（DEC-108，`Content/clip_<器件小写>`，合计 45.3 MB）。零件脚本 `StructureTaskObj` 与 `InstControlledManager` 有意未搬（用本工程 `StepManager` 承载，DEC-104）；**HighlightPlus 已可由业务程序集引用**（`WSU3.Core → HighlightPlus.Runtime`，DEC-106）。⚠️ **进结构站已能实例化结构件**（DEC-110）且**步骤子树已就位**（DEC-111：8 个器件 **46 步**由 `StructureStepGenerator` 从来源工程生成、幂等可重跑，见 `docs/design/10` §7）；**Web 侧的步骤显示也已落地**（DEC-112：进度 / 提示条 / 信息面板 / 答题面板）；**相机 / 交互闸门 / 高亮的初始化未接**（`TODO.md` D-13，与 D-21 合并做）。⚠️ 这 8 个包**已重打**（D-23 已关闭：负责人 2026-10-14 重打，并已切回 **WebGL** 平台重打一次 —— AB 是平台锁定的，出 Web 产物前确认当前那份是 WebGL） |
-| **资源包与 AB 打包** | ✅ **已落地**（DEC-87 / DEC-108~110，`docs/design/12`）：**包登记表**（`Assets/Resources/Config/PackageDB_Master` + 8 条 `ContentPackages/AB_*.asset`）+ **一键打 AB 包**（菜单 `WSU3/Pack/一键打 AB 包（全部）`，8 个包 / 45.3 MB 落 `Assets/StreamingAssets/Content/`）+ **三条链路运行期**（`AddressableManager`：内置 / AB / AA）+ **装包卸包已接进 `scene:enter`/`scene:exit`** + Addressables 设置与默认分组已初始化。⚠️ 全局包（UI / 字体 / 相机背景）登记表为空（Unity 侧不做界面 + 背景取图入口未接）；简介 / 检测的内容 Provider 未登记（素材未到位） |
+| **结构任务（TaskType 8）资产** | ✅ **已搬入 Unity**（DEC-102 / DEC-103）：8 个结构件预制体（含 1 个空壳）+ **46 段拆装动画 14.6 MB** + 29 个器件材质（**接管**从 FBX 自动抽出的同名材质）+ 4 个自制 ShaderGraph + 1 个 SubGraph + HighlightPlus 插件 + **12 MB 反射 cubemap**（4 个金属材质的依赖）；脚本 `tools/pipeline/import-structure-assets.mjs`、清单 `content/asset-structure-report.json`。**已打成 9 个 AA 组**（DEC-118 全量迁 Addressables，含 `WSU3_Shared` 共享材质组，合计约 43 MB）。零件脚本 `StructureTaskObj` 与 `InstControlledManager` 有意未搬（用本工程 `StepManager` 承载，DEC-104）；**HighlightPlus 已可由业务程序集引用**（`WSU3.Core → HighlightPlus.Runtime`，DEC-106）。⚠️ **进结构站已能实例化结构件**（DEC-110）且**步骤子树已就位**（DEC-111：8 个器件 **46 步**由 `StructureStepGenerator` 从来源工程生成、幂等可重跑，见 `docs/design/10` §7）；**Web 侧的步骤显示也已落地**（DEC-112：进度 / 提示条 / 信息面板 / 答题面板）；**相机 / 交互闸门 / 高亮的初始化未接**（`TODO.md` D-13，与 D-21 合并做）。⚠️ 这 9 个 AA 组**已重打**（`TODO.md` D-23 已改口径：AB 时代的 8 个包已作废，2026-10-14 夜按 AA 重打为 9 组 / 27 项资源）—— AA 内容同样是**平台锁定**的，出 Web 产物前确认当前那份是 WebGL |
+| **资源包与内容打包** | ✅ **已落地**（DEC-87 / DEC-108~110 / **DEC-118 全量迁 AA**，`docs/design/12`）：**包登记表**（`Assets/Resources/Config/PackageDB_Master` + 9 条 `ContentPackages/AA_*.asset`）+ **一键打 AA 包**（菜单 `WSU3/Pack/一键打 AA 包（全部）`，9 个组 / 约 43 MB 落 `Library/com.unity.addressables/aa/<平台>/`）+ **两条链路运行期**（`AddressableManager`：内置 / AA）+ **共享材质组先于内容组装载** + **装包卸包已接进 `scene:enter`/`scene:exit`** + Addressables 设置与分组已就位。⚠️ 全局包（UI / 字体 / 相机背景）登记表为空（Unity 侧不做界面 + 背景取图入口未接）；简介 / 检测的内容 Provider 未登记（素材未到位） |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁） |
 | 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；框体规则见 `docs/design/07-frame-style-rules.md` |
@@ -68,7 +68,7 @@
 | **Principle 页（产品侧）** | ✅ **左视频 + 右说明**（DEC-99，与排版稿 C4 同构）：8 段讲解视频 **65.9 MB** 落 `content/assets/video/**`（**不进 git**），与三维资产同一套发布链（同一插件服务多棵树：`/assets/three/` + `/assets/video/`），视频另有 `_meta/index.json` 清单当**唯一判据**（缺了显示"未包含"，不打 404）；**数据只有一段视频时右栏"视频列表"整块不出现**（规则在 `web/src/domain/principle.ts`，有单测）；`.mp4` 的 MIME 与 `Range` 在 dev 中间件与壳的静态服务器都实现。冒烟：`readyState=4 1920x1080 81s`、列表 `rows=0`、右栏只有"原理说明"、console 0 错误；**壳里（打包产物）同组读数通过** |
 | 门禁 | pre-commit hook + CI（**双端契约**、**内容数据双份**、大文件、壳耦合、Unity 清单、类型检查、Lint、格式、单测、构建、渲染冒烟） |
 | Electron 壳 | ✅ 骨架 + 窗口外观（Windows 隐藏原生标题栏、系统浮层按钮、主题同步）+ **打包分发**（electron-builder portable → 单文件 exe）；冒烟**四段**（挂载 + Unity 页 + Info 页三维区 + **原理页视频**），报告落 JSON。细节见 [`electron/README.md`](./electron/README.md) |
-| **尚未开始 / 欠** | ① ~~Web 侧步骤系统的落地面板~~ ✅ **已落地**（DEC-112）；② 其余 C 组页面骨架（C2/C3/C7）仍与排版稿不同构；③ 材质解算在产品与审核页各一份（`TODO.md` D-09）、包体核算（D-10，已加 65.9 MB 视频 + 内容 AB 包）；④ Unity 侧：**相机 / 交互闸门 / 高亮初始化**（D-13）、**真 WebGL 构建的实机端到端验收**（D-24，本轮的桥交互是桩构建验的）、**实例在任务之间常驻**（D-25，DEC-81 的目标形态）、全局包与其余内容 Provider（`design/12` §8）、操控层进场景（D-19~D-22）；⑤ 待负责人拍板项见 `TODO.md` §1 |
+| **尚未开始 / 欠** | ① ~~Web 侧步骤系统的落地面板~~ ✅ **已落地**（DEC-112）；② 其余 C 组页面骨架（C2/C3/C7）仍与排版稿不同构；③ 材质解算在产品与审核页各一份（`TODO.md` D-09）、包体核算（D-10，已加 65.9 MB 视频 + 内容 AA 组合计约 43 MB）；④ Unity 侧：**相机 / 交互闸门 / 高亮初始化**（D-13）、**真 WebGL 构建的实机端到端验收**（D-24，本轮的桥交互是桩构建验的）、**实例在任务之间常驻**（D-25，DEC-81 的目标形态）、全局包与其余内容 Provider（`design/12` §8）、操控层进场景（D-19~D-22）；⑤ 待负责人拍板项见 `TODO.md` §1 |
 
 ## 4 怎么跑
 
@@ -237,17 +237,19 @@ git push -u origin feat/xxx    # 3 推分支
 ### Unity 侧
 
 - 用 Unity **2022.3.53f1c1** 打开 `NewStructureUnity/`；
-- **一键打 AB 包**（资源包，DEC-108，细则见 [`docs/design/12`](./docs/design/12-resource-packs-and-ab-build.md)）：菜单
-  `WSU3/Pack/一键打 AB 包（全部）` —— 收集 → 校验 → 写包配置 → 同步包登记表 → **一次构建** → 出报告；
-  产物落 `Assets/StreamingAssets/<包名首段>/`（**不进版本库**，可一键重建），报告落 `Builds/assetbundles/ab-build-report.json`。
+- **一键打 AA 包**（内容包，DEC-108 + **DEC-118 迁 Addressables**，细则见 [`docs/design/12`](./docs/design/12-resource-packs-and-ab-build.md)）：菜单
+  `WSU3/Pack/一键打 AA 包（全部）` —— 收集 → 校验 → 写包配置 → 同步包登记表 → **注册分组 → 一次构建** → 出报告；
+  产物落 `Library/com.unity.addressables/aa/<平台>/`（**不进版本库**，可一键重建），报告落 `Builds/assetbundles/aa-build-report.json`。
+  ⚠️ **产物要进 WebGL 构建目录还差一步 Build Player**：Addressables 在 Build Player 时把内容自动拷进 `Assets/StreamingAssets/aa/<平台>/`（见 `design/12` §6）。
   等价批处理（不弹窗）：
   ```bash
   Unity.exe -batchmode -quit -projectPath NewStructureUnity -buildTarget WebGL \
     -executeMethod WSU3.Editor.BuildTools.BundlePipeline.BuildAllFromBatch -logFile -
   ```
-  同菜单下另有 `对账（dry-run，不写盘）` / `仅构建（不写配置）` / `仅刷新包登记表` / `打开 AB 产物目录`；
-  Addressables 相关在 `WSU3/Pack/Addressables/`（初始化设置与默认分组 / 同步场景分组 / 构建 AA 内容 / 清理场景分组）。
-  ⚠️ AB 与构建目标平台绑定 —— **发布 WebGL 前先在 Build Settings 里切到 WebGL 再打一次**（不是 WebGL 时 Console 会给告警）。
+  同菜单下另有 `对账（dry-run，不写盘）` / `仅构建（不写配置）` / `仅刷新包登记表` / `打开 AA 产物目录`；
+  Addressables 相关在 `WSU3/Pack/Addressables/`（初始化设置与默认分组 / 同步场景分组 / 构建 AA 内容 / 清理场景分组）；
+  **内容包本身也走 AA**（DEC-118），故上面那条「一键打 AA 包」已经是唯一的打包入口。
+  ⚠️ AA 内容与构建目标平台绑定 —— **发布 WebGL 前先在 Build Settings 里切到 WebGL 再打一次**（不是 WebGL 时 Console 会给告警）。
 - WebGL 基线构建：菜单 `WSU3/Build/WebGL Baseline`（等价批处理：`-executeMethod WSU3.Editor.BuildTools.WebGLBaselineBuild.RunBaseline`）；
 - 契约冻结单测：EditMode 测试 `ContractIntegrityTests`（校验 TaskType / SceneState 的**名字、顺序、中文标签**）；
 - 步骤系统单测：EditMode `StepSystemTests`（49 项全流程）。

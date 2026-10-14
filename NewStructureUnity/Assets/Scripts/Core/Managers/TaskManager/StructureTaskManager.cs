@@ -64,7 +64,7 @@ namespace WSU3.Core.Managers.TaskManager
             if (!addressables.TryGetConfig(packageId, out PackageConfigSO config) || config == null)
             {
                 Debug.LogError($"{LogTag} 包登记表里没有 {packageId}（clip={clipId}）—— 结构件取不到，装配中止。\n" +
-                               $"   先跑菜单 WSU3/Pack/一键打 AB 包（全部）生成包与登记表；登记表现有 clip：" +
+                               $"   先跑菜单 WSU3/Pack/一键打 AA 包（全部）生成包与登记表；登记表现有 clip：" +
                                $"{string.Join("、", addressables.GetClipIds())}");
                 yield break;
             }

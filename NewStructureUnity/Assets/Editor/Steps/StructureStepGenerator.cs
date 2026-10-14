@@ -378,7 +378,6 @@ namespace WSU3.Editor
                     SerializedProperty slot = slots.GetArrayElementAtIndex(0);
                     SerializedProperty animProp = slot.FindPropertyRelative("animation");
                     SerializedProperty clipProp = slot.FindPropertyRelative("clip");
-                    SerializedProperty hideProp = slot.FindPropertyRelative("ifHideOnFinish");
 
                     if (animProp != null && animProp.objectReferenceValue != animation)
                     {
@@ -397,11 +396,8 @@ namespace WSU3.Editor
                         changed = true;
                     }
 
-                    if (hideProp != null && hideProp.boolValue)
-                    {
-                        hideProp.boolValue = false;   // 口径：都用类默认（负责人 2026-10-14 定）
-                        changed = true;
-                    }
+                    // WHY: 这里**不再写 ifHideOnFinish**（2026-10-14 显隐改由两张表管，该字段已从
+                    //      AnimationStruct 删除）。旧资产里若还留着这个序列化字段，Unity 会当孤儿数据忽略掉。
                 }
             }
 

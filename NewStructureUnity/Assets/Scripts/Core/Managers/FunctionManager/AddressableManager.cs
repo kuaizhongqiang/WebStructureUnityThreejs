@@ -12,20 +12,25 @@ using WSU3.Core.Models.Addressable;
 namespace WSU3.Core.Managers.FunctionManager
 {
     /// <summary>
-    /// 资源包管理器：**包登记表 + 三条加载链路 + 实例登记与卸载纪律**。
+    /// 资源包管理器：**包登记表 + 双链路加载 + 实例登记与卸载纪律**。
     ///
-    /// 依据 docs/design/12（资源包与 AB 打包流水线）、docs/design/03 §7、DEC-87（三条链路都做）。
+    /// 依据 docs/design/12（资源包与打包流水线）、docs/design/03 §7、DEC-87（链路分流）、DEC-118（全量迁 AA）。
     ///
-    /// 三条链路（由 <see cref="PackageType"/> 分流，**调用方只给包 id / clip，不关心走哪条**）：
+    /// 两条链路（由 <see cref="PackageType"/> 分流，**调用方只给包 id / clip，不关心走哪条**）：
     ///   · <c>Default</c> 内置  —— <c>Resources.Load</c>，全局单例资源（管理器、相机、配置表）；
-    ///   · <c>AB</c>      AssetBundle —— <c>UnityWebRequestAssetBundle</c>，从 StreamingAssets 取，内容包走这条；
-    ///   · <c>AA</c>      Addressables —— <c>Addressables.LoadAssetAsync / LoadSceneAsync</c>，漫游场景走这条。
+    ///   · <c>AA</c> Addressables —— <c>Addressables.LoadAssetAsync</c>，内容包与漫游场景都走这条。
     ///
-    /// 四条必须遵守的纪律（DEC-87，踩过的坑）：
+    /// 2026-10-14（DEC-118）：原先还有第三条 <c>AB</c> 链路（<c>UnityWebRequestAssetBundle</c> + 手拼 URL + 手管
+    /// <c>bundle.Unload</c>），已**整条删除**。理由不是它不好用，而是它与 AA 底层本就是同一条
+    /// （都是 <c>BuildAssetBundles</c> 产物）却要多养一套纪律；而 AA 多给的 Play Mode Script
+    /// （编辑器 Play 直取 AssetDatabase、不碰 bundle）恰好解掉了 DEC-117 记的那个死结：
+    /// **编辑器里加载 WebGL 平台的 bundle，里面所有 shader 都拿不到可用 pass ⇒ 一律洋红**。
+    ///
+    /// 四条必须遵守的纪律（DEC-87，踩过的坑；AB 链路没了但纪律①④仍在）：
     ///   ① **一个项目一个内容包**：切任务 = 卸旧 clip 的包 + 装新 clip 的包；
     ///   ② **实例要登记"实例 → 包"**：卸载包前先销毁该包实例（否则材质变粉），卸载前先失效资源缓存（否则下次取到已销毁对象）；
-    ///   ③ **WebGL 下 StreamingAssets 就是 HTTP 路径**：不能加 <c>file://</c>，只能经 UnityWebRequest 读；
-    ///   ④ **bundle 文件名一律小写、目录段保持原样** —— 大小写写错在 WebGL / Linux 上直接 404。
+    ///   ③ **共享材质先于内容组装载**：材质在 <c>WSU3_Shared</c> 组里，<see cref="LoadClipRoutine"/> 会先装它；
+    ///   ④ **AA 取件必须留住 handle**：只留 Result 丢掉 handle，卸载时引用计数永不归零（显存一路涨）。
     ///
     /// 为什么不是 MonoBehaviour：与 <see cref="TaskFlowManager"/> / 步骤系统同一套写法 ——
     /// 由 <see cref="GlobalManager"/> 持有并驱动（<c>Init</c> 建表 + <c>CoreUpdate</c> 推进自驱泵），
@@ -47,7 +52,6 @@ namespace WSU3.Core.Managers.FunctionManager
         private readonly Dictionary<string, string> m_SceneNameToAddress = new Dictionary<string, string>(StringComparer.Ordinal);
 
         // ── 运行期缓存 ────────────────────────────────────────────────────
-        private readonly Dictionary<string, AssetBundle> m_BundleCache = new Dictionary<string, AssetBundle>();
         private readonly Dictionary<string, UnityEngine.Object> m_AssetCache = new Dictionary<string, UnityEngine.Object>();
 
         // WHY: AA 的取件必须留住 handle 才能释放 —— 只把 Result 塞进缓存、丢掉 handle 的话，
@@ -72,8 +76,8 @@ namespace WSU3.Core.Managers.FunctionManager
         /// <summary>场景 AA 路由条数。</summary>
         public int SceneRouteCount => m_SceneMap.Count;
 
-        /// <summary>已装载的 AssetBundle 数。</summary>
-        public int LoadedBundleCount => m_BundleCache.Count;
+        /// <summary>已装载的 AA 包数（AA 的分组粒度由 Addressables 内部管，这里只报"已留住 handle 的包配置数"）。</summary>
+        public int LoadedBundleCount => m_AAAssetHandles.Count;
 
         /// <summary>已登记的存活实例数（顺带清理被外部销毁的空槽）。</summary>
         public int InstanceCount
@@ -106,7 +110,6 @@ namespace WSU3.Core.Managers.FunctionManager
             UnloadAllBundles(true);
             m_SceneHandles.Clear();
         }
-
         /// <summary>由 <see cref="GlobalManager"/> 的 Update 驱动：推进内部协程。</summary>
         public void CoreUpdate()
         {
@@ -173,34 +176,29 @@ namespace WSU3.Core.Managers.FunctionManager
             return !string.IsNullOrEmpty(id) && m_ConfigMap.ContainsKey(id);
         }
 
-        /// <summary>取 clipId 相同的全部 AB 配置（一个 clip 一次装卸，纪律①）。</summary>
-        public List<ABPackageConfigSO> GetConfigsByClip(string clipId)
+        /// <summary>取 clipId 相同的全部内容包配置（一个 clip 一次装卸，纪律①）。</summary>
+        public List<AAPackageConfigSO> GetConfigsByClip(string clipId)
         {
-            var list = new List<ABPackageConfigSO>();
+            var list = new List<AAPackageConfigSO>();
             if (string.IsNullOrEmpty(clipId)) return list;
 
             foreach (KeyValuePair<string, PackageConfigSO> kvp in m_ConfigMap)
             {
-                var ab = kvp.Value as ABPackageConfigSO;
-                if (ab != null && ab.clipId == clipId) list.Add(ab);
+                var aa = kvp.Value as AAPackageConfigSO;
+                if (aa != null && aa.clipId == clipId) list.Add(aa);
             }
             return list;
         }
 
-        // WHY: 全局包没有 clipId，GetConfigsByClip 收集不到它；按 bundleName 收集是全局包唯一的聚合口径
-        //      （卸载侧的 UnloadByBundleName 与它同口径）。
-        /// <summary>取某个 bundle 名下的全部 AB 配置（全局包预加载用）。</summary>
-        public List<ABPackageConfigSO> GetConfigsByBundleName(string bundleName)
+        /// <summary>共享材质包的配置（DEC-118：材质常驻，先于任何内容组装载；登记表里没有就是没打，返回 null）。</summary>
+        public AAPackageConfigSO GetSharedConfig()
         {
-            var list = new List<ABPackageConfigSO>();
-            if (string.IsNullOrEmpty(bundleName)) return list;
-
             foreach (KeyValuePair<string, PackageConfigSO> kvp in m_ConfigMap)
             {
-                var ab = kvp.Value as ABPackageConfigSO;
-                if (ab != null && ab.bundleName == bundleName) list.Add(ab);
+                var aa = kvp.Value as AAPackageConfigSO;
+                if (aa != null && aa.address == ContentNaming.SharedAddress) return aa;
             }
-            return list;
+            return null;
         }
 
         /// <summary>登记表里出现过的全部 clipId（诊断用）。</summary>
@@ -209,8 +207,8 @@ namespace WSU3.Core.Managers.FunctionManager
             var set = new HashSet<string>();
             foreach (KeyValuePair<string, PackageConfigSO> kvp in m_ConfigMap)
             {
-                var ab = kvp.Value as ABPackageConfigSO;
-                if (ab != null && !string.IsNullOrEmpty(ab.clipId)) set.Add(ab.clipId);
+                var aa = kvp.Value as AAPackageConfigSO;
+                if (aa != null && !string.IsNullOrEmpty(aa.clipId)) set.Add(aa.clipId);
             }
             return new List<string>(set);
         }
@@ -287,21 +285,44 @@ namespace WSU3.Core.Managers.FunctionManager
 
         // ── 装载 / 卸载（包粒度 = 内容包按 clip 聚合）───────────────────────
 
-        // WHY: 内容包一次装一整个 clip —— 调用方（任务流）只给 clipId，不关心该 clip 下面有几个包配置、各自走哪条链路。
-        /// <summary>装载一个 clip 的全部资源包；<paramref name="onDone"/>(是否成功, 失败原因)。</summary>
+        // WHY: 内容包一次装一整个 clip —— 调用方（任务流）只给 clipId，不关心该 clip 下面有几个包配置。
+        // WHY: **共享材质包必须先装**（DEC-118 纪律③）—— 材质在 WSU3_Shared 组里，是各模型预制体的依赖；
+        //      先装它有两个好处：① 装载顺序确定（不依赖 Addressables 的依赖自动拉取时机）；
+        //      ② 多个 clip 之间共用一份材质，切任务不必重复解包/上传显存。
+        //      登记表里没有共享包时**不报错**：可能是还没打过包，也可能是这个工程确实没有共享材质。
+        /// <summary>装载一个 clip 的全部资源包（先共享材质、再该 clip 的内容包）；<paramref name="onDone"/>(是否成功, 失败原因)。</summary>
         public IEnumerator LoadClipRoutine(string clipId, Action<bool, string> onDone)
         {
-            List<ABPackageConfigSO> configs = GetConfigsByClip(clipId);
+            List<AAPackageConfigSO> configs = GetConfigsByClip(clipId);
             if (configs.Count == 0)
             {
-                onDone?.Invoke(false, $"登记表里没有 clip '{clipId}' 的任何包（见 docs/design/12；先跑菜单 WSU3/Pack 打一次 AB 包）");
+                onDone?.Invoke(false, $"登记表里没有 clip '{clipId}' 的任何包（见 docs/design/12；先跑菜单 WSU3/Pack 打一次 AA 包）");
                 yield break;
             }
 
             Busy = true;
+
+            AAPackageConfigSO shared = GetSharedConfig();
+            if (shared != null)
+            {
+                bool sharedOk = false;
+                yield return LoadAssetRoutine<UnityEngine.Object>(shared, asset => sharedOk = asset != null);
+                if (!sharedOk)
+                {
+                    Busy = false;
+                    onDone?.Invoke(false, $"共享材质包装载失败：{shared.id}（每个内容包都依赖它，先修它）");
+                    yield break;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"{LogTag} 登记表里没有共享材质包（address={ContentNaming.SharedAddress}）—— " +
+                                 "本次只装内容包；若模型出现材质缺失/洋红，先跑一次「WSU3/Pack/一键打 AA 包（全部）」");
+            }
+
             for (int i = 0; i < configs.Count; i++)
             {
-                ABPackageConfigSO config = configs[i];
+                AAPackageConfigSO config = configs[i];
                 bool ok = false;
                 yield return LoadAssetRoutine<UnityEngine.Object>(config, asset => ok = asset != null);
 
@@ -315,85 +336,36 @@ namespace WSU3.Core.Managers.FunctionManager
             }
 
             Busy = false;
-            Debug.Log($"{LogTag} 内容包已装载：{clipId}（{configs.Count} 个包）");
+            Debug.Log($"{LogTag} 内容包已装载：{clipId}（{configs.Count} 个内容包" +
+                      (shared != null ? " + 共享材质包）" : "，无共享包）"));
             onDone?.Invoke(true, null);
         }
 
         // WHY: 缓存必须先清再卸 —— 残留条目会让下一次取用拿到已销毁对象（表现是图片空白 / 材质变粉）。
-        /// <summary>卸载一个 clip：先销毁该包实例 → 失效资源缓存 → 卸 bundle；返回失效的缓存条数。</summary>
+        //      顺序也不能换：先销毁实例，再失效缓存，最后释放 handle（引用计数归零才会真正卸载）。
+        /// <summary>卸载一个 clip：先销毁该包实例 → 失效资源缓存 → 释放 AA handle；返回失效的缓存条数。</summary>
         public int UnloadClip(string clipId)
         {
-            List<ABPackageConfigSO> configs = GetConfigsByClip(clipId);
+            List<AAPackageConfigSO> configs = GetConfigsByClip(clipId);
             if (configs.Count == 0) return 0;
 
-            var bundles = new HashSet<string>();
             int invalidated = 0;
-
-            foreach (ABPackageConfigSO config in configs)
+            foreach (AAPackageConfigSO config in configs)
             {
+                DestroyInstances(config.id);   // 纪律②：卸载前先销毁该包实例，否则留下引用已释放资源的空壳
                 if (InvalidateCache(config.id)) invalidated++;
-                if (!string.IsNullOrEmpty(config.bundleName)) bundles.Add(config.bundleName);
             }
 
-            foreach (string bundle in bundles) UnloadBundle(bundle, true);
-
-            Debug.Log($"{LogTag} 已卸载内容包 {clipId}：失效缓存 {invalidated} 条 / bundle {bundles.Count} 个");
+            // WHY: 共享材质包**不随 clip 卸载** —— 它被多个 clip 共用，跟着某个 clip 走会把别的 clip 的材质一起带掉。
+            //      它常驻到 UnloadAllBundles / OnDespose。
+            Debug.Log($"{LogTag} 已卸载内容包 {clipId}：失效缓存 {invalidated} 条（共享材质包常驻不动）");
             return invalidated;
         }
 
-        // WHY: 空名直接返回 0 —— 否则空串会误命中"所有 bundleName 为空的配置"，把别的包一起卸掉。
-        /// <summary>按 bundle 名卸载（全局包专用，clipId 为空走不了 <see cref="UnloadClip"/>）。</summary>
-        public int UnloadByBundleName(string bundleName)
-        {
-            if (string.IsNullOrEmpty(bundleName)) return 0;
-
-            int invalidated = 0;
-            foreach (KeyValuePair<string, PackageConfigSO> kvp in m_ConfigMap)
-            {
-                var ab = kvp.Value as ABPackageConfigSO;
-                if (ab != null && ab.bundleName == bundleName)
-                {
-                    if (InvalidateCache(ab.id)) invalidated++;
-                }
-            }
-
-            UnloadBundle(bundleName, true);
-
-            Debug.Log($"{LogTag} 已卸载全局包 {bundleName}：失效缓存 {invalidated} 条");
-            return invalidated;
-        }
-
-        /// <summary>卸载单个 AssetBundle；<paramref name="unloadAllLoadedObjects"/> 为真时先销毁该包的存活实例（防变粉）。</summary>
-        public void UnloadBundle(string bundleName, bool unloadAllLoadedObjects = false)
-        {
-            if (string.IsNullOrEmpty(bundleName)) return;
-
-            if (unloadAllLoadedObjects)
-            {
-                foreach (KeyValuePair<string, PackageConfigSO> kvp in m_ConfigMap)
-                {
-                    var ab = kvp.Value as ABPackageConfigSO;
-                    if (ab != null && ab.bundleName == bundleName) DestroyInstances(ab.id);
-                }
-            }
-
-            if (m_BundleCache.TryGetValue(bundleName, out AssetBundle bundle))
-            {
-                if (bundle != null) bundle.Unload(unloadAllLoadedObjects);
-                m_BundleCache.Remove(bundleName);
-            }
-        }
-
-        /// <summary>卸载全部 bundle（连带清缓存与实例）。</summary>
+        /// <summary>卸载全部包（连带清缓存与实例）。</summary>
         public void UnloadAllBundles(bool unloadAllLoadedObjects = false)
         {
             if (unloadAllLoadedObjects) DestroyAllInstances();
-
-            foreach (KeyValuePair<string, AssetBundle> kvp in m_BundleCache)
-            {
-                if (kvp.Value != null) kvp.Value.Unload(unloadAllLoadedObjects);
-            }
-            m_BundleCache.Clear();
 
             foreach (KeyValuePair<string, AsyncOperationHandle> kvp in m_AAAssetHandles)
             {
@@ -404,15 +376,15 @@ namespace WSU3.Core.Managers.FunctionManager
             m_AssetCache.Clear();
         }
 
-        /// <summary>清空资源缓存（不卸 bundle）。</summary>
+        /// <summary>清空资源缓存（不释放 handle）。</summary>
         public void ClearAssetCache()
         {
             m_AssetCache.Clear();
         }
 
-        // ── 统一取件入口（三条链路）────────────────────────────────────────
+        // ── 统一取件入口（两条链路）────────────────────────────────────────
 
-        // WHY: 同步取件只服务"已装好的 AB 缓存"与"内置 Resources" —— AA 的取件天生异步，
+        // WHY: 同步取件只服务"已装好的缓存"与"内置 Resources" —— AA 的取件天生异步，
         //      在这里同步返回只会给出"看起来成功、其实是 null"的结果，故明确报错让调用方改走异步入口。
         /// <summary>同步取件：命中缓存 / 内置资源直接返回，否则返回 null 并说明该走异步入口。</summary>
         public T LoadAsset<T>(string packageId) where T : UnityEngine.Object
@@ -431,20 +403,11 @@ namespace WSU3.Core.Managers.FunctionManager
                 return LoadFromDefault<T>(packageId, config.GetLoadKey());
             }
 
-            if (config.PackageType == PackageType.AB && config is ABPackageConfigSO ab &&
-                m_BundleCache.TryGetValue(ab.bundleName, out AssetBundle bundle) && bundle != null)
-            {
-                // 包已下载：Bundle 内的取件本身是同步的，这里可以安全地直接给
-                T asset = bundle.LoadAsset<T>(ab.assetPath);
-                if (asset != null) m_AssetCache[packageId] = asset;
-                return asset;
-            }
-
-            Debug.LogError($"{LogTag} 包 {packageId} 尚未装载（或走 AA 链路），同步取件不可用；请改用 LoadAssetAsync / LoadClipRoutine");
+            Debug.LogError($"{LogTag} 包 {packageId} 尚未装载（AA 链路一律异步），同步取件不可用；请改用 LoadAssetAsync / LoadClipRoutine");
             return null;
         }
 
-        /// <summary>异步取件（三条链路统一入口），完成回调为 null 表示失败。</summary>
+        /// <summary>异步取件（两条链路统一入口），完成回调为 null 表示失败。</summary>
         public void LoadAssetAsync<T>(string packageId, Action<T> onLoaded) where T : UnityEngine.Object
         {
             if (!m_ConfigMap.TryGetValue(packageId ?? string.Empty, out PackageConfigSO config))
@@ -489,10 +452,6 @@ namespace WSU3.Core.Managers.FunctionManager
                     yield return LoadFromAA<T>(config.id, config.GetLoadKey(), onLoaded);
                     break;
 
-                case PackageType.AB:
-                    yield return LoadFromAB<T>(config.id, (ABPackageConfigSO)config, onLoaded);
-                    break;
-
                 default:
                     onLoaded?.Invoke(LoadFromDefault<T>(config.id, config.GetLoadKey()));
                     break;
@@ -524,7 +483,7 @@ namespace WSU3.Core.Managers.FunctionManager
         // ── 实例化（预制体 → GameObject，与资源加载同一条包管线）────────────
 
         // WHY: 只用 Object.Instantiate，不用 Addressables.InstantiateAsync ——
-        //      生命周期归包管（纪律②）、对象池要能自由 Destroy 复用、三条链路口径一致。
+        //      生命周期归包管（纪律②）、对象池要能自由 Destroy 复用、两条链路口径一致。
         /// <summary>由已加载的预制体实例化并登记包归属。</summary>
         public GameObject InstantiatePrefab(GameObject prefab, string packageId, Transform parent = null)
         {
@@ -606,8 +565,10 @@ namespace WSU3.Core.Managers.FunctionManager
             return count;
         }
 
-        // ── 三条链路的实现 ────────────────────────────────────────────────
+        // ── 两条链路的实现 ────────────────────────────────────────────────
 
+        // WHY: AA 取件的失败日志必须带 OperationException —— 只报"失败"时排查只能靠猜
+        //      （AB 时代吃过这个亏：`request.error` 是空串，日志退化成一句没有原因的 `（ ）`）。
         private IEnumerator LoadFromAA<T>(string cacheKey, string address, Action<T> onLoaded) where T : UnityEngine.Object
         {
             if (string.IsNullOrEmpty(address))
@@ -628,86 +589,9 @@ namespace WSU3.Core.Managers.FunctionManager
                 yield break;
             }
 
-            Debug.LogError($"{LogTag} AA 加载失败：{address}（{handle.OperationException}）");
+            Debug.LogError($"{LogTag} AA 加载失败：{address}（status={handle.Status}, err={handle.OperationException}）" +
+                           " —— 常见原因：登记表里 address 与实际注册的地址不一致 / 没跑过「一键打 AA 包」/ catalog 未随产物发布");
             onLoaded?.Invoke(null);
-        }
-
-        private IEnumerator LoadFromAB<T>(string cacheKey, ABPackageConfigSO config, Action<T> onLoaded) where T : UnityEngine.Object
-        {
-            if (string.IsNullOrEmpty(config.bundleName))
-            {
-                Debug.LogError($"{LogTag} AB 配置缺少 bundleName：{config.id}");
-                onLoaded?.Invoke(null);
-                yield break;
-            }
-
-            if (!m_BundleCache.TryGetValue(config.bundleName, out AssetBundle bundle) || bundle == null)
-            {
-                string url = GetBundleUrl(config.bundleName);
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-                // WHY（WebGL 专用分支）：**不用** `UnityWebRequestAssetBundle.GetAssetBundle`。
-                //   它在 WebGL 上走"IndexedDB 缓存 + DownloadHandlerAssetBundle"这条路，缓存键就是 URL ——
-                //   同一个地址换过几次包之后会命中旧条目而加载失败，而且 `request.error` 可能是**空串**。
-                //   2026-10-14 的现场就是一句 `AB 下载失败：Content/clip_contactor ← http://…（）`，连原因都没有；
-                //   而同一时刻的探针是：HTTP 200 / Range 206 / Content-Length 与工程里的包逐字节一致，
-                //   把那些字节下回来在编辑器里也能解成 UnityFS（资产名与预制体逐级可读）。
-                //   ⇒ 坏的是这条缓存路，不是包、也不是服务器。改成"普通 GET + LoadFromMemoryAsync"：
-                //   不碰任何缓存，字节到手直接解包（这条在编辑器里对同一份字节实测是通的）。
-                using (UnityWebRequest request = UnityWebRequest.Get(url))
-                {
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        Debug.LogError($"{LogTag} AB 下载失败：{config.bundleName} ← {url}" +
-                                       $"（result={request.result}, http={request.responseCode}, err={request.error}）");
-                        onLoaded?.Invoke(null);
-                        yield break;
-                    }
-
-                    AssetBundleCreateRequest create = AssetBundle.LoadFromMemoryAsync(request.downloadHandler.data);
-                    yield return create;
-                    bundle = create.assetBundle;
-                }
-#else
-                using (UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(url))
-                {
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        // WHY: 把 result / http 码也打出来 —— 只打 `request.error` 时，某些失败会给**空串**，
-                        //      日志就退化成一句没有原因的 `（ ）`，排查时只能靠猜（2026-10-14 踩过）。
-                        Debug.LogError($"{LogTag} AB 下载失败：{config.bundleName} ← {url}" +
-                                       $"（result={request.result}, http={request.responseCode}, err={request.error}）");
-                        onLoaded?.Invoke(null);
-                        yield break;
-                    }
-
-                    bundle = DownloadHandlerAssetBundle.GetContent(request);
-                }
-#endif
-
-                if (bundle == null)
-                {
-                    // WHY: 下载"成功"但解不出 Bundle，最常见的原因是包里没有资源被分配 / 打包目标平台与当前运行平台不一致
-                    Debug.LogError($"{LogTag} AB 解包失败：{config.bundleName}（{url}）—— 检查该包是否真的打过、" +
-                                   "以及打包时的目标平台与当前运行平台是否一致");
-                    onLoaded?.Invoke(null);
-                    yield break;
-                }
-
-                m_BundleCache[config.bundleName] = bundle;
-            }
-
-            AssetBundleRequest request2 = bundle.LoadAssetAsync<T>(config.assetPath);
-            yield return request2;
-
-            T asset = request2.asset as T;
-            if (asset != null) m_AssetCache[cacheKey] = asset;
-
-            onLoaded?.Invoke(asset);
         }
 
         private T LoadFromDefault<T>(string cacheKey, string loadKey) where T : UnityEngine.Object
@@ -729,7 +613,7 @@ namespace WSU3.Core.Managers.FunctionManager
             if (db == null)
             {
                 Debug.LogError($"{LogTag} 读不到包登记表 Resources/{PackageDbResourcePath}.asset —— " +
-                               "所有资源包都会装载失败。先跑菜单 WSU3/Pack/一键打 AB 包（全部）生成它。");
+                               "所有资源包都会装载失败。先跑菜单 WSU3/Pack/一键打 AA 包（全部）生成它。");
                 return;
             }
 
@@ -786,28 +670,6 @@ namespace WSU3.Core.Managers.FunctionManager
             if (dead == null) return;
 
             for (int i = 0; i < dead.Count; i++) m_InstanceMap.Remove(dead[i]);
-        }
-
-        /// <summary>bundle 的取件 URL（纪律③④的落点）。</summary>
-        public static string GetBundleUrl(string bundleName)
-        {
-            if (string.IsNullOrEmpty(bundleName)) return null;
-
-            // WHY: Unity 打包只小写 bundle 文件名、目录保持原样；不跟着小写会在 Linux / Android / WebGL 上找不到文件（纪律④）
-            string normalized = bundleName;
-            int lastSlash = normalized.LastIndexOf('/');
-            normalized = lastSlash >= 0
-                ? normalized.Substring(0, lastSlash + 1) + normalized.Substring(lastSlash + 1).ToLowerInvariant()
-                : normalized.ToLowerInvariant();
-
-            string path = System.IO.Path.Combine(Application.streamingAssetsPath, normalized);
-#if UNITY_WEBGL && !UNITY_EDITOR
-            // WHY: WebGL 下 StreamingAssets 就是 HTTP 路径，直接拼 URL，不能加 file:// 前缀（纪律③）
-            return path.Replace("\\", "/");
-#else
-            // WHY: 本地必须用 Uri 转义成 file:// URL，否则工程路径含空格 / 中文时加载失败
-            return new Uri(path).AbsoluteUri;
-#endif
         }
     }
 }

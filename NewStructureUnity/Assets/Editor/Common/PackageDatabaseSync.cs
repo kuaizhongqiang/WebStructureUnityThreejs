@@ -13,7 +13,7 @@ namespace WSU3.Editor.Common
     public static class PackageDatabaseSync
     {
         /// <summary>同步主清单：全量 <c>AutoCollect</c> + 本次产出兜底补入（AutoCollect 可能漏收）；会写盘，返回同步后的条数。</summary>
-        public static int Sync(string dbAssetPath, IEnumerable<ABPackageConfigSO> justGenerated, string logTag)
+        public static int Sync(string dbAssetPath, IEnumerable<AAPackageConfigSO> justGenerated, string logTag)
         {
             PackageDatabaseSO db = EditorAssetUtil.LoadOrCreateAsset<PackageDatabaseSO>(dbAssetPath, logTag, "已创建包清单");
             if (db == null)
@@ -27,7 +27,7 @@ namespace WSU3.Editor.Common
             int added = 0;
             if (justGenerated != null)
             {
-                foreach (ABPackageConfigSO config in justGenerated)
+                foreach (AAPackageConfigSO config in justGenerated)
                 {
                     // WHY: config == null 是隐式保护，别去掉 —— 上游自检删掉坏资产后，列表里仍持有被删对象的引用
                     if (config == null || string.IsNullOrEmpty(config.id) || db.FindById(config.id) != null) continue;
@@ -85,14 +85,14 @@ namespace WSU3.Editor.Common
                     if (!present.Contains(id)) audit.Missing.Add(id);
             }
 
-            // WHY: 反向残留只看"内容包"（AB 且 clipId 非空）—— 全局包不属于内容流水线的产出，
+            // WHY: 反向残留只看"内容包"（AA 且 clipId 非空）—— 全局包不属于内容流水线的产出，
             //      一律报出只会淹没有效信息。
             foreach (PackageConfigSO package in db.packages)
             {
-                var ab = package as ABPackageConfigSO;
-                if (ab == null || string.IsNullOrEmpty(ab.id) || string.IsNullOrEmpty(ab.clipId)) continue;
-                if (expectedIds != null && expectedIds.Contains(ab.id)) continue;
-                audit.Residue.Add(ab.id);
+                var aa = package as AAPackageConfigSO;
+                if (aa == null || string.IsNullOrEmpty(aa.id) || string.IsNullOrEmpty(aa.clipId)) continue;
+                if (expectedIds != null && expectedIds.Contains(aa.id)) continue;
+                audit.Residue.Add(aa.id);
             }
 
             audit.Missing.Sort(StringComparer.Ordinal);

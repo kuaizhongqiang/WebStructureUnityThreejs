@@ -8,5 +8,23 @@ namespace WSU3.Core.Interactive
     {
         [SerializeField] string objName;
         [SerializeField] string objName_en;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            HighlightInit();
+        }
+
+        public override void InvokeEnter()
+        {
+            base.InvokeEnter();
+            OnHighlightChanged(true);
+        }
+
+        public override void InvokeExit()
+        {
+            base.InvokeExit();
+            OnHighlightChanged(false);
+        }
     }
 }

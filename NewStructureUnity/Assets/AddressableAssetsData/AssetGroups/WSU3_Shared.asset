@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: WSU3_Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: WSU3_Shared
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 143714253ea1520449b0a61473405119
+  m_SerializeEntries:
+  - m_GUID: 08699f2977c99fb43a5f95c354201268
+    m_Address: shared_material/CombinationSwitch
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 13bf4cb5ef418e3448c28913fecc9c39
+    m_Address: shared_material/SpeedRelay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ec7ff767d48f3e4ab795ab5e7110f4e
+    m_Address: shared_material/CircuitBreaker_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 37a283ce8e8e0cb458d8c6a48927069d
+    m_Address: shared_material/ThermalOerloadRelay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3c83351ec31f9da4b92c9aef00967795
+    m_Address: shared_material/CeramicPlugInFse_Metal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 46add3433960d0b42ab0b07293b7f89a
+    m_Address: shared_material/CombinationSwitch_Metal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 47c74be84c7f0fd4ab82b49fadebd343
+    m_Address: shared_material/TimeRelayMap
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4f41e75f6b36f9448aa002f830c692f3
+    m_Address: shared_material/CombinationSwitch2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e5d39c1cbcd274469b93705c6629ead
+    m_Address: shared_material/SpeedRela_Metal
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 655d6656bca31b54da543ae44f8f7721
+    m_Address: shared_material/ThermalOerloadRelay_2
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65d23b1c5623b0c4091f2a65fec01085
+    m_Address: shared_material/CircuitBreaker
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 664dabf3afc1e9543a6b17b9fc794d15
+    m_Address: shared_material/Alpha
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b5277cf7304cf3b42a8e481544c43e81
+    m_Address: shared_material/TimeRelay
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b7ffac3b92a382447b7330604d512c0d
+    m_Address: shared_model_materials
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c5efdb673e591d24ca207d7613aaf0c8
+    m_Address: shared_material/SpeedRelay_Coat
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9b288e24cd8d6240ae47025253b16af
+    m_Address: shared_material/Glass
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ea379ad7f42c9694cbb5e9619e6a25af
+    m_Address: shared_material/CeramicPlugInFse
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eeec2ecad2590104c97abd8d4598933b
+    m_Address: shared_material/MasterControlAppliances
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - 
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 421f7316ea093514eafe7d5fb3be8295, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: c10a098210726514385dd67eb3fea904, type: 2}
+    - {fileID: 11400000, guid: 05bdbcc24d9908540bf882c303d48ec1, type: 2}

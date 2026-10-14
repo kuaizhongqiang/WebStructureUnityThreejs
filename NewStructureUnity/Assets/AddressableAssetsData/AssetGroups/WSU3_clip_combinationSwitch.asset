@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: WSU3_clip_combinationSwitch
+  m_EditorClassIdentifier: 
+  m_GroupName: WSU3_clip_combinationSwitch
+  m_Data:
+    m_SerializedData: []
+  m_GUID: acd9016a8421c1c4bb08acb359cb6bd5
+  m_SerializeEntries:
+  - m_GUID: 546df841ada024040a25e2922b69caaf
+    m_Address: combinationSwitch_structure_model
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - clip_combinationSwitch
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 421f7316ea093514eafe7d5fb3be8295, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 051acc8fd39d2704a9d9e3f29f99d1b6, type: 2}
+    - {fileID: 11400000, guid: 645990f8272ec6241a355adf024f998f, type: 2}

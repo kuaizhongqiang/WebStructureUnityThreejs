@@ -156,6 +156,16 @@ namespace WSU3.Editor
                 {
                     errors.Add($"{label} 的 clip '{slot.clip.name}' 不在 {slot.animation.name} 的 Animations 列表里，运行时会跳过。");
                 }
+
+                // WHY（2026-10-14 显隐改由两张表管之后新增）：隐藏的物体播不了动画（Legacy Animation 不推进），
+                //   而"播完"判据是 isPlaying ⇒ 被隐藏的槽位会让这一步**瞬间算播完**，且不报错。
+                //   这里提前说清楚：要播的物体必须被本步骤的显示表（或它的某个祖先）带成可见。
+                if (!IsRevealedByActiveList(condition, slot.animation.gameObject))
+                {
+                    warnings.Add(
+                        $"{label} 的物体 '{slot.animation.gameObject.name}' 不在显示表里（也没有祖先在显示表里）—— " +
+                        "它在这一步是隐藏的，动画不会播。显隐一律由显示表/隐藏表负责。");
+                }
             }
 
             // ③ 层级：StepHandler 必须挂在 ProcessingHandler 下面（收集只看这一层）
@@ -182,6 +192,23 @@ namespace WSU3.Editor
             for (int i = 0; i < objects.Count; i++)
             {
                 if (objects[i] == target) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 该物体会不会被本步骤的显示表带成可见：它自己在表里，或它的某个祖先在表里
+        /// （`SetActive(true)` 作用在祖先上时，后代靠 `activeInHierarchy` 一起可见）。
+        /// </summary>
+        private static bool IsRevealedByActiveList(ConditionBase condition, GameObject target)
+        {
+            if (target == null) return false;
+
+            Transform current = target.transform;
+            while (current != null)
+            {
+                if (ContainsReference(condition.ActiveObjects, current.gameObject)) return true;
+                current = current.parent;
             }
             return false;
         }
