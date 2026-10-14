@@ -128,15 +128,18 @@ NewStructureUnity/Assets/Models/_shared/…          # 多器件共用的贴图�
 NewStructureUnity/Assets/Sprites/Content/<器件>/    # 原理图（供 Unity）★ 不进 git
 web/public/content/sprites/<器件>/                 # 同一批原理图（供 Web，小，进 git）
 content/assets/three/<器件>/<名>.glb               # Blender 转出的 GLB（Three 侧）★ 不进 git
+content/assets/video/<videoName>.mp4               # 原理页讲解视频（DEC-99）★ 不进 git
 content/asset-import-report.json                   # 搬运清单（来源 / 目标 / 字节 / sha256）★ 进 git
 content/asset-convert-report.json                  # 转换清单（三角面 / 贴图 / 未映射项）★ 进 git
+content/asset-video-report.json                    # 视频搬运清单（来源 / 目标 / 字节 / sha256）★ 进 git
 ```
 
-两件工具（都可重跑，幂等）：
+三件工具（都可重跑，幂等）：
 
 | 脚本 | 作用 |
 |---|---|
 | `tools/pipeline/import-adopted-assets.mjs` | 按**内容数据**决定搬什么：`prefabKey` → 包配置 → prefab → GUID 依赖闭包取 FBX + 贴图；`images[]` → 原理图。**只读来源工程** |
+| `tools/pipeline/import-principle-videos.mjs` | 按**内容数据**的 `principleStructs[].videoName` 搬讲解视频（DEC-99）。**与上一条分开**：那条链服务两条线共用的资产（带 `.meta`、过 Blender、有"单图 ≥10 MB 剔除"规则），视频只服务 Web 侧且单段最大 30 MB，套用那条剔除规则会把视频全剔掉 |
 | `tools/pipeline/fbx-to-glb.mjs` + `blender-fbx-to-glb.py` | 每个模型一个 `blender --background` 进程转 GLB，自带"清掉 FBX 里的失效贴图引用、按文件名重接 BaseColor/Normal" |
 
 两条从执行中学到的规矩：
@@ -188,6 +191,7 @@ content/asset-convert-report.json                  # 转换清单（三角面 / 
 |---|---|---|---|
 | Unity 侧源资产（FBX / 贴图 / 预制体） | `NewStructureUnity/Assets/Models/**` | **Plastic**（Unity 侧渠道） | **忽略**（DEC-57；Unity 要导入就必须放在自己的 `Assets/` 下） |
 | Three.js 侧资产（glTF/GLB） | `content/assets/three/**` | git 仓库（不进库） | **忽略**；构建前由流水线拷进 `web/dist/assets/three/` |
+| 原理页讲解视频（mp4，DEC-99） | `content/assets/video/**` | git 仓库（不进库） | **忽略**（单段最大 30.57 MB，远超 10 MB 门禁）；构建时拷进 `web/dist/assets/video/`，并附 `_meta/index.json` 清单 |
 
 > 「`content/assets/unity/`」这个早期设想**作废** —— 那会让同一份资产在仓库里出现两次。
 

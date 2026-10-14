@@ -103,6 +103,9 @@ async function buildReleaseManifest() {
   // 三维资产（DEC-98 / 原 P1-5）：随包发布的 `assets/three/**`。
   // 这一行能直接回答"这个包里到底有没有模型"——没有它的包，Info 页只会显示"本项目没有三维模型"。
   const assetFiles = webFiles.filter((file) => file.startsWith('assets/three/'))
+  // 原理视频（DEC-99）：`assets/video/**`（含 `_meta/index.json` 清单）。
+  // 同理：没有它，原理页只会显示"讲解视频未包含在本次发布里"。
+  const videoFiles = webFiles.filter((file) => file.startsWith('assets/video/'))
 
   let unity = { included: false, builds: [], reason: '本机没有 Unity 暂存产物' }
   if (existsSync(join(unityStage, 'manifest.json'))) {
@@ -146,6 +149,8 @@ async function buildReleaseManifest() {
       data: contentData,
       // DEC-98：三维资产与元数据表（数量 + 字节）
       assets: { files: assetFiles.length, bytes: await dirBytes(distRoot, assetFiles) },
+      // DEC-99：原理视频（数量 + 字节）。单独一项，好让"包体里视频占多少"一眼可见（包体核算见 TODO D-10）
+      video: { files: videoFiles.length, bytes: await dirBytes(distRoot, videoFiles) },
     },
     unity,
     // 服务端约定：把 DEC-22 的"MIME/压缩/缓存清单"写进产物，部署方照抄
@@ -160,6 +165,9 @@ async function buildReleaseManifest() {
         // Three 侧资产（DEC-98）
         '.glb': 'model/gltf-binary',
         '.exr': 'image/x-exr',
+        // 原理视频（DEC-99）：MIME 必须写对，且服务端要支持 Range（拖进度条）
+        '.mp4': 'video/mp4',
+        '.webm': 'video/webm',
       },
       precompressed: ['br', 'gzip'],
       cache: { fingerprinted: 'public, max-age=31536000, immutable', htmlAndManifest: 'no-cache' },
@@ -181,6 +189,10 @@ function summary(manifest, exePath) {
   const assets = manifest.content.assets
   console.log(
     `三维资产：   ${assets && assets.files > 0 ? `${assets.files} 个文件 / ${mb(assets.bytes)} MB` : '**未包含** —— 相关页面只会显示"本项目没有三维模型"'}`,
+  )
+  const video = manifest.content.video
+  console.log(
+    `原理视频：   ${video && video.files > 0 ? `${video.files} 个文件 / ${mb(video.bytes)} MB` : '**未包含** —— 原理页只会显示"讲解视频未包含在本次发布里"'}`,
   )
   if (manifest.unity.included) {
     for (const build of manifest.unity.builds) {

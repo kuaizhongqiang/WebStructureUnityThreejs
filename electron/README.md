@@ -31,8 +31,13 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 [shell]   页面标题： 虚拟仿真教学平台
 [shell]   Vue 已挂载： 是
 [shell]   预加载桥 window.wsu3Shell： isDesktop=true electron=40.x.x
+[shell] 原理页：phase=ready 段数=1 列表=无（行数 0） 播放器=1920x1080 81s readyState=4 右栏=原理说明
 [shell] 冒烟通过。
 ```
+
+取证分**四段**（都在**打包产物**上跑，不是 dev server）：① 挂载与预加载桥 → ② Unity 类任务页（挂了 / 还是"产物未包含"）→
+③ Info 页的三维区（模型真的画出三角面、材质解算零错误）→ ④ **原理页的讲解视频**（`readyState ≥ 1` 且尺寸非 0，
+即浏览器真的认这段 mp4 —— 这一段专验静态服务器的 `.mp4` MIME 与 `Range`）。
 
 ## 三个设计取舍（改之前先读）
 
@@ -44,6 +49,12 @@ npm run smoke        # 冒烟：不显示窗口，断言 DOM 与预加载桥后�
 
 `server.js` 的 MIME 表覆盖 Unity 所需的 `.wasm`（必须是 `application/wasm`）与 `.data` / `.unityweb` / `.mem`，
 并支持直接命中预压缩产物（`.br` / `.gz`，附 `Content-Encoding`）。
+
+**视频（2026-10-14 追加，DEC-99）**：加了 `.mp4`（`video/mp4`）与 **`Range` 支持（206）** ——
+MIME 写错 `<video>` 直接拒播，没有 `Range` 则拖不动进度条（Safari 完全不响应，Chrome 退化成整段重下，30 MB 那一段尤其明显）。
+缓存口径也分开了：**带指纹**的资源（vite 的 `/assets/<名>-<hash>.js`、Unity 的 `/Build/**`）仍是 `immutable`；
+**不带指纹**的资产树（`/assets/three/**`、`/assets/video/**` 名字固定）改成 **`no-cache` + `ETag`/`Last-Modified`** ——
+标 `immutable` 会让"换了资产的机器"一直吃旧文件，而 `no-cache` 配校验器既不读旧文件、也不会把视频每次重下一遍。
 
 **Unity 产物是第二个根目录**（URL 前缀 `/unity/**`，打包后在 `resources/unity`），与 Web 产物物理分开 ——
 将来改成按需下载或换 CDN 只换这一个根目录（DEC-23 / DEC-79，细则见
