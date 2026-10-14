@@ -10,6 +10,8 @@
  *   6) **内容层吃到真实数据**（第 7 节）：菜单出 9 个项目、进项目出真实正文、
  *      未启用的槽位显示"本项目未启用"而不是空白、小测验出题目。
  *   7) **站点线跟着数据走**（第 5 节）：只画当前项目启用的任务，换项目即换站。
+ *   8) **启动流程真的点得通**（第 4b 节）：`start → login → menu` 且目录页能退出回登录；
+ *      登录页**不该有输入框**（DEC-101：本期只允许游客）。
  *
  * 说明：三维断言用 `#/task/8`（结构）而不是 `#/task/2`（实验仪器）—— 采纳数据里
  * 接触器启用了结构槽位，"实验仪器"的槽位是 `null`（会正确地显示"本项目未启用"）。
@@ -265,6 +267,45 @@ try {
   )
   check(home.theme === 'dark' || home.theme === 'light', '主题属性已设置', home.theme)
   await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
+
+  // ---------- 4b. 启动流程（DEC-101）：start → login → menu，且目录页能退出回登录 ----------
+  // 判据是**真的点**（不是读路由表）：本期只允许游客，所以登录页**不该有输入框**。
+  await page.click('button.ui-btn--primary') // 「开始实验」
+  await page.waitForTimeout(400)
+  const loginPage = await page.evaluate(() => ({
+    hash: location.hash,
+    text: document.body.innerText,
+    inputs: document.querySelectorAll('input').length,
+    crumb: document.querySelector('.ui-titlebar__crumb')?.textContent?.trim() ?? '',
+  }))
+  check(loginPage.hash === '#/login', '启动流程：开始实验 → 登录页（start → login）', loginPage.hash)
+  check(loginPage.text.includes('以游客身份进入'), '登录页：提供游客入口', loginPage.crumb)
+  check(
+    loginPage.inputs === 0,
+    '登录页：不摆账号 / 密码输入框（DEC-101：本期只允许游客）',
+    `inputs=${loginPage.inputs}`,
+  )
+  await page.screenshot({ path: resolve(artifactsDir, 'login.png'), fullPage: false })
+
+  await page.click('button.ui-btn--primary') // 「以游客身份进入」
+  await page.waitForTimeout(700)
+  const menuAfterLogin = await page.evaluate(() => ({
+    hash: location.hash,
+    tiles: document.querySelectorAll('.ui-tile-grid .ui-tile').length,
+    text: document.body.innerText,
+  }))
+  check(
+    menuAfterLogin.hash === '#/menu',
+    '启动流程：游客进入 → 项目目录（login → menu）',
+    menuAfterLogin.hash,
+  )
+  check(menuAfterLogin.tiles >= 9, '启动流程：登录之后目录照常加载内容数据', `tiles=${menuAfterLogin.tiles}`)
+  check(menuAfterLogin.text.includes('退出'), '项目目录：有「退出」入口（DEC-101）')
+
+  await page.click('button.ui-iconbtn--back') // 「退出」
+  await page.waitForTimeout(400)
+  const afterExit = await page.evaluate(() => location.hash)
+  check(afterExit === '#/login', '项目目录：退出 → 回到登录页', afterExit)
 
   // ---------- 5. 站点线：**只画本项目启用的站**（DEC-100）+ 契约标签 + 技术栈标注 ----------
   // 站点由**内容数据**决定（不再是"契约里 11 个都画"）：接触器只填了

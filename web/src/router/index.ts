@@ -14,7 +14,10 @@ import StartView from '@/views/StartView.vue'
  *      页面不要再自己 set，否则"当前处于哪个场景"会有多个真源。
  *
  * 页面分组对应排版稿：A 组（启动与导航）/ B 组（项目内主页面）/ C 组（任务页）/ D 组（考核与结算）。
- * Phase 1（DEC-75）做实：start / menu / task / debug；其余先给外壳就绪的占位页。
+ * Phase 1（DEC-75）做实：start / login / menu / task / debug；其余先给外壳就绪的占位页。
+ *
+ * **启动流程（DEC-101）**：`start → login → menu` —— 登录页是流程中的一站，不是可选旁路；
+ * 它只提供游客入口（本期无后端、无登录校验），菜单页有"退出"回到这里。
  */
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -31,11 +34,7 @@ export const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/PlaceholderView.vue'),
-      props: {
-        title: '登录',
-        desc: '账号 / 学号 + 密码 + 身份下拉（游客可直接进入，DEC-04）。本期无后端，登录仅作界面占位；Phase 3 按排版稿 A2 交付。',
-      },
+      component: () => import('@/views/LoginView.vue'),
       meta: { scene: SceneState.Login },
     },
     {

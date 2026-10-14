@@ -1,6 +1,6 @@
 # docs/ 索引
 
-> 读者：AI 与人｜状态：2026-10-14 **v4（与仓库现状同步：DEC-01~DEC-100 / 各轮问答均已关闭 / "计划·待办·记录"三分）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
+> 读者：AI 与人｜状态：2026-10-14 **v5（与仓库现状同步：DEC-01~DEC-101 / 各轮问答均已关闭 / "计划·待办·记录"三分）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
 >
 > **"接下来做什么 / 还剩什么 / 做完了什么"三分**（2026-10-13 拆开，此前混在 `PLAN.md` 里）：
 > `PLAN.md`（只写计划）· `TODO.md`（只写待办）· `RECORD.md`（只写记录与证据）。
@@ -9,7 +9,7 @@
 
 | 你是什么 | 顺序 |
 |---|---|
-| **人（决策者）** | `DECISIONS.md`（**已定的 99 条**；轮次与关闭状态以它为准，不在别处重复维护）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
+| **人（决策者）** | `DECISIONS.md`（**已定的 101 条**；轮次与关闭状态以它为准，不在别处重复维护）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
 | **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` / `design/` |
 
 ## 文件清单
@@ -25,7 +25,7 @@
 
 | 文件 | 内容 | 状态 |
 |---|---|---|
-| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：**DEC-01 ~ DEC-100**，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。章节：§1~§9 第一轮、§10~§13 第二轮、§14~§15 第三轮、§16 第四轮、第五轮追加、§17 第六轮、§18~§20 第七轮（步骤系统 / 模型检视页 / Info 页与原理页 / 站点线按数据画站）。**只增不改** | v1~v4 生效 |
+| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：**DEC-01 ~ DEC-101**，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。章节：§1~§9 第一轮、§10~§13 第二轮、§14~§15 第三轮、§16 第四轮、第五轮追加、§17 第六轮、§18~§20 第七轮（步骤系统 / 模型检视页 / Info 页与原理页 / 站点线按数据画站 / **登录页进主流程**）。**只增不改** | v1~v5 生效 |
 | `OPEN-QUESTIONS.md` | 第一轮问题清单（32 题）**原文保留**，答案已全部固化到 `DECISIONS.md` | v1 已关闭 |
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
 | `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |

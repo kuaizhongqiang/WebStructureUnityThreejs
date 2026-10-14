@@ -62,6 +62,16 @@ function enter(card: MenuCard): void {
   })
 }
 
+/**
+ * 退出：回登录页（DEC-101 的流程 = `start → login → menu`）。
+ *
+ * 游客模式**没有会话要清**，所以这里只做页面流转 —— 本机进度存档（DEC-54）**保留**，
+ * 再次以游客进入时进度还在。真正的"清档"是 `progress.reset()`，不该藏在退出按钮里。
+ */
+function exitToLogin(): void {
+  void router.push({ name: 'login' })
+}
+
 onMounted(() => void content.ensureCatalog())
 </script>
 
@@ -70,6 +80,7 @@ onMounted(() => void content.ensureCatalog())
     crumb="项目目录"
     :badges="[`已完成 ${totals.done} / ${totals.total}`, '游客']"
     status-left="[ 就绪 ] 选择项目后进入任务流"
+    exit
     :status-right="
       content.source === 'data'
         ? `内容数据已加载 · ${cards.length} 个项目`
@@ -77,6 +88,7 @@ onMounted(() => void content.ensureCatalog())
           ? '内容数据未就位 · 正在用兜底演示内容'
           : '正在读取内容数据…'
     "
+    @exit="exitToLogin"
   >
     <div class="app-task">
       <div class="ui-panel" style="flex: 1; min-height: 0">

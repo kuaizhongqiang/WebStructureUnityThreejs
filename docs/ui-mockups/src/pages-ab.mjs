@@ -64,57 +64,26 @@ export const pagesAB = [
     crumb: '登录',
     body: `
       <div style="display:flex;height:100%">
-        <!-- 左：三维展示区。产品里是 Three.js 画布（DEC-06：简单三维 → Three.js）；
-             排版稿按全站惯例用 --grid 作三维空间底，并挂视口标识，避免被误认成背景底纹。 -->
+        <!-- 左：**品牌展示区**（DEC-101）。原来标的是"三维展示区"，但产品本期没有可展示的模型，
+             按"不假装有"的纪律撤掉视口提示 —— 网格底只表示"这一侧是视觉区"，不再承诺三维。 -->
         <div style="flex:1;position:relative;background:var(--grid);background-color:var(--bg-0);border-right:var(--hairline) solid var(--line-1)">
-          <span class="ui-viewport__hint">Three.js · 三维展示区（设备旋转）</span>
           <div style="position:absolute;left:56px;bottom:56px;max-width:520px">
             <div class="ui-h2">欢迎使用虚拟仿真教学平台</div>
-            <div class="ui-muted ui-small" style="margin-top:8px;line-height:1.8">登录后可保存学习进度与考核成绩；本期也可以游客身份直接体验全部实验。</div>
+            <div class="ui-muted ui-small" style="margin-top:8px;line-height:1.8">本期以游客方式使用：不需要账号，进度与考核成绩保存在本机，不上传任何数据。</div>
           </div>
           <div class="ui-company" style="bottom:24px;top:auto"><span class="ui-company__logo">示</span>示范教育科技有限公司</div>
         </div>
         <div style="width:680px;padding:0 96px;display:flex;flex-direction:column;justify-content:center;gap:18px">
           <div class="ui-h2">登录</div>
-          <div class="ui-field">
-            <div class="ui-field__label">账号 / 学号</div>
-            <input class="ui-input" placeholder="请输入账号或学号">
-          </div>
-          <div class="ui-field">
-            <div class="ui-field__label">密码</div>
-            <input class="ui-input" type="password" placeholder="请输入密码">
-          </div>
-          <div class="ui-field">
-            <div class="ui-field__label">身份</div>
-            <!-- 自定义下拉：原生 <select> 的展开列表由浏览器绘制、无法套样式，所以改用触发器 + .ui-menu 浮层 -->
-            <div class="ui-selectbox">
-              <button class="ui-selectbox__trigger" type="button" aria-haspopup="listbox" aria-expanded="true">
-                <span>学生</span><span class="ui-selectbox__chev">${icon('chevron-down', 14)}</span>
-              </button>
-              <div class="ui-menu ui-selectbox__pop" role="listbox" aria-label="选择身份">
-                <div class="ui-menu__group">选择身份</div>
-                <div class="ui-menu__item ui-menu__item--current" role="option" aria-selected="true">学生</div>
-                <div class="ui-menu__item" role="option">教师</div>
-                <div class="ui-menu__item" role="option">管理员</div>
-                <div class="ui-menu__sep"></div>
-                <div class="ui-menu__item ui-menu__item--disabled" role="option" aria-disabled="true">其他（暂不支持）</div>
-              </div>
-            </div>
-            <div class="ui-field__hint">对应数据模型的 userType（未知 / 学生 / 教师 / 管理员）</div>
-          </div>
-          <div class="ui-row" style="justify-content:space-between">
-            <label class="ui-check ui-check--on"><span class="ui-check__box">${icon('check', 12)}</span>记住我</label>
-            <span class="ui-muted ui-small">忘记密码？</span>
-          </div>
-          <button class="ui-btn ui-btn--primary ui-btn--block">登录</button>
-          <button class="ui-btn ui-btn--ghost ui-btn--block">以游客身份进入</button>
+          <div class="ui-muted ui-small">本期无后端，只提供游客入口（DEC-04）。</div>
+          <button class="ui-btn ui-btn--primary ui-btn--block">以游客身份进入</button>
           <div class="ui-alert ui-alert--info">
-            <span class="u${icon('info', 14)}-alert__icon">i</span>
-            <span>本期无后端（DEC-21）：登录仅作界面占位；进度与成绩保存在本机一个 JSON 里（DEC-54）。</span>
+            <span class="ui-alert__icon">i</span>
+            <span>进度与成绩保存在本机一个 JSON 里（DEC-54）；接入后端时界面不变。</span>
           </div>
         </div>
       </div>
-      <div class="note">A2 · <b>登录页</b> · 左三维展示区 + 右表单；身份下拉为<b>展开态</b>演示（浮层会盖住下方内容，真实下拉就是这样）</div>`,
+      <div class="note">A2 · <b>登录页</b> · 只提供<b>游客入口</b>（DEC-101）：本期无后端、无登录校验，所以不摆账号 / 密码 / 身份表单</div>`,
   },
 
   // ------------------------------------------------------------------ A3

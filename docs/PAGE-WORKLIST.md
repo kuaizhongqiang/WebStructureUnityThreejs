@@ -24,7 +24,7 @@
 | # | 页面 | 归属 `SceneState` | 参考来源（已实现可参考） | 要素 | 状态 |
 |---|---|---|---|---|---|
 | A1 | 欢迎/开始页 | `Start` | MCV `StartPanel` ✅ / Sensor `StartPanel` 空壳 | 软件名/中英文/开始按钮 | [ ] |
-| A2 | 登录页 | `Login` | MCV `LoginPanel` ✅ / Sensor `LoginPanel` ✅（流程未接线） | 账号/密码/游客入口/角色下拉 | [ ] |
+| A2 | 登录页 | `Login` | MCV `LoginPanel` ✅ / Sensor `LoginPanel` ✅（流程未接线） | **只提供游客入口 + 左品牌区**（DEC-101：本期无后端、无登录校验，账号/密码/角色下拉不入产品） | [x] 已落地（DEC-101） |
 | A3 | 加载过渡页 | 常驻 | MCV `LoadingPanel` ✅ / Sensor `LoadingPanel` ✅ | 进度条 + 百分比 + 呼吸动效 | [ ] |
 | A4 | 画质/首次设置 | `Start`（首启弹窗） | MCV `RenderQualityPanel` ✅ / Sensor 同名 ✅ | 标清/高清/超清 + 硬件提示 | [ ] |
 | A5 | 菜单/项目列表页 | `Menu` | MCV `MenuPanel` ✅ / Sensor `MenuPanel_Content` ✅ | 项目按钮列表 + 退出 + 去漫游 + 看成绩 | [ ] |

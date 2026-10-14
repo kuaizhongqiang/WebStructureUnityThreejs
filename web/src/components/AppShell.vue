@@ -11,7 +11,7 @@
  * 桌面壳的标题栏高度由 `--shell-caption-h` 预留（见 shell/bridge.ts），浏览器里为 0。
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { ArrowLeft, Maximize, SlidersHorizontal, CircleHelp } from 'lucide-vue-next'
+import { ArrowLeft, LogOut, Maximize, SlidersHorizontal, CircleHelp } from 'lucide-vue-next'
 import RouteBar from './RouteBar.vue'
 import ShellCard from './ShellCard.vue'
 import { TaskType } from '@/contracts'
@@ -26,6 +26,8 @@ const props = withDefaults(
     activeTask?: TaskType | null
     /** 显示"返回目录"等按钮组 */
     actions?: boolean
+    /** 显示"退出"（回到登录页）—— 只有项目目录页用；与 `actions` 各自独立，不共存于同一页 */
+    exit?: boolean
     statusLeft?: string
     statusRight?: string
   }>(),
@@ -35,12 +37,13 @@ const props = withDefaults(
     route: false,
     activeTask: null,
     actions: false,
+    exit: false,
     statusLeft: '[ 就绪 ]',
     statusRight: 'v0.2 · 脚手架',
   },
 )
 
-const emit = defineEmits<{ selectTask: [TaskType]; back: [] }>()
+const emit = defineEmits<{ selectTask: [TaskType]; back: []; exit: [] }>()
 
 /** 窄屏：站点线切成横向滚动（1440 以下浮卡与 11 站无法并排放下） */
 const narrow = ref(false)
@@ -57,11 +60,14 @@ onMounted(() => {
 onBeforeUnmount(() => media?.removeEventListener('change', syncNarrow))
 
 const showRoute = computed(() => props.route)
+const showTopright = computed(() => props.actions || props.exit)
 </script>
 
 <template>
   <div class="app-root">
-    <div class="app-chrome">
+    <!-- 只有右上按钮组、没有站点线时（项目目录页）chrome 里没有东西撑高，
+         绝对定位的按钮组会压到下方面板的标题上 —— 由 CSS 按浮卡高度补一段（见 product.css）。 -->
+    <div class="app-chrome" :class="{ 'app-chrome--topright-only': showTopright && !showRoute }">
       <ShellCard class="app-card" :crumb="crumb" :badges="badges" />
 
       <RouteBar
@@ -71,18 +77,23 @@ const showRoute = computed(() => props.route)
         @select="(type: TaskType) => emit('selectTask', type)"
       />
 
-      <div v-if="actions" class="app-topright">
-        <button class="ui-iconbtn ui-iconbtn--back" @click="emit('back')">
-          <ArrowLeft :size="14" /> 返回目录
-        </button>
-        <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">
-          <Maximize :size="14" />
-        </button>
-        <button class="ui-iconbtn ui-iconbtn--icon" title="画质">
-          <SlidersHorizontal :size="14" />
-        </button>
-        <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">
-          <CircleHelp :size="14" />
+      <div v-if="showTopright" class="app-topright">
+        <template v-if="actions">
+          <button class="ui-iconbtn ui-iconbtn--back" @click="emit('back')">
+            <ArrowLeft :size="14" /> 返回目录
+          </button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">
+            <Maximize :size="14" />
+          </button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">
+            <SlidersHorizontal :size="14" />
+          </button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">
+            <CircleHelp :size="14" />
+          </button>
+        </template>
+        <button v-if="exit" class="ui-iconbtn ui-iconbtn--back" @click="emit('exit')">
+          <LogOut :size="14" /> 退出
         </button>
       </div>
     </div>

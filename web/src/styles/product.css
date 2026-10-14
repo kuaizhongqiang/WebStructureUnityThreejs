@@ -58,6 +58,13 @@
   flex: none;
 }
 
+/* 只有右上按钮组、没有站点线时（项目目录页）：chrome 里没有东西撑高，
+   而按钮组是绝对定位的，会直接压到下方面板的标题栏上 —— 这里按浮卡占的高度预留一段。
+   数值全部来自令牌，改 --shell-gap / --shell-card-h 时这里跟着走。 */
+.app-chrome--topright-only {
+  min-height: calc(var(--shell-gap) + var(--shell-card-h) + var(--sp-3));
+}
+
 .app-card {
   position: absolute;
   top: var(--shell-gap);
@@ -105,6 +112,10 @@
   .app-topright {
     position: static;
     margin: 0 var(--shell-gap);
+  }
+  /* 窄屏上按钮组回到文档流，占位就多余了（否则顶部会多出一条空带） */
+  .app-chrome--topright-only {
+    min-height: 0;
   }
 }
 
@@ -256,6 +267,66 @@
   .app-hero__actions {
     position: static;
     margin-top: var(--sp-5);
+  }
+}
+
+/* ------------------------------------------------ 登录页（A2，DEC-101）*/
+/* 左品牌区 + 右入口栏。右栏是**固定宽的入口栏**（不是 .app-split 那种 380px 侧栏）：
+   这一页只有一个按钮，宽度给足才不像"表单被截断"。窄屏堆叠成一列（与 DEC-18 的移动端口径一致）。 */
+.app-login {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+.app-login__brand {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
+  background: var(--grid);
+  background-color: var(--bg-0);
+  border-right: var(--hairline) solid var(--line-1);
+}
+/* 欢迎语贴底：与右下主按钮"错开"，不和左上浮卡抢视线 */
+.app-login__brand-text {
+  margin-top: auto;
+  max-width: 520px;
+}
+.app-login__company {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-11);
+  color: var(--text-3);
+}
+.app-login__panel {
+  flex: none;
+  width: min(680px, 46vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-7);
+}
+@media (max-width: 1023px) {
+  .app-login {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .app-login__brand {
+    flex: none;
+    min-height: 160px;
+    padding: var(--sp-5) var(--shell-gap);
+    border-right: 0;
+    border-bottom: var(--hairline) solid var(--line-1);
+  }
+  .app-login__panel {
+    width: auto;
+    padding: var(--sp-5) var(--shell-gap);
   }
 }
 

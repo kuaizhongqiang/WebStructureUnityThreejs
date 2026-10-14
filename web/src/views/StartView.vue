@@ -4,6 +4,8 @@
  *
  * 排版稿要素：居中主视觉（大标题 84px + 英文副题 + 一句话）+ 状态徽章 + **右下角主按钮**。
  * 这里只把"右下角"落成流式：桌面贴右下（与左上浮卡形成对角），窄屏回到文档流居中。
+ *
+ * 主按钮进的是**登录页**（DEC-101：流程 = `start → login → menu`），不是直接进菜单。
  */
 import { useRouter } from 'vue-router'
 import AppShell from '@/components/AppShell.vue'
@@ -13,7 +15,7 @@ const router = useRouter()
 const progress = useProgressStore()
 
 function enter(): void {
-  void router.push({ name: 'menu' })
+  void router.push({ name: 'login' })
 }
 </script>
 
