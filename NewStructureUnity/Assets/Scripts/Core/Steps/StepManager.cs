@@ -21,6 +21,11 @@ namespace WSU3.Core.Steps
     ///   ③ **协作式打断**：`NextStep / SkipCurrentStep / CompleteCurrentStep` 都走 `ForceComplete()`，
     ///      让 Waiting 里的等待循环尽快退出，而不是靠轮询硬拽。
     ///
+    /// **三种走法**（前两种是"怎么到达某一步"，第三种是"整条流程怎么跑"，见 <see cref="StepRunMode"/>）：
+    ///   · 一步一步（默认）—— 每个条件阻塞等待交互/条件成立；
+    ///   · 跳步快进 —— `FastForwardStep`：目标之前的步骤 `FastComplete`（定格末帧、不播、不等）；
+    ///   · 动画运行 —— 条件**不等**（跳过 waiting 判断），其余全按流程走，看起来就是动画一路自动执行到最后。
+    ///
     /// 为什么不直接用 `StartCoroutine`：本类的推进是**自驱小泵**（`Stack<IEnumerator>` + 每帧 `MoveNext`），
     /// 与 `TaskFlowManager` 同一套写法。好处有两个：`InputGate.ShouldUpdate` 能直接管住"容器不可见时先别推进"；
     /// 编辑器测试里可以手动 `CoreUpdate()` 一帧帧推，不必等真实帧循环。
@@ -42,6 +47,12 @@ namespace WSU3.Core.Steps
 
         [Tooltip("把每次步骤切换打到 Console（排查流程问题时打开）")]
         [SerializeField] private bool logTransitions = true;
+
+        [Tooltip("步骤运行模式：\n" +
+                 "· StepByStep 一步一步来（默认）：每个条件阻塞等待交互/条件成立；\n" +
+                 "· Animation   动画运行：条件**不等**（跳过 waiting 判断），其余（Prepare / 完成 / 动画 / 事件）全按流程走，\n" +
+                 "              看起来就是动画一步一步自动执行到最后")]
+        [SerializeField] private StepRunMode runMode = StepRunMode.StepByStep;
 
         private readonly List<ProcessingHandler> processes = new List<ProcessingHandler>();
         private readonly Stack<IEnumerator> routines = new Stack<IEnumerator>();
@@ -81,6 +92,60 @@ namespace WSU3.Core.Steps
         {
             get => stepDelaySeconds;
             set => stepDelaySeconds = Mathf.Max(0f, value);
+        }
+
+        /// <summary>
+        /// 步骤运行模式（**公开可改**：其他脚本 / 桥 / Inspector 都能切）。
+        ///
+        /// 与"一步一步"并列的第三种走法（另两种见 <see cref="StepRunMode"/> 的说明：正常推进 vs 跳步快进）。
+        ///
+        /// **切到动画模式时会立刻放行"正在等待的那一步"**：否则界面看着像没生效 ——
+        /// 用户把类型改成动画、画面却还停在"等你点"，而实现上是"等下一次等待口才生效"。
+        /// 放行方式是 <see cref="ConditionBase.AdvanceWithoutWaiting"/>（让它的等待循环下一帧自然退出），
+        /// **不是** `ForceComplete`：这一步是"本来就不必等"，不是"被打断"。
+        /// </summary>
+        public StepRunMode RunMode
+        {
+            get => runMode;
+            set
+            {
+                if (runMode == value) return;
+
+                runMode = value;
+                if (logTransitions)
+                {
+                    Debug.Log($"[Step] 运行模式 → {DescribeRunMode(value)}");
+                }
+
+                if (value == StepRunMode.Animation && IsRunning && !isFinished && currentCondition != null)
+                {
+                    if (logTransitions)
+                    {
+                        Debug.Log($"[Step] 动画运行：正在等待的 {currentStep?.Path} 不再等条件，放行。");
+                    }
+                    currentCondition.AdvanceWithoutWaiting();
+                }
+            }
+        }
+
+        /// <summary>是否处于"动画运行模式"（等价于 <c>RunMode == StepRunMode.Animation</c>）。</summary>
+        public bool IsAnimationMode => runMode == StepRunMode.Animation;
+
+        /// <summary>切到动画运行模式（语义化入口，供桥 / 脚本调用）。</summary>
+        public void EnterAnimationMode()
+        {
+            RunMode = StepRunMode.Animation;
+        }
+
+        /// <summary>切回一步一步模式（语义化入口）。</summary>
+        public void EnterStepByStepMode()
+        {
+            RunMode = StepRunMode.StepByStep;
+        }
+
+        private static string DescribeRunMode(StepRunMode mode)
+        {
+            return mode == StepRunMode.Animation ? "动画运行（条件不等待，按流程走完）" : "一步一步";
         }
 
         /// <summary>执行开始到现在的毫秒数（随 `task:completed` 上报）。</summary>
@@ -555,7 +620,8 @@ namespace WSU3.Core.Steps
             target.SetLifecycle(StepLifecycle.Waiting);
             if (logTransitions)
             {
-                Debug.Log($"[Step] {target.Path} 进入等待（{target.ConditionType}，{target.DisplayName}）。");
+                Debug.Log($"[Step] {target.Path} 进入等待（{target.ConditionType}，{target.DisplayName}）" +
+                          (IsAnimationMode ? "［动画运行：不等条件］" : "") + "。");
             }
             EventBus<StepWaitingEvent>.Publish(
                 new StepWaitingEvent(target, process, step, target.FlatIndex));
@@ -564,6 +630,15 @@ namespace WSU3.Core.Steps
 
             if (currentCondition != null)
             {
+                // WHY（动画运行模式）：**不是**跳过整个 Waiting 阶段，而是"进了 Waiting、只是不等"。
+                //   `Waiting()` 里还有"定格首帧"与"请求提示"，跳过它会让首帧没定格、动画从当前位置乱跳；
+                //   而 `AdvanceWithoutWaiting()` 只是让等待循环立刻退出 —— 显隐 / 动画 / 事件三条路径
+                //   与正常模式完全同源，只有"等不等"这一处不同（正是需求要的"跳过 waiting 判断，其他按流程"）。
+                if (IsAnimationMode)
+                {
+                    currentCondition.AdvanceWithoutWaiting();
+                }
+
                 yield return currentCondition.Waiting();
             }
             else
@@ -740,5 +815,25 @@ namespace WSU3.Core.Steps
         {
             JumpToStep(e.ProcessIndex, e.StepIndex);
         }
+    }
+
+    /// <summary>
+    /// 步骤运行模式：**整条流程怎么跑**（与"一步一步 / 跳步快进"那种"怎么到达某一步"是两件事）。
+    ///
+    /// · <see cref="StepByStep"/> —— 一步一步来（默认）：每个条件阻塞等待交互 / 条件成立。
+    /// · <see cref="Animation"/>    —— 动画运行：条件的 `Waiting` 阶段照走（照样定格首帧、照样发事件、照样播动画），
+    ///   但**不等条件成立**，于是流程自动一路推进到结束，看起来就是"动画一步一步执行到最后"。
+    ///   适合做演示 / 自动播放：不需要学生点，也不用真的走一遍跳步快进。
+    ///
+    /// ⚠️ 动画模式下"点击/答题/连线"这类交互条件不会被满足，因此它们的效果是**动画走到位**，
+    ///   而不是"用户点了才走"。要恢复交互把模式切回 <see cref="StepByStep"/> 即可。
+    /// </summary>
+    public enum StepRunMode
+    {
+        /// <summary>一步一步（默认）。</summary>
+        StepByStep = 0,
+
+        /// <summary>动画运行：条件不等待，其余按流程走。</summary>
+        Animation = 1,
     }
 }

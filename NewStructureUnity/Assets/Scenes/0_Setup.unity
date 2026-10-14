@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7a7d0fa8a18bc74a9b84dd3629ce8c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enabled: 0
+  testEnabled: 1
   taskType: 8
   projectClip: clip_contactor
   allowUrlOverride: 1

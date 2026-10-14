@@ -71,7 +71,9 @@ namespace WSU3.Core.Steps.Conditions
                 yield break;
             }
 
-            while (!forceComplete && !answered)
+            // WHY: 用 ShouldStopWaiting（= 被强制完成 **或** 动画运行模式不等人）而不是裸 forceComplete ——
+            //      内层等待已经认这个判据，外层循环若不认，"动画模式 + 无超时"时会一圈圈重复提问而退不出去。
+            while (!ShouldStopWaiting && !answered)
             {
                 attempts++;
                 state = AskState.Pending;

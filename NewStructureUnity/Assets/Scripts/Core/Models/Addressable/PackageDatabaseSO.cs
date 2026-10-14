@@ -46,8 +46,8 @@ namespace WSU3.Core.Models.Addressable
             var set = new HashSet<string>();
             for (int i = 0; i < packages.Count; i++)
             {
-                var ab = packages[i] as ABPackageConfigSO;
-                if (ab != null && !string.IsNullOrEmpty(ab.clipId)) set.Add(ab.clipId);
+                var aa = packages[i] as AAPackageConfigSO;
+                if (aa != null && !string.IsNullOrEmpty(aa.clipId)) set.Add(aa.clipId);
             }
             return new List<string>(set);
         }
@@ -76,7 +76,6 @@ namespace WSU3.Core.Models.Addressable
 
             AddAssets("t:PackageConfigSO", found);
             AddAssets("t:AAPackageConfigSO", found);
-            AddAssets("t:ABPackageConfigSO", found);
             AddAssets("t:DefaultPackageConfigSO", found);
 
             packages.Clear();

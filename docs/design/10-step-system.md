@@ -257,5 +257,106 @@ SetStep(2, 3)
 ③ **只补空**（手工在 Inspector 里填过的非空字段保留，唯一例外是与来源不符时替换并**告警**）；
 ④ 顺手清掉 `StructureTaskObj` / `InstControlledManager` 的 Missing Script 残留（DEC-104：这两个脚本有意未搬）。
 
-⚠️ **预制体改完要重打 AB 包**（`WSU3/Pack/一键打 AB 包（全部）`）—— 运行期加载的是包里的那份。
+⚠️ **预制体改完要重打内容包**（`WSU3/Pack/一键打 AA 包（全部）`）—— 运行期加载的是包里的那份；
+编辑器 Play 走 AA 的 fast mode（读 AssetDatabase）会**立刻**生效，**真产物不会**（见 `12-resource-packs-and-ab-build.md` §6）。
 报告落 `content/asset-structure-steps-report.json`（逐器件：步数 / 新建 / 变更 / 清的 Missing Script / 补的零件与 clip / 告警）。
+
+## 8 三种走法：一步一步 / 跳步快进 / 动画运行（2026-10-14 晚）
+
+前两种是"**怎么到达某一步**"，第三种是"**整条流程怎么跑**" —— 三者的关系容易混，先分清：
+
+| 走法 | 落点 | 语义 |
+|---|---|---|
+| 一步一步（默认） | `ExecuteStep` + 条件正常等待 | 每个条件阻塞等待交互 / 条件成立 |
+| 跳步快进 | `FastForwardStep`（`Prepare` → `FastComplete`） | 目标**之前**的步骤定格末帧、不播、不等（跳转时用） |
+| **动画运行** | `StepRunMode.Animation` + `AdvanceWithoutWaiting` | 条件**不等**，其余全按流程走 ⇒ 自动一路执行到最后 |
+
+### 8.1 动画运行模式（DEC-121）
+
+```csharp
+public enum StepRunMode { StepByStep = 0, Animation = 1 }   // StepManager 上，与"一步一步"并列
+public StepRunMode RunMode { get; set; }                    // 公开可改（脚本 / Inspector / 将来的桥）
+public bool IsAnimationMode { get; }
+public void EnterAnimationMode();  public void EnterStepByStepMode();
+```
+
+**核心：不是跳过 `Waiting` 阶段，而是"进了 `Waiting`、只是不等"。**
+
+`Waiting()` 里除了等条件，还负责**定格动画首帧**与**请求提示** —— 如果整个阶段跳过，首帧就不定格、
+动画会从当前位置乱跳。所以实现是：
+
+- `ConditionBase.AdvanceWithoutWaiting()`：只让等待循环**立刻退出**，**不碰状态机**；
+- `ExecuteStep` 在 `Waiting()` **之前**调它；
+- ⇒ Prepare / Waiting / Complete / 动画播放 / 事件广播 **全部与正常模式同源**，唯一差别是"等不等"。
+
+**为什么单独开一个入口、不复用 `ForceComplete()`**：后者是"外部把这一步提前结掉"，会置 `IsForceCompleted`
+（诊断要看见）；动画模式是"这一步本来就不等人"，不是被打断 —— 混用会污染诊断，日志也说不清。
+
+**为什么把判据合成 `ShouldStopWaiting`**：原先四个等待循环各自写 `!forceComplete`，新增一种"不等"来源时
+最容易漏改其中一个，症状是"某个条件类型在动画模式下莫名卡住"。现在：
+
+```csharp
+protected bool ShouldStopWaiting => forceComplete || advanceWithoutWaiting;   // 所有等待口统一认它
+```
+
+⚠️ 顺带修掉 `ConditionQuestion` 的一处真实隐患：**内层**等待已认新判据、**外层重问循环**原来只认 `forceComplete`，
+在"动画模式 + 无超时"下会一圈圈重复提问退不出去。
+
+⚠️ **切模式时会立刻放行"正在等待的那一步"**（setter 里对该条件调 `AdvanceWithoutWaiting()`）。
+WHY：否则界面看着像没生效 —— 用户把类型改成动画、画面却还停在"等你点"（实测踩过这个观感问题）。
+
+**实测**（contactor 12 步，先切模式再重跑）：`isFinished=True`、**12 个条件全部 Complete / 0 个在等待**、
+用时 **58.8s**（正是 12 段 clip 的真实总长）。
+
+## 9 显隐与动画分家 + 碰撞体闸门（2026-10-14 晚，DEC-119 / DEC-120）
+
+### 9.1 显隐**只认两张表**，动画只负责动画
+
+```csharp
+[SerializeField] protected List<GameObject> activeObjects;    // Prepare 时显示
+[SerializeField] protected List<GameObject> inactiveObjects;  // Prepare 时隐藏
+```
+
+原先动画路径里藏着 4 处 `SetActive`（`HideAnimations` 归位即隐藏、`ShowAnimationsAtFirstFrame` /
+`PlayAnimations` / `SampleAnimations` 显示、`HideAnimationsOnComplete` 隐藏）—— 后果是**显隐被动画暗中接管**，
+"这一步该看见什么"无处可查，两张表也被架空。现在：
+
+- 上述 `SetActive` **全部删除**；`HideAnimations` → **`PrepareAnimations()`**（只 `Stop()` + 回 0 帧）；
+- `AnimationStruct.ifHideOnFinish` **字段删除**（与显隐表重复管一件事），生成器里写它的那段一并去掉；
+- 新增护栏 **`IsAnimationVisible`**：物体隐藏时**不播**并明确告警。
+
+> ⚠️ **为什么必须有 `IsAnimationVisible` 这道护栏**：Legacy `Animation` 对**隐藏**的物体不推进
+> （`Play` 调得下去、但 `isPlaying` 恒 false、画面也不动），而"播完"判据就是 `AnyAnimationPlaying()`
+> ⇒ 被隐藏的槽位会让该步骤**瞬间算播完且不报错**，现象是"动画莫名不执行"。
+> 有了它，问题从"动画不播"变成一句"这一步没把这个物体放进 activeObjects"。
+> `StepHandlerEditor` 同步加了一条校验（动画物体不在显示表、也没有祖先在表里 ⇒ 警告）。
+
+**约定**：物体要在某步露出 / 收起 ⇒ 写进那一步的两张表；物体在某步要播动画 ⇒ 放进动画槽位
+**并且它必须在那一刻可见**（否则动画跑了也看不见）。
+
+### 9.2 点击条件的碰撞体闸门
+
+拾取链是 `InteractiveManager.RaycastTarget()` 的 `Physics.Raycast` + `GetComponentInParent<InteractiveObjBase>()`，
+所以"能不能点" = **碰撞体开没开**。`ConditionClick` 按自己的生命周期开关 target **自己的**碰撞体：
+
+| 阶段 | 动作 |
+|---|---|
+| `OnPrepare` | `enabled = false` |
+| `OnWaiting` | `enabled = true` ⇒ 此刻**唯一**可点 |
+| `OnCompleteHide` | `enabled = false` |
+| `OnReset`（跳转归位） | `enabled = false` |
+
+⇒ **全场最多只有一个可点**（当前步骤那个），其余零件即使可见也点不动 —— 不会"随便点就跳步"。
+
+- 只改 `collider.enabled`，**不动物体显隐**（物体照常渲染、动画照常播，只是射线打不到它）；
+- 新增可空字段 `targetCollider`：留空 ⇒ 运行期取 target **自己身上**的第一个 `Collider` 并缓存
+  （用 `GetComponent` 而非 `GetComponentInParent`，否则可能抓到别的零件的碰撞体）；`SetTarget()` 会清掉缓存；
+- 目标没有碰撞体时告警说清"它本来就点不到"（拾取走物理射线，静默失败最难查）。
+
+**与 `toggleTargetActive` 的分工**：后者管"物体本身露不露面"，闸门管"露着的时候能不能点" —— 两件事。
+点击步骤的 `toggleTargetActive` 现已**全部置 false**（接触器 10 处 + 其余 7 个预制体 23 处），
+显隐交给两张表。
+
+**实测**（Play，contactor）：10 个零件的碰撞体**全部被关**，每个 `ConditionClick.TargetCollider`
+都解析到自己的 `BoxCollider` —— "初始全关"生效，剩下由 `Waiting` 开当前那一个。
+

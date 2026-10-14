@@ -1536,3 +1536,167 @@ Unity 于是把它编进**预定义程序集** `Assembly-CSharp-firstpass`；而
 > **改后必须在真 WebGL 产物上复跑一次**才算闭合 —— 见 `TODO.md` D-24。
 > 另：负责人用 VS Code Live Server 复现（`127.0.0.1:5500`），交付形态仍是 WebGL（DEC-12），
 > 与 `docs/design/09` §12.2 的 dev 服务器是两条不同的服务路径，别混。
+
+---
+
+## 28 第十五轮（2026-10-14）：洋红定案 → 全量迁 Addressables → 步骤系统两种新行为（DEC-117 ~ DEC-120）
+
+> 背景：负责人 2026-10-14 晚报"编辑器 Play 洋红 + 真 WebGL 产物取包失败"。
+> 上一轮（§26 / §27）两次判断都被推翻（详见 §28.1），本轮先把机制查到底，再按结论动架构。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-117 | **"编辑器 Play 洋红"是测试方式的必然假象，不是内容/材质/shader 的问题**：WebGL 平台的 AssetBundle 在 Windows 编辑器里加载时，包里**每一个 shader**（含 Unity 内置的 `Universal Render Pipeline/Lit`）都拿不到可用 pass ⇒ Unity 一律套内置 error shader ⇒ 纯洋红。**判定规则：编辑器里加载 WebGL 产物看到的洋红不作数；验渲染必须用真产物**（或该平台自己的 AB） | AI 定（依据本轮实测对照，见 §28.1） | 否 | **生效** |
+| DEC-118 | **内容包全量迁到 Addressables（`PackageType.AB` 整条删除）**：模型预制体与漫游场景统一走 AA；**共享材质单独成组 `WSU3_Shared`，先于任何内容组装载**。收益不是"治洋红"（AA 底层同样是 AssetBundle），而是①**编辑器 Play 走 Play Mode Script（AssetDatabase）、开发循环不再看到洋红**；②两条链路合一，不再手拼 URL / 手管 `bundle.Unload` / 不用再守"文件名段必须小写" | 负责人 2026-10-14 定（"彻底改掉这个问题"，并要求材质进 shared 组先装） | 否 | **生效** |
+| DEC-119 | **显隐与动画彻底分家**：动画槽位**不再 `SetActive`**（原 `HideAnimations` / `ShowAnimationsAtFirstFrame` / `HideAnimationsOnComplete` 里的显隐动作全部删除），显隐**只由 `activeObjects` / `inactiveObjects` 两张表**负责；`AnimationStruct.ifHideOnFinish` 字段删除 | 负责人 2026-10-14 定 | 否 | **生效** |
+| DEC-120 | **点击条件自带"碰撞体闸门"**：拾取是物理射线，所以"能不能点"= "碰撞体开没开"。`ConditionClick` 按生命周期开关 target 自己的碰撞体：`Prepare` 关 → `Waiting` 开 → 完成后关（`OnReset` 也关）⇒ **全场最多只有一个可点**（当前步骤那个） | 负责人 2026-10-14 定 | 否 | **生效** |
+| DEC-121 | **步骤系统新增"动画运行模式"**（`StepRunMode.Animation`）：条件的 `Waiting` 阶段**照走**（照常定格首帧、发事件、播动画），只是**不等条件成立** ⇒ 流程自动一路推进到结束。与"一步一步"并列，`StepManager.RunMode` 公开可改 | 负责人 2026-10-14 定 | 否 | **生效** |
+
+### 28.1 洋红的定案过程（推翻上一轮的两处判断）
+
+上一轮（§26 / §27）的两处判断**都是错的**，本轮逐条推翻：
+
+| 上一轮的说法 | 本轮的实测反证 |
+|---|---|
+| "坏的是 `timeRelay` / `masterAppliance` 两个器件"（DEC-115） | 那只解释了**包内材质为 null**，解释不了洋红 —— contactor 的 11 个材质一直正常解析，却一样洋红。DEC-115 是真 bug 但不是这个症状的解 |
+| "用 `material.FindPass("UniversalForward") == -1` 判缺 URP 前向 pass" | **探针无效**：`FindPass` 匹配的是 **pass 名**，不是 LightMode tag；内置 `URP/Lit` 同样返回 `-1`。以后禁用这个判据 |
+
+**本轮的决定性对照（全部可复核）**：
+
+| 探针 | 结果 |
+|---|---|
+| 洋红截图逐像素 | 模型区主色 **`(254,0,254)`** = error shader 的 `(1,0,1)` 被 sRGB 取整 |
+| AB 里那个 shader 的 pass 名 | `<Unnamed Pass 0>` / `DepthNormalsOnly` / `DepthOnly` —— 与 `Hidden/InternalErrorShader` **逐字相同** |
+| 两者的 `GetPropertyCount()` | 都是 **0**（名字还是原 shader 名、数据已是 error shader 的"混合态"） |
+| 两者每个 pass 的 `ShaderUtil.IsPassCompiled` | **全 True**（而工程那份 9 个 pass **全 False**）⇒ AB 的 shader 数据是按 **WebGL 平台**编的 |
+| **对照实验 1**：新建材质用**内置** `Universal Render Pipeline/Lit` → 打 WebGL AB → 编辑器加载 | `passCount=3`、pass 名与 error shader 完全相同、`UniversalForward=-1` ⇒ **与我们的 shader 一模一样** |
+| **对照实验 2**：同一材质打 **StandaloneWindows64** AB → 编辑器加载 | 我们的 shader `passCount=5`（`Universal Forward` / `ShadowCaster` / `DepthOnly` / `DepthNormals` / `Universal 2D`）、URP/Lit `passCount=4`（含 `ForwardLit`）⇒ **前向 pass 都在** |
+| **对照实验 3**：按现有配置真的跑一次 Addressables（`BuildPlayerContent`，WebGL）→ 编辑器加载 | 产出 `defaultlocalgroup_assets_all_*.bundle` **79,937 字节**（与 AB 探针同量级同结构），加载后同样是那 3 个 pass、同样 `UniversalForward=-1` ⇒ **AA 底层就是 AssetBundle，换成 AA 治不了洋红** |
+
+⇒ **结论**：洋红 = "在 Windows 编辑器里加载 WebGL 平台的 bundle"的必然结果（error shader 回退），
+**与材质、shader、AB/AA 的选择都无关**。所以 DEC-118 迁 AA 的**正当理由**不是"治洋红"，
+而是"编辑器 Play 走 AssetDatabase"这一条（AA 的 Play Mode Script）—— 它让开发循环不再踩这个假象。
+
+### 28.2 迁 AA 的落点与不变量
+
+**落点**（`Assets/Editor/BuildTools/`）：
+
+| 文件 | 作用 |
+|---|---|
+| `ContentPipeline.cs` | **一键编排**（菜单 `WSU3/Pack/一键打 AA 包（全部）`）：收集 → 校验 → 写配置 → 同步登记表 → 注册分组 → 一次 AA 构建 → 报告；批处理入口 `-executeMethod …ContentPipeline.BuildAllFromBatch`；另加 `BuildAllNonInteractive()` 供脚本化验证（弹窗会卡住调用方） |
+| `AaContentBuilder.cs` | **地址与分组怎么落到 Addressables** 的唯一落点：建组 / 清本流水线残留组与残留条目 / `CreateOrMoveEntry` + 设地址 → `BuildPlayerContent` |
+
+**不变的三条铁律**：
+- ① **包粒度 = 一个 clip 一个组**（`WSU3_clip_{器件}`），切任务 = 卸旧 clip + 装新 clip，与 AB 时代同口径；
+- ② **共享材质单独成组、先于内容组装载**（`AddressableManager.LoadClipRoutine` 先装 `shared_model_materials`）；
+- ③ **一次构建产出全部组**（AA 的 `BuildPlayerContent` 本就是全局操作）。
+
+**新增的四条实测坑（都已在代码里写清 WHY）**：
+1. **一个资源只能有一个 address**：Addressables 的 entry 由 **GUID** 定位，第二次 `entry.address = …` 会**静默覆盖**第一次
+   （症状是"某个地址注册了却查不到"、运行期 `InvalidKeyException: No Location found for Key=…`）。
+   实测踩过：共享组先把 18 份材质注册成 `shared_material/*`、再 `insert(0)` 组级配置，
+   结果 `shared_model_materials` 消失、整组装载失败。**修法：组级配置先注册**（那份"代表材质"于是同时持有两个地址）。
+2. **包配置 id 会变成文件名**（`AA_{id}.asset`）⇒ 不能带 `/`：共享材质条目的 `configId` 与 `address` 必须分开取值
+   （实测第一次就抛 `Creating asset at path …/AA_shared_material/ACContactor.asset failed`）。
+3. **判构建成败不能读 `BuildPlayerContent()` 的返回值**：它在不少版本里返回 `void`，反射拿到 `null` 会被误判成失败
+   （实测：日志写着 `Addressable content successfully built (duration : 0:00:23)`，流水线却报失败、体积报 0.00 MB）。
+   ⇒ 判据改成**数输出目录里的 bundle**。
+4. **"没有新增文件"不等于失败**：什么都没改就重跑时 Addressables 会做一次 **no-op 重建**（实测 4.7 秒、bundle 哈希不变）。
+   ⇒ 判据是"输出目录里有 bundle"，新增数只作"是否真正重建过"的参考。
+5. **清残留只能清本流水线的组**：`WSU3_` 前缀；AA 的 settings 是全局单例，误删别人手工建的分组是不可逆的现场破坏。
+6. **旧类型的资产按类型搜不到**：`ABPackageConfigSO` 被删后，那些 `AB_*.asset` 的 `m_Script` 是 `{fileID: 0}`，
+   `AssetDatabase.FindAssets("t:ScriptableObject")` **不会**把它们报出来（实测按类型搜 0 命中、文件明明在盘上）
+   ⇒ 只能走**文件系统枚举**按文件名前缀清理（`EditorAssetUtil.DeleteAssetsByFilePrefix`）。
+
+**产物落点**（容易误判的一条）：`BuildPlayerContent()` 把包写进
+`Library/com.unity.addressables/aa/<平台>/`，**再由 `AddressablesPlayerBuildProcessor` 在 Build Player 时**
+拷进 `Assets/StreamingAssets/aa/<平台>/`（从而被 Unity 带进 WebGL 产物）。
+实测：只调 `BuildPlayerContent` 时 `StreamingAssets/aa` 是**空的**、包都在 `Library` 下 —— 这是设计如此，不是失败。
+
+**实测读数**（`activeBuildTarget=WebGL`，9 个组 / 27 项资源）：
+
+| 组 | 字节 |
+|---|---|
+| `wsu3_shared`（18 份材质 + 贴图 + 4 个 ShaderGraph） | **32,921,147** |
+| `wsu3_clip_timerelay` | 1,021,328 |
+| `wsu3_clip_contactor` | 1,441,813（AB 时代同一个包是 4,201,911 ⇒ 材质被抽到共享组之后显著变小） |
+| 其余 6 个 clip | 570K ~ 3.9M |
+
+包登记表 `PackageDB_Master` = **9 条 / 空引用 0**（8 个器件 + 1 个 `shared_model_materials`）。
+
+### 28.3 显隐与动画分家、碰撞体闸门、动画运行模式
+
+**① 显隐只认两张表（DEC-119）**
+
+原先 `ConditionBase` 的动画路径里藏着 4 处 `SetActive`（`HideAnimations` 归位即隐藏、
+`ShowAnimationsAtFirstFrame` / `PlayAnimations` / `SampleAnimations` 显示、`HideAnimationsOnComplete` 隐藏）。
+后果是**显隐被动画暗中接管**，"这一步该看见什么"无处可查，两张表也被架空。现在：
+
+- 删除上述全部 `SetActive`；`HideAnimations` → **`PrepareAnimations()`**（只 `Stop()` + 回 0 帧，不动显隐）；
+- `AnimationStruct.ifHideOnFinish` **删除**（与显隐表重复管一件事），生成器里写它的那段一并去掉；
+- 新增护栏 **`IsAnimationVisible`**：物体隐藏时**不播**并明确告警。
+  WHY 必须有这道：Legacy `Animation` 对**隐藏**的物体不推进（`Play` 调得下去但 `isPlaying` 恒 false、画面也不动），
+  而"播完"判据就是 `AnyAnimationPlaying()` ⇒ 被隐藏的槽位会让该步骤**瞬间算播完且不报错**，
+  现象是"动画莫名不执行"。有了这道护栏，问题从"动画不播"变成一句"这一步没把这个物体放进 activeObjects"。
+- `StepHandlerEditor` 同步加一条校验：动画物体若不在显示表（也没有祖先在表里）→ 警告。
+
+**② 碰撞体闸门（DEC-120）**
+
+拾取链是 `InteractiveManager.RaycastTarget()` 的 `Physics.Raycast` + `GetComponentInParent<InteractiveObjBase>()`，
+所以闸门就是**开关碰撞体**（只改 `enabled`，不动物体显隐）：
+
+| 阶段 | 动作 |
+|---|---|
+| `OnPrepare` | `SetTargetColliderEnabled(false)` |
+| `OnWaiting` | `SetTargetColliderEnabled(true)` ⇒ 此刻唯一可点 |
+| `OnCompleteHide` | `SetTargetColliderEnabled(false)` |
+| `OnReset`（跳转归位） | `SetTargetColliderEnabled(false)` |
+
+配套：
+- 新增可空字段 `targetCollider`（留空 ⇒ 运行期取 target **自己身上**的第一个 `Collider` 并缓存；
+  用 `GetComponent` 而非 `GetComponentInParent`，否则可能抓到别的零件的碰撞体）；`SetTarget()` 会清掉缓存；
+- 目标没有碰撞体时告警说清"它本来就点不到"（拾取走物理射线）；
+- **`toggleTargetActive` 全部置 false**：接触器 10 处（负责人改）+ 其余 7 个预制体 **23 处**（AI 批改：
+  breaker 4 / timeRelay 4 / thermalRelay 6 / fuse 3 / speedRelay 6 / combinationSwitch 5；
+  `masterAppliance` 无点击步骤）。它管"物体本身露不露面"，与闸门是**两件事**。
+
+实测（Play，contactor）：10 个零件的碰撞体**全部被关**，每个 `ConditionClick.TargetCollider` 都解析到自己的
+BoxCollider —— "初始全关"生效，剩下由 `Waiting` 开当前那一个。
+
+**③ 动画运行模式（DEC-121）**
+
+```csharp
+public enum StepRunMode { StepByStep = 0, Animation = 1 }   // StepManager 上，与"一步一步"并列
+public StepRunMode RunMode { get; set; }                    // 公开可改（脚本 / Inspector）
+public bool IsAnimationMode { get; }
+public void EnterAnimationMode();  public void EnterStepByStepMode();
+```
+
+实现要点（**"不是跳过 Waiting 阶段，而是进了 Waiting、只是不等"**）：
+- `ConditionBase.AdvanceWithoutWaiting()`：只让等待循环立刻退出，**不碰状态机**；
+- `ExecuteStep` 在 `Waiting()` **之前**调它；
+- ⇒ Prepare / Waiting / Complete / 动画播放 / 事件广播 **全部与正常模式同源**，唯一差别是"等不等"。
+  若真的跳过整个 `Waiting()`，就会连"定格首帧"与"请求提示"一起丢掉，动画会从当前位置乱跳。
+
+**为什么单独开一个入口、不复用 `ForceComplete()`**：后者是"外部把这一步提前结掉"，会置 `IsForceCompleted`（诊断要看见）；
+动画模式是"这一步本来就不等人"，不是被打断 —— 混用会污染诊断。
+
+**为什么把判据合成 `ShouldStopWaiting`**：原先四个等待循环各自写 `!forceComplete`，新增一种"不等"来源时
+最容易漏改其中一个，症状是"某个条件类型在动画模式下莫名卡住"。现在
+`ShouldStopWaiting => forceComplete || advanceWithoutWaiting`，所有等待口统一认它。
+顺带修掉 `ConditionQuestion` 的一处真实隐患：内层等待已认新判据、**外层重问循环**原来只认 `forceComplete`，
+在"动画模式 + 无超时"下会一圈圈重复提问退不出去。
+
+**切模式时立刻放行"正在等待的那一步"**：否则界面看着像没生效（用户把类型改成动画、画面还停在"等你点"）。
+实测踩过这个观感问题 —— **修法**是 setter 里对该条件调 `AdvanceWithoutWaiting()`（仍然不是 `ForceComplete`）。
+
+**实测**（先切模式再重跑，contactor 12 步）：`isFinished=True`、**12 个条件全部 Complete / 0 个在等待**、
+用时 **58.8s**（正是 12 段 clip 的真实总长）⇒ 一路自动跑到"全部步骤完成"。
+
+### 28.4 工程侧卫生
+
+- **`AddressableAssetsData/**` 必须进版本控制**（AA 的配置就住在那里：settings + 分组 + 各分组的 schema）。
+  它此前**未被 git 跟踪** —— 一丢整条 AA 配置就没了。
+- **`Assets/StreamingAssets/Content/**`（AB 时代的 8 个包 / 45.3 MB）已成无主产物**：
+  运行期不再读它，`.gitignore` 与 `ignore.conf` 里那几条规则可留（防误提交），但目录本身该删。
+- **`Assets/AddressableAssetsData/WebGL/`（AA 构建输出 / 2 文件 / 3,893 B）不入库**，属产物。

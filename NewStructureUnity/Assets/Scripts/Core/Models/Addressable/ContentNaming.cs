@@ -1,19 +1,27 @@
 namespace WSU3.Core.Models.Addressable
 {
     // WHY: 命名规则的**唯一来源**（编辑器流水线与运行期都取这里，测试也读这里）——
-    //      「包配置 id 用器件小驼峰」与「bundle 名用器件全小写」是两套东西，混用会让打包写盘与运行期拼 URL 对不上；
-    //      bundle 的**文件名段**必须全小写，否则 WebGL / Linux 上必然 404（Windows 上看不出问题）。
-    /// <summary>内容 AB 命名规则的唯一来源：包配置 id 与 bundle 名的拼装与校验。</summary>
+    //      「包配置 id」「address」「Addressables 分组名」是三套东西，混用会让打包注册与运行期取件对不上。
+    //
+    // 2026-10-14（DEC-118 全量迁 AA）：原先这里管的是"AssetBundle 名"，那套管的是
+    //      "末段必须小写否则 WebGL/Linux 必然 404"的纪律。迁到 AA 后**这条纪律连同它的坑一起消失了**：
+    //      AA 的地址与分组名是 catalog 里的字符串，不经文件系统，不存在大小写 404。
+    //      故删掉 BundleNameFor / IsBundleFileNameLowerCase / BundleDirSegmentOf 三个成员，
+    //      换成 GroupNameFor / SharedGroupName / SharedPackageId。
+    /// <summary>内容包命名规则的唯一来源：包配置 id、Addressables 地址与分组名的拼装与校验。</summary>
     public static class ContentNaming
     {
         /// <summary><c>ProjectClip.id</c> 的前缀（内容数据的稳定主键，docs/design/04 §2.1）。</summary>
         public const string ClipIdPrefix = "clip_";
 
-        /// <summary>bundle 的输出目录段（= 相对 StreamingAssets 的一级目录，DEC-87 的"包名首段"）。</summary>
-        public const string BundleDirName = "Content";
+        /// <summary>内容包分组名的前缀：<c>WSU3_</c>（与工程里非本流水线创建的分组区分开，清理残留只动这一族）。</summary>
+        public const string GroupPrefix = "WSU3_";
 
-        /// <summary>bundle 文件名段的前缀。</summary>
-        public const string BundleFilePrefix = "clip_";
+        /// <summary>共享材质分组的后缀（含全部模型材质，先于各 clip 组装载）。</summary>
+        public const string SharedGroupSuffix = "Shared";
+
+        /// <summary>共享材质包的固定地址（**契约**：运行期靠它先装材质，见 AddressableManager.LoadClipRoutine）。</summary>
+        public const string SharedAddress = "shared_model_materials";
 
         // WHY: 任务段取 TaskType 的枚举名小写 —— 与内容数据里 taskXxxData 的键名同源，改名要连带改内容数据。
         /// <summary>任务段：简介。</summary>
@@ -42,11 +50,14 @@ namespace WSU3.Core.Models.Addressable
                 : clipId;
         }
 
-        /// <summary><c>contactor</c> → <c>Content/clip_contactor</c>（**文件名段小写**）。</summary>
-        public static string BundleNameFor(string device)
+        /// <summary><c>clip_contactor</c> → <c>WSU3_clip_contactor</c>（一个 clip 一个地址组，装卸以此为单位）。</summary>
+        public static string GroupNameForClip(string clipId)
         {
-            return BundleDirName + "/" + (BundleFilePrefix + device).ToLowerInvariant();
+            return GroupPrefix + clipId;
         }
+
+        /// <summary>共享材质组的分组名（<c>WSU3_Shared</c>）。</summary>
+        public static string SharedGroupName => GroupPrefix + SharedGroupSuffix;
 
         /// <summary>包配置 id：device=<c>contactor</c>, task=<c>structure</c>, resource=<c>model</c> → <c>contactor_structure_model</c>。</summary>
         public static string ConfigId(string device, string task, string resource)
@@ -60,25 +71,11 @@ namespace WSU3.Core.Models.Addressable
             return ConfigId(device, TaskInfo, index.ToString("D2"));
         }
 
-        /// <summary>bundle 名的文件名段是否全小写（对账用；目录段不参与判断）。</summary>
-        public static bool IsBundleFileNameLowerCase(string bundleName)
+        /// <summary>该分组名是不是本流水线管的（清理残留只动这一族，别碰别人手工建的分组）。</summary>
+        public static bool IsManagedGroup(string groupName)
         {
-            if (string.IsNullOrEmpty(bundleName)) return false;
-
-            string fileName = bundleName;
-            int slash = fileName.LastIndexOf('/');
-            if (slash >= 0) fileName = fileName.Substring(slash + 1);
-
-            return fileName == fileName.ToLowerInvariant();
-        }
-
-        /// <summary>bundle 名的目录段（<c>Content/clip_contactor</c> → <c>Content</c>）；不是"目录段/文件名段"两段式时返回 null。</summary>
-        public static string BundleDirSegmentOf(string bundleName)
-        {
-            if (string.IsNullOrEmpty(bundleName)) return null;
-
-            string[] parts = bundleName.Split('/');
-            return parts.Length == 2 && parts[0].Length > 0 && parts[1].Length > 0 ? parts[0] : null;
+            return !string.IsNullOrEmpty(groupName) &&
+                   groupName.StartsWith(GroupPrefix, global::System.StringComparison.Ordinal);
         }
     }
 }

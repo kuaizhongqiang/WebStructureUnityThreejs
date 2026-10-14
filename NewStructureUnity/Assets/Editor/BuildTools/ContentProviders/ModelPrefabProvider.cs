@@ -6,7 +6,7 @@ namespace WSU3.Editor.BuildTools
 {
     // WHY: 产出 id = 内容数据里的 `prefabKey`，素材路径 = <c>{素材目录}/{id}.prefab</c> ——
     //      **文件名必须与 id 逐字符一致**；prefabKey 为空视为"该项目不需要这个模型"，静默跳过（内容数据是唯一源）。
-    //      新增同类模型只需在 BundlePipeline.ContentProviders 里再登记一行，不需要新建类。
+    //      新增同类模型只需在 ContentPipeline.ContentProviders 里再登记一行，不需要新建类。
     /// <summary>"一个 TaskData → 一个预制体"型 Provider 的通用实现（简介 / 结构 / 检测三种任务都是这个形态）。</summary>
     public class ModelPrefabProvider : IContentProvider
     {

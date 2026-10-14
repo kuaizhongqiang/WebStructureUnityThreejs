@@ -41,7 +41,7 @@ namespace WSU3.Core.Interactive
         const string HighlightProfile = "Highlight";
 
         private Guid guid = Guid.NewGuid();
-        private bool hovered;
+        [SerializeField] bool hovered;
         private bool highlighted;
 
         /// <summary>运行时唯一标识（诊断用；**对 Web 暴露的是 <see cref="ObjectKey"/>，不是它**）。</summary>
@@ -101,7 +101,7 @@ namespace WSU3.Core.Interactive
         // ── 由 InteractiveManager 调用的入口（业务不要直接调）────────────────
 
         /// <summary>指针移入（悬停）。</summary>
-        public void InvokeEnter()
+        public virtual void InvokeEnter()
         {
             if (!CanInteract() || hovered) return;
             hovered = true;
@@ -109,7 +109,7 @@ namespace WSU3.Core.Interactive
         }
 
         /// <summary>指针移出。**即使闸门此刻被关上也要能收尾**，否则悬停态会卡住。</summary>
-        public void InvokeExit()
+        public virtual void InvokeExit()
         {
             if (!hovered) return;
             hovered = false;

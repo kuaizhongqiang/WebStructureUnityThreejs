@@ -83,8 +83,9 @@ namespace WSU3.Editor.Common
             return removed;
         }
 
-        /// <summary>回读自检：返回 <c>dir</c> 下 <c>AB_{id}.asset</c> 加载为 null（m_Script 丢失）的资产路径。</summary>
-        public static List<string> FindBrokenAssets<T>(string dir, IEnumerable<string> expectedIds)
+        /// <summary>回读自检：返回 <c>dir</c> 下 <c>{filePrefix}{id}.asset</c> 加载为 null（m_Script 丢失）的资产路径。</summary>
+        public static List<string> FindBrokenAssets<T>(string dir, IEnumerable<string> expectedIds,
+                                                       string filePrefix = "AB_")
             where T : UnityEngine.Object
         {
             var broken = new List<string>();
@@ -92,11 +93,57 @@ namespace WSU3.Editor.Common
 
             foreach (string id in expectedIds)
             {
-                string path = $"{dir}/AB_{id}.asset";
+                string path = $"{dir}/{filePrefix}{id}.asset";
                 if (AssetDatabase.LoadAssetAtPath<T>(path) == null) broken.Add(path);
             }
 
             return broken;
+        }
+
+        /// <summary>
+        /// 清掉 <c>dir</c> 下文件名以 <paramref name="filePrefix"/> 开头的旧配置资产，返回被删路径。
+        ///
+        /// WHY: 迁移专用（DEC-118 AB→AA）。旧类型被删掉之后 <c>t:ABPackageConfigSO</c> 已经搜不到任何东西，
+        ///      而这类资产会在 <c>PackageDatabaseSO.AutoCollect()</c> 里变成 <c>packages[i]==null</c> 的空引用
+        ///      （表现为"登记表里全是 None"）—— 必须按文件名前缀把它们找出来删掉。
+        ///
+        /// ⚠ **不能用 <c>AssetDatabase.FindAssets("t:ScriptableObject")</c>**：脚本类被删掉之后这些资产的
+        ///   <c>m_Script</c> 是 <c>{fileID: 0}</c>，AssetDatabase **不会**把它们当 ScriptableObject 报出来
+        ///   （实测：按类型搜 0 命中，而文件明明在盘上）⇒ 只能走文件系统枚举。
+        /// </summary>
+        public static List<string> DeleteAssetsByFilePrefix(string dir, string filePrefix, string logTag)
+        {
+            var removed = new List<string>();
+            if (string.IsNullOrEmpty(dir) || string.IsNullOrEmpty(filePrefix)) return removed;
+
+            string abs = Path.GetFullPath(dir);
+            if (!Directory.Exists(abs)) return removed;
+
+            var stale = new List<string>();
+            foreach (string file in Directory.GetFiles(abs, filePrefix + "*.asset", SearchOption.TopDirectoryOnly))
+            {
+                // 只认 <dir> 下的资产路径；转成工程相对路径才能交给 AssetDatabase.DeleteAsset
+                string absNorm = file.Replace('\\', '/');
+                int idx = absNorm.IndexOf("/Assets/", StringComparison.Ordinal);
+                if (idx < 0) continue;
+                stale.Add(absNorm.Substring(idx + 1));
+            }
+
+            // WHY: 先收起再删 —— 边枚举边删会让枚举器状态失效
+            foreach (string assetPath in stale)
+            {
+                if (AssetDatabase.DeleteAsset(assetPath))
+                {
+                    removed.Add(assetPath);
+                    if (logTag != null) Debug.Log($"{logTag} 已删除迁移残留的旧配置：{assetPath}");
+                }
+                else
+                {
+                    Debug.LogWarning($"{logTag} 旧配置删除失败（可手工删）：{assetPath}");
+                }
+            }
+
+            return removed;
         }
     }
 }

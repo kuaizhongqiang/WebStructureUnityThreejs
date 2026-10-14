@@ -11,7 +11,7 @@ namespace WSU3.Core.DataStruct
         const string AudioPath = "Audio/";
         const string DataPath = "Data/";
         const string ContentSceneName = "1_Content";
-        const string HighlightProfileName = "HighlightProfile";
+        const string HighlightProfileName = "Highlight";
         const string FocusRotationControlPath = "FocusRotationControl";
 
         /// <summary>结构件实例的挂载根节点名（内容场景里可以预摆，也可以由运行期自动建）。</summary>

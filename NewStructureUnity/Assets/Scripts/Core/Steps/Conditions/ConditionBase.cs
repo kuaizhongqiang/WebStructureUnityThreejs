@@ -15,13 +15,15 @@ namespace WSU3.Core.Steps.Conditions
     /// 不必在 `StepHandler` 上摊开一堆"只有某几种类型才用得上"的空字段。
     ///
     /// 三阶段里基类做什么（子类只写钩子）：
-    ///   · `Prepare`：`ApplyObjectsActive()`（showObj 显 / hideObj 隐）+ `HideAnimations()`（动画归位 = 隐藏）
-    ///     + `OnPrepare()`（子类隐藏交互物 / 关面板 / 取消临时线）；
-    ///   · `Waiting`：`ShowAnimationsAtFirstFrame()`（定格首帧）+ `RequestTips()` + `OnWaiting()`（子类显示交互物并等待）；
-    ///   · `Complete`：`OnCompleteHide()` + `PlayAnimations()` + 等播完 + `HideAnimationsOnComplete()`。
+    ///   · `Prepare`：`ApplyObjectsActive()`（showObj 显 / hideObj 隐）+ `PrepareAnimations()`（动画归位）+ `OnPrepare()`；
+    ///   · `Waiting`：`SampleAnimationsAtFirstFrame()`（定格首帧）+ `RequestTips()` + `OnWaiting()`；
+    ///   · `Complete`：`OnCompleteHide()` + `PlayAnimations()` + 等播完。
     ///
-    /// ⚠️ 归位阶段是**隐藏**动画物体，**不是**定格第一帧 —— 定格首帧只发生在目标步骤进入 `Waiting` 时。
-    /// 这条是跳转后状态能一致的关键（`docs/design/10` §3.2）。
+    /// ⚠️ **显隐的唯一来源是 activeObjects / inactiveObjects 两张表**（2026-10-14 改，负责人定）。
+    /// 动画槽位**只管动画**：不再 `SetActive` —— 早先"动画归位 = 隐藏动画物体"的做法等于让动画暗中接管了显隐，
+    /// 于是"这一步该看见什么"无处可查，两张表也被架空。现在：
+    ///   · 物体要在某步露出 / 收起 → 写进那一步的两张表；
+    ///   · 物体在某步要播动画 → 放进动画槽位（**它必须在那一刻是可见的**，否则动画跑了也看不见）。
     /// </summary>
     [Serializable]
     public abstract class ConditionBase : ICondition
@@ -51,6 +53,12 @@ namespace WSU3.Core.Steps.Conditions
 
         /// <summary>协作式打断标记：置位后所有等待循环尽快退出。</summary>
         protected bool forceComplete;
+
+        /// <summary>
+        /// "这一步不等人"标记（动画运行模式置位，见 <see cref="AdvanceWithoutWaiting"/>）。
+        /// 与 <see cref="forceComplete"/> 分开，是因为"不等"不是"被打断" —— 诊断要能区分这两件事。
+        /// </summary>
+        protected bool advanceWithoutWaiting;
 
         /// <summary>所属步骤。</summary>
         public StepHandler Step => step;
@@ -97,8 +105,8 @@ namespace WSU3.Core.Steps.Conditions
             forceComplete = false;
             Status = StepStatus.Ready;
 
-            ApplyObjectsActive();   // 显隐只在 Prepare 设定一次
-            HideAnimations();       // 动画归位 = 隐藏（不是定格首帧）
+            ApplyObjectsActive();   // 显隐的唯一落点（两张表）
+            PrepareAnimations();    // 动画归位（不动显隐）
 
             yield return OnPrepare();
         }
@@ -107,7 +115,7 @@ namespace WSU3.Core.Steps.Conditions
         {
             Status = StepStatus.Waiting;
 
-            ShowAnimationsAtFirstFrame();   // 目标步骤才定格首帧
+            SampleAnimationsAtFirstFrame();   // 目标步骤才定格首帧
             RequestTips();
 
             yield return OnWaiting();
@@ -121,7 +129,6 @@ namespace WSU3.Core.Steps.Conditions
 
             PlayAnimations();
             yield return WaitAnimationsDone();
-            HideAnimationsOnComplete();
         }
 
         public virtual IEnumerator FastComplete()
@@ -129,7 +136,6 @@ namespace WSU3.Core.Steps.Conditions
             OnCompleteHide();
 
             StopAtLastFrame();              // 不播放，直接定格末帧
-            HideAnimationsOnComplete();
 
             // 快进也是"这一步已经过去了"：状态要走到 Completed，否则"快进过的步骤"与"真跑完的步骤"两套状态互相矛盾
             Status = StepStatus.Complete;
@@ -142,12 +148,29 @@ namespace WSU3.Core.Steps.Conditions
             forceComplete = true;
         }
 
+        /// <summary>
+        /// 本条件**不再阻塞等待**，下一次 <see cref="Waiting"/> 立刻返回（供"动画运行模式"用，
+        /// 见 <c>StepManager.StepRunMode.Animation</c>）。
+        ///
+        /// WHY 单独一个入口、而不是复用 <see cref="ForceComplete"/>：
+        ///   ① 语义不同 —— `ForceComplete` 是"外部把这一步提前结掉"，会置 `IsForceCompleted`（诊断要看见）；
+        ///      本方法是"这一步本来就不等人"，不是被打断，不该把自己标记成"被强制完成"污染诊断。
+        ///   ② 它**不改**状态机：`Waiting()` 照常把 Status 置成 Waiting、照常定格首帧、照常请求提示，
+        ///      只是不等条件成立。于是"动画模式"与"正常模式"在**显隐 / 动画 / 事件**上走完全同一条路径，
+        ///      唯一差别就是"等不等" —— 这正是"跳过 waiting 判断、其他都按流程走"的准确含义。
+        /// </summary>
+        public void AdvanceWithoutWaiting()
+        {
+            advanceWithoutWaiting = true;
+        }
+
         public void ResetCondition()
         {
             forceComplete = false;
+            advanceWithoutWaiting = false;
             Status = StepStatus.Ready;
 
-            HideAnimations();
+            PrepareAnimations();
             OnReset();
         }
 
@@ -185,7 +208,7 @@ namespace WSU3.Core.Steps.Conditions
 
         // ── 状态操作原语（StepHandler 侧的统一口径）────────────────────────
 
-        /// <summary>显隐：activeObjects 显示、inactiveObjects 隐藏（Prepare 时调用一次）。</summary>
+        /// <summary>显隐：activeObjects 显示、inactiveObjects 隐藏（Prepare 时调用一次）。**唯一的显隐落点。**</summary>
         protected void ApplyObjectsActive()
         {
             SetActive(activeObjects, true);
@@ -193,31 +216,39 @@ namespace WSU3.Core.Steps.Conditions
         }
 
         /// <summary>
-        /// 所有动画物体归位：`SetActive(false)`。
-        /// 这里**只要求有 Animation 组件**，不要求 clip 可用 —— 归位是"把它藏起来"，
-        /// 不该因为某一步忘了配 clip 就漏掉一个还亮着的物体。
+        /// 动画归位：把每个槽位的动画停掉、状态回到 0（**不动显隐** —— 显隐归两张表管）。
+        /// 这里**只要求有 Animation 组件**，不要求 clip 可用 —— 归位是"让动画回到起点"，
+        /// 不该因为某一步忘了配 clip 就漏掉一个还在播的物体。
         /// </summary>
-        protected void HideAnimations()
+        protected void PrepareAnimations()
         {
             for (int i = 0; i < animations.Count; i++)
             {
                 AnimationStruct slot = animations[i];
                 if (slot.animation == null)
                 {
-                    Debug.LogWarning($"[Step] {step?.Path} 的 animations[{i}] 缺 animation 组件，HideAnimations 已跳过。");
+                    Debug.LogWarning($"[Step] {step?.Path} 的 animations[{i}] 缺 animation 组件，PrepareAnimations 已跳过。");
                     continue;
                 }
-                slot.animation.gameObject.SetActive(false);
+
+                // WHY: Stop() 会把变换留在当前位置，所以还要显式回 0 帧，否则"归位"归不回去。
+                slot.animation.Stop();
+                if (slot.clip != null && slot.animation[slot.clip.name] != null)
+                {
+                    slot.animation[slot.clip.name].normalizedTime = 0f;
+                    slot.animation.Sample();
+                    slot.animation.Stop();
+                }
             }
         }
 
-        /// <summary>动画物体显示 + 定格**首帧**（`normalizedTime=0` → Play/Sample/Stop）。</summary>
-        protected void ShowAnimationsAtFirstFrame()
+        /// <summary>动画定格**首帧**（`normalizedTime=0` → Play/Sample/Stop）。</summary>
+        protected void SampleAnimationsAtFirstFrame()
         {
             SampleAnimations(0f);
         }
 
-        /// <summary>动画物体显示 + 定格**末帧**（`normalizedTime=1` → Play/Sample/Stop），用来呈现"已完成"。</summary>
+        /// <summary>动画定格**末帧**（`normalizedTime=1` → Play/Sample/Stop），用来呈现"已完成"。</summary>
         protected void StopAtLastFrame()
         {
             SampleAnimations(1f);
@@ -230,8 +261,8 @@ namespace WSU3.Core.Steps.Conditions
             {
                 AnimationStruct slot = animations[i];
                 if (!IsAnimationUsable(slot, "PlayAnimations", i, out string name)) continue;
+                if (!IsAnimationVisible(slot, "PlayAnimations", i)) continue;
 
-                slot.animation.gameObject.SetActive(true);
                 slot.animation.Play(name);
             }
         }
@@ -248,18 +279,6 @@ namespace WSU3.Core.Steps.Conditions
             return false;
         }
 
-        /// <summary>按 `ifHideOnFinish` 隐藏动画物体（正常完成与快进都调）。</summary>
-        protected void HideAnimationsOnComplete()
-        {
-            for (int i = 0; i < animations.Count; i++)
-            {
-                AnimationStruct slot = animations[i];
-                if (!slot.ifHideOnFinish) continue;
-                if (!IsAnimationUsable(slot, "HideAnimationsOnComplete", i, out _)) continue;
-                slot.animation.gameObject.SetActive(false);
-            }
-        }
-
         /// <summary>
         /// 精确控帧三连：`normalizedTime` → `Play` → `Sample` → `Stop`。
         /// `Sample` 把指定帧的变换应用到物体上，`Stop` 让它"粘"在那帧不动。
@@ -270,8 +289,8 @@ namespace WSU3.Core.Steps.Conditions
             {
                 AnimationStruct slot = animations[i];
                 if (!IsAnimationUsable(slot, "SampleAnimations", i, out string name)) continue;
+                if (!IsAnimationVisible(slot, "SampleAnimations", i)) continue;
 
-                slot.animation.gameObject.SetActive(true);
                 slot.animation.Play(name);
 
                 AnimationState state = slot.animation[name];
@@ -324,7 +343,9 @@ namespace WSU3.Core.Steps.Conditions
             return max;
         }
 
-        /// <summary>动画槽位可用性检查（缺引用时告警一次并跳过，不做静默失败）。</summary>
+        /// <summary>
+        /// 动画槽位可用性检查（缺引用时告警一次并跳过，不做静默失败）。
+        /// </summary>
         private bool IsAnimationUsable(AnimationStruct slot, string from, int index, out string clipName)
         {
             clipName = null;
@@ -343,6 +364,27 @@ namespace WSU3.Core.Steps.Conditions
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// 动画物体此刻可见吗？不可见就**不播**，并明确告警。
+        ///
+        /// WHY 要有这一道（2026-10-14 显隐改由两张表管之后新增的护栏）：
+        ///   Legacy `Animation` 对**已隐藏**的物体不会推进（`Play` 调得下去，但 `isPlaying` 恒为 false、
+        ///   画面也不动）。而上层是靠 `AnyAnimationPlaying()` 判"播完"的 —— 于是一个被隐藏的动画槽位会让
+        ///   该步骤**瞬间"播完"**，看起来像"动画没执行"，却不报任何错。
+        ///   这里把它变成一句看得见的日志：问题从"动画莫名不播"变成"这一步没把这个物体放进 activeObjects"。
+        /// </summary>
+        private bool IsAnimationVisible(AnimationStruct slot, string from, int index)
+        {
+            if (slot.animation == null) return false;
+            if (slot.animation.gameObject.activeInHierarchy) return true;
+
+            Debug.LogWarning(
+                $"[Step] {step?.Path} 的 animations[{index}]（物体 '{slot.animation.gameObject.name}'）当前是隐藏的，" +
+                $"{from} 已跳过 —— 隐藏的物体播不了动画。要让它在这一步可见，把它加进该步骤的 activeObjects；" +
+                "显隐一律由 activeObjects / inactiveObjects 两张表负责。");
+            return false;
         }
 
         private static void SetActive(List<GameObject> objects, bool value)
@@ -365,11 +407,20 @@ namespace WSU3.Core.Steps.Conditions
 
         // ── 给子类用的等待工具（都必须能被 ForceComplete 打断）────────────
 
-        /// <summary>等条件成立，或被强制完成。**所有阻塞点都必须用这个**。</summary>
+        /// <summary>
+        /// 所有等待循环的统一退出判据：**被强制完成**，或**这一步本来就不等人**（动画运行模式）。
+        ///
+        /// 合成一处是为了"漏掉一个等待口"不可能发生 —— 早先每个循环各写一遍 `!forceComplete`，
+        /// 新增一种"不等"的来源时最危险的失误就是漏改其中一个，而症状是"某个条件类型在动画模式下卡住"，
+        /// 极难定位。
+        /// </summary>
+        protected bool ShouldStopWaiting => forceComplete || advanceWithoutWaiting;
+
+        /// <summary>等条件成立，或被强制完成 / 动画模式不等人。**所有阻塞点都必须用这个**。</summary>
         protected IEnumerator WaitUntilOrForceComplete(Func<bool> predicate)
         {
             if (predicate == null) yield break;
-            while (!predicate() && !forceComplete)
+            while (!predicate() && !ShouldStopWaiting)
             {
                 yield return null;
             }
@@ -380,7 +431,7 @@ namespace WSU3.Core.Steps.Conditions
         protected IEnumerator WaitSecondsOrForceComplete(float seconds)
         {
             float deadline = Time.realtimeSinceStartup + Mathf.Max(0f, seconds);
-            while (!forceComplete && Time.realtimeSinceStartup < deadline)
+            while (!ShouldStopWaiting && Time.realtimeSinceStartup < deadline)
             {
                 yield return null;
             }
@@ -401,13 +452,13 @@ namespace WSU3.Core.Steps.Conditions
                 ? Time.realtimeSinceStartup + timeoutSeconds
                 : float.PositiveInfinity;
 
-            while (!predicate() && !forceComplete && Time.realtimeSinceStartup < deadline)
+            while (!predicate() && !ShouldStopWaiting && Time.realtimeSinceStartup < deadline)
             {
                 yield return null;
             }
 
-            // 只有"因为超时"退出才算超时：条件已成立、或被强制完成，都不该再报超时
-            if (timeoutSeconds > 0f && !forceComplete && !predicate())
+            // 只有"因为超时"退出才算超时：条件已成立、被强制完成、或本来就不等人，都不该再报超时
+            if (timeoutSeconds > 0f && !ShouldStopWaiting && !predicate())
             {
                 onTimeout?.Invoke();
             }
@@ -456,17 +507,17 @@ namespace WSU3.Core.Steps.Conditions
     }
 
     /// <summary>
-    /// 一个动画槽位：Legacy `Animation` + `clip` + 播完是否隐藏该物体。
+    /// 一个动画槽位：Legacy `Animation` + `clip`。
     /// ⚠️ `clip` 必须**非循环**，否则 Complete 阶段的"等播完"要靠超时护栏兜底。
+    /// ⚠️ **本槽位只管动画，不管显隐**（2026-10-14 改）：原先的 `ifHideOnFinish` 已删除 ——
+    ///     "播完要不要藏起来"归该步骤的 `inactiveObjects` 管，两处都能藏会让显隐无从查起。
     /// </summary>
     [Serializable]
     public struct AnimationStruct
     {
-        [Tooltip("持有 Legacy Animation 的物体")]
+        [Tooltip("持有 Legacy Animation 的物体（**必须在该步骤可见**，否则动画跑了也看不见）")]
         public Animation animation;
         [Tooltip("⚠️ 必须是非循环动画")]
         public AnimationClip clip;
-        [Tooltip("播完之后是否隐藏这个动画物体")]
-        public bool ifHideOnFinish;
     }
 }

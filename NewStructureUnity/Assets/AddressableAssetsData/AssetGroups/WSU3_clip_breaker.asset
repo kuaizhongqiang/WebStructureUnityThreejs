@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: WSU3_clip_breaker
+  m_EditorClassIdentifier: 
+  m_GroupName: WSU3_clip_breaker
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 1854af1308437fe408857e4034bd6870
+  m_SerializeEntries:
+  - m_GUID: 2973980e1bf568245b6673b2bdf9ce9a
+    m_Address: breaker_structure_model
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - clip_breaker
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 421f7316ea093514eafe7d5fb3be8295, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 6d9b9e935aca81c44a2d391f0873cfa5, type: 2}
+    - {fileID: 11400000, guid: 2141ffd2e9a7f544d9f90e64e2fdf294, type: 2}

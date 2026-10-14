@@ -15,7 +15,7 @@ MonoBehaviour:
   m_DefaultGroup: 7ed69b42fc7265d49b66bebe5f9a2506
   m_currentHash:
     serializedVersion: 2
-    Hash: 00000000000000000000000000000000
+    Hash: d0895d19fa700d37e5d506810bb87009
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -45,7 +45,16 @@ MonoBehaviour:
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
   - {fileID: 11400000, guid: a5105a0674c8a034fa44cdebcaa92891, type: 2}
+  - {fileID: 11400000, guid: 724c75a46037d1445916d49a9eba58c6, type: 2}
+  - {fileID: 11400000, guid: 34b1a8490126697439a723a377559035, type: 2}
+  - {fileID: 11400000, guid: bb636b20db7eb6e43bc479ebe0188a0d, type: 2}
+  - {fileID: 11400000, guid: 33da227215ab3a74c91272f4f5e93760, type: 2}
   - {fileID: 11400000, guid: 74a8b57c572f33143bfc3a255dd3e5c7, type: 2}
+  - {fileID: 11400000, guid: f0f5f6e657086e948ab947c8ce14e534, type: 2}
+  - {fileID: 11400000, guid: 869f1729353e2ef4ba77ff40586e99ac, type: 2}
+  - {fileID: 11400000, guid: dddbc5c7a59c32740b590831411e87bf, type: 2}
+  - {fileID: 11400000, guid: 81d1421783e799a4e8e0ee83dbf98c31, type: 2}
+  - {fileID: 11400000, guid: e14a0417ed02c274d936ec02e3c28ee3, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -87,6 +96,15 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - 
+    - clip_contactor
+    - clip_thermalRelay
+    - clip_timeRelay
+    - clip_masterAppliance
+    - clip_fuse
+    - clip_breaker
+    - clip_speedRelay
+    - clip_combinationSwitch
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 192f4aeea657b59409d64d25c176134b, type: 2}

@@ -61,11 +61,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: e777704d992f3fa41be3b099be7b82ca, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 922655154084805422}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &111770661294982793
 GameObject:
   m_ObjectHideFlags: 0
@@ -114,6 +114,7 @@ MonoBehaviour:
   autoStart: 0
   stepDelaySeconds: 0.5
   logTransitions: 1
+  runMode: 0
 --- !u!1 &156431683513223861
 GameObject:
   m_ObjectHideFlags: 0
@@ -127,7 +128,7 @@ GameObject:
   - component: {fileID: 6300937034178448051}
   - component: {fileID: 4249951434759428448}
   - component: {fileID: 7941495823188132191}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -234,8 +235,104 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
+--- !u!1 &242046656428643857
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5698214900237710895}
+  - component: {fileID: 4244444760143099350}
+  - component: {fileID: 2008848457824678042}
+  - component: {fileID: 8087583106363043944}
+  m_Layer: 0
+  m_Name: cm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5698214900237710895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242046656428643857}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4365990987244139809}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4244444760143099350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242046656428643857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2008848457824678042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242046656428643857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackedObjectOffset: {x: 0, y: 0, z: 0}
+  m_LookaheadTime: 0
+  m_LookaheadSmoothing: 0
+  m_LookaheadIgnoreY: 0
+  m_HorizontalDamping: 0.5
+  m_VerticalDamping: 0.5
+  m_ScreenX: 0.5
+  m_ScreenY: 0.5
+  m_DeadZoneWidth: 0
+  m_DeadZoneHeight: 0
+  m_SoftZoneWidth: 0.8
+  m_SoftZoneHeight: 0.8
+  m_BiasX: 0
+  m_BiasY: 0
+  m_CenterOnActivate: 1
+--- !u!114 &8087583106363043944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242046656428643857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BindingMode: 1
+  m_FollowOffset: {x: 0, y: 0, z: -10}
+  m_XDamping: 1
+  m_YDamping: 1
+  m_ZDamping: 1
+  m_AngularDampingMode: 0
+  m_PitchDamping: 0
+  m_YawDamping: 0
+  m_RollDamping: 0
+  m_AngularDamping: 0
 --- !u!1 &345064110906365058
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,11 +394,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 4b4c31da6e719c04ead1d574e79421d5, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 86219460792935235}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &748343949688618053
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,11 +460,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 58dff372bf48a0e498fcf06f8fac0d08, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 560692181820504399}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &1156911298738561196
 GameObject:
   m_ObjectHideFlags: 0
@@ -489,11 +586,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: ee6ee993628a5d344892d484ee186499, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 7941495823188132191}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &1968321366140507994
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,7 +604,7 @@ GameObject:
   - component: {fileID: 8281642683671855419}
   - component: {fileID: 5676993779482651892}
   - component: {fileID: 7014449035471024917}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -614,6 +711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &2210617069592225273
@@ -625,7 +723,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2964116507642761342}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -714,11 +812,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 941b3cc9f35d8b14d9b841aba5cfbd48, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 414402392504789191}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &2680094262349641914
 GameObject:
   m_ObjectHideFlags: 0
@@ -728,7 +826,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1960583978206625605}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Rotate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -764,7 +862,7 @@ GameObject:
   - component: {fileID: 5605525652023136983}
   - component: {fileID: 2664631165101948490}
   - component: {fileID: 922655154084805422}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor08
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -871,6 +969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &2728989065770986172
@@ -992,11 +1091,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 7f6fa871f57e4604da7b65b423e6b73a, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 8382018849394216212}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &2927874059972026671
 GameObject:
   m_ObjectHideFlags: 0
@@ -1058,7 +1157,6 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: ae04b796f38ddc24ab16e117cfb39ff0, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
 --- !u!1 &3665800964202189944
@@ -1074,7 +1172,7 @@ GameObject:
   - component: {fileID: 1753820791486077962}
   - component: {fileID: 7564217127344363268}
   - component: {fileID: 86219460792935235}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1181,6 +1279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &3870746145198514815
@@ -1196,7 +1295,7 @@ GameObject:
   - component: {fileID: 718944726440901377}
   - component: {fileID: 8606045877618680565}
   - component: {fileID: 560692181820504399}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1303,6 +1402,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &4276903627678891665
@@ -1366,7 +1466,6 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 6576b155301a54a4ba78cddf777298cb, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
 --- !u!1 &4353615746062920148
@@ -1382,7 +1481,7 @@ GameObject:
   - component: {fileID: 5265921751413941790}
   - component: {fileID: 5017021872050587743}
   - component: {fileID: 8382018849394216212}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1489,6 +1588,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &4366199967863376124
@@ -1502,7 +1602,7 @@ GameObject:
   - component: {fileID: 7417725557167778907}
   - component: {fileID: 7933654065967719169}
   - component: {fileID: 6501441094225911186}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactorBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1640,11 +1740,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 35d090f15a504e34ba403f90829d8774, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 322847175150369941}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &6051901656707487191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1706,11 +1806,83 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: ec41626519db1514fb559d9420c8074b, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 7014449035471024917}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
+--- !u!1 &6517939329405521344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4365990987244139809}
+  - component: {fileID: 5172660804556014380}
+  m_Layer: 0
+  m_Name: Virtual Camera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4365990987244139809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6517939329405521344}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.13862272, y: -0, z: -0, w: 0.9903453}
+  m_LocalPosition: {x: 0, y: 1.08, z: -4.66}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5698214900237710895}
+  m_Father: {fileID: 5761736523254888232}
+  m_LocalEulerAnglesHint: {x: 15.936, y: 0, z: 0}
+--- !u!114 &5172660804556014380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6517939329405521344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExcludedPropertiesInInspector:
+  - m_Script
+  m_LockStageInInspector: 
+  m_StreamingVersion: 20170927
+  m_Priority: 10
+  m_StandbyUpdate: 2
+  m_LookAt: {fileID: 0}
+  m_Follow: {fileID: 0}
+  m_Lens:
+    FieldOfView: 42
+    OrthographicSize: 5
+    NearClipPlane: 0.3
+    FarClipPlane: 1000
+    Dutch: 0
+    ModeOverride: 0
+    LensShift: {x: 0, y: 0}
+    GateFit: 2
+    FocusDistance: 10
+    m_SensorSize: {x: 1, y: 1}
+  m_Transitions:
+    m_BlendHint: 0
+    m_InheritPosition: 0
+    m_OnCameraLive:
+      m_PersistentCalls:
+        m_Calls: []
+  m_LegacyBlendHint: 0
+  m_ComponentOwner: {fileID: 5698214900237710895}
 --- !u!1 &6531510068407264661
 GameObject:
   m_ObjectHideFlags: 0
@@ -1724,7 +1896,7 @@ GameObject:
   - component: {fileID: 963352865920781230}
   - component: {fileID: 3341132051605263966}
   - component: {fileID: 414402392504789191}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1831,6 +2003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &7425869190268788277
@@ -1846,7 +2019,7 @@ GameObject:
   - component: {fileID: 3671793172435535846}
   - component: {fileID: 2548828439812794991}
   - component: {fileID: 322847175150369941}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor09
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1953,6 +2126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &7463447304046755049
@@ -2016,11 +2190,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 988b840c65988d74a8a9abc592fdbde4, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 1332596306838913055}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &7906907518062581475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2082,11 +2256,11 @@ MonoBehaviour:
         animations:
         - animation: {fileID: 7718529350201148291}
           clip: {fileID: 7400000, guid: 1826700d22834ac4eb31ca9d0c7feb7b, type: 2}
-          ifHideOnFinish: 0
         tipsKey: 
         audioKey: 
         target: {fileID: 4020244659364662716}
-        toggleTargetActive: 1
+        toggleTargetActive: 0
+        targetCollider: {fileID: 0}
 --- !u!1 &8568395417737691280
 GameObject:
   m_ObjectHideFlags: 0
@@ -2118,6 +2292,7 @@ Transform:
   m_Children:
   - {fileID: 2113627421702320064}
   - {fileID: 5212658648858860635}
+  - {fileID: 4365990987244139809}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8585517817649806660
@@ -2133,7 +2308,7 @@ GameObject:
   - component: {fileID: 3452436056944775255}
   - component: {fileID: 4155670780713569137}
   - component: {fileID: 4020244659364662716}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2240,6 +2415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 
 --- !u!1 &8714608631996852159
@@ -2255,7 +2431,7 @@ GameObject:
   - component: {fileID: 13785643543535737}
   - component: {fileID: 6774247488722674635}
   - component: {fileID: 1332596306838913055}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: ACContactor05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2362,5 +2538,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectKey: 
   isInteractable: 1
+  hovered: 0
   objName: 
   objName_en: 

@@ -40,7 +40,7 @@ namespace WSU3.Editor.BuildTools
     }
 
     // WHY: 这是"一个 ProjectClip 打包哪些资源"的**唯一扩展点** —— 新增一类内容 = 加一个实现
-    //      + 在 BundlePipeline.ContentProviders 里登记一行；漏登记不会被打包（且对账报告里看不到它）。
+    //      + 在 ContentPipeline.ContentProviders 里登记一行；漏登记不会被打包（且对账报告里看不到它）。
     /// <summary>内容资源提供者（编辑器侧契约）：收集单个项目待打包的资源条目。</summary>
     public interface IContentProvider
     {
