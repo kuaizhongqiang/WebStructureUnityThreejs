@@ -100,6 +100,9 @@ async function buildReleaseManifest() {
   const contentData = webFiles
     .filter((file) => /^content\/data\/.+\.json$/.test(file))
     .map((file) => basename(file))
+  // 三维资产（DEC-98 / 原 P1-5）：随包发布的 `assets/three/**`。
+  // 这一行能直接回答"这个包里到底有没有模型"——没有它的包，Info 页只会显示"本项目没有三维模型"。
+  const assetFiles = webFiles.filter((file) => file.startsWith('assets/three/'))
 
   let unity = { included: false, builds: [], reason: '本机没有 Unity 暂存产物' }
   if (existsSync(join(unityStage, 'manifest.json'))) {
@@ -138,7 +141,12 @@ async function buildReleaseManifest() {
     version: 1,
     generatedAt: new Date().toISOString(),
     web: { files: webFiles.length, bytes: await dirBytes(distRoot, webFiles) },
-    content: { projects: contentProjects, data: contentData },
+    content: {
+      projects: contentProjects,
+      data: contentData,
+      // DEC-98：三维资产与元数据表（数量 + 字节）
+      assets: { files: assetFiles.length, bytes: await dirBytes(distRoot, assetFiles) },
+    },
     unity,
     // 服务端约定：把 DEC-22 的"MIME/压缩/缓存清单"写进产物，部署方照抄
     serving: {
@@ -149,6 +157,9 @@ async function buildReleaseManifest() {
         '.mem': 'application/octet-stream',
         '.js': 'text/javascript; charset=utf-8',
         '.json': 'application/json; charset=utf-8',
+        // Three 侧资产（DEC-98）
+        '.glb': 'model/gltf-binary',
+        '.exr': 'image/x-exr',
       },
       precompressed: ['br', 'gzip'],
       cache: { fingerprinted: 'public, max-age=31536000, immutable', htmlAndManifest: 'no-cache' },
@@ -167,6 +178,10 @@ function summary(manifest, exePath) {
   console.log('\n================ 打包摘要 ================')
   console.log(`Web 产物：   ${manifest.web.files} 个文件 / ${mb(manifest.web.bytes)} MB`)
   console.log(`内容项目：   ${manifest.content.projects.length ? manifest.content.projects.join('、') : '（无）'}`)
+  const assets = manifest.content.assets
+  console.log(
+    `三维资产：   ${assets && assets.files > 0 ? `${assets.files} 个文件 / ${mb(assets.bytes)} MB` : '**未包含** —— 相关页面只会显示"本项目没有三维模型"'}`,
+  )
   if (manifest.unity.included) {
     for (const build of manifest.unity.builds) {
       console.log(

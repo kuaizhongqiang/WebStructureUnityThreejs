@@ -23,6 +23,8 @@ import { useProgressStore } from '@/stores/progress'
 import { useContentStore } from '@/stores/content'
 import { useRuntimeStore } from '@/stores/runtime'
 import { Viewer } from '@/viewer/Viewer'
+import { ModelStage } from '@/viewer/ModelStage'
+import { deviceOfProject, loadSceneTables, modelOfDevice } from '@/viewer/scene-assets'
 import { UnityBridge } from '@/unity/UnityBridge'
 import { mountUnity, type UnityFailure, type UnityHandle } from '@/unity/UnityLoader'
 
@@ -77,14 +79,76 @@ function unmountViewer(): void {
 function syncViewer(): void {
   if (meta.value.kind === 'list') void nextTick(mountViewer)
   else unmountViewer()
+  // 「左三维 + 右图文」（Info，DEC-98）用的是另一个舞台：要环境、要渲染期后加载贴图
+  if (meta.value.kind === 'model') void nextTick(mountModelStage)
+  else unmountModelStage()
+}
+
+// —— Info 页的三维区（DEC-98）：影棚 HDRI 当 IBL + 画布透明 + 贴图后加载 ——
+// 取件口径：项目 id → 器件段 → 转换报告里的 GLB；材质按 `asset-material-spec.json` 解算。
+// **不硬编**器件、模型与贴图路径 —— 三张表都是流水线产物，随包发布（见 viewer/scene-assets.ts）。
+const modelViewport = ref<HTMLElement | null>(null)
+const modelPhase = ref<'idle' | 'loading' | 'ready' | 'failed' | 'absent'>('idle')
+const modelError = ref<string | null>(null)
+let modelStage: ModelStage | null = null
+let modelUrl: string | null = null
+
+/** 冒烟探针：与 `__WSU3_VIEWER__` 同一约定（读 `renderStats` / `solveRecords`）。 */
+type ModelProbe = Window & { __WSU3_MODEL__?: ModelStage | null }
+
+async function mountModelStage(): Promise<void> {
+  const container = modelViewport.value
+  if (!container) return
+  const device = deviceOfProject(content.project?.id)
+  if (!device) {
+    modelPhase.value = 'absent'
+    modelError.value = `项目「${content.project?.title ?? '—'}」不是器件项目，没有对应的三维模型。`
+    return
+  }
+  modelStage ??= new ModelStage({ container })
+  modelStage.start()
+  try {
+    const tables = await loadSceneTables()
+    const model = modelOfDevice(tables, device)
+    if (!model) {
+      modelPhase.value = 'absent'
+      modelError.value = `本次产物里没有器件「${device}」的模型（转换报告里查不到）。`
+      return
+    }
+    // 已经挂着同一个模型就不重载（项目没变时会被同步函数反复调到）
+    if (modelUrl === model.url && modelPhase.value === 'ready') return
+    modelPhase.value = 'loading'
+    modelError.value = null
+    const loaded = await modelStage.loadModel(model.url, { device, tables })
+    // `null` = 这次加载已被更新的请求取代（例如刚切了项目）——**不要把过期结果写进页面**
+    if (!loaded) return
+    modelUrl = model.url
+    modelPhase.value = 'ready'
+    ;(window as ModelProbe).__WSU3_MODEL__ = modelStage
+  } catch (cause) {
+    modelPhase.value = 'failed'
+    modelError.value = cause instanceof Error ? cause.message : String(cause)
+  }
+}
+
+function unmountModelStage(): void {
+  ;(window as ModelProbe).__WSU3_MODEL__ = null
+  modelStage?.dispose()
+  modelStage = null
+  modelUrl = null
+  modelPhase.value = 'idle'
+  modelError.value = null
 }
 
 /**
  * 内容可能**晚于**导航到位：SPA 里换 `?project=` 只更新 URL，项目数据是异步取的。
  * 在它到达之前，页面会先落到"本项目未启用"分支（没有视口容器），
  * 所以内容到位时**必须再同步一次**，否则视口永远挂不上（`mountViewer` 拿不到容器就静默返回）。
+ * 信号里带**项目 id**：Info 页的三维模型是跟着项目走的，换项目必须换模型。
  */
-const viewerSignal = computed(() => `${meta.value.kind}:${task.value ? 'on' : 'off'}`)
+const viewerSignal = computed(
+  () => `${meta.value.kind}:${task.value ? 'on' : 'off'}:${content.project?.id ?? ''}`,
+)
 watch(viewerSignal, () => void nextTick(syncViewer))
 
 onMounted(async () => {
@@ -105,6 +169,7 @@ watch([taskType, projectId], ([next], [previous]) => {
   void content.ensureProject(projectId.value)
 })
 onBeforeUnmount(unmountViewer)
+onBeforeUnmount(unmountModelStage)
 
 function back(): void {
   unmountViewer()
@@ -267,6 +332,56 @@ function finish(): void {
             </div>
             <div class="app-grow" />
             <button class="ui-btn ui-btn--block" @click="back()">返回项目目录</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- model：左三维 + 右图文（Info，DEC-98 —— 形态与排版稿 C6 同构） -->
+      <div v-else-if="meta.kind === 'model'" class="app-split">
+        <!-- 左：三维区。画布透明 ⇒ 底色就是这个毛玻璃框（与排版稿一致） -->
+        <div class="ui-panel app-model">
+          <div class="ui-panel__body ui-panel__body--flush app-model__body">
+            <div ref="modelViewport" class="app-model__stage" />
+            <div v-if="modelPhase === 'loading'" class="ui-viewport__center">
+              <LoaderCircle :size="18" />
+              <div>正在加载三维模型…</div>
+            </div>
+            <!-- 缺资产/缺模型是**明确状态**，不是"一直在转圈"（同 Unity 产物的纪律） -->
+            <div v-else-if="modelPhase === 'absent' || modelPhase === 'failed'" class="ui-viewport__center">
+              <div>
+                <div style="color: var(--text-1); font-weight: 600">
+                  {{ modelPhase === 'absent' ? '本项目没有三维模型' : '三维模型没能加载' }}
+                </div>
+                <div style="max-width: 460px; line-height: 1.8">{{ modelError }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右：简介。列宽 380px 由 .app-split 给；**不放"完成并前往"** —— 排版稿 C6 没有这个控件，
+             导航由站点线承担（DEC-98；DEC-40 也明确 Info 这类无交互的可以只有进入） -->
+        <div class="ui-panel">
+          <div class="ui-panel__head">简介</div>
+          <div class="ui-panel__body ui-col" style="overflow: auto">
+            <div class="ui-article">
+              <p v-for="(paragraph, index) in task?.paragraphs ?? []" :key="`p${index}`">
+                {{ paragraph }}
+              </p>
+              <template v-for="(section, index) in task?.sections ?? []" :key="`s${index}`">
+                <p v-if="section.title">
+                  <b>{{ section.title }}</b>
+                </p>
+                <p>{{ section.text }}</p>
+              </template>
+              <p v-if="!(task?.paragraphs.length || task?.sections.length)">
+                该任务在内容数据里没有文字（由三维承担）。
+              </p>
+            </div>
+            <!-- 徽标只写数据里真有的（不编造"预计 45 分钟""中职/高职"这类排版稿上的示意值） -->
+            <div class="ui-row" style="flex-wrap: wrap">
+              <span class="ui-badge">{{ enabledTypes.length }} 个任务</span>
+              <span class="ui-badge ui-badge--info">Three.js · 可旋转</span>
+            </div>
           </div>
         </div>
       </div>

@@ -327,6 +327,52 @@ try {
   check(article.text.includes('接触器'), '项目任务页：面包屑显示项目名（内容数据里的 displayName）')
   await page.screenshot({ path: resolve(artifactsDir, 'task-article.png'), fullPage: false })
 
+  // 7b-2. Info 页的三维区（DEC-98）：左边真的挂上了模型，不是占位块。
+  //       断言四件事：有画布、ModelStage 已就绪、真的画出了三角面、材质解算零错误。
+  await page.waitForFunction(() => Boolean(window.__WSU3_MODEL__), null, { timeout: 30_000 }).catch(() => {})
+  await page.waitForTimeout(900) // 放开几帧，让 renderStats 里有真实的 draw call / 三角面
+  const model = await page.evaluate(() => {
+    const stage = window.__WSU3_MODEL__
+    const canvas = document.querySelector('.app-model__stage canvas')
+    return {
+      mounted: Boolean(stage),
+      canvas: Boolean(canvas),
+      width: canvas?.width ?? 0,
+      stats: stage ? stage.renderStats : null,
+      records: stage
+        ? stage.solveRecords.map((item) => ({ name: item.name, orm: item.orm, errors: item.errors.length }))
+        : [],
+    }
+  })
+  check(model.canvas && model.width > 0, 'Info 页：三维视口真的有画布', `width=${model.width}`)
+  check(model.mounted, 'Info 页：ModelStage 已就绪（模型加载完成）')
+  check(
+    (model.stats?.triangles ?? 0) > 1000,
+    'Info 页：模型真的画出了三角面（不是空场景）',
+    `triangles=${model.stats?.triangles} calls=${model.stats?.calls}`,
+  )
+  check(
+    model.records.length > 0 && model.records.every((item) => item.errors === 0),
+    'Info 页：材质解算零错误（含 mask→ORM）',
+    JSON.stringify(model.records),
+  )
+  const modelCanvas = await page.$('.app-model__stage canvas')
+  const modelBox = modelCanvas ? await modelCanvas.boundingBox() : null
+  if (modelBox) {
+    const shot = await page.screenshot({ clip: modelBox })
+    await writeFile(resolve(artifactsDir, 'task-info-model-canvas.png'), shot)
+    const stats = pngStats(shot)
+    // 画布**透明**（底色交给毛玻璃框），所以判据是"颜色有明显分布"而不是"不是纯白"
+    check(
+      stats.uniqueColors > 200 && stats.maxLum - stats.minLum > 40,
+      'Info 页：三维画布画出了内容（透明底 + 模型明暗分布）',
+      `unique=${stats.uniqueColors} lum=${stats.minLum}~${stats.maxLum}`,
+    )
+  } else {
+    check(false, 'Info 页：拿不到三维画布的截图区域')
+  }
+  await page.screenshot({ path: resolve(artifactsDir, 'task-info.png'), fullPage: false })
+
   // 7c. 未启用的槽位要说清，而不是给个空白页（"实验仪器"(2) 在接触器里是 null）
   await page.goto(`${base}/#/task/2?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(500)

@@ -242,13 +242,14 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 **不阻塞任何事**：随时可在编辑器里做；做完把那 24 个 `.mat` 一起提交（Plastic）。
 相关：`docs/research/09` §6、`docs/design/03` §5.1。
 
-### P1-5 资产发布链（大资产怎么进产物）
+### P1-5 资产发布链（大资产怎么进产物）—— ✅ **已完成（2026-10-14，DEC-98）**
 
 | 项 | 内容 |
 |---|---|
 | 问题 | `web/public/` 下的东西会被 Vite 拷进 `dist` 并进 git；`content/assets/` 不能进 git，但运行时必须能被 Web 服务到 |
-| 方案 | 新增 `tools/pipeline/web-assets.mjs`：构建**前**把 `content/assets/three/**` 拷进 `web/dist/assets/three/**`（`dist` 不进 git）；`pack.mjs` 把它计入发布清单 |
-| 落点 | `tools/pipeline/`、`web/dist/release-manifest.json` 的 `content.assets` 字段 |
+| 方案（实际落地） | `vite.config.ts` 里的 `threeAssets()` 插件：**dev 走中间件**（直接从 `content/assets/three` 读盘）、**build 走拷贝**（→ `dist/assets/three/**`），三张元数据表发到 `/assets/three/_meta/`。这样 dev / smoke / build **同一套 URL**，`content/assets/**` 仍不进 git（DEC-57），`web/public/` 不被生成物污染 |
+| 落点 | `web/vite.config.ts`（插件）、`web/src/viewer/scene-assets.ts`（取数）、`pack.mjs` 发布清单的 `content.assets` 字段（数量 + 字节） |
+| 用它的第一页 | `Info` 的三维区（DEC-98）；缺资产时页面显示**明确状态**，不假装加载 |
 
 > ⚠️ **别把 DEC-96 的审核页当成它**：`docs/model-preview/` 是"从仓库根起静态服务、直读磁盘"的**审核工具**（不起构建、不进产品），
 > 本项要的是**产品链路**（构建前拷进 `web/dist/assets/three/**`，`content/assets/**` 仍然不进 git，DEC-57）。

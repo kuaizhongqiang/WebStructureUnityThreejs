@@ -21,7 +21,8 @@ const { join, resolve } = require('node:path')
 const { startStaticServer } = require('./server')
 
 const SMOKE = process.argv.includes('--smoke') || process.env.WSU3_SMOKE === '1'
-const SMOKE_TIMEOUT_MS = 25_000
+// 45s：冒烟现在有三段（挂载 + Unity 页 + Info 页的三维取证），而 Info 页要等模型与贴图到货
+const SMOKE_TIMEOUT_MS = 45_000
 const IS_WINDOWS = process.platform === 'win32'
 
 /**
@@ -258,8 +259,57 @@ async function smokeUnity() {
   }
 }
 
-async function afterLoad() {
-  if (!SMOKE) {
+/**
+ * 冒烟第三段：打开 **Info 页**（TaskType.Info = 7）—— 断言"左三维 + 右图文"里的三维区
+ * 真的挂上了模型（DEC-98）。判据与 `web/tools/render-smoke.mjs` 同一套：
+ * 有画布、ModelStage 就绪、真的画出三角面、材质解算零错误。
+ *
+ * 为什么壳里还要再验一遍：**壳里这份是打包产物** —— 资产随包发、URL 前缀与 MIME 都由壳的静态服务器给，
+ * 与 dev server 下的行为不是同一件事。
+ */
+async function smokeInfo() {
+  try {
+    await win.webContents.executeJavaScript(`location.hash = '#/task/7?project=clip_contactor'`)
+    const started = Date.now()
+    let state = {
+      hasCanvas: false,
+      ready: false,
+      triangles: 0,
+      records: [],
+      columns: [],
+      text: '',
+    }
+    for (;;) {
+      state = await win.webContents.executeJavaScript(`(() => {
+        const stage = window.__WSU3_MODEL__
+        const canvas = document.querySelector('.app-model__stage canvas')
+        return {
+          hasCanvas: Boolean(canvas && canvas.width > 0),
+          ready: Boolean(stage),
+          triangles: stage ? stage.renderStats.triangles : 0,
+          records: stage ? stage.solveRecords.map((r) => ({ name: r.name, orm: r.orm, errors: r.errors.length })) : [],
+          columns: [...document.querySelectorAll('.app-split > *')].map((el) => Math.round(el.getBoundingClientRect().width)),
+          text: (document.body.innerText || '').replace(/\\s+/g, ' ').slice(0, 120),
+        }
+      })()`)
+      if (state.ready || Date.now() - started > 12_000) break
+      await new Promise((done) => setTimeout(done, 300))
+    }
+    const solved = state.records.length > 0 && state.records.every((item) => item.errors === 0)
+    const ok = state.hasCanvas && state.ready && state.triangles > 1000 && solved
+    log(
+      `Info 页：canvas=${state.hasCanvas} 就绪=${state.ready} 三角面=${state.triangles}` +
+        ` 材质=${state.records.length}${solved ? '（零错误）' : '（**有错误或没解算**）'}` +
+        ` 栏宽=${state.columns.join(' + ')}`,
+    )
+    return { ok, ...state }
+  } catch (error) {
+    log('Info 页取证失败：', String(error))
+    return { ok: false, mode: 'error' }
+  }
+}
+
+async function afterLoad() {  if (!SMOKE) {
     log('页面已加载')
     return
   }
@@ -284,12 +334,15 @@ async function afterLoad() {
 
     // 第二段取证：真的开一个 Unity 类任务页（TaskType.Training = 5）
     const unityReport = await smokeUnity()
+    // 第三段取证：Info 页的三维区（DEC-98；顺带覆盖 Unity → Three 的切回）
+    const infoReport = await smokeInfo()
 
     const ok =
       report.mounted &&
       report.shell.isDesktop &&
       consoleErrors.length === 0 &&
-      unityReport.ok
+      unityReport.ok &&
+      infoReport.ok
 
     // 打包后的 Windows GUI 程序**不带控制台**，stdout 会被丢掉 —— 所以同时落一份报告文件，
     // 让"能打开"这件事有可读、可留档的证据。
@@ -305,6 +358,7 @@ async function afterLoad() {
       captionHeight: CAPTION_HEIGHT,
       unityManifest,
       unityPage: unityReport,
+      infoPage: infoReport,
       consoleErrors,
       ...report,
       at: new Date().toISOString(),
@@ -324,6 +378,7 @@ async function afterLoad() {
     log('  页面实际预留的标题栏高度：', report.captionVar || '(未设置)')
     log('  画布数：', report.canvases)
     log('  正文片段：', report.text)
+    log('  Info 页三维区：', infoReport.ok ? '通过' : '未通过')
     if (consoleErrors.length) log('  控制台错误：', consoleErrors.slice(0, 3))
     log(ok ? '冒烟通过。' : '冒烟失败。')
     app.exit(ok ? 0 : 1)

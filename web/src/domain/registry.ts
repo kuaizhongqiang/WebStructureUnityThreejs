@@ -13,6 +13,7 @@ import { TaskType, TASK_TYPE_LABELS, TASK_TYPE_STACK, ViewerStack } from '@/cont
 /** 页面骨架类型：决定任务页用哪种主体容器（不是"每个 TaskType 各写一页"）。 */
 export type TaskPageKind =
   | 'article' // 一段正文（目的 / 原理 / 简介）
+  | 'model' // 左三维 + 右图文（简介；DEC-98，与排版稿 C6 同构）
   | 'list' // 条目列表 + 三维展示（仪器 / 结构）
   | 'video' // 视频 + 播放列表（原理）
   | 'quiz' // 题目控件（小测验）
@@ -36,7 +37,8 @@ const META: Readonly<Record<TaskType, Omit<TaskTypeMeta, 'type'>>> = {
   [TaskType.LineConnection]: { icon: 'cable', kind: 'practice', hint: '电路连接（Unity 承载）' },
   [TaskType.Training]: { icon: 'flask-conical', kind: 'practice', hint: '仿真实验（Unity 承载）' },
   [TaskType.Test]: { icon: 'list-checks', kind: 'quiz', hint: '小测验' },
-  [TaskType.Info]: { icon: 'book-open', kind: 'article', hint: '实验简介与背景' },
+  // DEC-98：简介页 = 左三维 + 右图文（排版稿 C6 的形态；三维由 ModelStage 承载）
+  [TaskType.Info]: { icon: 'book-open', kind: 'model', hint: '实验简介与背景' },
   [TaskType.Structure]: { icon: 'boxes', kind: 'practice', hint: '结构认知（Unity 承载）' },
   [TaskType.Inspection]: { icon: 'search-check', kind: 'practice', hint: '故障检测（Unity 承载）' },
   [TaskType.Exam]: { icon: 'clipboard-check', kind: 'exam', hint: '考核与结算' },

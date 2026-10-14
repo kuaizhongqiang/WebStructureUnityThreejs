@@ -168,6 +168,28 @@
   height: 100% !important;
 }
 
+/* ------------------------------------------------ Info 页（DEC-98）：左三维 + 右图文
+   与排版稿 C6 同构：三维区**画布透明**，底色就是 `.ui-panel` 的毛玻璃与描边，
+   所以"模型浮在一个半透明框里"（这也是为什么这里不给视口铺底色 —— 铺了就不是那个观感）。
+   右栏 380px 由 `.app-split` 的列宽给，不再单独写死。 */
+.app-model {
+  min-width: 0; /* 关键：让三维框在栅格里能收缩，否则 canvas 会把右栏挤出去 */
+}
+.app-model__body {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+}
+.app-model__stage {
+  position: absolute;
+  inset: 0;
+}
+.app-model__stage > canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 /* ------------------------------------------------ 首页（A1）*/
 .app-hero {
   position: relative;
