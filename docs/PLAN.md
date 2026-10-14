@@ -291,15 +291,15 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 
 **目标**：`clip_contactor` 等 8 个器件的"结构"站真的能在 WebGL 里点零件、播拆装动画、走完步骤、发 `structure:done`。
 
-**现状**：**资产已全部搬入 Unity**（2026-10-14，DEC-102 / DEC-103）—— 预制体 / 46 段动画 / 材质 / Shader / 插件都在位，脚本与清单可复核。
+**现状**：**资产已全部搬入 Unity**（2026-10-14，DEC-102 / DEC-103）—— 预制体 / 46 段动画 / 材质 / Shader / 插件都在位，脚本与清单可复核；**46 步的步骤子树也已生成**（DEC-111，`StructureStepGenerator` 从只读来源工程生成、幂等可重跑，见 `design/10` §7）。
 
 | 步 | 内容 | 待办编号 | 依赖 |
 |---|---|---|---|
-| a | 零件脚本重新承载（`InteractiveObjBase` 派生，字段照留，去掉 HighlightPlus 门面调用） | `TODO.md` D-15 | 无 |
+| a | 零件脚本重新承载（`InteractiveObjBase` 派生，字段照留，去掉 HighlightPlus 门面调用） | ✅ **已落地（2026-10-14，DEC-104）**：`StructureObj` + 8 个器件共 **38 个零件**（`TODO.md` D-15 已关闭） | 无 |
 | b | 决定 HighlightPlus 怎么被业务代码用上 | ✅ **已定（2026-10-14，DEC-106）：给插件补 asmdef，`WSU3.Core` 引用 `HighlightPlus.Runtime`** | a |
-| c | **等负责人给出步骤数据的预制体结构** → 定"步骤数据落哪"（Unity 步骤节点 / 内容数据 JSON） | `TODO.md` D-14 | 负责人 |
-| d | 实例化与初始化：进 `Structure` 站 → 装配预制体 → 相机 / 交互闸门 / 高亮 / 动画驱动 | `TODO.md` D-13。**实例化已落地**（DEC-110）；**初始化未做**（相机 / 闸门 / 高亮）；动画驱动卡在 D-14 的步骤数据落点 |
-| e | AB 打包与装载（`bundleName = Content/clip_<器件>`），接进 `assets:ready` / `scene:ready` | ✅ **已完成（2026-10-14，DEC-108）**：8 个包 / 45.3 MB，包名与 `content/asset-structure-report.json` 逐条一致；装载已接进任务流 |
+| c | **定"步骤数据落哪"** | ✅ **已定 + 已落地（2026-10-14，DEC-111）**：Unity 侧步骤节点 —— 预制体自带**全量** `StepManager → ProcessingHandler → StepHandler` 子树；8 个器件 **46 步**由 `StructureStepGenerator` 从只读来源工程生成（幂等；报告 `content/asset-structure-steps-report.json`），见 `design/10` §7 | — |
+| d | 实例化与初始化：进 `Structure` 站 → 装配预制体 → 相机 / 交互闸门 / 高亮 / 动画驱动 | `TODO.md` D-13。**实例化已落地**（DEC-110）；**初始化未做**（相机 / 闸门 / 高亮）；**动画驱动已就位**（每步自带 `animations[0]`：播放器 + clip + `ifHideOnFinish=false`） |
+| e | AB 打包与装载（`bundleName = Content/clip_<器件>`），接进 `assets:ready` / `scene:ready` | ✅ **已完成（2026-10-14，DEC-108）**：8 个包 / 45.3 MB，包名与 `content/asset-structure-report.json` 逐条一致；装载已接进任务流。⚠️ **预制体当晚又变了（46 步子树）⇒ 这 8 个包要重打一次**，见 `TODO.md` D-23 |
 | f | 编辑器里复核材质接管（重导 FBX）+ `timeRelay` 的嵌套预制体 | `TODO.md` D-18 | 无 |
 
 **验收**（未定则先按这条）：WebGL 里进结构站 → 点任一零件 → 播对应拆装动画 → 全部走完后 Web 收到 `structure:done`；

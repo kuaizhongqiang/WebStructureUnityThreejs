@@ -35,6 +35,18 @@ namespace WSU3.Core.Steps
         [Tooltip("步骤描述（内容侧留痕，不上网）")]
         [SerializeField] private string description;
 
+        /// <summary>
+        /// 条件类型的**待选值**：只在"这个步骤还没有条件"时用得上 —— `StepHandlerEditor` 的「条件类型」
+        /// 下拉读它当初始值，选完类型由编辑器建出对应条件对象并回写这里。
+        ///
+        /// ⚠️ 它**不是运行期数据**：真实类型永远取 `condition` 的实际类（见下面的 `ConditionType` 属性），
+        /// 所以它即使过期也不影响运行逻辑。`[HideInInspector]` 是因为裸枚举画出来没有语义 ——
+        /// 会让人以为"改这个字段就能换条件"，而真正要换的是 `condition` 上的那个对象；
+        /// 编辑器里由 `StepHandlerEditor.DrawConditionSection()` 用带标签的下拉呈现。
+        /// </summary>
+        [HideInInspector]
+        [SerializeField] private ConditionType conditionType = ConditionType.Default;
+
         [Tooltip("步骤条件：数据与行为都在这里。抽象类型用 Inspector 的类型下拉选具体条件（ConditionDefault / ConditionClick / …）")]
         [SerializeReference] private ConditionBase condition;
 

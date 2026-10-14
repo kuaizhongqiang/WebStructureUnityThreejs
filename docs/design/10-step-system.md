@@ -44,6 +44,16 @@ StepManager（场景根节点，导演）
 摊到步骤上就是一堆永远空着的字段；反过来，用 `[SerializeReference]` 多态序列化后，
 Inspector 里**每个步骤只显示自己那套字段**。
 
+> **怎么在 Inspector 里选条件类型**（2026-10-14 补）：条件类型是**由类决定**的（`ConditionBase.Type` 属性），
+> `ConditionType` 枚举里那几个（结束 / 问题 / 点击 / UI / 连线配对 / 默认）只是标签。
+> 所以**换类型 = 换对象**：`StepHandlerEditor` 的「条件类型」下拉里选一个，就建出对应的条件类
+> （`NewCondition` 是唯一的"类型 → 类"映射点）；下拉的**显示值永远取 `condition` 的实际类**，
+> 所以面板上写的类型与运行期真正跑的条件不可能对不上。
+> `StepHandler.conditionType` 那个序列化字段**只在还没有条件时**当待选值用，运行期没有人读它
+> （带 `[HideInInspector]`，由上面那个下拉画）。只有已实现的类型可选，灰掉的是「开始」（与默认同义）
+> 与「拖拽 / 工具」（DEC-93 本期不做）。
+> 换类型会新建对象 ⇒ 旧条件里已填的字段会丢掉，编辑器会先弹确认；也可以走「清空条件（重新选类型）」。
+
 条件的公共字段（`ConditionBase`）：
 
 | 字段 | 说明 |
@@ -218,3 +228,27 @@ SetStep(2, 3)
 4. **步骤树挂进内容场景**（等 P2-6 内容装配）+ 一次真机/真构建验收；
 5. **成绩体系**：`task:completed` 的 score 现在是恒 0 的占位；
 6. 动画播完的护栏阈值（现在是 `clip 时长 + 1s`）与 `timeoutSeconds` 的实际取值，按真内容复核。
+
+## 7 从来源工程生成步骤子树（结构任务 = TaskType 8，DEC-111）
+
+结构任务的 **46 步不是手工搭的**，由 `Assets/Editor/Steps/StructureStepGenerator.cs` 从**只读来源工程**
+（DEC-69）的 `InstControlledManager.simpleSteps` 生成；层级形状见 §1（StepManager → 直接子 ProcessingHandler
+→ 直接子 StepHandler）。映射：
+
+| 来源 `simpleSteps` | 落到本工程 |
+|---|---|
+| `clip`（guid） | `Condition.animations[0].clip`；播放器 = 该器件 `Scale` 上的 `Animation`（来源 `controlAnim` 指的就是它），并会检查该 clip 有没有注册进它的 `m_Animations`（没注册的运行期取不到 = 静默不播） |
+| `clickObj`（零件脚本 MonoBehaviour 的 fileID） | `ConditionClick.target` = 该零件上的 `StructureObj`（没有就补）；`{fileID: 0}` ⇒ 用 `ConditionDefault`（只播动画、不等待交互） |
+| `delay` / `animSpeed` | **不落**：7 个器件全 0；只有 `contactor` 用 `0.5` / `1`，正好是 `StepManager.stepDelaySeconds`（默认 0.5f）与默认播放速度 |
+| `index` | **不用**（来源数据里每条都写 0）：**顺序**才是步骤顺序 |
+
+**怎么跑**：菜单 `WSU3/Steps/生成结构任务步骤（选来源工程…）`（第一次选目录，之后走「沿用上次来源工程」）；
+批处理 `-executeMethod WSU3.Editor.StructureStepGenerator.GenerateFromBatch -structureSource <来源工程根目录>`。
+两个菜单入口都会先拦"预制体编辑模式开着"与"编辑器正在编译"，并有确认弹窗。
+
+**四条纪律**：① 来源工程**只读**（只 `File.ReadAllText`）；② **幂等**（重复跑应报 0 变更）；
+③ **只补空**（手工在 Inspector 里填过的非空字段保留，唯一例外是与来源不符时替换并**告警**）；
+④ 顺手清掉 `StructureTaskObj` / `InstControlledManager` 的 Missing Script 残留（DEC-104：这两个脚本有意未搬）。
+
+⚠️ **预制体改完要重打 AB 包**（`WSU3/Pack/一键打 AB 包（全部）`）—— 运行期加载的是包里的那份。
+报告落 `content/asset-structure-steps-report.json`（逐器件：步数 / 新建 / 变更 / 清的 Missing Script / 补的零件与 clip / 告警）。

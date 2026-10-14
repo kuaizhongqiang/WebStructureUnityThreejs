@@ -1283,3 +1283,53 @@ Unity 于是把它编进**预定义程序集** `Assembly-CSharp-firstpass`；而
 - 本期的 AA 资源是 **0 条**（漫游场景未做，`PLAN.md` P2-6c），场景分组是**明确的空操作**（弹窗说明原因）。
 
 
+
+## 24 第十一轮（2026-10-14）：结构任务的步骤落点（DEC-111）
+
+> 背景：DEC-104 把结构任务的步骤承载定为 `StepManager`，但**步骤数据放哪**留成了未闭合项
+> （`TODO.md` D-14：Unity 侧步骤节点 / 内容数据 JSON 二选一）。负责人 2026-10-14 在
+> `breaker_structure_model.prefab` 里手工搭出 `StepManager → 0(ProcessingHandler) → 0(StepHandler)`
+> 骨架，并给出结论：**"我们直接用全量的 `StepManager`"**。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-111 | **结构任务的步骤数据落点 = Unity 侧步骤节点**：结构件预制体自带**全量** `StepManager → ProcessingHandler → StepHandler` 子树（步骤与条件都住在预制体里），**不走内容数据 JSON**。`StructureTaskManager` 早有对应实现（DEC-110：`GetComponentInChildren<StepManager>()` → `StartExecution()`；没有子树时只实例化并说明原因）⇒ 这条决策**不需要改运行期代码** | 负责人 2026-10-14 指示（原话"我们直接用全量的 StepManager"） | 否 | **生效** |
+
+### DEC-111 落地要点
+
+- **层级形状是硬约束，不是风格问题**（`design/10` §1）：`StepManager` 只看**直接子** `ProcessingHandler`，
+  `ProcessingHandler` 只看**直接子** `StepHandler`。手工搭出的骨架（`StepManager/0/0`）正好是这个形状；
+  将来若写生成器，产出也必须是这个形状。
+- **一条步骤 = "点第 N 个零件 → 播第 N 段"**：来源预制体 `simpleSteps` 的条数**与拆装动画段数逐器件相等**
+  （breaker 5 / combinationSwitch 6 / contactor 12 / fuse 4 / speedRelay 7 / thermalRelay 7 / timeRelay 5 = **46**；
+  `masterAppliance` 0 条 —— 空壳，见 DEC-105）。`simpleSteps[i].clip` 与该预制体 `Scale` 上
+  `Animation.m_Animations` **同序同 guid**（实测 breaker 5/5 命中）。
+- **`clickObj` 可以直接当 `ConditionClick.target`**：它在来源工程里是**挂零件脚本的 MonoBehaviour 的 fileID**
+  （不是 GameObject），而预制体搬运时 fileID **逐字保留** ⇒ 本工程同一个 fileID 就是那个零件的
+  `InteractiveObjBase`（`StructureObj`，DEC-104 的重新承载）。实测 breaker 的 4 个非零 `clickObj` 已逐个对上
+  （Cylinder / CircuitBreaker01 / CircuitBreaker13 / CircuitBreaker16，4 处都已挂 `StructureObj`）；
+  `clickObj: {fileID: 0}` 的那条 = 无交互 ⇒ 映射成 `ConditionDefault`。
+- **`delay` / `animSpeed` 无需另立数据**：7 个器件两者全为 0；只有 `contactor` 用 `delay: 0.5` 与 `animSpeed: 1`
+  —— 前者正是 `StepManager.stepDelaySeconds`（默认 `0.5f`），后者就是默认播放速度。
+- **`masterAppliance` 不产子树**（0 步）：与 DEC-105"该站永远不发 `structure:done`"一致，是接受的结果。
+- **未闭合**：这 46 步由**脚本从只读来源工程生成**、还是**在编辑器里手工搭**；
+  以及 `ifHideOnFinish`（动画播完是否隐藏该物体）与 `activeObjects` / `inactiveObjects`（显隐表）
+  在来源的 `simpleSteps` 里**没有对应字段**，取值要负责人定（当前骨架留的是类默认值）。
+
+### DEC-111 补记（2026-10-14）：46 步由脚本生成，两个未闭合项已定
+
+- **"脚本生成还是手工搭" → 脚本生成**：新增 `Assets/Editor/Steps/StructureStepGenerator.cs`
+  （菜单 `WSU3/Steps/生成结构任务步骤（选来源工程…）` / `（沿用上次来源工程）`；
+  批处理 `-executeMethod WSU3.Editor.StructureStepGenerator.GenerateFromBatch -structureSource <来源工程根目录>`）。
+  8 个器件一次跑完且**幂等**（第 4 次跑 0 变更）。证据：`docs/RECORD.md` 1.39、`content/asset-structure-steps-report.json`。
+- **`ifHideOnFinish` / 显隐表 → 都用类默认**（负责人 2026-10-14 定）：`ifHideOnFinish = false`、两张表留空，
+  收场交给 `ConditionClick.toggleTargetActive`（Prepare 藏 / Waiting 显 / Complete 再藏）。
+  要逐器件调就在 Inspector 里改 —— 生成器**只补空**，不覆盖手工值。
+- **两条"找不到目标"的坑（都已修，记在这里免得再踩）**：
+  ① `Transform.Find` 要的是**相对**预制体根的路径，而按 fileID 算出来的路径是**从根开始**的（含根名）⇒ 必须先剥根名；
+  ② 嵌套 FBX 实例里的零件在外层 YAML 里是 `stripped` 块（没有名字、没有 Transform），路径算不出来 ⇒
+  改按"**源资产 guid + 该资产里的 fileID**"当身份：stripped GameObject 的 fileID 在两个工程里**保留**，
+  先在本工程 YAML 里把 stripped id 翻成身份，再在内容里按身份匹配。
+  ⚠️ 取 id 只能用**源资产物体**（`GetCorrespondingObjectFromSource` 的返回值，实测 7/7 命中）；
+  对**预制体内容里的物体**调 `TryGetGUIDAndLocalFileIdentifier` 实测 16/16 失败，别走那条路。
+- **预制体已变 ⇒ 结构件 AB 包要重打一次**（`WSU3/Pack/一键打 AB 包（全部）`），已登记 `TODO.md` D-23。

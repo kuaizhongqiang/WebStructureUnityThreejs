@@ -103,6 +103,15 @@ NewStructureUnity/Assets/StreamingAssets/Content.meta
 # 含本机工作区 GUID 与账号）一律不入 git。依据：docs/DECISIONS.md DEC-34。
 .plastic/
 
+# Unity Version Control（Plastic）的「私有文件」副本：**git 以外的工具**（`git pull` / 编辑器之外写盘）
+# 改动工作区里受控文件时，UVCS 会留一份 `<文件>.private.N` 的同内容副本（实测：2026-10-14 拉取那一刻
+# 一次生成 6 个，正对应 #21 rename 掉的 `Assets/Settings/{High,Low,Middle}*`）。
+# 塑料侧本来就不管它 —— `NewStructureUnity/ignore.conf` 自带 `*.private` / `^*.private.[0-9]+$`；
+# 缺的是 git 侧这条：不写的话它们会以 untracked 身份挤进 `git status`，还可能被 `git add -A` 顺手带进来。
+*.private
+*.private.meta
+*.private.[0-9]*
+
 # ---------- 操作系统 ----------
 .DS_Store
 Thumbs.db
@@ -113,6 +122,9 @@ desktop.ini
 *.log
 *.stackdump
 nul
+
+# Agent 工具的项目级 clone（dsh-github 插件的落点）：整棵仓库的副本，绝不入库
+.dsh-github/
 
 # 打包产物（exe 可达上百 MB，绝不入库；见 DEC-77）
 # 注意用通配：pack.mjs 支持 --out release-xxx 换输出目录（上一次的 exe 被占用时），那些也要忽略
