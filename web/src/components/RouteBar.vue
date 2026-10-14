@@ -2,14 +2,22 @@
 /**
  * 站点线导航（对应排版稿 A7/B2 的 `.ui-route`）。
  *
- * 顺序与标签全部来自**契约**（`TASK_TYPES` / `TASK_TYPE_LABELS`），
- * 完成态来自进度档案（`stores/progress`），技术栈徽章来自 `TASK_TYPE_STACK`。
+ * **画哪几站由内容数据决定**（DEC-100）：只画**当前项目真正启用**的任务
+ * （`stores/content` 的 `enabledTypesOf()`，顺序仍按契约 `TASK_TYPES`）——
+ * 数据里那个槽位是 `null` / `taskActive:false` 的任务**不出现**；
+ * 一个启用的任务都没有（数据没到位、项目为空）时，**整条站点线不渲染**，不画一条空壳。
+ * 理由：站点线是导航，"点得进去的站"才算一站，把没有内容的任务画上去等于把用户送进空页面；
+ * 这与菜单页的"站数"、任务页的"上一 / 下一站"用的是**同一个口径**。
+ *
+ * 标签仍逐字来自**契约**（`TASK_TYPE_LABELS`），完成态来自进度档案（`stores/progress`），
+ * 技术栈徽章来自 `TASK_TYPE_STACK`。
  * 组件只负责呈现与点击，不决定"能不能进"（那属于任务页/权限，见 design/01）。
  */
 import { computed } from 'vue'
 import { Check } from 'lucide-vue-next'
-import { TASK_TYPES, TaskType, ViewerStack } from '@/contracts'
+import { TaskType, ViewerStack } from '@/contracts'
 import { labelOf, stackOf } from '@/domain/registry'
+import { useContentStore } from '@/stores/content'
 import { useProgressStore } from '@/stores/progress'
 
 const props = defineProps<{
@@ -23,10 +31,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{ select: [TaskType] }>()
 
+const content = useContentStore()
 const progress = useProgressStore()
 
+/** 本项目启用的任务（契约顺序）。空数组 = 这一页没有任务可导航 ⇒ 站点线整条不画。 */
+const types = computed(() => content.enabledTypesOf())
+
 const items = computed(() =>
-  TASK_TYPES.map((type, index) => ({
+  types.value.map((type, index) => ({
     type,
     index,
     label: labelOf(type),
@@ -50,7 +62,13 @@ function choose(item: { type: TaskType; locked: boolean }): void {
 </script>
 
 <template>
-  <nav class="ui-route" :class="{ 'ui-route--narrow': narrow }" aria-label="任务站点线">
+  <!-- 一个启用的任务都没有时不渲染整条（不是渲染成空条）—— 见脚本头的 DEC-100 说明 -->
+  <nav
+    v-if="items.length > 0"
+    class="ui-route"
+    :class="{ 'ui-route--narrow': narrow }"
+    aria-label="任务站点线"
+  >
     <template v-for="item in items" :key="item.type">
       <span
         v-if="item.index > 0"
@@ -71,6 +89,8 @@ function choose(item: { type: TaskType; locked: boolean }): void {
         @keydown.enter.prevent="choose(item)"
         @keydown.space.prevent="choose(item)"
       >
+        <!-- 站号是**本站点线内**的顺序（1..n），不是契约序号 ——
+             数据只启用一部分槽位，用契约序号会跳号（如 3 / 7 / 8 / 9） -->
         <span class="ui-route__dot">
           <Check v-if="item.done" :size="15" />
           <template v-else>{{ item.index + 1 }}</template>

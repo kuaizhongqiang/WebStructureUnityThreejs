@@ -20,7 +20,8 @@ const props = withDefaults(
   defineProps<{
     crumb?: string
     badges?: readonly string[]
-    /** 显示站点线（首页/登录/加载这类"项目外"页面不显示） */
+    /** 显示站点线（首页/登录/加载这类"项目外"页面不显示）。
+     *  这里只表达"这一页要不要站点线"；当前项目一个启用任务都没有时，站点线自己也不渲染（DEC-100）。 */
     route?: boolean
     activeTask?: TaskType | null
     /** 显示"返回目录"等按钮组 */

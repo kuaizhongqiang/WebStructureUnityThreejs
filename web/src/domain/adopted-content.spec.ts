@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { QuestionType, QuestionUsage, TaskType } from '@/contracts'
 import {
+  enabledTaskTypesOf,
   questionTypeOf,
   questionUsageOf,
   toContentMenu,
@@ -92,6 +93,17 @@ describe('TaskType ↔ 槽位', () => {
     const project = toContentProject({ ...CLIP, taskStructureData: null })
     const types = project?.tasks.map((task) => task.taskType) ?? []
     expect(types.indexOf(TaskType.Principle)).toBeLessThan(types.indexOf(TaskType.Info))
+  })
+
+  it('站点线的两个前置条件：项目为空 ⇒ 无站可画（整条不渲染），有项目 ⇒ 只给启用的站（DEC-100）', () => {
+    // 内容没到位 / 兜底项目也读不到时 `project` 为 null ⇒ 空数组 ⇒ 站点线不渲染
+    expect(enabledTaskTypesOf(null)).toEqual([])
+    // 有项目时给的就是"启用的任务"（未启用与 taskActive:false 的都不在），顺序按契约
+    expect(enabledTaskTypesOf(toContentProject(CLIP))).toEqual([
+      TaskType.Principle,
+      TaskType.Info,
+      TaskType.Exam,
+    ])
   })
 
   it('正文、资源引用、图片按槽位取到（Inspection 这类纯三维槽位没有正文也不报错）', () => {
