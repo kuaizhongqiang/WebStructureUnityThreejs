@@ -53,9 +53,9 @@
 | C1 | `None` 空类型 | Three | MCV `TaskDefaultPanel` 空壳（设计即占位） | 占位/无操作 | [ ] |
 | C2 | `Purpose` 任务目的 | **Three** | Sensor `Task_PurposePanel` ✅ / MCV 半接线 | 3D 模型循环动画 + 图文说明 + 跳过 | [ ] |
 | C3 | `Equipment` 实验仪器 | **Three** | Sensor ✅ / **MCV ✅「最佳样板」** | 左仪器列表 + 中 3D 可交互 + 右图文 | [ ] |
-| C4 | `Principle` 实验原理 | **Three** | Sensor 半（视频字段）/ MCV 半 | 图文 + 原理动画/视频 | [ ] |
+| C4 | `Principle` 实验原理 | **Three** | Sensor 半（视频字段）/ MCV 半 | **视频 + 说明（单段视频时右栏列表隐藏）** | [x] 已落地（DEC-99） |
 | C5 | `Test` 小测验 | **Three** | Sensor `Task_TestPanel` ✅（题目控件）/ MCV 空壳 | 题干/选项/提交/对错反馈 | [ ] |
-| C6 | `Info` 简介 | **Three** | MCV 半（有字段无写入方） | 图文 | [ ] |
+| C6 | `Info` 简介 | **Three** | MCV 半（有字段无写入方） | **左三维 + 右图文**（Three 模型 + 说明） | [x] 已落地（DEC-98） |
 | C7 | `Exam` 考核 | **Three** | MCV 空壳（`ProjectState.Exam` 不可达） | 抽题/计时/交卷 | [ ] |
 | C8 | `LineConnection` 电路连接 | **Unity** | Sensor ✅（`WiringElement`，步骤驱动）/ MCV 空壳 | 全屏画布 + 工具条 + 接线点/引线 | [ ] |
 | C9 | `Training` 仿真实验 | **Unity** | Sensor ✅（`SimulationTraining`）/ MCV 空壳 | 全屏画布 + 步骤面板 + 操作提示 | [ ] |

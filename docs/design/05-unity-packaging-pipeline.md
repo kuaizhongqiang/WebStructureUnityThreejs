@@ -81,9 +81,10 @@ StreamingAssets/**             ← 可选（TMP 字体等，必须经 UnityWebRe
 
 | 项 | 要求 |
 |---|---|
-| MIME | `.wasm → application/wasm`（错则 `instantiateStreaming` 直接失败）；`.data/.unityweb/.mem → application/octet-stream` |
+| MIME | `.wasm → application/wasm`（错则 `instantiateStreaming` 直接失败）；`.data/.unityweb/.mem → application/octet-stream`；Three 侧 `.glb → model/gltf-binary`；原理视频 `.mp4 → video/mp4`（**写错 `<video>` 直接拒播**） |
+| Range | **视频必须支持 `Range`**（`206` + `Content-Range`，越界回 `416`）：没有它进度条拖不动 —— Safari 完全不响应，Chrome 退化成"每次 seek 整段重下"（DEC-99） |
 | 预压缩 | 存在 `X.br`/`X.gz` 且客户端接受时，直接命中并附 `Content-Encoding`（**不要**让浏览器先下未压缩版） |
-| 缓存 | Unity 产物带指纹（`.wasm` 有 hash 后缀）→ 可长缓存；`index.html` 与清单 → `no-cache` |
+| 缓存 | 带指纹的产物（`.wasm` 有 hash 后缀、vite 的 `/assets/<名>-<hash>.js`）→ 长缓存 `immutable`；**不带指纹的资产树**（`/assets/three/**`、`/assets/video/**`，名字固定）→ **`no-cache` + `ETag`/`Last-Modified`**（每次重验证：既不读到旧文件，也不把 30 MB 视频每次重下一遍）；`index.html` 与清单 → `no-cache` |
 | COOP/COEP | **默认关**。仅当构建启用了多线程（`SharedArrayBuffer`）才需要；壳里用 `WSU3_COOP_COEP=1` 打开（DEC-13 口径：先测再开） |
 
 `release-manifest.json` 的 `serving` 段把上面这张表**写进产物**，部署方照抄即可。

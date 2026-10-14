@@ -11,11 +11,11 @@
 | 路径 | 内容 |
 |---|---|
 | `docs/requirement/raw/raw-requirement.md` | **原始需求，唯一权威来源**（只读，不得改写） |
-| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 **DEC-01 ~ DEC-97**（六轮问答的结论），**只增不改** |
+| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 **DEC-01 ~ DEC-99**（第一~七轮的问答结论），**只增不改** |
 | `docs/PLAN.md` | **执行计划（活文档）**：**只写"接下来做什么"** —— 分批（P0→P1→P2）/ 落点 / 验收标准 / 依赖顺序 |
 | `docs/TODO.md` | **待办（活文档）**：**只写"现在还剩什么"** —— 待拍板 / 待做 / 未提交。**新增待办只加这里** |
 | `docs/RECORD.md` | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表 + 日期 / 提交号 / PR；**只增不改** |
-| `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留（第一 / 二 / 三轮已关闭，答案固化进 `DECISIONS.md`；第六轮见该文件）。⚠️ 轮次口径 README 与 `DECISIONS.md` 尚有出入，见 `TODO.md` T-07 |
+| `docs/OPEN-QUESTIONS*.md` | 问答清单原文保留（答案固化进 `DECISIONS.md`）。**轮次与关闭状态以 `DECISIONS.md` 为准**，本文件不重复维护 |
 | `docs/requirement/requirement-analysis.md` | 需求分析：原始需求条目化（R-1~R-8）、红线、需求→交付物映射、缺口闭合表 |
 | `docs/research/01~09` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘** |
 | `docs/design/01~10` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地**、**步骤系统** |
@@ -28,7 +28,7 @@
 | `NewStructureUnity/` | **Unity 工程**：Unity 2022.3.53f1c1 + URP 14.0.11 |
 | `unity/builds/` | **Unity 产物暂存区**（不进 git，DEC-57/79）；只保留说明文件 |
 | `content/` | 内容与契约：`contracts/snapshot.json`（契约校验的**基准快照**）、`assets/`（大资产落点，**不进 git**：`three/` 模型、`video/` 原理视频）；材质规格与人工修正：`asset-material-spec.json` / `asset-material-textures.json` / `material-overrides.json`；搬运清单：`asset-import-report.json` / `asset-convert-report.json` / **`asset-video-report.json`**；**内容数据有两份**：`web/public/content/data/`（Web）+ `NewStructureUnity/Assets/StreamingAssets/Data/`（Unity），由门禁比对 |
-| `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存校验打包、三维资产搬运与 Blender 转换） |
+| `tools/` | 门禁与流水线：契约一致性 / **内容数据双份一致性** / 大文件 / 壳耦合 / pre-commit hook + `pipeline/`（Unity 暂存校验打包、三维资产搬运与 Blender 转换、**原理视频搬运**、发布清单与打包） |
 | `.github/workflows/gate.yml` | 合并门禁（CI） |
 
 ## 2 架构红线（不可违背）
@@ -48,7 +48,7 @@
 
 | 部分 | 状态 |
 |---|---|
-| 文档与决策 | **DEC-01 ~ DEC-97** 生效；"计划 / 待办 / 记录"已分家（`PLAN.md` / `TODO.md` / `RECORD.md`）；设计文档 10 篇、调研 9 篇 |
+| 文档与决策 | **DEC-01 ~ DEC-99** 生效；"计划 / 待办 / 记录"已分家（`PLAN.md` / `TODO.md` / `RECORD.md`）；设计文档 10 篇、调研 9 篇 |
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
 | Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、`StartView` / `MenuView` / `TaskView`（登记表驱动）/ 骨架自检页；样式只走设计系统令牌；ESLint + Prettier 已进 hook 与 CI |
 | Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测 / 构建全过；**渲染冒烟**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、站点线 11 站、骨架自检页可达、无 console 错误） |

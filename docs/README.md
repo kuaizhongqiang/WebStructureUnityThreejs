@@ -1,6 +1,6 @@
 # docs/ 索引
 
-> 读者：AI 与人｜状态：2026-10-13 **v3（与仓库现状同步：DEC-01~DEC-97 / 六轮问答全部关闭 / "计划·待办·记录"三分）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
+> 读者：AI 与人｜状态：2026-10-14 **v4（与仓库现状同步：DEC-01~DEC-99 / 各轮问答均已关闭 / "计划·待办·记录"三分）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
 >
 > **"接下来做什么 / 还剩什么 / 做完了什么"三分**（2026-10-13 拆开，此前混在 `PLAN.md` 里）：
 > `PLAN.md`（只写计划）· `TODO.md`（只写待办）· `RECORD.md`（只写记录与证据）。
@@ -9,7 +9,7 @@
 
 | 你是什么 | 顺序 |
 |---|---|
-| **人（决策者）** | `DECISIONS.md`（**已定的 97 条**；轮次与问题清单的口径见 `TODO.md` T-07）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
+| **人（决策者）** | `DECISIONS.md`（**已定的 99 条**；轮次与关闭状态以它为准，不在别处重复维护）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
 | **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` / `design/` |
 
 ## 文件清单
@@ -25,11 +25,11 @@
 
 | 文件 | 内容 | 状态 |
 |---|---|---|
-| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：**DEC-01 ~ DEC-97（六轮）**，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。章节：§1~§9 第一轮、§10~§13 第二轮、§14~§15 第三轮。**只增不改** | v1~v3 生效 |
+| **`DECISIONS.md`** | **决策记录（唯一决策权威）**：**DEC-01 ~ DEC-99**，含"决定 / 是否偏离建议 / 偏离后果与缓解 / 待办"。章节：§1~§9 第一轮、§10~§13 第二轮、§14~§15 第三轮、§16 第四轮、第五轮追加、§17 第六轮、§18~§20 第七轮（步骤系统 / 模型检视页 / Info 页与原理页）。**只增不改** | v1~v4 生效 |
 | `OPEN-QUESTIONS.md` | 第一轮问题清单（32 题）**原文保留**，答案已全部固化到 `DECISIONS.md` | v1 已关闭 |
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
 | `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |
-| **`OPEN-QUESTIONS-R6.md`** | **第六轮问题清单**：Unity 脚手架的 **UI 形态**（"全部 UI 用 Web"与 DEC-14 的冲突）与**启动阶段 Web→Unity 事件 / 预加载 / 数据形状**；**26 条已答 + 补充 14 条（S1~S14）待答**；回答后固化为 DEC-80 起 | **补充项待回答** |
+| **`OPEN-QUESTIONS-R6.md`** | **第六轮问题清单**：Unity 脚手架的 **UI 形态**（"全部 UI 用 Web"与 DEC-14 的冲突）与**启动阶段 Web→Unity 事件 / 预加载 / 数据形状**；**26 条 + 补充 14 条（S1~S14）均已答**，已固化为 DEC-80 ~ DEC-88 | v1 已关闭 |
 | **`PLAN.md`** | **执行计划（活文档）**：**只写"接下来做什么"** —— 分批（P0→P1→P2）/ 落点 / 验收标准。已定结论在 `DECISIONS.md`、待办在 `TODO.md`、已完成的在 `RECORD.md` | **活文档** |
 | **`TODO.md`** | **待办（活文档）**：**只写"现在还剩什么"** —— §1 待拍板 / §2 待做 / §3 未提交；已合并此前散在 `DECISIONS.md` 未闭合表、`OPEN-QUESTIONS*`、`PAGE-WORKLIST.md`、`ui-mockups/TODO.md` 的待办（做法：一条索引 + 一句话状态 + 来源链接，不在两处重复写） | **活文档** |
 | **`RECORD.md`** | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表（原 `PLAN.md` §1 的表**整表迁入**）+ 日期 / 提交 / PR；只增不改 | **活文档** |
