@@ -70,6 +70,10 @@
 | `taskInfoData` | `contentText` / `contentTextEn` / `prefabKey` / `imageKey` / `images[]` |
 | `taskTestData` / `taskExamData` | `questionClips[]`（内联题目，见 §3.5） |
 
+> **`videoName` 指到哪**（DEC-99）：原理槽位的 `videoName`（如 `01jcq_yl`）就是**文件名去掉扩展名**，
+> 视频文件落 `content/assets/video/<videoName>.mp4`（**不进 git**，构建时发到 `/assets/video/**`，见 `web/README.md`）。
+> 采纳数据里 8 个器件**各只有 1 条 `principleStructs`** ⇒ 原理页只有一段视频，右栏不显示"视频列表"。
+
 ### 3.4 题库（`QuestionData.json`）
 
 ```jsonc
