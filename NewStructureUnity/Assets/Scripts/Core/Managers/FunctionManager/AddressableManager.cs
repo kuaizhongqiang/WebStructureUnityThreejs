@@ -644,19 +644,50 @@ namespace WSU3.Core.Managers.FunctionManager
             if (!m_BundleCache.TryGetValue(config.bundleName, out AssetBundle bundle) || bundle == null)
             {
                 string url = GetBundleUrl(config.bundleName);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                // WHY（WebGL 专用分支）：**不用** `UnityWebRequestAssetBundle.GetAssetBundle`。
+                //   它在 WebGL 上走"IndexedDB 缓存 + DownloadHandlerAssetBundle"这条路，缓存键就是 URL ——
+                //   同一个地址换过几次包之后会命中旧条目而加载失败，而且 `request.error` 可能是**空串**。
+                //   2026-10-14 的现场就是一句 `AB 下载失败：Content/clip_contactor ← http://…（）`，连原因都没有；
+                //   而同一时刻的探针是：HTTP 200 / Range 206 / Content-Length 与工程里的包逐字节一致，
+                //   把那些字节下回来在编辑器里也能解成 UnityFS（资产名与预制体逐级可读）。
+                //   ⇒ 坏的是这条缓存路，不是包、也不是服务器。改成"普通 GET + LoadFromMemoryAsync"：
+                //   不碰任何缓存，字节到手直接解包（这条在编辑器里对同一份字节实测是通的）。
+                using (UnityWebRequest request = UnityWebRequest.Get(url))
+                {
+                    yield return request.SendWebRequest();
+
+                    if (request.result != UnityWebRequest.Result.Success)
+                    {
+                        Debug.LogError($"{LogTag} AB 下载失败：{config.bundleName} ← {url}" +
+                                       $"（result={request.result}, http={request.responseCode}, err={request.error}）");
+                        onLoaded?.Invoke(null);
+                        yield break;
+                    }
+
+                    AssetBundleCreateRequest create = AssetBundle.LoadFromMemoryAsync(request.downloadHandler.data);
+                    yield return create;
+                    bundle = create.assetBundle;
+                }
+#else
                 using (UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(url))
                 {
                     yield return request.SendWebRequest();
 
                     if (request.result != UnityWebRequest.Result.Success)
                     {
-                        Debug.LogError($"{LogTag} AB 下载失败：{config.bundleName} ← {url}（{request.error}）");
+                        // WHY: 把 result / http 码也打出来 —— 只打 `request.error` 时，某些失败会给**空串**，
+                        //      日志就退化成一句没有原因的 `（ ）`，排查时只能靠猜（2026-10-14 踩过）。
+                        Debug.LogError($"{LogTag} AB 下载失败：{config.bundleName} ← {url}" +
+                                       $"（result={request.result}, http={request.responseCode}, err={request.error}）");
                         onLoaded?.Invoke(null);
                         yield break;
                     }
 
                     bundle = DownloadHandlerAssetBundle.GetContent(request);
                 }
+#endif
 
                 if (bundle == null)
                 {

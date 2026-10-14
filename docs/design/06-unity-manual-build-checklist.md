@@ -102,3 +102,21 @@ node tools/pipeline/pack.mjs --skip-web   # 只重打包（web 产物没变时�
 - Unity 侧的改动（`.cs` / `.jslib` / `ProjectSettings`）**必须双渠道提交**（DEC-60）。
 - 构建产物（`Builds/`、`ServerData/`）**一律不进 git**（DEC-57）；只进 `unity/builds/`（也进 git 的忽略）。
 - 每个 key 对应哪个 TaskType 见 `05-unity-packaging-pipeline.md` §3.2；**一个 key 只服务一个 TaskType**。
+
+## 7 本地拿静态服务器自测（VS Code Live Server 之类）：要改哪些设置，**测完必须改回来**
+
+§1 的两条值是为**交付形态**定的（Brotli + 壳服务器附 `Content-Encoding`）。
+拿一个"不会做内容协商"的静态服务器（VS Code Live Server、`http.server` 等）跑真产物时，
+下面两条**必须临时改**，否则一定失败——而且失败现象很容易被误诊成"包坏了"：
+
+| 设置 | 交付值 | 本地自测临时值 | 不改会怎样 |
+|---|---|---|---|
+| `webGLCompressionFormat` | **0 = Brotli** | **2 = Disabled** | Live Server 不会对 `.br` 附 `Content-Encoding` ⇒ 浏览器把 Brotli 当明文解析 ⇒ **白屏 / 加载失败** |
+| `insecureHttpOption` | **0 = NotAllowed** | **2 = AlwaysAllowed** | AB 地址是明文 `http://…` ⇒ **UnityWebRequest 被这条策略挡下**，而播放器自己的文件是 JS loader 拉的、不走 UnityWebRequest ⇒ **播放器起得来、只有 AB 下载失败，且 `error` 可能为空**（2026-10-14 实测踩到，见 `../DECISIONS.md` §27 / DEC-116） |
+
+⚠️ **这两条是"本地自测"设置，不是交付设置**：忘了改回来，压缩关掉会让首屏体积明显变大，
+`AlwaysAllowed` 也会把"允许明文 HTTP"带进交付产物。改了就一定在提交前恢复成 §1 的值。
+
+> 另一条路（**不用改任何设置**）：用壳的静态服务器跑 —— `node tools/pipeline/pack.mjs` 之后跑打包产物，
+> 或按 `release-manifest.json` 的 `serving` 段自己配一个会附 `Content-Encoding` 的服务器。
+> 这样验的就是**交付形态本身**，比 Live Server 更接近真实。
