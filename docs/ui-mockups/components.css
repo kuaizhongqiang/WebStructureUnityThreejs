@@ -576,6 +576,21 @@
 .ui-playlist__name { font-size: var(--fs-13); }
 .ui-playlist__meta { font-size: var(--fs-11); color: var(--text-3); }
 
+/* ------------------------------------------------ 16.5b 原理页布局（视频 + 右栏）
+   两档，由**数据里视频条数**决定：
+     · **多段视频** ⇒ 右栏 = 视频列表（当前段高亮）+ 本段说明；
+     · **只有一段视频** ⇒ **视频列表整块隐藏**（`.ui-videopage--single`），
+       右栏只剩"原理说明"，播放器自动占满让出来的宽度。
+   为什么要单列这一档：采纳数据里 8 个项目**各只有一段视频**，所以"单段"才是常态 ——
+   不该画出一个只有一项的"列表"，那样既浪费一整栏，又暗示还有别的内容可切。
+   产品侧是**条件渲染**（`v-if`），排版稿与样式清单靠 `--single` 这个类演示两档。 */
+.ui-videopage { position: absolute; inset: 0; padding: 150px 24px 20px; display: flex; gap: 18px; }
+.ui-videopage__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ui-videopage__side { width: 360px; flex: none; display: flex; flex-direction: column; gap: 18px; }
+.ui-videopage__list { flex: none; }
+.ui-videopage__notes { flex: 1; min-height: 0; }
+.ui-videopage--single .ui-videopage__list { display: none; }
+
 /* ------------------------------------------------ 16.6 AI 思考气泡 */
 .ui-ai__thinking { display: flex; align-items: center; gap: 4px; height: 14px; }
 .ui-ai__thinking i {

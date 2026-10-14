@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>C4 C4 实验原理（Principle）— 改为视频播放器 — 页面排版稿</title>
+<title>C4 C4 实验原理（Principle）— 单段视频 · 列表隐藏 — 页面排版稿</title>
 <link rel="stylesheet" href="../style.css">
 <script>
   (function () {
@@ -102,11 +102,11 @@
           <button class="ui-iconbtn ui-iconbtn--icon" title="帮助"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg></button>
           
         </div>
-      <div style="position:absolute;inset:0;padding:150px 24px 20px;display:flex;gap:18px">
-        <div style="flex:1;display:flex;flex-direction:column">
+      <div class="ui-videopage ui-videopage--single">
+        <div class="ui-videopage__main">
           <div class="ui-player">
             <div class="ui-player__stage">
-              <div class="ui-player__badge"><span class="ui-badge ui-badge--info">原理讲解</span><span class="ui-badge">03:24</span></div>
+              <div class="ui-player__badge"><span class="ui-badge ui-badge--info">原理讲解</span><span class="ui-badge">01jcq_yl</span></div>
               <div class="ui-player__play"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></div>
               <div class="ui-muted ui-small" style="position:absolute;bottom:14px">视频区域（真实播放时由 video 元素承载；微信内需点击后播放，DEC-70）</div>
             </div>
@@ -119,25 +119,38 @@
             </div>
           </div>
         </div>
-        <div class="ui-panel" style="width:360px">
-          <div class="ui-panel__head">视频列表<span class="ui-panel__right"><span class="ui-badge">3 段</span></span></div>
-          <div class="ui-panel__body ui-playlist">
-            <div class="ui-playlist__item ui-playlist__item--active">
-              <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
-              <span><span class="ui-playlist__name">1 · 测温原理</span><br><span class="ui-playlist__meta">03:24 · 已看完 0:00</span></span>
-            </div>
-            <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
-              <span><span class="ui-playlist__name">2 · 电路模型与接线</span><br><span class="ui-playlist__meta">04:10</span></span>
-            </div>
-            <div class="ui-playlist__item">
-              <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
-              <span><span class="ui-playlist__name">3 · 误差来源分析</span><br><span class="ui-playlist__meta">02:45</span></span>
+        <aside class="ui-videopage__side">
+          <!-- 视频列表：**只有多段视频时才出现**；本页数据是单段 ⇒ 被 --single 隐藏 -->
+          <div class="ui-panel ui-videopage__list">
+            <div class="ui-panel__head">视频列表<span class="ui-panel__right"><span class="ui-badge">3 段</span></span></div>
+            <div class="ui-panel__body ui-playlist">
+              <div class="ui-playlist__item ui-playlist__item--active">
+                <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
+                <span><span class="ui-playlist__name">1 · 测温原理</span><br><span class="ui-playlist__meta">03:24 · 已看完 0:00</span></span>
+              </div>
+              <div class="ui-playlist__item">
+                <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
+                <span><span class="ui-playlist__name">2 · 电路模型与接线</span><br><span class="ui-playlist__meta">04:10</span></span>
+              </div>
+              <div class="ui-playlist__item">
+                <span class="ui-playlist__thumb"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" /></svg></span>
+                <span><span class="ui-playlist__name">3 · 误差来源分析</span><br><span class="ui-playlist__meta">02:45</span></span>
+              </div>
             </div>
           </div>
-        </div>
+          <div class="ui-panel ui-videopage__notes">
+            <div class="ui-panel__head">原理说明</div>
+            <div class="ui-panel__body">
+              <div class="ui-article">
+                <h3>电磁吸合与触头动作</h3>
+                <p>线圈通电产生电磁吸力，吸引衔铁下移，带动主触头闭合、辅助触头随之动作；线圈断电后靠反力弹簧复位，触头断开。</p>
+                <p>主触头断开的瞬间产生电弧，灭弧罩将电弧冷却并分割成多段短弧，使电弧迅速熄灭。</p>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
-      <div class="note">C4 · <b>实验原理（已改正）</b> · 主体是<b>视频播放器</b> + 右侧<b>视频列表</b>（原第一轮理解成图文+动画，是错的）</div>
+      <div class="note">C4 · <b>实验原理</b> · <b>单段视频</b>（本项目数据只有 1 段）⇒ <b>视频列表隐藏</b>，播放器占满左区，右栏放<b>本段说明</b>；多段时右栏才出现列表（见样式成果页第八节）</div>
 
   </div>
 
@@ -145,7 +158,7 @@
 
 <div class="board-nav">
   <a href="../index.html">← 样式清单 / 页面索引</a>
-  <span>C4 · C4 实验原理（Principle）— 改为视频播放器 · 归属 UI · TaskType.Principle</span>
+  <span>C4 · C4 实验原理（Principle）— 单段视频 · 列表隐藏 · 归属 UI · TaskType.Principle</span>
   <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
 </div>
 </body>
