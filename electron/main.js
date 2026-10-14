@@ -274,6 +274,7 @@ async function smokeInfo() {
     let state = {
       hasCanvas: false,
       ready: false,
+      absent: false,
       triangles: 0,
       records: [],
       columns: [],
@@ -286,23 +287,27 @@ async function smokeInfo() {
         return {
           hasCanvas: Boolean(canvas && canvas.width > 0),
           ready: Boolean(stage),
+          // 大资产按 DEC-57 不进 git：干净 checkout 上打的包**没有**三维资产，
+          // 那时页面必须明确报告"本项目没有三维模型"（与 Unity 产物缺席同一口径）
+          absent: (document.body.innerText || '').includes('本项目没有三维模型'),
           triangles: stage ? stage.renderStats.triangles : 0,
           records: stage ? stage.solveRecords.map((r) => ({ name: r.name, orm: r.orm, errors: r.errors.length })) : [],
           columns: [...document.querySelectorAll('.app-split > *')].map((el) => Math.round(el.getBoundingClientRect().width)),
           text: (document.body.innerText || '').replace(/\\s+/g, ' ').slice(0, 120),
         }
       })()`)
-      if (state.ready || Date.now() - started > 12_000) break
+      if (state.ready || state.absent || Date.now() - started > 12_000) break
       await new Promise((done) => setTimeout(done, 300))
     }
     const solved = state.records.length > 0 && state.records.every((item) => item.errors === 0)
-    const ok = state.hasCanvas && state.ready && state.triangles > 1000 && solved
+    const withModel = state.hasCanvas && state.ready && state.triangles > 1000 && solved
+    const ok = withModel || state.absent
     log(
       `Info 页：canvas=${state.hasCanvas} 就绪=${state.ready} 三角面=${state.triangles}` +
         ` 材质=${state.records.length}${solved ? '（零错误）' : '（**有错误或没解算**）'}` +
-        ` 栏宽=${state.columns.join(' + ')}`,
+        ` 栏宽=${state.columns.join(' + ')}${state.absent ? ' → 明确报告未包含（本机没有三维资产）' : ''}`,
     )
-    return { ok, ...state }
+    return { ok, withModel, ...state }
   } catch (error) {
     log('Info 页取证失败：', String(error))
     return { ok: false, mode: 'error' }

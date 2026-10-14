@@ -328,14 +328,24 @@ try {
   await page.screenshot({ path: resolve(artifactsDir, 'task-article.png'), fullPage: false })
 
   // 7b-2. Info 页的三维区（DEC-98）：左边真的挂上了模型，不是占位块。
-  //       断言四件事：有画布、ModelStage 已就绪、真的画出了三角面、材质解算零错误。
-  await page.waitForFunction(() => Boolean(window.__WSU3_MODEL__), null, { timeout: 30_000 }).catch(() => {})
+  //
+  // ⚠️ 判据是**二择一**，与壳里那段 Unity 取证同一口径：大资产按 DEC-57 **不进 git**，
+  //    干净 checkout（CI）里没有 `content/assets/three`，那时页面必须**明确报告**
+  //    "本项目没有三维模型"；本机有资产时则必须真的挂上模型。**"卡在加载中"算失败**。
+  await page
+    .waitForFunction(
+      () => Boolean(window.__WSU3_MODEL__) || document.body.innerText.includes('本项目没有三维模型'),
+      null,
+      { timeout: 30_000 },
+    )
+    .catch(() => {})
   await page.waitForTimeout(900) // 放开几帧，让 renderStats 里有真实的 draw call / 三角面
   const model = await page.evaluate(() => {
     const stage = window.__WSU3_MODEL__
     const canvas = document.querySelector('.app-model__stage canvas')
     return {
       mounted: Boolean(stage),
+      absent: document.body.innerText.includes('本项目没有三维模型'),
       canvas: Boolean(canvas),
       width: canvas?.width ?? 0,
       stats: stage ? stage.renderStats : null,
@@ -344,18 +354,21 @@ try {
         : [],
     }
   })
+  const materialsSolved = model.records.length > 0 && model.records.every((item) => item.errors === 0)
+  const withModel = model.mounted && (model.stats?.triangles ?? 0) > 1000 && materialsSolved
   check(model.canvas && model.width > 0, 'Info 页：三维视口真的有画布', `width=${model.width}`)
-  check(model.mounted, 'Info 页：ModelStage 已就绪（模型加载完成）')
   check(
-    (model.stats?.triangles ?? 0) > 1000,
-    'Info 页：模型真的画出了三角面（不是空场景）',
-    `triangles=${model.stats?.triangles} calls=${model.stats?.calls}`,
+    withModel || model.absent,
+    'Info 页：三维区要么挂着模型（材质零错误）、要么明确报告"本项目没有三维模型"',
+    model.mounted
+      ? `triangles=${model.stats?.triangles} calls=${model.stats?.calls} 材质=${JSON.stringify(model.records)}`
+      : `absent=${model.absent}（本 checkout 没有 content/assets/three）`,
   )
-  check(
-    model.records.length > 0 && model.records.every((item) => item.errors === 0),
-    'Info 页：材质解算零错误（含 mask→ORM）',
-    JSON.stringify(model.records),
-  )
+  if (model.absent) {
+    console.log(
+      '[SKIP] 本 checkout 没有 content/assets/three（DEC-57 不进 git）：模型断言按"明确报告未包含"通过',
+    )
+  }
   const modelCanvas = await page.$('.app-model__stage canvas')
   const modelBox = modelCanvas ? await modelCanvas.boundingBox() : null
   if (modelBox) {
