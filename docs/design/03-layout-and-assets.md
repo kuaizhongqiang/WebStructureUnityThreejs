@@ -25,6 +25,8 @@ WebStructureUnityThreejs/
 ```text
 NewStructureUnity/Assets/Scripts/
   Core/        # 框架基础设施：单例基类、事件总线、日志、JSON、协程、状态机基类、资源包管理器
+               #   子目录：`Interactive/` 拾取与交互闸门、`Managers/` 全局与功能管理器、
+               #   `Controllers/` 底层操控层（输入控制器 + 相机背景，DEC-107）、`Steps/` 步骤系统、`DataStruct/`、`Models/`、`Interfaces/`
   Contracts/   # ★ 与 Web 共享的契约（SceneState / TaskType / QuestionType / QuestionUsage / BridgeMessageType）
   Managers/    # 全局管理器：Data / Assets（包登记与装卸）/ Scene / Camera / Interactive
   Viewers/     # 三维承载：每个 Unity 类 TaskType 一个 Viewer（进入 / 退出 / 清理）
@@ -44,10 +46,13 @@ NewStructureUnity/Assets/Tests/           # 测试（DEC-27）
 | 程序集 | 目录 | 依赖 | 说明 |
 |---|---|---|---|
 | `WSU3.Contracts` | `Contracts/` | 无（除 Unity 内置） | 契约层：只有枚举与消息常量，**不得**引用其它程序集 |
-| `WSU3.Core` | `Core/` | `WSU3.Contracts` + `UnityEngine.UI` | 框架基础设施，不得反向依赖上层 |
+| `WSU3.Core` | `Core/` | `WSU3.Contracts` + `UnityEngine.UI` + `HighlightPlus.Runtime` + `Cinemachine` + `Unity.InputSystem` | 框架基础设施，不得反向依赖上层；后两个是底层操控层带来的（DEC-107） |
 | `WSU3.Runtime` | `Managers/` `Viewers/` `Web/` `Services/` | `WSU3.Core` `WSU3.Contracts` | 业务运行时 |
 | `WSU3.Editor` | `Assets/Editor/` | `WSU3.Runtime` `WSU3.Core` | 编辑器工具 |
 | `WSU3.Tests.*` | `Assets/Tests/` | 被测程序集 + test-framework | 单测 / PlayMode |
+| `HighlightPlus.Runtime` | `Assets/Plugins/HighlightPlus/Runtime/` | `UnityEngine.UI` + `Unity.InputSystem` | 第三方高亮插件的运行时代码（DEC-103 搬入 / DEC-106 定接入方式；输入后端改 Both 后补 `Unity.InputSystem`，见 DEC-107） |
+| `HighlightPlus.Pipelines` | `Assets/Plugins/HighlightPlus/Pipelines/URP/` | `HighlightPlus.Runtime` + URP 运行时 | 插件的 URP 渲染特性；**是否挂进 URP 资产未定**（`../TODO.md` D-18） |
+| `HighlightPlus.Editor` | `Assets/Plugins/HighlightPlus/Editor/` | `HighlightPlus.Runtime` + `HighlightPlus.Pipelines` + URP 运行时 | 插件编辑器脚本（仅 Editor 平台） |
 
 **为什么只有 `WSU3.Core` 引用 `UnityEngine.UI`**（2026-10-13 补，DEC-80 的落地）：它提供的是
 `UnityEngine.EventSystems`（`EventSystem` / `StandaloneInputModule` / `PhysicsRaycaster` / `IPointer*Handler`），
@@ -56,8 +61,9 @@ NewStructureUnity/Assets/Tests/           # 测试（DEC-27）
 （**不另建 manager、不另建注册表脚本**，驱动是 `GlobalManager.Update` → `InteractiveManager.CoreUpdate`），
 所以只有 Core 需要这个引用；`WSU3.Runtime` 不需要。
 
-依赖纪律（DEC-86）：`WSU3.Core → WSU3.Contracts` 是**允许且唯一**的一条下行依赖（`Core` 里的管理器要认枚举与消息名）；
-`Contracts` 必须保持零依赖。至于 **TMP / uGUI 包**：本批**保留在 `Packages/manifest.json` 里不删**（Q-R6-5 = B），
+依赖纪律（DEC-86）：本工程各层之间，`WSU3.Core → WSU3.Contracts` 是**允许且唯一**的一条下行依赖（`Core` 里的管理器要认枚举与消息名）；
+`Contracts` 必须保持零依赖。**另有一条指向第三方的引用**：`WSU3.Core → HighlightPlus.Runtime`（DEC-106，高亮表现要用插件）——
+它不属于本工程的分层，不算上面那条下行依赖；`WSU3.Runtime` 未加。至于 **TMP / uGUI 包**：本批**保留在 `Packages/manifest.json` 里不删**（Q-R6-5 = B），
 但它们是"输入与服务用的底座"（`EventSystem` / `PhysicsRaycaster` 属于 uGUI 包），**不作为界面方案**（DEC-80 / Q-R6-S1 = A）。
 
 ⚠️ **执行前置**：创建目录与 asmdef 会让 Unity 重新导入并生成 `.meta`，且改动属于 Unity 侧 ⇒ 需走 DEC-60 的**双渠道提交**，并在编辑器空闲时进行（DEC-59）。
@@ -134,13 +140,14 @@ content/asset-convert-report.json                  # 转换清单（三角面 / 
 content/asset-video-report.json                    # 视频搬运清单（来源 / 目标 / 字节 / sha256）★ 进 git
 ```
 
-三件工具（都可重跑，幂等）：
+四条工具链（都可重跑，幂等）：
 
 | 脚本 | 作用 |
 |---|---|
 | `tools/pipeline/import-adopted-assets.mjs` | 按**内容数据**决定搬什么：`prefabKey` → 包配置 → prefab → GUID 依赖闭包取 FBX + 贴图；`images[]` → 原理图。**只读来源工程** |
 | `tools/pipeline/import-principle-videos.mjs` | 按**内容数据**的 `principleStructs[].videoName` 搬讲解视频（DEC-99）。**与上一条分开**：那条链服务两条线共用的资产（带 `.meta`、过 Blender、有"单图 ≥10 MB 剔除"规则），视频只服务 Web 侧且单段最大 30 MB，套用那条剔除规则会把视频全剔掉 |
 | `tools/pipeline/fbx-to-glb.mjs` + `blender-fbx-to-glb.py` | 每个模型一个 `blender --background` 进程转 GLB，自带"清掉 FBX 里的失效贴图引用、按文件名重接 BaseColor/Normal" |
+| `tools/pipeline/import-structure-assets.mjs` | 搬**结构任务专属**的 Unity 资产（DEC-102 / DEC-103）：结构件预制体 + 46 段拆装动画 + 器件材质 + 自制 ShaderGraph（含 SubGraph）+ HighlightPlus 插件。**单独一条链**：上面两条一条剔除过 `.mat`/`.anim`（服务两条线共用的几何）、一条只服务 Web 侧视频，判据都不同 |
 
 两条从执行中学到的规矩：
 
@@ -155,6 +162,51 @@ content/asset-video-report.json                    # 视频搬运清单（来源
 ⚠️ **`content/contracts/snapshot.json` 的性质**：它**不是**真源，而是**门禁的比对基准**（两侧都必须与它一致）。
 它只能在一侧或两侧同时修改时、作为可评审的 diff 一起更新 —— 若不做这个约束，它就变成了"第三份事实源"，与 DEC-10 冲突。
 **同理**：`content/data/*.json` 与 `Assets/StreamingAssets/Data/*.json` 是**两份手写文件**，靠门禁报"不一致"（DEC-82）。
+
+### 5.2 结构任务（TaskType 8）的资产落点（**已落地**，DEC-102 / DEC-103）
+
+结构任务**只在 Unity 侧表现**，它的载体是"预制体 = 零件装配 + 拆装动画 + 零件交互"，与 §5.1 那批共用几何**不是一回事**。
+
+```text
+NewStructureUnity/Assets/Prefabs/Models/StructureObjs/<器件>_structure_model.prefab   # 8 个（含 1 个空壳）★ 进 git
+NewStructureUnity/Assets/Animation/Model/Structure/<器件>_structure_model_<n>.anim    # 46 段 14.6 MB ★ Plastic（git 忽略）
+NewStructureUnity/Assets/Shaders/Models/*.shadergraph · *.shadersubgraph               # 4 + 1 ★ 进 git
+NewStructureUnity/Assets/Plugins/HighlightPlus/{Runtime,Pipelines,Editor}/…            # 插件 ★ 进 git（Runtime / Pipelines / Editor 各一个 asmdef，见 DEC-106）
+NewStructureUnity/Assets/Models/<器件>/Materials/*.mat                                 # **接管**：覆盖自动抽出的同名材质（DEC-102 §4）
+NewStructureUnity/Assets/Models/_shared/Model/Public/Materials/Alpha.mat               # 多器件共用的公共材质
+NewStructureUnity/Assets/Models/_shared/Model/Cubicmap/_cubmap/Chrome05.cubemap        # 12.0 MB 反射环境（4 个 *_Metal 材质的真实依赖）★ Plastic
+content/asset-structure-report.json                                                    # 搬运清单（来源 / 目标 / 字节 / sha256）★ 进 git
+```
+
+- **为什么 `.anim` 走 Plastic、预制体 / Shader / 插件进 git**：判据是"**两条线共用的资产进 git**
+  （如 `Assets/Sprites/Content`，Web 也用得上），**Unity 专属的大块走 Plastic**"（`Assets/Models` 已是这个待遇）；
+  预制体 / Shader / 插件体积小且是**要能 diff 评审**的东西，进 git。
+- **材质为什么落在 `Assets/Models/<器件>/Materials/`**：Unity 从 FBX 抽材质时就抽到这个位置，
+  搬入的源材质**同名同址**才会在 FBX 重导时被复用（"接管"）；且搬运连 `.meta` 一起覆盖，
+  GUID 换成源工程的 ⇒ 源预制体里的材质引用逐条对得上。
+- **AB 打包**：结构件的包名与来源工程一致（`bundleName = Content/clip_<器件>`，见清单的 `entries`），
+  包配置的 `assetPath` 指向上面那 8 个预制体 —— 打包规则仍走 §7 的"三条链路"（DEC-87，继续生效）。
+- **本轮不做**：`.cs`（`StructureTaskObj` / `InstControlledManager`）与"实例化 / 初始化"，
+  后者见 `../TODO.md`；口径见 `DECISIONS.md` DEC-104。
+
+### 5.3 底层操控层的资产落点（**已落地**，DEC-107）
+
+详细规格见 [`11-input-and-camera.md`](./11-input-and-camera.md)。
+
+```text
+NewStructureUnity/Assets/Scripts/Core/Controllers/                          # 7 个 .cs + StarterAssets.inputactions（程序集 WSU3.Core）★ 进 git
+NewStructureUnity/Assets/Prefabs/Characters/FirstPersonController.prefab    # 角色 + 控制器 + 它自己的虚拟相机 ★ 进 git
+NewStructureUnity/Assets/Prefabs/Camera/MainCameraRig.prefab                # 相机 rig（CinemachineBrain + 背景板）★ 进 git
+NewStructureUnity/Assets/Model/Public/Materials/CamBg.mat                   # 背景板材质（跟来源工程的 Assets 相对路径）
+NewStructureUnity/Assets/Shaders/Models/CamBgUnlitShader.shadergraph        # 它的自制 ShaderGraph
+content/asset-input-controller-report.json                                  # 搬运清单（来源 / 目标 / 字节 / sha256 / 未解析引用）★ 进 git
+docs/research/10-input-controller-specs/**                                  # 来源的 14 份行为规格 .md（原文照录，只作对照）
+```
+
+- **为什么 rig 不落 `Assets/Resources/`**：本工程首批脚手架已有同名的 `Resources/MainCamera.prefab`（精简相机），
+  搬运规矩是**不覆盖同名资产**；"要不要把它换成本工程的主相机"是负责人的决定（`../TODO.md` D-19），不由脚本替人定。
+- **代码为什么进 `Core/`**：它和拾取（`Core/Interactive`）同类，是"三维世界怎么响应输入"的**基础设施**，不是某个任务的业务。
+- **`.inputactions` 与两个预制体进 git**：都是小体积、要能 diff 评审的东西（判据同 §5.2）。
 
 ## 6 门禁（DEC-41 / DEC-66，**已落地**）
 
@@ -195,5 +247,7 @@ content/asset-video-report.json                    # 视频搬运清单（来源
 
 > 「`content/assets/unity/`」这个早期设想**作废** —— 那会让同一份资产在仓库里出现两次。
 
-**明确的取舍**（见 `../research/09-adopted-content-data.md` §5）：**不采用**被采纳工程的第三方表现插件与自制 ShaderGraph，
+**明确的取舍**（见 `../research/09-adopted-content-data.md` §5）：早期定的是**不采用**被采纳工程的第三方表现插件与自制 ShaderGraph，
 材质改用 URP 标准光照 + 贴图通道直接映射（BaseColor / Normal / AO-Gloss），画面效果降级但避免把插件依赖拖进来。
+⚠️ **这一句已被 `DECISIONS.md` DEC-103 取代一部分**：结构任务（TaskType 8）所需的**自制 ShaderGraph 与 HighlightPlus 已搬入本工程**
+（理由与实际画面强依赖它们）；被取代的范围**仅限这一句**，DEC-87 的"三条链路"继续生效。

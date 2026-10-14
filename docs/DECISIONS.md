@@ -1000,3 +1000,286 @@ C6 的页脚批注删除。
 | 反例（改前） | 旧实现是 `TASK_TYPES.map(...)`、旧冒烟断言也是 `count === 11` —— 即同一条 URL 下画 **11 站**，其中 7 站点进去只有"本项目未启用" |
 | 单测 | `adopted-content.spec.ts` 增 1 项：`enabledTaskTypesOf(null)` 为空（站点线据此整条不画）、有项目时按契约顺序给出启用任务；`npm test` **54 项**全过 |
 
+
+---
+
+## 21 第八轮（2026-10-14）：结构任务（`Structure` = TaskType 8）的资产口径
+
+> 背景：结构任务**只在 Unity 侧表现**（DEC-06），而 P1-4 那条资产链当初**明确剔除了它真正要用的三样东西**
+> —— `.mat`、自制 ShaderGraph、`.anim`（`PLAN.md` P1-4「剔除」行 / `research/09` §5）。
+> 原因是那条链服务的是"**两条线共用**的几何（FBX + PBR 贴图，要过 Blender 转 GLB）"，
+> 而结构任务的载体是**预制体 = 零件装配 + 拆装动画 + 零件交互**，判据完全不同。
+> 本轮（负责人 2026-10-14 逐条拍板）把结构任务的口径重新定死，并**先把资产搬进来**；
+> "怎么实例化、怎么初始化"**不在本轮**（`TODO.md` 已登记）。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-102 | 结构任务的资产**全部从来源工程搬入且不重做**（预制体照搬 / 旧版 `.anim` 直接搬 / 内置图元照搬 / 材质**接管** / 零件名留预制体 / 空壳照搬）；**P1-4b 作废** | 负责人 2026-10-14 逐条拍板 | 否 | 生效 |
+| DEC-103 | **取代 DEC-87 的"不采用插件与自制 Shader"一句**：搬入 4 个 ShaderGraph + 1 个 SubGraph + HighlightPlus（只搬 Runtime / Pipelines / Editor）；后处理插件本期不搬；**零件名显示由 Web 侧做** | 同上 | 是（取代 DEC-87 一句） | 生效 |
+| DEC-104 | 结构任务的**步骤承载 = 本工程既有的 `StepManager`**（`design/10`）；**不搬** `InstControlledManager`、**不整份搬** `StructureTaskObj` | 同上 | 否 | 生效（步骤数据落点未闭合） |
+| DEC-105 | `structure:done` **只在全部步骤走完时发**；`masterAppliance` 无步骤数据 ⇒ **永远不发**（接受，非缺陷） | 同上 | 否 | 生效（是否带进度/分数未闭合） |
+| DEC-106 | **HighlightPlus 的接入方式 = 给插件补 asmdef**：`Runtime` / `Pipelines/URP` / `Editor` 各一个程序集（`HighlightPlus.Runtime` / `.Pipelines` / `.Editor`），业务侧由 `WSU3.Core` 正向引用 `HighlightPlus.Runtime`；插件源码与目录位置不动 | 负责人 2026-10-14 选定 | 否 | 生效（闭合 DEC-103 未闭合项，原 `TODO.md` D-16） |
+
+### DEC-102 结构任务的资产全部搬入、不重做（负责人定）
+
+1. **结构件预制体照搬**：`Assets/Prefabs/Models/StructureObjs/*.prefab`（8 个）→ 同名同结构，
+   不重做装配、不改层级、不改节点名（零件名与网格对应关系是业务数据）。
+2. **旧版 `AnimationClip` 直接搬**：46 段 / 14.6 MB（`Assets/Animation/Model/Structure/*.anim`），
+   **不做 Reanimated / Timeline 重建** —— `PLAN.md` P2-6d「结构拆装动画是否重建」由此**关闭**（答案是"用现成的"）。
+3. **内置图元照搬**：`fuse` 的 `Cube` / `Cube (1..3)`、`breaker` 的 `Cylinder`、`jiexiankong`
+   是 Unity 内置资源，跟着预制体走（"Unity 搬 Unity，没什么不能搬的"）。
+4. **材质接管**：源器件材质（`Model/Element/Show/<器件>/Materials/*.mat`）**覆盖** Unity 从 FBX
+   自动抽出的同名材质（那批是 `_BaseMap` 为空的 URP Lit 占位）。搬运**连 `.meta` 一起覆盖**，
+   于是 GUID 变成源工程的 —— 源预制体里的材质引用因此逐条对得上。
+   ⇒ **`PLAN.md` P1-4b「给自动抽出的 24 个材质接贴图」作废**（不再需要，源材质本身是对的）。
+5. **零件名留在预制体上**：`structureName` / `structureNameEn` 随零件组件走（与来源工程一致），
+   **不进**内容数据 JSON —— 它是"随模型预制体走的业务数据"，每套结构模型各不相同。
+6. **空壳照搬**：`masterAppliance_structure_model` 在来源工程里只有 `root` + `Scale` + 一个整体 FBX 实例
+   （无零件、无动画、无步骤），**照搬成空壳**，不做补内容（后果见 DEC-105）。
+7. **落点与版本控制**：落点见 `design/03` §5.2；`Assets/Animation/`（Unity 专属、14.6 MB）走 **Plastic**、git 忽略，
+   判据是"**两条线共用的资产进 git（如 `Assets/Sprites/Content`），Unity 专属的大块走 Plastic**"；
+   预制体 / Shader / 插件（均为小体积且要能 diff 评审）**进 git**。
+
+### DEC-103 取代 DEC-87 的一部分：搬入自制 ShaderGraph 与 HighlightPlus
+
+**取代关系（只取代一句，其余继续生效）**：DEC-87 写死"**不采用**被采纳工程的第三方表现插件与自制 ShaderGraph
+（材质改用 URP + 贴图通道映射，画面降级已确认可接受）"。结构任务的实际画面**依赖**这两样，故：
+
+- **继续生效**：DEC-87 的"资源加载三条链路（AB 为主 / AA 管场景 / 内置 `Resources`）"、
+  包登记表落 `Resources/Config`、包产物落 `Assets/StreamingAssets`。
+- **被取代**：同条里"不采用第三方表现插件与自制 ShaderGraph"那句（仅就**结构任务所需的那部分**）。
+
+**决定**：
+
+| 项 | 决定 |
+|---|---|
+| 自制 Shader | 搬入 **4 个 ShaderGraph + 1 个 SubGraph**（`Assets/Shaders/Models/`，1.06 MB）—— 器件材质指向它们，缺则紫红 |
+| 器件材质 | 搬入 **29 个器件材质 + 1 个公共 `Alpha.mat`**（见 DEC-102 §4） |
+| HighlightPlus | 搬入插件（**只搬 `Runtime` / `Pipelines` / `Editor`**；`Demo` 与 `Documentation` 约 9.4 MB 不进产品） |
+| 其它表现插件 | **本期不搬**（Beautify / ShinySSRR / SSAO / Decal —— 负责人："其他不影响可以先不管"） |
+| 零件名显示 | **由 Web 侧做**（与 DEC-80「Unity 不做 UI」一致）；HighlightPlus 在本工程**只承担高亮表现** |
+
+**未闭合（已有实测证据）**：HighlightPlus **没有 asmdef**，因为它在 `Assets/Plugins/**` 下，
+Unity 把它编译进**预定义程序集** `Assembly-CSharp-firstpass`（实测：`HighlightPlus.*` 41 个类型都在那里）。
+而本工程业务代码在 asmdef 程序集 `WSU3.Core` / `WSU3.Runtime` 里 ——
+实测 `CompilationPipeline.GetAssemblies(Player)` 读回，这两者的 `assemblyReferences` 里**都没有**任何预定义程序集
+⇒ **业务代码现在用不了 `HighlightPlus.*`**。
+"业务代码怎么用上插件"（给插件补 asmdef / 把用到它的脚本放到无 asmdef 的目录 / 其它）
+留到接入时定，`TODO.md` 已登记。
+
+### DEC-104 结构任务的步骤承载 = `StepManager`
+
+- **不搬 `InstControlledManager`**：它是来源工程的"简化版步骤运行器"（点击 + 播片 + 延时），
+  与本工程既有的步骤系统（`design/10`：`StepManager → ProcessingHandler → StepHandler → ConditionBase`）**职责重叠**。
+- **`StructureTaskObj` 不整份搬**：它的父类是 `MCV_Module.Objects.Interactives.InteractiveBase`，
+  还依赖 HighlightPlus 门面；搬进来整个工程编译不过。它承载的字段
+  （`structureName` / `structureNameEn` / `HoverOrTips`）由本工程 `InteractiveObjBase` 的派生类重新承载。
+- **步骤数据落点未闭合**：源预制体上那张 `simpleSteps`（`clip` + `clickObj` + `delay` + `animSpeed`，
+  每器件 4~12 条）是**唯一的步骤定义**，改用 `StepManager` 后它没地方待了。
+  负责人会先给一个预制体结构，再定"挪到哪儿"（Unity 侧步骤节点 / 内容数据 JSON）。
+
+### DEC-105 `structure:done` 的语义
+
+- **全部步骤走完**才发 `structure:done`（与来源工程的"完成事件"语义一致）。
+- `masterAppliance` 的结构件是空壳、**没有任何步骤数据** ⇒ 该站**永远不发 `structure:done`**。
+  这是**接受的结果**，不是缺陷（负责人明示）。
+- **未闭合**：带不带进度（如 5/7 步）/ 分数。`design/03` 规则 3 要求"完成事件必须有语义"，
+  不许含糊，因此这一条要在接 `StepManager` 时一起定（`TODO.md` 已登记）。
+
+### 21.1 本轮实测（可复核）
+
+| 项 | 结果 / 证据 |
+|---|---|
+| 搬运脚本（可重跑、`--dry-run`） | `tools/pipeline/import-structure-assets.mjs` |
+| 清单 | `content/asset-structure-report.json`（来源 / 目标 / 字节 / sha256 / 类别 / 本次状态） |
+| 结构件预制体 | **8 个**（含 1 个空壳）· 0.54 MB |
+| 拆装动画 | **46 段** · 14.62 MB |
+| 器件材质 | **29 个 + 1 个公共 `Alpha.mat`**（接管自动抽出的同名材质） |
+| 反射立方体贴图 | **`Chrome05.cubemap` 1 个 · 12.0 MB**（4 个 `*_Metal` 材质的**真实依赖**）—— 它是**非位图**，不受"单张位图 ≥10 MB 剔除"约束（那条规则的原意是"未压缩背景照片"）；套用会把金属件的反射静默弄坏，第一次跑就踩到了 |
+| 自制 Shader | **4 个 ShaderGraph + 1 个 SubGraph** · 1.06 MB |
+| 插件 | **HighlightPlus 86 文件** · 0.46 MB |
+| 幂等 | 重跑一次：**0 个文件被写**，已在本工程的按 GUID 跳过 |
+| 未搬（登记为待办） | 2 个脚本（`StructureTaskObj.cs` / `InstControlledManager.cs`）—— 见 DEC-104 |
+| 纪律 | 来源工程**全程只读**（DEC-69）；不打开 Unity；不碰 git / Plastic |
+
+**Unity 编辑器内实测**（导入完成后用 Unity MCP 逐个 `AssetDatabase` 读回，2026-10-14）：
+
+| 器件 | 网格件 | 渲染器 | 空网格 | 空材质 | Animation 片段 | 实测着色器 |
+|---|---|---|---|---|---|---|
+| contactor | 11 | 11 | 0 | 0 | 12 | `Shader Graphs/HDRPtoURPCustomDirtLitShader` |
+| thermalRelay | 44 | 44 | 0 | 0 | 7 | 同上 |
+| timeRelay | 6 | 6 | 0 | 0 | 5 | 同上 |
+| masterAppliance（空壳） | 2 | 2 | 0 | 0 | 0 | 同上 |
+| fuse | 10 | 10 | 0 | 0 | 4 | Dirt + Unlit + CubeSpecular |
+| breaker | 61 | 61 | 0 | 0 | 5 | Dirt + URP Lit + Unlit |
+| speedRelay | 41 | 41 | 0 | 0 | 7 | Dirt + ClearCoated + CubeSpecular |
+| combinationSwitch | 21 | 21 | 0 | 0 | 6 | Dirt + CubeSpecular |
+
+- **合计 0 空网格 / 0 空材质** ⇒ 两条关键假设都成立：① 源预制体里按 `fileID + FBX guid` 引用的子网格，
+  在"FBX 连同 `.meta` 一起搬"之后**仍然解析得到**（逐字命中，没有变成空网格）；② 材质接管后着色器是**自制 ShaderGraph 而非紫红**。
+- 抽查动画可读：`contactor_structure_model_0 = 5s`、`_11 = 3s`、`fuse_structure_model_3 = 1s`、`breaker_structure_model_4 = 2s`。
+- `timeRelay` / `masterAppliance` 这两个的零件是**嵌套 FBX 预制体实例**，材质走的是 FBX 自己的绑定；
+  换掉同名材质后 FBX 的绑定指向已消失的旧 GUID ⇒ 第一次读回是**空材质**。**已对该两个 FBX 做 `ImportAsset(ForceUpdate)` 重导**，
+  重导后空材质归零（Unity 会各留一条 `FBXImporter generated inconsistent result` 警告，是"这次导入结果与上次不同"的提示，不是错误）。
+- HighlightPlus 已编译：`Assembly-CSharp-firstpass` 里 `HighlightPlus.*` 类型 **41 个**、Editor 侧 6 个，
+  URP 的 `HighlightPlusRenderPassFeature.cs` 也在位。
+- **后续（DEC-106）**：上一条的落点**已改变** —— 这些类型不再住在预定义程序集里，见下。
+
+### DEC-106 HighlightPlus 的接入方式：给插件补 asmdef
+
+**背景（DEC-103 的未闭合项）**：插件搬入时**没有 asmdef**，又落在 `Assets/Plugins/**` 下，
+Unity 于是把它编进**预定义程序集** `Assembly-CSharp-firstpass`；而本工程业务代码都在 asmdef 程序集里，
+**asmdef 一律不引用预定义程序集** ⇒ 业务代码里写 `HighlightEffect` 必定 `CS0246`（无解的是引用关系，不是 `using`）。
+
+**决定**：给插件补 asmdef，业务程序集**正向**引用它（插件源码与目录位置都不动）：
+
+| 程序集 | 目录 | 引用 |
+|---|---|---|
+| `HighlightPlus.Runtime` | `Assets/Plugins/HighlightPlus/Runtime/` | `UnityEngine.UI`（`HighlightTrigger` / `HighlightManager` 要判 `GraphicRaycaster`） |
+| `HighlightPlus.Pipelines` | `Assets/Plugins/HighlightPlus/Pipelines/URP/` | `HighlightPlus.Runtime` + `Unity.RenderPipelines.{Core,Universal}.Runtime` |
+| `HighlightPlus.Editor` | `Assets/Plugins/HighlightPlus/Editor/` | `HighlightPlus.Runtime` + `HighlightPlus.Pipelines` + 同上两个 URP 程序集（`includePlatforms = ["Editor"]`） |
+
+- **业务侧**：`WSU3.Core` 的 `references` 加 `HighlightPlus.Runtime`；`WSU3.Runtime` **未加**（目前只有高亮钩子要用它）。
+- **高亮的落点不变**：`InteractiveObjBase` 只留 `SetHighlight(bool)` 状态与 `OnHighlightChanged` 钩子，
+  **表现由派生类自己写**（与该文件自己的注释一致）；本工程**不引入"门面服务"**（DEC-104 已明确不整份搬 `StructureTaskObj`）。
+- **未闭合（将来才需要）**：`HighlightPlus.Runtime` 未引用 `Unity.InputSystem` ——
+  插件里 `InputProxy.cs` 有 `#if ENABLE_INPUT_SYSTEM` 分支，将来启用 Input System 包时需给这个程序集补引用。
+- **未定项照旧**：URP RendererFeature 要不要挂进 URP 资产仍待定（`TODO.md` D-18）——
+  "插件能被业务程序集引用"**不等于**高亮现在就能画出描边。
+
+**实测（2026-10-14，Unity 2022.3.53f1c1 编辑器内反射读回）**：
+`CompilationPipeline.GetAssemblies(Editor)` 得到 `WSU3.Core => WSU3.Contracts, UnityEngine.UI, HighlightPlus.Runtime`；
+`HighlightPlus.HighlightEffect` 解析到程序集 **`HighlightPlus.Runtime`**、`Assembly-CSharp-firstpass` 里**已不再有**它；
+`HighlightPlus.HighlightPlusRenderPassFeature` 落在 `HighlightPlus.Pipelines`；
+`InteractiveObjBase` 的 `highlightEffect` 字段类型 = `HighlightPlus.HighlightEffect @ HighlightPlus.Runtime`；编译后 console **0 error**。
+
+---
+
+## 22 第九轮（2026-10-14）：底层操控层的移植（DEC-107）
+
+> 背景：负责人要求把参照工程 `Assets/Scripts/InputController/` 那套**底层操控层**（第一人称 / 第三人称 / 聚焦环绕 / 相机背景）
+> **连相关预制体一起**搬到本工程。这套代码原本住在参照工程的单一程序集里、强依赖它的 `Global*Mgr` 管理器骨架与自带日志门面，
+> 照搬会**同时触犯** R-1 与 DEC-69 的两条禁令（照搬目录布局、照搬 `Global*Mgr` 骨架）。
+> 负责人按既有边界选了**移植**：算法保留，目录与命名落到本工程。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-107 | 底层操控层**按 DEC-69 的边界移植**（不照搬来源的目录布局与 `Global*Mgr` 骨架）：代码落 `Assets/Scripts/Core/Controllers/`（程序集 `WSU3.Core`、命名空间 `WSU3.Core.Controllers`）；控制器登记改**基类静态注册表**、相机取用走 `GlobalManager.MainCamera`、逐帧接 `InputGate`；**新增 `com.unity.inputsystem` 1.11.2 与 `com.unity.cinemachine` 2.10.7**，并把 `activeInputHandler` 改 **Both**（旧版 Input 的拾取继续可用） | 负责人 2026-10-14 逐条选定（形态 / 依赖包 / 范围） | 是（**翻 Q-G1 的"暂不新增包"**） | 生效（接入与验收未闭合，见 `TODO.md`） |
+
+### DEC-107 落地要点
+
+- **搬什么**：操控层 7 个 `.cs` + 输入资产（`.inputactions`）+ 两个预制体（角色 / 相机 rig）
+  + 它们的 **GUID 依赖闭包**（背景板材质与自制 ShaderGraph）+ 参照工程的 14 份行为规格 `.md`（原文照录进 `docs/research/10-input-controller-specs/`）。
+- **不搬**：参照工程的管理器 / 工具 / 事件骨架与目录布局（`GlobalInputMgr` / `GlobalCameraMgr` / `GlobalAssetsMgr` / 日志门面）。
+  这些职责改由本工程**既有**组件承担：相机 → `GlobalManager.MainCamera`；控制器登记 → 基类静态注册表；逐帧闸门 → `InputGate`（DEC-84）。
+- **⚠️ 命名空间必须避让 `Input`**：首版落成 `WSU3.Core.Input`，编译立刻把整个 `WSU3.*` 下裸 `Input.GetMouseButton*`（旧版 Input）
+  解析成"命名空间"，`InteractiveManager` 等文件整片打红 —— **命名空间优先于 `using` 导入的类型**。
+  故定名 **`WSU3.Core.Controllers`**、目录 `Core/Controllers/`，原因写进 `design/11`。
+- **不覆盖同名资产**：本工程首批脚手架已有 `Assets/Resources/MainCamera.prefab`（精简相机，`96a03e8` 入库），
+  而参照工程那台是**带 `CinemachineBrain` 与背景板的 rig** ⇒ rig 落 `Assets/Prefabs/Camera/MainCameraRig.prefab`。
+  "要不要把它换成本工程的主相机"（换掉才能用缩放与视角控制）**登记在 `TODO.md`，不由搬运脚本替人决定**。
+- **纪律**：搬运与移植各有**可重跑**脚本（`tools/pipeline/import-input-controller.mjs`、`port-input-controller.mjs`），
+  参照工程全程只读；清单落 `content/asset-input-controller-report.json`；`design/11` 记本层规格与未闭合项。
+
+**实测（2026-10-14，Unity 2022.3.53f1c1 编辑器内）**：`com.unity.cinemachine@2.10.7` 与 `com.unity.inputsystem@1.11.2` 解析到位；
+全项目重编译 **console 0 error**；`WSU3.Core.asmdef` 引用读回 = `WSU3.Contracts, UnityEngine.UI, HighlightPlus.Runtime, Cinemachine, Unity.InputSystem`；
+5 个移植类型在 `WSU3.Core` 里解析得到；**三个预制体缺失脚本 0**（角色 6 节点 / 7 个 MonoBehaviour、相机 rig 2 节点 / 3 个、`Resources/MainCamera` 1 节点 / 1 个）；
+相机 rig 的背景板材质与 `Shader Graphs/CamBgUnlitShader` 都解析到位；输入资产 `StarterAssets`（1 张动作表）被 `PlayerInput` 正常引用。
+**已知继承缺陷**：角色预制体 `Capsule` 的材质引用在**参照工程里就是断的**（清单 `unresolved`），搬过来仍是空材质。
+**未做**：任何实机验收（没进场景、没接线 ⇒ 跑不了），见 `TODO.md`。
+
+---
+
+## 23 第十轮（2026-10-14）：资源包与 AB 打包流水线（DEC-108 ~ DEC-110）
+
+> 背景：负责人要求 ① **完善 `AddressableManager`**（此前是 23 行的空桩：`Init` 里一个 TODO、`OnDespose` 空），
+> ② 把 **AB 打包流水线移植进来**并要求**一键打包**，③ 明确"**可以参考既有同类工程的脚本，不要全部凭空空写**"。
+> 负责人逐条选定：**一键 = Unity 菜单里一个按钮（只打 AB 包）**；**三条链路（AB / AA / 内置）都实装**；
+> **并把 `TaskFlowManager` 的装/卸包与结构件实例化一起接上**。
+
+| ID | 决策 | 来源 | 偏离★ | 状态 |
+|---|---|---|---|---|
+| DEC-108 | **AB 打包入口 = Unity 菜单一个按钮**（`WSU3/Pack/一键打 AB 包（全部）`）：收集 → 校验 → 写包配置 → 同步包登记表 → **一次 `BuildAssetBundles` 建出全部包** → 出报告；产物落 `Assets/StreamingAssets/{包名首段}/`（DEC-87 原定），**不进版本库**（`ignore.conf` 已加规则） | 负责人 2026-10-14 指示 | 否 | **生效**（已跑通） |
+| DEC-109 | **内容包 Provider 本期只登记"结构件模型"一类**；全局包抽象（`IGlobalBundleProvider`）就位但**登记表留空**（不产出空包）。理由：简介 / 检测的预制体目录本工程还没有，登记它们会让"找不到预制体"变成阻塞构建的 Error；UI / 字体包因"Unity 侧不做界面"（DEC-80）不存在，相机背景包因取图入口未接（D-20）不存在 | **由 AI 定**（可推翻） | 否 | 生效 |
+| DEC-110 | **结构件实例的挂载根** = 场景里已有同名节点 `StructureRoot` 就用它、没有则运行期在管理器节点下建一个（工具不替人改场景文件）；**结构任务的步骤驱动**按"预制体自带 `StepManager` 子树"实现，没有子树时**只实例化、不假装跑流程**；顺带纠正 `TaskManagerBase.Instance` 的 `new MonoBehaviour` 老写法（改为解析场景实例） | **由 AI 定**（挂载根待负责人确认，见 `TODO.md` §1） | 否 | 生效 |
+
+### DEC-108 落地要点
+
+**照搬的部分**（既有同类工程的做法经验证有效，直接沿用）：包登记表形状（`PackageConfigSO` 抽象基类 +
+`ABPackageConfigSO` / `AAPackageConfigSO` / `DefaultPackageConfigSO` 三子类，**各自独占同名文件**，否则 `CreateAsset`
+出来的资产 `m_Script` 是 `{fileID: 0}`）、命名规则唯一来源 `ContentNaming`、编辑器内核
+（`EditorPaths` / `EditorAssetUtil` / `BundleBuilder` / `PackageConfigWriter` / `PackageDatabaseSync`）、
+`PackageDatabaseSO.AutoCollect` 按"基类 + 各子类"各搜一遍（类型过滤器**收不到抽象基类的派生资源**）、
+以及三条铁律（一次构建 / Temp 中转只拷本体 / 按目录各自清残留）。
+
+**两处有意改动**（不是照抄，理由写在此处）：
+
+1. 既有实现把"内容包"与"全局包"**拆成两条各带构建步骤的流水线**；本工程把"收集 / 校验 / 写配置 / 同步登记表"
+   收成一个 planner、**一次性把全部包交给同一次 `BuildAssetBundles`**。
+   理由：Unity 的"同一资产被显式分配后不再复制"**只在同一次调用内成立**（既有实现的注释里就有这条实测），
+   一次建全比"靠依赖声明把两个包凑进同一批"更稳 —— 而那正是"一键"的字面含义。
+2. 因此既有实现里 `IGlobalBundleProvider.BuildWith`（声明"必须与本包同批构建"的依赖表）在本工程**被上一条整体取代**，
+   没有这个成员；顺带也去掉了 `CleanStaleConfigs` / `AbortOnFirstAssetProblem` 两条 per-provider 策略
+   （它们服务的是某个包的历史语义，本工程没有这条包袱）。
+
+**实测（2026-10-14，Unity 2022.3.53f1c1，`activeBuildTarget = WebGL`）**：
+
+| 项 | 读数 |
+|---|---|
+| 对账 | **8 个包 / 8 项资源 / Error 0 / Warning 0** |
+| 包登记表 | `Assets/Resources/Config/PackageDB_Master.asset` 建成，**8 条** |
+| 包配置 | `Assets/Resources/Config/ContentPackages/AB_*.asset` **8 个** |
+| 构建 | **8 个 bundle / 47,476,797 字节（45.3 MB）**，`missing 0` / `removed 0` | 
+| 逐包 | contactor 4.20 MB · thermalRelay 3.26 · timeRelay 7.62 · masterAppliance 4.38 · fuse 4.27 · breaker 6.73 · speedRelay 10.13 · combinationSwitch 6.90 |
+| 产物 | `Assets/StreamingAssets/Content/clip_<器件小写>`，**无扩展名、无 `.manifest`**（Temp 中转生效） |
+| 报告 | `Builds/assetbundles/ab-build-report.json`（不进版本库） |
+| 运行期读回 | `Resources.Load<PackageDatabaseSO>("Config/PackageDB_Master")` **非空 / 8 条**；`AddressableManager.IsInit=True`、`ConfigCount=8`、`HasClip("clip_contactor")=True`、`HasClip("clip_nope")=False`；`GetBundleUrl("Content/clip_contactor")` = `file:///…/Assets/StreamingAssets/Content/clip_contactor`（编辑器口径；WebGL 下不带 `file://`） |
+| 编译 | 全项目重编译 **console 0 error**；`WSU3.Core` 新增引用 `Unity.Addressables` / `Unity.ResourceManager`，`WSU3.Editor` 另加 `Unity.Addressables.Editor` |
+
+**包名与既有清单逐条一致**：8 个 `bundleName` 与 `content/asset-structure-report.json` 的 `entries[].bundleName` **完全相同**
+（`Content/clip_contactor` … `Content/clip_combinationswitch`），包配置 id 与内容数据里的 `prefabKey` 也逐字符一致
+（`contactor_structure_model` …）—— 也就是说 `TODO.md` D-17 里"包配置的 assetPath 已对得上"这条承诺兑现了。
+
+### DEC-109 落地要点
+
+- 登记点唯一：`BundlePipeline.ContentProviders`（内容包）与 `BundlePipeline.GlobalProviders`（全局包）。
+  **新增一类内容 = 加一个 `IContentProvider` 实现 + 登记一行**，不需要改流程。
+- 内容数据的读取**不走运行期模型**：`ProjectData.json` 的键是 `taskStructureData` / `taskActive`，
+  而运行期模型的字段名是 `structure` / `isActive` —— 两者**不同名**，`JsonUtility` 按字段名对位，
+  直接反序列化只会得到一堆空字段（表现是"对账通过、一个包都没收集到"这种最难查的沉默故障）。
+  故编辑器侧另立 `ProjectDataDto`（只声明流水线要用的键，与 JSON 逐字对齐）。
+- 全局包抽象就位但为空表：**不产出空包**，且空表是如实状态（理由见上表）。
+
+### DEC-110 落地要点
+
+- **挂载根两级口径**：`DataStructMapping.GetStructureRoot()` —— 场景里有 `StructureRoot` 就用它（位置 / 父级由负责人摆），
+  没有就运行期在管理器节点下建一个。为什么不由工具往场景里塞节点：`1_Content` 由负责人在编辑器里装配，
+  工具替人改场景会让"场景长什么样"出现两个作者；运行期建节点是幂等、可回退的。
+- **`TaskManagerBase.Instance` 的老写法是错的**：原实现 `instance = new StructureTaskManager()` ——
+  Unity **不允许** `new` 一个 MonoBehaviour（只能用 `AddComponent`），那种实例没有 `transform`/`gameObject`、
+  `Awake`/`OnDestroy` 也不跑，而场景里真正挂着的那个节点永远收不到指令。
+  实测代价：把 `TaskManagerBase` 改成非 MonoBehaviour 的那一刻，编辑器立刻报
+  `'StructureTaskManager' is missing the class attribute 'ExtensionOfNativeClass'` +
+  `GameObject (named 'StructureTaskManager') references runtime script in scene file. Fixing!`
+  —— 这由 `1_Content.unity` 里那个**真实存在**的 `StructureTaskManager` 节点触发。
+  改回 MonoBehaviour + `Instance` **解析场景实例**（`FindObjectsByType`，`Include` 非激活）后，
+  该节点与组件读回完好（`componentTypes = [Transform, StructureTaskManager]`），`1_Content` 未被改动。
+- **装载顺序**：`scene:exit` 与"切任务"时**先销毁实例、再卸包** —— 反过来会让存活实例的材质引用到已释放资源（变粉），
+  这正是 DEC-87 纪律②。
+- **两条失败口径分开**：装包失败 → `9002`（`fatal=true`，**不发** `scene:ready`，界面不能以为可交互）；
+  登记表里没有该 clip 的包 → `9001`（`fatal=false`，仍走到 `scene:ready`，保留原联调口径）。
+
+### AA（Addressables）这条链路的落地
+
+- 运行期实装：`AddressableManager` 的 `LoadFromAA` 走 `Addressables.LoadAssetAsync` 并**留住 handle**
+  （只把 `Result` 塞进缓存、丢掉 handle 的话，卸载时那份资源永远释放不掉）；场景走
+  `Addressables.LoadSceneAsync` / `UnloadSceneAsync` 并把场景 handle 单独留一份。
+- 编辑器工具：`WSU3/Pack/Addressables/`（初始化设置与默认分组 / 同步场景分组 / 构建 AA 内容 / 清理场景分组）。
+- **已初始化**：`Assets/AddressableAssetsData/AddressableAssetSettings.asset`（**2 个默认分组**）+ `AssetGroups/` 5 个资产，`console 0 error`。
+- **内容位置**（`design/06` §3③ 的最大坑）的结论是**默认 profile 就已经对**：
+  `Local.LoadPath` 解析到 `StreamingAssets/aa/[BuildTarget]` ⇒ 内容随玩家包一起走，
+  不需要手工改 profile，也不需要 `unity-stage.mjs --extra`。但这条是**读数不是假设** ——
+  工具会把当前生效的 profile 路径打到 Console。
+- 本期的 AA 资源是 **0 条**（漫游场景未做，`PLAN.md` P2-6c），场景分组是**明确的空操作**（弹窗说明原因）。
+
+

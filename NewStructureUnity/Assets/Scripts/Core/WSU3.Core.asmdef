@@ -3,7 +3,12 @@
   "rootNamespace": "WSU3.Core",
   "references": [
     "WSU3.Contracts",
-    "UnityEngine.UI"
+    "UnityEngine.UI",
+    "HighlightPlus.Runtime",
+    "Cinemachine",
+    "Unity.InputSystem",
+    "Unity.Addressables",
+    "Unity.ResourceManager"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

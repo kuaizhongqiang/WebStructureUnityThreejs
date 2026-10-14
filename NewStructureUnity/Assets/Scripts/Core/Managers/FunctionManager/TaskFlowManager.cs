@@ -5,6 +5,7 @@ using UnityEngine;
 using WSU3.Contracts;
 using WSU3.Contracts.Events;
 using WSU3.Core.Interactive;
+using WSU3.Core.Managers.TaskManager;
 
 namespace WSU3.Core.Managers.FunctionManager
 {
@@ -16,17 +17,25 @@ namespace WSU3.Core.Managers.FunctionManager
     ///
     /// 分层：
     ///   · 本类只管**时机与状态**（谁先谁后、忙不忙），不碰资源细节；
-    ///   · "卸旧项目的资源包 / 装新项目的资源包"由 P2-6 的包管理器接管
-    ///     —— 现在发一条**非致命**错误码 9001 说明"尚未实现"，好让 Web 侧整条流先能联调；
+    ///   · "卸旧 clip 的资源包 / 装新 clip 的资源包"交给 <see cref="AddressableManager"/>（DEC-87 纪律①）；
+    ///     **装配**按 TaskType 分派给任务管理器（`Core/Managers/TaskManager/`）；
     ///   · 真正上网的是 Runtime 的桥：本类只 `Publish` 意图事件（`TaskAssetsReadyEvent` 等）。
     ///
     /// 说话顺序（每个任务）：`assets:ready` → `unity:progress`×N → `scene:ready`；
-    /// 退出：卸包清理 → `scene:exited`（**实例不销毁**，DEC-81）。
+    /// 退出：销毁任务实例 → 卸包清理 → `scene:exited`（**引擎实例不销毁**，DEC-81）。
+    ///
+    /// 两条失败口径（不要混）：
+    ///   · **装包失败**（9002，`fatal=true`）：本次进入中止，**不发** `scene:ready` —— 界面不能以为能交互；
+    ///   · **登记表里没有该 clip 的包**（9001，`fatal=false`）：只提示、仍走到 `scene:ready`，
+    ///     好让 Web 侧整条流先能联调（内容包还没打过时就是这个状态）。
     /// </summary>
     public class TaskFlowManager : FunctionManagerBase
     {
-        /// <summary>内容资源装载/装配尚未实现（P2-6）时的占位错误码。`fatal=false`，Web 可只做提示。</summary>
+        /// <summary>包登记表里没有该 clip 的包时的**非致命**提示码（内容包还没打过 / projectId 与登记表对不上）。</summary>
         public const int ErrorContentFlowNotImplemented = 9001;
+
+        /// <summary>装包失败（下载失败 / 解包失败 / 半装）的**致命**错误码：本次进入没有完成，不要显示"就绪"。</summary>
+        public const int ErrorContentPackLoadFailed = 9002;
 
         /// <summary>当前已进入的任务类型；待命时为 <see cref="TaskType.None"/>。</summary>
         public TaskType CurrentTaskType { get; private set; } = TaskType.None;
@@ -178,6 +187,7 @@ namespace WSU3.Core.Managers.FunctionManager
         {
             Busy = true;
             TaskType target = request.TaskType;
+            string clipId = request.ProjectId;
 
             // 切任务 = 先退旧的，再进新的（同一个实例，不重建，DEC-81）
             if (CurrentTaskType != TaskType.None)
@@ -187,22 +197,59 @@ namespace WSU3.Core.Managers.FunctionManager
 
             Debug.Log($"[TaskFlow] scene:enter → {target}（projectId={request.ProjectId}, version={request.ContentVersion}）");
 
-            // ① 装载项目资源包 —— P2-6 未实现，先发一条非致命错误让联调继续
-            EventBus<BridgeErrorEvent>.Publish(new BridgeErrorEvent
+            // ① 装载项目资源包：一个 clip 一个内容包（DEC-87 纪律①）
+            bool packReady = false;
+
+            if (!string.IsNullOrEmpty(clipId) && GlobalManager.AddressableManager.HasClip(clipId))
             {
-                Code = ErrorContentFlowNotImplemented,
-                Message = $"内容资源包装载尚未实现（{target} / projectId={request.ProjectId}）；见 docs/PLAN.md P2-6。",
-                Fatal = false,
-            });
+                bool ok = false;
+                string reason = null;
+                yield return GlobalManager.AddressableManager.LoadClipRoutine(
+                    clipId, (success, why) => { ok = success; reason = why; });
+
+                if (!ok)
+                {
+                    // WHY: 装包失败**不能**继续走到 scene:ready —— 界面会以为可交互，点下去却是空的。
+                    //      "半装的包"比"没装"更危险，所以这里明确中止并如实回报原因。
+                    EventBus<BridgeErrorEvent>.Publish(new BridgeErrorEvent
+                    {
+                        Code = ErrorContentPackLoadFailed,
+                        Message = reason,
+                        Fatal = true,
+                    });
+                    Debug.LogError($"[TaskFlow] 装包失败，本次进入 {target} 中止：{reason}");
+                    Busy = false;
+                    yield break;
+                }
+
+                packReady = true;
+            }
+            else
+            {
+                // 登记表里没有该 clip 的包（内容包还没打过，或 projectId 与登记表对不上）——
+                // 发一条**非致命**提示，仍让整条流走到 scene:ready（Web 侧联调不受影响），
+                // 但"没有内容包"这件事必须写在显眼处。
+                EventBus<BridgeErrorEvent>.Publish(new BridgeErrorEvent
+                {
+                    Code = ErrorContentFlowNotImplemented,
+                    Message = $"包登记表里没有 clip '{clipId}' 的资源包（{target}）—— " +
+                              "先跑菜单 WSU3/Pack/一键打 AB 包（全部）生成包与登记表；见 docs/design/12。",
+                    Fatal = false,
+                });
+            }
+
             PendingPreload = null;
             yield return null;
 
             // ② 资产就绪：Web 可以开始渲染该任务的界面（DEC-84）
             EventBus<TaskAssetsReadyEvent>.Publish(new TaskAssetsReadyEvent { TaskType = target });
 
-            // ③ 装配 —— 同样等 P2-6；进度先按"两段"的后半段报
+            // ③ 装配 —— 进度按两段里的后半段报（docs/design/09 §7）
+            GlobalManager.SetCurrentTask(clipId, target);
             EventBus<SceneProgressEvent>.Publish(new SceneProgressEvent { Progress = 0.5f });
-            yield return null;
+
+            yield return packReady ? AssemblyRoutine(target, clipId) : null;
+
             EventBus<SceneProgressEvent>.Publish(new SceneProgressEvent { Progress = 1f });
             yield return null;
 
@@ -212,6 +259,38 @@ namespace WSU3.Core.Managers.FunctionManager
             Busy = false;
         }
 
+        /// <summary>
+        /// 按任务类型分派装配。
+        ///
+        /// 当前只有结构任务（<see cref="TaskType.Structure"/> = 8）有装配链路；
+        /// 其余 Unity 类任务（电路连接 / 仿真实验 / 检测）的三维装配还没做（docs/PLAN.md P2-6 / P2-8）——
+        /// 这里**只如实记一条日志**，不假装装配过（资源包已经装好，界面照常渲染）。
+        /// </summary>
+        private IEnumerator AssemblyRoutine(TaskType target, string clipId)
+        {
+            switch (target)
+            {
+                case TaskType.Structure:
+                    // WHY: 任务管理器是**场景里的节点**，没摆就是 null —— 必须报"没进场景"，
+                    //      而不是吞掉它（否则表现是"包装好了、画面什么都没变"，最难查的一类）。
+                    StructureTaskManager structure = StructureTaskManager.Instance;
+                    if (structure == null)
+                    {
+                        Debug.LogError("[TaskFlow] 内容场景里没有 StructureTaskManager 节点，结构任务无法装配" +
+                                       "（应在 1_Content 下）。");
+                        yield break;
+                    }
+                    yield return structure.StartTaskRoutine(clipId);
+                    break;
+
+                default:
+                    Debug.Log($"[TaskFlow] {target} 的装配尚未实现（本工程当前只有结构任务的装配链路）；" +
+                              "资源包已装好，界面可以照常渲染。见 docs/PLAN.md P2-6 / P2-8。");
+                    yield return null;
+                    break;
+            }
+        }
+
         private IEnumerator ExitRoutine()
         {
             Busy = true;
@@ -219,7 +298,7 @@ namespace WSU3.Core.Managers.FunctionManager
             Busy = false;
         }
 
-        /// <summary>退出的公共部分：卸包清理 → 报 `scene:exited`。调用方负责 <see cref="Busy"/>。</summary>
+        /// <summary>退出的公共部分：销毁任务实例 → 卸包清理 → 报 `scene:exited`。调用方负责 <see cref="Busy"/>。</summary>
         private IEnumerator ExitRoutineCore()
         {
             TaskType exiting = CurrentTaskType;
@@ -229,8 +308,17 @@ namespace WSU3.Core.Managers.FunctionManager
                 yield break;
             }
 
-            Debug.Log($"[TaskFlow] 退出 {exiting}：卸包清理（P2-6 落地后生效）。");
-            yield return null; // 预留：等包管理器卸载完成
+            // ① 先销毁本次任务装配出来的实例 —— **顺序不能反**：先卸包会让存活实例的材质引用到已释放资源（变粉，DEC-87 纪律②）
+            StructureTaskManager structure = StructureTaskManager.Instance;
+            if (structure != null) structure.StopTask();
+
+            // ② 再卸资源包（纪律①：切任务 = 卸旧 clip 的包 + 装新 clip 的包）
+            string clipId = GlobalManager.CurrentClipId;
+            int invalidated = GlobalManager.AddressableManager.UnloadClip(clipId);
+            GlobalManager.SetCurrentTask(null, TaskType.None);
+
+            Debug.Log($"[TaskFlow] 退出 {exiting}：已卸包（clip={clipId ?? "（无）"}，失效缓存 {invalidated} 条）");
+            yield return null; // 留给后续可能出现的其他任务级清理
 
             CurrentTaskType = TaskType.None;
             EventBus<TaskExitedEvent>.Publish(new TaskExitedEvent { TaskType = exiting });

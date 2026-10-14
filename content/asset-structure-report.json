@@ -1,0 +1,2227 @@
+{
+  "generatedAt": "2026-10-14T03:14:18.556Z",
+  "dryRun": false,
+  "from": "F:\\Project\\Low-voltageElectricalSimulationSoftware",
+  "entries": [
+    {
+      "prefabKey": "contactor_structure_model",
+      "device": "contactor",
+      "bundleName": "Content/clip_contactor",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/contactor_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "thermalRelay_structure_model",
+      "device": "thermalRelay",
+      "bundleName": "Content/clip_thermalrelay",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/thermalRelay_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "timeRelay_structure_model",
+      "device": "timeRelay",
+      "bundleName": "Content/clip_timerelay",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/timeRelay_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "masterAppliance_structure_model",
+      "device": "masterAppliance",
+      "bundleName": "Content/clip_masterappliance",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/masterAppliance_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "fuse_structure_model",
+      "device": "fuse",
+      "bundleName": "Content/clip_fuse",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/fuse_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "breaker_structure_model",
+      "device": "breaker",
+      "bundleName": "Content/clip_breaker",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/breaker_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "speedRelay_structure_model",
+      "device": "speedRelay",
+      "bundleName": "Content/clip_speedrelay",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/speedRelay_structure_model.prefab",
+      "taskActive": true
+    },
+    {
+      "prefabKey": "combinationSwitch_structure_model",
+      "device": "combinationSwitch",
+      "bundleName": "Content/clip_combinationswitch",
+      "assetPath": "Assets/Prefabs/Models/StructureObjs/combinationSwitch_structure_model.prefab",
+      "taskActive": true
+    }
+  ],
+  "files": [
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/contactor_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/contactor_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 47034,
+      "sha256": "903a41fc07096cd47d6482835a726a5dae3f14e0d02e7351cca82d061db8ce38",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor.fbx",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor.fbx",
+      "kind": "model",
+      "bytes": 1588944,
+      "sha256": "e8fa4e329351f596efb991987e703943782f44abf30e3e63f111564a6860262d",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/Materials/ACContactor.mat",
+      "path": "NewStructureUnity/Assets/Models/contactor/Materials/ACContactor.mat",
+      "kind": "material",
+      "bytes": 5302,
+      "sha256": "5adae276c5df5d23d9fedecc20c171bdda4e9961cd8b4fd55555c5cd46acaab7",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 404019,
+      "sha256": "8785ea25e747b0f9eb41353e9d5b5808961b97f28d7160549bec97b1451b12f2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 245235,
+      "sha256": "c10622d0187b9b31d48d96c58ac2aaa8ad17eaa0dd84ce4f5c546526d57efd4b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 248125,
+      "sha256": "9121a00ebf47664c76ec03204e77f52544608029a9a1aff5d44ae69a19bce21c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 16898,
+      "sha256": "344c7f3fde13e73d34ffc01ea5a297f0175e38f4c4877710692ca8fccc63695b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 254100,
+      "sha256": "ecb9fb39343c610a3104fbdb67e7f3389e5c41d1904f5cd40bd3af72dfbdb96b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_5.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_5.anim",
+      "kind": "animation",
+      "bytes": 262908,
+      "sha256": "92e70357e8e12b50a0be1c37588459b80837f653970260bb1a36d90664ae46a7",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_6.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_6.anim",
+      "kind": "animation",
+      "bytes": 105311,
+      "sha256": "fdf2f472e1b53c8b8daded2589b7f6c54599ce653a7fa6c62b3ee6542723db10",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_7.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_7.anim",
+      "kind": "animation",
+      "bytes": 28721,
+      "sha256": "0c7e5408a8972c736136f839ec158fb736b1eeb062ff8f9aaec8e58bb4a23f79",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_8.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_8.anim",
+      "kind": "animation",
+      "bytes": 30624,
+      "sha256": "9da1d34edb640015a98d62cb6925accd34a4951ddc3c9f708d53a9b1d6cfe1f7",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_9.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_9.anim",
+      "kind": "animation",
+      "bytes": 503766,
+      "sha256": "b1546ecde17495126cfc435bc7499a40b71f31a5e87c4bbce22ca3d0aa3caa02",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_10.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_10.anim",
+      "kind": "animation",
+      "bytes": 506785,
+      "sha256": "e6e90fa16bc26124ab6d21be47e57c117bbe54772e74fe3e21b58e5729108ec2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/contactor_structure_model_11.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/contactor_structure_model_11.anim",
+      "kind": "animation",
+      "bytes": 509811,
+      "sha256": "b43ffb6e2ca61cbcf5ba55caba705c8f8a2d4ace48c93e22e1796169850b6b40",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Base Color.png",
+      "kind": "texture",
+      "bytes": 169398,
+      "sha256": "d042861c6cdc8f4f00f7dccf6dcf7ee001d5909c2d9bb11f9b76fe38e2f1293f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1824856,
+      "sha256": "152a724a7463e69f3806e585d3d3bbeaf79264e057f95d0e93537d8212867016",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ACContactor_ACContactor_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ACContactor_ACContactor_Normal.png",
+      "kind": "texture",
+      "bytes": 332010,
+      "sha256": "257b7684199690e8f11d9c4e7d74504ec08dab514c5afc7fc93d081b62a52f3b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/Materials/ElectronicSupermarket2.mat",
+      "path": "NewStructureUnity/Assets/Models/contactor/Materials/ElectronicSupermarket2.mat",
+      "kind": "material",
+      "bytes": 3810,
+      "sha256": "2f70884d1663196bec952b3d23cd306b8bd57b31a619738f2b4de35a2c0655a9",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ElectronicSupermarket2.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ElectronicSupermarket2.png",
+      "kind": "texture",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/Materials/NewACContactor.mat",
+      "path": "NewStructureUnity/Assets/Models/contactor/Materials/NewACContactor.mat",
+      "kind": "material",
+      "bytes": 5305,
+      "sha256": "fb36b41831b3820da4192963a8fe73d1158ec72ee1eb3037467320cab79615cb",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Base Color.png",
+      "kind": "texture",
+      "bytes": 33030,
+      "sha256": "ecef025a2d0b958771882613225f9a709576cb578f5e09598acd21ea7204346f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1265419,
+      "sha256": "2aca07030d0edf0877290f86f25354728c79c58886e43518028f10b26289d083",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/NewACContactor_NewACContactor_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/NewACContactor_NewACContactor_Normal.png",
+      "kind": "texture",
+      "bytes": 1578154,
+      "sha256": "9310e1e30b5f3e96f70c513c8272387fc53654c03c7d984ebd3f973bd8f84be7",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/thermalRelay_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/thermalRelay_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 123285,
+      "sha256": "c2417181694cf18a501ec1f0074ed4dedb2ea38a2c63725b5cf19b3f3d338b3c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay.fbx",
+      "kind": "model",
+      "bytes": 834544,
+      "sha256": "c895efc0d52820e6aad8bd78b09c3bf9744b5b12763ee17c5f5a4c854daf235c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/Materials/ThermalOerloadRelay.mat",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/Materials/ThermalOerloadRelay.mat",
+      "kind": "material",
+      "bytes": 5309,
+      "sha256": "e602a73de21a0da3d4751dc204cded83a4ffb3111a5d84d735dea648d018f3d9",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 718794,
+      "sha256": "a206db448c86601545c7c9f43e22e6ad365f152ca1ed354b4716637a9116c469",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 143002,
+      "sha256": "907576fe168d716e0b8e124ca7c5c5477a2650bdd11860d9019a153a626bb849",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 274211,
+      "sha256": "68e1da09f3f05da7a9211a4930594b48ac4fbb83504640a3125ce873df0cafc2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 279439,
+      "sha256": "2d8f7e9e41046c2c37a8ff62b079d113c6cd1488da0ae28f1c92bd86b814c00f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 284419,
+      "sha256": "87f6bcecaa7f0bc52f838f93a8e9f6f0d896d76457e76cca3cf27f50d784216c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_5.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_5.anim",
+      "kind": "animation",
+      "bytes": 791265,
+      "sha256": "0a239caf2416356aac9e74a1544aa7b4536ec5e4f913ce4ca3d6a556de0d4482",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/thermalRelay_structure_model_6.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/thermalRelay_structure_model_6.anim",
+      "kind": "animation",
+      "bytes": 538699,
+      "sha256": "1d4e29baffc40722c8c2606a67bc17de2b6d39e65a534ce0dc20de598a824075",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/Materials/ThermalOerloadRelay_2.mat",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/Materials/ThermalOerloadRelay_2.mat",
+      "kind": "material",
+      "bytes": 5202,
+      "sha256": "151f61c6da1f9238ebdc9940c00008174ec66b8016028b7a9b199be098135a65",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Base Color.png",
+      "kind": "texture",
+      "bytes": 56471,
+      "sha256": "4e309b8664f63c2c3421816ecee405167af5289a9d4128adbccf99511e5106aa",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 2293180,
+      "sha256": "0c896b0d76c3addafca00d658c595f2489576d9da79427c533e72c40dc086804",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_ThermalOerloadRelay_Normal.png",
+      "kind": "texture",
+      "bytes": 284347,
+      "sha256": "5b811597d99e9c50bb898dfbb8bdd056a801f44aeac5039906ef206bb1e06f0e",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/ThermalOerloadRelay_2.jpg",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/ThermalOerloadRelay_2.jpg",
+      "kind": "texture",
+      "bytes": 82569,
+      "sha256": "79f47d9a46a54ce025d35f0c9204bd306ce344958700bbfaa40991411c23f27c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/Materials/ElectronicSupermarket2.mat",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/Materials/ElectronicSupermarket2.mat",
+      "kind": "material",
+      "bytes": 3817,
+      "sha256": "237b9d1d19c466e8c6e90b62b34fb97aa15b4b3dd2c3cd528eec0029f0b0cb34",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ElectronicSupermarket2.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ElectronicSupermarket2.png",
+      "kind": "texture",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/Materials/NewThermalRelay.mat",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/Materials/NewThermalRelay.mat",
+      "kind": "material",
+      "bytes": 5306,
+      "sha256": "33c8d02aedd2ac654224ba36b3e59b62334ddd5dcfa6a8b16bbb1d822c7dc031",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Base Color.png",
+      "kind": "texture",
+      "bytes": 30300,
+      "sha256": "c91ad8d1634c2f1dee078d678979a1a43822cfc2ed68e445dd6a829d266bd3fb",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1162328,
+      "sha256": "7aa12c3e0701ec4b0f675c37c723b02f69e6ad1ae83e0791f1fc15e181927b88",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/NewThermalRelay_NewThermalRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/NewThermalRelay_NewThermalRelay_Normal.png",
+      "kind": "texture",
+      "bytes": 1888289,
+      "sha256": "0282a2725d56dff06b33846736fcf29ff59fd65fc39c7428a50b1fa298317732",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/热继电器/Materials/ThermalOerloadRelay_Metal.mat",
+      "path": "NewStructureUnity/Assets/Models/thermalRelay/Materials/ThermalOerloadRelay_Metal.mat",
+      "kind": "material",
+      "bytes": 5734,
+      "sha256": "0a0e17d68fac65dc232f3fe0e8c96a08d4d9113fc382a79c59b3d79bc7541328",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "kind": "shader",
+      "bytes": 226752,
+      "sha256": "a18d1e0a290a3e6ef1100cccec6b8b123c33112ef35de66100727ca8944ddc63",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "kind": "cubemap",
+      "bytes": 12584057,
+      "sha256": "4e329b04d98f810ee3199167adaf221130a9f2576f60c8d944c2ed7063ee444a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/timeRelay_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/timeRelay_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 15748,
+      "sha256": "59c96232542cba66e91ef0812a751024c09301fbe1ca3c3faa9d116b1286687e",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/timeRelay_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/timeRelay_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 288673,
+      "sha256": "0fef95a3aea602de4de0dd2b59f0cf831686e5609cf87bbd318fb015048a1af7",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/timeRelay_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/timeRelay_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 167518,
+      "sha256": "835367f0301fd2cf49a7ae6967b2032c4aa25d68c4fa2ccd0e8e02c4706a9786",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/timeRelay_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/timeRelay_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 170360,
+      "sha256": "f15de36a0f44b4c791a3ab49a4883e9f6e26a78e34842f68a6437df43bd30f08",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/timeRelay_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/timeRelay_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 606571,
+      "sha256": "fb6130d3a32ef6a77a1288f8d6550b188a17cf1bdd6d990db1e0c4da334d5820",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/timeRelay_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/timeRelay_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 339690,
+      "sha256": "c487faca200a752b0b86e54ea3519fc2acebe345d5b89820d9630322f60436cd",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay.fbx",
+      "kind": "model",
+      "bytes": 1106288,
+      "sha256": "ae67227cfbca1f4b4647b0a5c21d2114a80b0c7b2b20623d409337fe0e0c2b5b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/Materials/ElectronicSupermarket2.mat",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/Materials/ElectronicSupermarket2.mat",
+      "kind": "material",
+      "bytes": 3815,
+      "sha256": "2d3b3d0086d2a7218c5af9095c3cda2e73cbd3ff0e0bc9e1dc823ca90d60453f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ElectronicSupermarket2.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ElectronicSupermarket2.png",
+      "kind": "texture",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/Materials/Glass.mat",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/Materials/Glass.mat",
+      "kind": "material",
+      "bytes": 4836,
+      "sha256": "0fc064d628a09ee44a662b263f4daeec6627cdcabff8d7e3cf33ce70b02a9981",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPLitTransShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPLitTransShader.shadergraph",
+      "kind": "shader",
+      "bytes": 248460,
+      "sha256": "e36fdaf2d0b679a61baf03e502040d88af341fd1cf1e01a04e9db54e6b76606a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Public/White.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/White.png",
+      "kind": "texture",
+      "bytes": 2219,
+      "sha256": "8a7fd93a1a58fdafa7fca08a5968cbdd265d81878a7df74ab8726af13bcdf761",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/Materials/NewTimeRelay.mat",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/Materials/NewTimeRelay.mat",
+      "kind": "material",
+      "bytes": 5328,
+      "sha256": "822fe1b8af84f2f523599d5ce70c8e6da256470265ea12bdfdc64fd0ab5b4314",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Base Color.png",
+      "kind": "texture",
+      "bytes": 26862,
+      "sha256": "d261852b408765193f8909d381688bb4e7d8ce294af52da2088565d45f8fe5a5",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1158998,
+      "sha256": "6850c93407190ef2bd10773dd9d116b5ce6d2b77c30c8d3178042638934a4f2a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/NewTimeRelay_NewTimeRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/NewTimeRelay_NewTimeRelay_Normal.png",
+      "kind": "texture",
+      "bytes": 23107,
+      "sha256": "a542167f0d845be8d1015899adc48a595087dee2bd135a50a044312f89550e84",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/Materials/TimeRelay.mat",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/Materials/TimeRelay.mat",
+      "kind": "material",
+      "bytes": 5301,
+      "sha256": "7fb8857fa09de3b9315b0b4044857ede431924d1c100baf87af39e071e6e6900",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Base Color.png",
+      "kind": "texture",
+      "bytes": 1869587,
+      "sha256": "660844c0d9773badbbd3ef0585890ac61abf9cd789fe65b23663da4ec6568eb4",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 3601234,
+      "sha256": "c1e92f719ab3df5a68adb90499078ca25e6ad3a0ccc25f5b4d38d083dbae4df0",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelay_TimeRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelay_TimeRelay_Normal.png",
+      "kind": "texture",
+      "bytes": 776800,
+      "sha256": "840c54b310b8eea0af034d8af1413d7ad43106d6da1ef8a605490cc1a2d9337b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/Materials/TimeRelayMap.mat",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/Materials/TimeRelayMap.mat",
+      "kind": "material",
+      "bytes": 5194,
+      "sha256": "9e8373f6259e496747e0a6154ef3cc479d75a55e9d3c001e89b4e4b32897a51d",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/时间继电器/TimeRelayMap.png",
+      "path": "NewStructureUnity/Assets/Models/timeRelay/TimeRelayMap.png",
+      "kind": "texture",
+      "bytes": 1279976,
+      "sha256": "f395be950198a62f23054b57a3f7d71e2ebf2c91438633745bb082a7dd24bc8a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/masterAppliance_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/masterAppliance_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 5249,
+      "sha256": "6c5c2bcc14e2dbf7ce24666d78f8a2168dd844579f74497e68e2edef7b0b2e28",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances.fbx",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances.fbx",
+      "kind": "model",
+      "bytes": 1034736,
+      "sha256": "093465282842eb1c4ffbba9662ea0ad62ead336cd277e2e329d37b5e0d50ed99",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/Materials/Glass.mat",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/Materials/Glass.mat",
+      "kind": "material",
+      "bytes": 4835,
+      "sha256": "ea3dc825520ecd3ebda96534a4b0beb61d84220d8b24421eb3f1406a76e98175",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPLitTransShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPLitTransShader.shadergraph",
+      "kind": "shader",
+      "bytes": 248460,
+      "sha256": "e36fdaf2d0b679a61baf03e502040d88af341fd1cf1e01a04e9db54e6b76606a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Public/White.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/White.png",
+      "kind": "texture",
+      "bytes": 2219,
+      "sha256": "8a7fd93a1a58fdafa7fca08a5968cbdd265d81878a7df74ab8726af13bcdf761",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/Materials/MasterControlAppliances.mat",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/Materials/MasterControlAppliances.mat",
+      "kind": "material",
+      "bytes": 5314,
+      "sha256": "d18988eabe0fc8c29cff9f220c1c808396718a18f84d0326593d558996c0b035",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Base Color.png",
+      "kind": "texture",
+      "bytes": 49232,
+      "sha256": "83fb69ef556c804a072ed40248a825af24cb3406974e5c2d02aea52a7369eda5",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1446498,
+      "sha256": "86279adba69e7168a1ef50ee35d69bbcb4a19966c12521b364b2525267f666fa",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/主令电器/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/masterAppliance/MasterControlAppliances_MasterControlAppliances_Normal.png",
+      "kind": "texture",
+      "bytes": 1791758,
+      "sha256": "b7b9003a19e9f72cce4e99e2d78cd8625eca732e178a537867d3b2761a0abe48",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/fuse_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/fuse_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 34900,
+      "sha256": "df8240bd6223fcbd1f3173691bde841fa21c613b69c93114498151749884fded",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse.fbx",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse.fbx",
+      "kind": "model",
+      "bytes": 608880,
+      "sha256": "6dc61645a5d889e5b291f49a0889aada11e73a8e25ce82a46bf61862962a8998",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Materials/CeramicPlugInFse.mat",
+      "path": "NewStructureUnity/Assets/Models/fuse/Materials/CeramicPlugInFse.mat",
+      "kind": "material",
+      "bytes": 5308,
+      "sha256": "37151b0b3cbf91087dba90fb85f837fb1c4ce69e4040c2779720c11b58c91bbc",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/fuse_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/fuse_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 248234,
+      "sha256": "c096d5c20c72717ce90c54da664dcf207cb2f2116d97e91e71db162bbadb6730",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/fuse_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/fuse_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 89345,
+      "sha256": "357ed9c1d727a566a311d644da8cd87e6d232da8aa50e2a307ed03692fd86109",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/fuse_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/fuse_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 960755,
+      "sha256": "ed93f547530908bc7eff5df2ce03193b7e4273380d2e5798bf2a889b25776289",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/fuse_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/fuse_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 179831,
+      "sha256": "6dbba042ec228d6ccb3b8a016797957cab7cb6fe386ea823bd9d82e73b2f578c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Materials/CeramicPlugInFse_Metal.mat",
+      "path": "NewStructureUnity/Assets/Models/fuse/Materials/CeramicPlugInFse_Metal.mat",
+      "kind": "material",
+      "bytes": 5733,
+      "sha256": "6016e83d5245f11f4a428bcd78f3213c6c0c8597f49b5f2d249f61e0eb4f0d7b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Public/Materials/Alpha.mat",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/Materials/Alpha.mat",
+      "kind": "material",
+      "bytes": 3679,
+      "sha256": "634caeccd283fb1c99aa4a4fcba62813e9de209d417b1d1bd43620584c2a31d1",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Base Color.png",
+      "kind": "texture",
+      "bytes": 706077,
+      "sha256": "05979caed20280f82c48ec9a718a85aa24628d4ae31d438642cbf85880efde00",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1485764,
+      "sha256": "0859b3af2ab9c96b61505dc0392f404455542b9a42fb42572fe2bc77917a936a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/CeramicPlugInFse_CeramicPlugInFse_Normal.png",
+      "kind": "texture",
+      "bytes": 298011,
+      "sha256": "6d60df1d47a85abb5be3af50108987c800572e30e665bc0f1f5dc759523b52d1",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "kind": "shader",
+      "bytes": 226752,
+      "sha256": "a18d1e0a290a3e6ef1100cccec6b8b123c33112ef35de66100727ca8944ddc63",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "kind": "cubemap",
+      "bytes": 12584057,
+      "sha256": "4e329b04d98f810ee3199167adaf221130a9f2576f60c8d944c2ed7063ee444a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Materials/ElectronicSupermarket2.mat",
+      "path": "NewStructureUnity/Assets/Models/fuse/Materials/ElectronicSupermarket2.mat",
+      "kind": "material",
+      "bytes": 3817,
+      "sha256": "bde6d67aea127e8a976f5e5e4b15c25f17021130753d530d687092525ee2ec91",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ElectronicSupermarket2.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ElectronicSupermarket2.png",
+      "kind": "texture",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Materials/Fuse.mat",
+      "path": "NewStructureUnity/Assets/Models/fuse/Materials/Fuse.mat",
+      "kind": "material",
+      "bytes": 5295,
+      "sha256": "45d05735448815085119a567a43f832a6a45cc96f409a5e73f79ffdd9fc7eac8",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Base Color.png",
+      "kind": "texture",
+      "bytes": 24545,
+      "sha256": "225b3ab65e6f708344c4bbfae7125b4f04b84f9207925ed17aff59621e04140e",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 822129,
+      "sha256": "72b66ee31a0a4cd2b75aefe595843c98344f106fa01ee12cc1d572e812350036",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/熔断器/Fuse_Fuse_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/fuse/Fuse_Fuse_Normal.png",
+      "kind": "texture",
+      "bytes": 76015,
+      "sha256": "eef2ac2d62512ae46f2177027e332edebdcf67f4ddf1f0c2303bfc65dc461bcf",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/breaker_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/breaker_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 162421,
+      "sha256": "70fd9c8354bad15652f7ef762a4f4bab6691b9c6889eda6c9edd97f686d2f1c1",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker.fbx",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker.fbx",
+      "kind": "model",
+      "bytes": 3899168,
+      "sha256": "4676ea82d7e64682a1cf846ad3ee05fc00528338ef9cc95690a8be7175077fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/Materials/CircuitBreaker.mat",
+      "path": "NewStructureUnity/Assets/Models/breaker/Materials/CircuitBreaker.mat",
+      "kind": "material",
+      "bytes": 5306,
+      "sha256": "787a1026ad35b71929cb9c6051f36bcce23e2ac377bfa29e5edd787d054ae4e2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Public/Materials/Alpha.mat",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/Materials/Alpha.mat",
+      "kind": "material",
+      "bytes": 3679,
+      "sha256": "634caeccd283fb1c99aa4a4fcba62813e9de209d417b1d1bd43620584c2a31d1",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/breaker_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/breaker_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 268327,
+      "sha256": "df6b02c6eaf9366c6412fd1ffc7dc88f882a870179eedc2560040c8b0ffe3399",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/breaker_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/breaker_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 229100,
+      "sha256": "a80b5faa5b738c4943f40dd4dd831a8259ceacd7b41eebd3f7cb8bc1b307dc7b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/breaker_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/breaker_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 198447,
+      "sha256": "551db84eb5de493645d73c3996083fef5a42561b65d5bfa5530d021512ccf7da",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/breaker_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/breaker_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 207423,
+      "sha256": "818fa346005873fdcb03c52f3c217e92b511dc426702719656d392e2af52d790",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/breaker_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/breaker_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 216545,
+      "sha256": "a64f564fe737dc7a829b3c282913aa1c6108b3452030e1d49646936d4b3e398a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/Materials/CircuitBreaker_2.mat",
+      "path": "NewStructureUnity/Assets/Models/breaker/Materials/CircuitBreaker_2.mat",
+      "kind": "material",
+      "bytes": 5283,
+      "sha256": "93360943e903860859e167322f485d01e5554b40d96ee7394b21f18f964ec4cf",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Base Color.png",
+      "kind": "texture",
+      "bytes": 199949,
+      "sha256": "dd338b3e091ed29e23a5bf594abeaa4798cb8b781846197f6f725a1d9d23a568",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 4287156,
+      "sha256": "c8849fcd885101901704f9591dfd13083fd48ca2ab93ab8edaaf37429e24d96e",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/CircuitBreaker_CircuitBreaker_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/CircuitBreaker_CircuitBreaker_Normal.png",
+      "kind": "texture",
+      "bytes": 347941,
+      "sha256": "c2b9b28eca3ea7e3bc57afd049ecd0e81966537a9423d3e43a1188bd0ff92f5c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/铭牌.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/铭牌.png",
+      "kind": "texture",
+      "bytes": 191384,
+      "sha256": "f2da2e7cb500645c3b9aa216d16c17a4f226a2dd442fc6ae5e6ecb1d3c481023",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/Materials/ElectronicSupermarket2.mat",
+      "path": "NewStructureUnity/Assets/Models/breaker/Materials/ElectronicSupermarket2.mat",
+      "kind": "material",
+      "bytes": 3817,
+      "sha256": "fc77e40bab32c9745e25173f614c94b4ab1e7f2b29a404a01f15c095e2db71d6",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/接触器/ElectronicSupermarket2.png",
+      "path": "NewStructureUnity/Assets/Models/contactor/ElectronicSupermarket2.png",
+      "kind": "texture",
+      "bytes": 626414,
+      "sha256": "d9d43a4b7b673d224b0f932dc5935a6fa051918af9dcc4b0ad026117d35d5653",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/Materials/NewCircuitBreaker.mat",
+      "path": "NewStructureUnity/Assets/Models/breaker/Materials/NewCircuitBreaker.mat",
+      "kind": "material",
+      "bytes": 5308,
+      "sha256": "1aab7c6a946302b357e9cb0f34ffdb757aec75f208ec3eafefa7cdf92dcc7500",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Base Color.png",
+      "kind": "texture",
+      "bytes": 49606,
+      "sha256": "9e2bc8dcd61a06e3ca553578c963ae406996e71925ae760b9c98f43f58c9798d",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 1228767,
+      "sha256": "a134c8da5db562e2d71b43584b1d83803e6d5f4b9a1923ed0e30ce4789eb4638",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/断路器/NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/breaker/NewCircuitBreaker_NewCircuitBreaker_Normal.png",
+      "kind": "texture",
+      "bytes": 1464650,
+      "sha256": "dbb8fe22fe3c464ef8e880dd8c40859e5ecd3574e85bf98a36a4ab1f48f32293",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/speedRelay_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/speedRelay_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 116171,
+      "sha256": "361e53d53b8be8d1d6583ea8ab4c637c12c7dc8fa3fef591b95c1387adc8d295",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay.fbx",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay.fbx",
+      "kind": "model",
+      "bytes": 1819392,
+      "sha256": "c3ffd7c887df46911c9f08bd427542723c238137b4058740719718d9f0ffdeeb",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/Materials/SpeedRelay.mat",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/Materials/SpeedRelay.mat",
+      "kind": "material",
+      "bytes": 5301,
+      "sha256": "9d126f76a5eead50a130289dd3dd3e002be9ab24afa64a4a67c03fec747cf6e2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 170205,
+      "sha256": "2ae4fa3ce6446e2eb8fea3afef8fa14c2903097bf68d02b9bf157ed322d2506f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 167309,
+      "sha256": "1e59c7f98c748315d4c951f05cd47f88ab5039999088a00ab7d276fb4a3e8c77",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 170261,
+      "sha256": "6c3d1b664c1e935f77413c140f1dcd2f6c08e40b45252614213030540be015c4",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 173157,
+      "sha256": "ddfef8009f4ad40dffe166baa49b2181f82d9c523d86d0e1d8e77599d9925021",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 498789,
+      "sha256": "6dd2bb9aa4aa31dae1acfc43a8dcef9b074fa1d0249d0d42aa09139a513385b4",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_5.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_5.anim",
+      "kind": "animation",
+      "bytes": 339768,
+      "sha256": "139880c1025802eba21bd8254d2a3a7cb7ae2f416f42a24ec8e5fd1ffa733eea",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/SpeedRelay_structure_model_6.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/SpeedRelay_structure_model_6.anim",
+      "kind": "animation",
+      "bytes": 342760,
+      "sha256": "5209db2333814ab17d0f0128738d48c8ef23f0351a165cb36d787c4e6bf41985",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/Materials/SpeedRelay_Coat.mat",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/Materials/SpeedRelay_Coat.mat",
+      "kind": "material",
+      "bytes": 5378,
+      "sha256": "3a6ed47eac582a61009a03ddaadc2a0ea11de7533c1d476e373a8437d6904eef",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/Materials/SpeedRela_Metal.mat",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/Materials/SpeedRela_Metal.mat",
+      "kind": "material",
+      "bytes": 5730,
+      "sha256": "729096b985b4a2d28a46cd422cbfac48ccd4bc111ac442eadfc928bf9db13f41",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Base Color.png",
+      "kind": "texture",
+      "bytes": 1334852,
+      "sha256": "4ba9cd65703db320018dbce6ba55a67a3f220b3226a4e5fc39a9fc588f908c9c",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 3180111,
+      "sha256": "e24c2919c861cf7361f80dd9f11ac2033835a3c5d3cd0b4b986b0dc8fee0c1fc",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/速度继电器/SpeedRelay_SpeedRelay_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/speedRelay/SpeedRelay_SpeedRelay_Normal.png",
+      "kind": "texture",
+      "bytes": 1885780,
+      "sha256": "c287a61982543d9b87ed70c199857958a8e6484e2462750c5ca39c1c9209ed2f",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPLitClearCoatedShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPLitClearCoatedShader.shadergraph",
+      "kind": "shader",
+      "bytes": 222572,
+      "sha256": "d6a768ed609c587a9380e5c57b2f29ab10da5b2fd40cf3b90dcf1ab7a21de2f9",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "kind": "shader",
+      "bytes": 226752,
+      "sha256": "a18d1e0a290a3e6ef1100cccec6b8b123c33112ef35de66100727ca8944ddc63",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "kind": "cubemap",
+      "bytes": 12584057,
+      "sha256": "4e329b04d98f810ee3199167adaf221130a9f2576f60c8d944c2ed7063ee444a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Prefabs/Models/StructureObjs/combinationSwitch_structure_model.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Models/StructureObjs/combinationSwitch_structure_model.prefab",
+      "kind": "prefab",
+      "bytes": 63486,
+      "sha256": "5111049ca18bc1f3f4080f6ac78d091574b2f399726e45d6405ce9ac75da15ba",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch.fbx",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch.fbx",
+      "kind": "model",
+      "bytes": 1293472,
+      "sha256": "38b435f330e5e39d0f3d78f86579b2ec92fb44a47c637ecb43f2c30d5fb7b6da",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/Materials/CombinationSwitch_Metal.mat",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/Materials/CombinationSwitch_Metal.mat",
+      "kind": "material",
+      "bytes": 5737,
+      "sha256": "18bc052851c2a64998f6fcd8215b3218c86fdbef5f2130e36c10d73efa1ebfc6",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_0.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_0.anim",
+      "kind": "animation",
+      "bytes": 486714,
+      "sha256": "4022c7a1718231eddb33cabcd75c11b7ceda70a5758aeb9aab97e083796f17b5",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_1.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_1.anim",
+      "kind": "animation",
+      "bytes": 421865,
+      "sha256": "fbd0a070cec08ba77aab2df04b4114d5b521da4690701f612d1720affae083e4",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_2.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_2.anim",
+      "kind": "animation",
+      "bytes": 220455,
+      "sha256": "b002620a3d25f36047c34264681def483d908d8bf56137e8cf8335647bd7336b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_3.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_3.anim",
+      "kind": "animation",
+      "bytes": 313606,
+      "sha256": "3719ccd36e73167fd0062eb832653335f947608a33996240806660473121dd79",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_4.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_4.anim",
+      "kind": "animation",
+      "bytes": 232477,
+      "sha256": "8e21a9fd4bc2693783a7164a7d00b4699ad64ab903eb4059eeb42b92361e4de2",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Animation/Model/Structure/combinationSwitch_structure_model_5.anim",
+      "path": "NewStructureUnity/Assets/Animation/Model/Structure/combinationSwitch_structure_model_5.anim",
+      "kind": "animation",
+      "bytes": 1468257,
+      "sha256": "ded4116eeac8521560a849ebdde6b2c50e52a5867bbb1a3502a776de6b9d0213",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/Materials/CombinationSwitch.mat",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/Materials/CombinationSwitch.mat",
+      "kind": "material",
+      "bytes": 5308,
+      "sha256": "e4cf351cfee4075ad4ad9475010e76a00bcf882cdd29c6630e8568185f4cc141",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/Materials/CombinationSwitch2.mat",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/Materials/CombinationSwitch2.mat",
+      "kind": "material",
+      "bytes": 5207,
+      "sha256": "26a78167e5134ba9653efc82efd1ef97f4770ba4c94d09183c19e69e9d444599",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPShader_CubeSpecular.shadergraph",
+      "kind": "shader",
+      "bytes": 226752,
+      "sha256": "a18d1e0a290a3e6ef1100cccec6b8b123c33112ef35de66100727ca8944ddc63",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Base Color.png",
+      "kind": "texture",
+      "bytes": 610550,
+      "sha256": "29242330039f6f7faf26c957ea53f64d2afa5b7cbea59cc346fc1611a92f8bc3",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_M_AO_G.png",
+      "kind": "texture",
+      "bytes": 2498432,
+      "sha256": "fcd4cb16faba8c33cbb233d32c0b34f2c31f812c3ccad2728638a74b1098085d",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "kind": "cubemap",
+      "bytes": 12584057,
+      "sha256": "4e329b04d98f810ee3199167adaf221130a9f2576f60c8d944c2ed7063ee444a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Element/Show/组合开关/CombinationSwitch_CombinationSwitch_Normal.png",
+      "path": "NewStructureUnity/Assets/Models/combinationSwitch/CombinationSwitch_CombinationSwitch_Normal.png",
+      "kind": "texture",
+      "bytes": 1052597,
+      "sha256": "25cb294d7533d9900aa179b81c8f583e2ab80a5775cb16f090711d68c040ff3a",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/HDRPtoURPCustomDirtLitShader.shadergraph",
+      "kind": "shader",
+      "bytes": 321106,
+      "sha256": "666d0b95b823c0aabe0a842502b1dd5e9ee615dae410cceedca0cd18aa84a619",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Model/Public/White.png",
+      "path": "NewStructureUnity/Assets/Models/_shared/Model/Public/White.png",
+      "kind": "texture",
+      "bytes": 2219,
+      "sha256": "8a7fd93a1a58fdafa7fca08a5968cbdd265d81878a7df74ab8726af13bcdf761",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/DirtMaskShaderFunction.shadersubgraph",
+      "kind": "subgraph",
+      "bytes": 88384,
+      "sha256": "7b487286695f2364a4cd60e396d75ee0f8b0afadf9f3f4c7d4df8d43449f9fbe",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightEffectEditor.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightEffectEditor.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 48676,
+      "sha256": "c71acabf8b56425c4e78f6f799fd3393031b6fcf6f2103b3b0c3011c12f59304",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightEffectEditor.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightEffectEditor.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "29fb91a4c8e29b607e36bd948c531385fe3c8aaa3acda3f6513826b5253ff8a1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightManagerEditor.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightManagerEditor.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 3314,
+      "sha256": "cb1a85cc615219ea36feec69b599be622017e01a8f85a2194d2b5aae3faf7f16",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightManagerEditor.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightManagerEditor.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "d667aa50a7be41fa13056b69f9f3bf1e8ef10e12d7332c30dae1e42087a2902d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightProfileEditor.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightProfileEditor.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 26655,
+      "sha256": "4fd3da14f7b3c48ec920b0b971fd352db9e99f31793290c4a030b0d64a168e13",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightProfileEditor.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightProfileEditor.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "b76b97318ff4f3a2ce7e930287bae7f99fd49f884309796ade3713c45ddd883c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightSeeThroughOccluderEditor.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightSeeThroughOccluderEditor.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 1118,
+      "sha256": "b35b0954a75ab39ebfa73ea6b7d07b32b2acacb4691b99b14abd4b4a7bc811ee",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightSeeThroughOccluderEditor.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightSeeThroughOccluderEditor.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "4a6ac92c13bdf3444f7a866390433f2e179f7999fc94058600b92962832ebba8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightTriggerEditor.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightTriggerEditor.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 5179,
+      "sha256": "972976143b1cd9427fee6d81324c97626c0a4a66dfe24e7fec5536f256e00139",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/HighlightTriggerEditor.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/HighlightTriggerEditor.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "1d0a2429638f92c430a961a8b49aeb74979e9df85bc71d4b4460d1590c2a420e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/TransparentWithDepth.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/TransparentWithDepth.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2872,
+      "sha256": "2ea5c95e6813534bb864e8ddf4768d3595dc3b810d2eef420c9a44f0ad679b9d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Editor/TransparentWithDepth.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Editor/TransparentWithDepth.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 286,
+      "sha256": "849cddeed3d2e5ef22219fcd19c472a7c9bac10a0cf8641068999d96017a3435",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusForwardRenderer.asset",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusForwardRenderer.asset",
+      "kind": "asset",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2201,
+      "sha256": "94792b01ba32042b176104d8c5379cf188d2c1b0d1eb0c1f4f1fe67732a4eab8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusForwardRenderer.asset.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusForwardRenderer.asset.meta",
+      "kind": "asset",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 182,
+      "sha256": "b7def60e0a5a1ae9052779328c6a4b297eee07b4a482dd1b74a0eb08da412c1f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusRenderPassFeature.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusRenderPassFeature.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 8612,
+      "sha256": "b17e7278cea65c8013a6f025df9de6cb67b35bade325a1faf8d8073132b8a1c5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusRenderPassFeature.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/HighlightPlusRenderPassFeature.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 243,
+      "sha256": "f71e96d007f32c92573fcee491fa2df101c77a657f045b45c0e8a2d2b592d5c9",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/UniversalRenderPipelineAsset.asset",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/UniversalRenderPipelineAsset.asset",
+      "kind": "asset",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 3659,
+      "sha256": "54dd50d8169d7c2ef2580c41e4808d74cd3bbeae3647f257750e9e6fd8cf572d",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Pipelines/URP/UniversalRenderPipelineAsset.asset.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Pipelines/URP/UniversalRenderPipelineAsset.asset.meta",
+      "kind": "asset",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 182,
+      "sha256": "005bef05545cc83f855d7008708847e084c6923d0feec660a4b5a58240fee618",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/README.txt",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/README.txt",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 16038,
+      "sha256": "bce716b3efbbb2e3853e1a481ae4243446e341e9220d61ce8b0d0c8d18989296",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/README.txt.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/README.txt.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 179,
+      "sha256": "c12a3533cb24c623e7bb298a5cd038d1be054ed37e3226613af0e27cf2954ae2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/CustomVertexTransform.cginc",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/CustomVertexTransform.cginc",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 248,
+      "sha256": "34333a72ffa051c30c7bbd6b425c41221c57eb8fbc0e1f5061eea5b5a6daadb4",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/CustomVertexTransform.cginc.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/CustomVertexTransform.cginc.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 204,
+      "sha256": "4fe503b632ceb552f86ad533af2422376516cccd1b8b6c6e5ed169b7937df0e8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightAddDepth.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightAddDepth.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 753,
+      "sha256": "8c333f8ca9a21a1a45d908f3d2fdc6562ee77fc745aeb7278e30d9a557268e98",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightAddDepth.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightAddDepth.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 219,
+      "sha256": "d6bf8befd3b1f8229876d6aba16c74b1e25ec8f07b23c3a5fe424a4200b38830",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurGlow.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurGlow.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 4992,
+      "sha256": "446268c0d152fd1ae281860b6f30df838713f136b2262f143abae224d3bbb4f1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurGlow.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurGlow.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "0a9ae21700b6225ce615cdb429e38baee95c58f0c5604a4b8b1ecbb9f4402e0b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurOutline.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurOutline.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 4932,
+      "sha256": "7766d084e9c956e0c178e60ad0051a2e898d62ea99bb311b47da1d4ae538f787",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurOutline.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightBlurOutline.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "3a6d99d9c4a93c777535e563fd519d02b1277c7a9b724b0ac0015f8f8f4ea065",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightClearStencil.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightClearStencil.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 1479,
+      "sha256": "a0b1b86b8dee339cace994de8ebbcead8a4b4c266ccd48a4b9e08dd00b4191a1",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightClearStencil.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightClearStencil.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 204,
+      "sha256": "50194a1dd14bc354a0211d70e06b08100fdeeda74b800f4d748a3e758e5545dc",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeGlow.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeGlow.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 3930,
+      "sha256": "f1f605d55e12b3d3e4b860eb1307a3a4baa4c45b427a30201316c1d1c66095ab",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeGlow.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeGlow.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "a29a411ab8acce79b27a7be244ba0171eb5e14cb85b25e3bdd9aa52911ee4803",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeOutline.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeOutline.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 3940,
+      "sha256": "eb24f006239d5203b04350e055ef2141c752adc9f3cd4e0f42366e65fb7236dd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeOutline.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightComposeOutline.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "991f4fff704eeacfcbea306218ba2b348e0f0481fc0e3e7c1f1e5e9c186536d5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.mat",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.mat",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2619,
+      "sha256": "9357a44fece4d5aed1ff4b2629d0b5728d8e20ca43656f50de501f3768cd1d75",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.mat.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.mat.meta",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 182,
+      "sha256": "009ffab5133deaae93b988b51be2a257624666b8988aecb6b0c6889fdba5775f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 4435,
+      "sha256": "7c431ce41bec40809b2bc7bac04abeb6bf8890aa633430cd14cffd5b00e2e4d7",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightGlow.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "5ba86b121f4174bd25ffba81b5011e293a5c6addd52c043e57fd58c74ac1eb06",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightInnerGlow.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightInnerGlow.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2801,
+      "sha256": "9e60695fc0e71de061e80b78cfc7825d2dd1be9a362410beea07fb123be3d1f5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightInnerGlow.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightInnerGlow.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "3f8cc23c013788bffcdf47bb661cbcf9def84bf5a1186d771b775655d799fac6",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightMask.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightMask.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2887,
+      "sha256": "bc8d7fb2d10e1e533b6efaf9c1b2ff254076688b15cb06a384c18581a11c2fd2",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightMask.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightMask.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "0ef1ab0621a38b3181e3edd4191c9de7a0f6849ac555cc78282b7cbcb70336b8",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOccluder.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOccluder.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 1355,
+      "sha256": "f4434a42fe8d24c114f55052369a00cb95911b21a4f764d0cecfefb7b88393b0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOccluder.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOccluder.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "d45700252d48c4f29d6b96f13765dddad1bfc90fbb1f606ae0634667c9e67629",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.mat",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.mat",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2567,
+      "sha256": "676a9fc62e0d1e838e802b042a03cebc8686d58aa117e9585afdaec103a3779e",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.mat.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.mat.meta",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 182,
+      "sha256": "7c5f5a1089bdb6ab901e9f39e16e85b14b9473870cab354ca4e4a998663fda4f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 5920,
+      "sha256": "7186b93007f28fd205c0f00269b443ac0f9e256c14ad013f0e7659ee188d15ab",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOutline.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "558c06789e2d9701e1e505e35f3cb2dc087c8307cf7f3f51efa7995f9cfbea35",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOverlay.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOverlay.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 5234,
+      "sha256": "af2349b65f8699af63e6cb149a20fb765c70cb574d65f07a1b68aee99b6119d9",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOverlay.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightOverlay.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "c58e6eedad6ccd0543690c4308bf767b720c95b1324ba1e8e4e87b0b62d3d9c0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightPlusDepthWrite.mat",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightPlusDepthWrite.mat",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2016,
+      "sha256": "0b4c64433cfc3f752543fb4c638fcccfca74d50388c7719b69ee3ae8b2fb72ec",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightPlusDepthWrite.mat.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightPlusDepthWrite.mat.meta",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 209,
+      "sha256": "f0e81f48cf95b7a2d360184cbdb6591585a93d478e33b5685178ba90508cd37b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThrough.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThrough.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 6499,
+      "sha256": "f82edbdb3fd0fb4143b701a32dba35b52004e579884ab25307b4d923c1a6e5c7",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThrough.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThrough.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "e81aa54a81d33670184594469fc7cfdd9d5cd354bfabb8e92a3edc87f7364f5c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughBorder.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughBorder.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 4540,
+      "sha256": "ec96c639a2d7b5398ef513aa8eb6475d9de51e63689166296605a46ea2e18efd",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughBorder.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughBorder.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 204,
+      "sha256": "217a9650d62fa36d907319b375907e29a45515aa1338e1668b383e1624f1d66f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughMask.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughMask.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 1590,
+      "sha256": "6d3ad8de3311d0068938b048c5a8d527e90977106549b5905f190b29b902a500",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughMask.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSeeThroughMask.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 204,
+      "sha256": "1887aceb6b7fa188b3bfbe1ea18cf61e658770cff00943980a6d96350344cd62",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSolidColor.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSolidColor.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 5250,
+      "sha256": "2941da54f2e2e89bfd7de1eacf8d41333851f3c9f7d5eba7f16474aece8ba677",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSolidColor.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightSolidColor.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "e5340e3a184e8584af6de41d08b41f91a50505a53e9fa9cf2ddaa2a8b2f9f928",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightTarget.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightTarget.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 5283,
+      "sha256": "201670a176ba24cc51f9533af8808ee313e9073b53f228ba244eee865b7a8ffc",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightTarget.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightTarget.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 197,
+      "sha256": "2e8c1cd2917d19e92d7e14e0638fb7a48e59f5464737bf12a7f3023fe0092420",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.mat",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.mat",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2554,
+      "sha256": "6743d18297685df15e9330e7d8f52692428adf2ca936d6f11658f99360e46101",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.mat.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.mat.meta",
+      "kind": "material",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 182,
+      "sha256": "28eb4a6655039024e8148ed7e37e0aeb41e3a0d7c321677e27f83b6a8fd114d4",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.shader",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.shader",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2095,
+      "sha256": "eb6d89e78c1a5d78d96a45a59258203b4ffc2ff1de3996bfd23b7d9982f46da0",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.shader.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/HighlightUIMask.shader.meta",
+      "kind": "other",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 204,
+      "sha256": "d6665fa277250213df3cc09edd2835b4f04766e84830ee77e02e060786282ee7",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/target.png",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/target.png",
+      "kind": "texture",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 46937,
+      "sha256": "3bb3cfa5c4f46a8d784c9cba9ff5498610075e0a81982296619bf7d14155ac0c",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/target.png.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Resources/HighlightPlus/target.png.meta",
+      "kind": "texture",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2268,
+      "sha256": "d86179975af6d500d72c3f331dac756a3a2a4ccfe12a9a65f37a3a30b2459ba6",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffect.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffect.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 139808,
+      "sha256": "0f7cd9c683cf7e73daf344f4033a5b711cd8f1ddf523b21dd9ca835062865836",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffect.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffect.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 266,
+      "sha256": "c511139f47afd2ece383e439de576da0fc95bdad1be2e7f5474cf1de53de7126",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectActions.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectActions.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2781,
+      "sha256": "e74c42aa60c8c597fe293a21c5999ab48a1cc1617d85b4c318d66d3a922148da",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectActions.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectActions.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "c724a49eaae376bf305dea753bf30c8da8761549a4067ffbd2eda77e84b4487a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectOccluderManager.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectOccluderManager.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 12962,
+      "sha256": "919248fcf8affce01f37ae3868ea3e19288e167cdf1db6ee4b5fb3b0e1b3f8da",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectOccluderManager.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightEffectOccluderManager.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "a4a4a758744baeb22a2e4b559e9161738babe0a4f5ab58b711c131ef21938b1f",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightManager.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightManager.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 17673,
+      "sha256": "1a338dee3166f10dbcfbce2e05b8b1c82e147a9f6709b9d3cc86f9b81e87d18b",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightManager.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightManager.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "1d85419bdbddd503e31f689a7761c0b34c57b560b804eb2a86c999f8503fd233",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightProfile.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightProfile.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 23773,
+      "sha256": "6c035ceec016b2191df97ae02e5fe6c2b7fc319482aed4494da8dbcdba4afb70",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightProfile.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightProfile.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "ae5c1bfb2eb1889fd459ca5e7238e83936c78e9db42eec29d1f6888f0b1d22ab",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightSeeThroughOccluder.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightSeeThroughOccluder.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2147,
+      "sha256": "2118fe57f2b80ebc0a8962d96d90a56ca54ac7aaa898725647aa0982149f9f70",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightSeeThroughOccluder.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightSeeThroughOccluder.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "5021a3cc5c0d7eddfdddbdd1780e50888a622bd93df3944e8667c1eb6d9eb6b3",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightTrigger.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightTrigger.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 17528,
+      "sha256": "9eb33c9e6a7d928b63f60fa14fd94cc52441bcb7b8b02534f00375e688234766",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightTrigger.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/HighlightTrigger.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 264,
+      "sha256": "1842350c2a2bc17cff504004aa177eb4bcad626c0a8558168f62a77d1996e3c5",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/InputProxy.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/InputProxy.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 2702,
+      "sha256": "354cadcff2a3d72a04568c7bc72f543e90ad8fce80270e727ca8ed769e25634a",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/InputProxy.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/InputProxy.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 243,
+      "sha256": "50c93ad9941baeccda753629dc9d79a275f74e1fff0e7ca121bbc39d358adf89",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/ShaderParams.cs",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/ShaderParams.cs",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 6045,
+      "sha256": "2eeb5ca0e0de349504197a0c35bda2deb32b03cc54f90e89ab7c98a84f9b8993",
+      "status": "exists"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Runtime/Scripts/ShaderParams.cs.meta",
+      "path": "NewStructureUnity/Assets/Plugins/HighlightPlus/Runtime/Scripts/ShaderParams.cs.meta",
+      "kind": "script",
+      "plugin": "Plugins/HighlightPlus",
+      "bytes": 243,
+      "sha256": "c9154243c760eb9d1d6ada00dcd94cab380c242e0fde4baf513d10462c3d5cae",
+      "status": "exists"
+    }
+  ],
+  "excluded": [
+    {
+      "from": "Assets/Scripts/Objects/Interactives/TaskObj/StructureTaskObj.cs",
+      "reason": "脚本：依赖旧工程基类（MCV_Module / HighlightPlus 门面），搬进来会导致本工程编译不过；业务数据由我们自己的组件与 StepManager 重新承载",
+      "pending": true
+    },
+    {
+      "from": "Assets/Scripts/Managers/InstManagers/InstControlledManager.cs",
+      "reason": "脚本：依赖旧工程基类（MCV_Module / HighlightPlus 门面），搬进来会导致本工程编译不过；业务数据由我们自己的组件与 StepManager 重新承载",
+      "pending": true
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Demo",
+      "reason": "插件自带的 Demo / Documentation，不进产品（--with-plugins-demo 可带上）"
+    },
+    {
+      "from": "Assets/Plugins/HighlightPlus/Documentation",
+      "reason": "插件自带的 Demo / Documentation，不进产品（--with-plugins-demo 可带上）"
+    }
+  ],
+  "missing": [],
+  "notes": [
+    {
+      "from": "Assets/Model/Cubicmap/_cubmap/Chrome05.cubemap",
+      "bytes": 12584057,
+      "reason": "非位图的 ≥10 MB 资产：是真实材质依赖（如金属件的反射 cubemap），照搬；若要压包体需另行替换"
+    }
+  ]
+}

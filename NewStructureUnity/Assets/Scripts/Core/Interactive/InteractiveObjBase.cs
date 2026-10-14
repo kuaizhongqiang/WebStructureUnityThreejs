@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
+using HighlightPlus;
 using WSU3.Contracts.Events;
+using WSU3.Core.DataStruct;
 
 namespace WSU3.Core.Interactive
 {
@@ -34,6 +36,9 @@ namespace WSU3.Core.Interactive
 
         [Tooltip("关掉后不参与拾取、不上报事件（用于禁用态部件）。")]
         [SerializeField] private bool isInteractable = true;
+
+        HighlightEffect highlightEffect;
+        const string HighlightProfile = "Highlight";
 
         private Guid guid = Guid.NewGuid();
         private bool hovered;
@@ -89,6 +94,8 @@ namespace WSU3.Core.Interactive
         /// </summary>
         protected virtual void OnHighlightChanged(bool on)
         {
+            if (highlightEffect == null) HighlightInit();
+            highlightEffect.highlighted = on;
         }
 
         // ── 由 InteractiveManager 调用的入口（业务不要直接调）────────────────
@@ -142,6 +149,16 @@ namespace WSU3.Core.Interactive
             GlobalInteractionEventData data = GlobalInteractionEventData.Get(this, type, delta);
             EventBus<GlobalInteractionEventData>.Publish(data);
             data.Release();
+        }
+
+        protected void HighlightInit()
+        {
+            if (highlightEffect == null) highlightEffect = GetComponent<HighlightEffect>();
+            if (highlightEffect == null) highlightEffect = gameObject.AddComponent<HighlightEffect>();
+            var profile = DataStructMapping.GetHighlightProfile();
+            highlightEffect.ProfileLoad(profile);
+
+            highlightEffect.highlighted = false;
         }
     }
 }

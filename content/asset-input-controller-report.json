@@ -1,0 +1,207 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-14T05:07:51.388Z",
+  "source": "既有实训软件（只读）",
+  "dryRun": false,
+  "files": [
+    {
+      "from": "Assets/Scripts/InputController/InputControllerBase.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/InputControllerBase.cs",
+      "source": "code",
+      "bytes": 6277,
+      "sha256": "6dbb808e2902aad54badea3302c668914c22789efc0627541bfdbdbc97be0ea8",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/CameraControl/CameraBg.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/CameraBg.cs",
+      "source": "code",
+      "bytes": 6276,
+      "sha256": "79b97e5738d0f559a59ca0c719c69aa43ff04dc998226f008a671e3a1da132db",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FirstPersonController/FirstPersonController.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/FirstPersonController.cs",
+      "source": "code",
+      "bytes": 11797,
+      "sha256": "53a8038d72f34779787bf8eb20b225cf68ca13440f9e9915ed9a66328a5c2325",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/ThirdPersonController/ThirdPersonController.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/ThirdPersonController.cs",
+      "source": "code",
+      "bytes": 15158,
+      "sha256": "2206cb5a3aa6ab91ae51fb15c0575abed04b9442d3e953ebe90946576fe15078",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FocusRotationController/FocusRotationControl.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/FocusRotationControl.cs",
+      "source": "code",
+      "bytes": 19622,
+      "sha256": "ac25fff10514ac568d48109b14b2d3773a93199ace078115418fac2e8f6e9c5b",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/InputSystem/StarterAssetsInputs.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/StarterAssetsInputs.cs",
+      "source": "code",
+      "bytes": 2413,
+      "sha256": "c1c782b3ec95bbd9d4b7f795a278fe8302ffff838d692ea90044347226d68fbb",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/BasicRigidBodyPush.cs",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/BasicRigidBodyPush.cs",
+      "source": "code",
+      "bytes": 1204,
+      "sha256": "b1d9fb120aa64ee5a9747879c5e677c60bb669efeb7566a030d364cd213916d4",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/InputSystem/StarterAssets.inputactions",
+      "path": "NewStructureUnity/Assets/Scripts/Core/Input/StarterAssets.inputactions",
+      "source": "code",
+      "bytes": 10132,
+      "sha256": "99b381edb6eb3665914e6e1df0315117325be821b6d6a81d4317d82521e1df00",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Resources/MainCamera.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Camera/MainCameraRig.prefab",
+      "source": "prefab",
+      "bytes": 7428,
+      "sha256": "69db6d393bbd4c33357c647cfa50aea9ddcd3472944425ba781e5203a2457bc6",
+      "status": "copied"
+    },
+    {
+      "from": "Assets/Model/Public/Materials/CamBg.mat",
+      "path": "NewStructureUnity/Assets/Model/Public/Materials/CamBg.mat",
+      "source": "closure",
+      "bytes": 4088,
+      "sha256": "cf41db668309e2352305d478c19d7358bef18d9c7dd7c857ad70ac2be8b16efb",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Shaders/Models/CamBgUnlitShader.shadergraph",
+      "path": "NewStructureUnity/Assets/Shaders/Models/CamBgUnlitShader.shadergraph",
+      "source": "closure",
+      "bytes": 97473,
+      "sha256": "33c02e2ace7343b96a1a41b9a3de32e1d743c771e17e1e70babf49ccf88bacb3",
+      "status": "already-in-project"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FirstPersonController/First Person Controller.prefab",
+      "path": "NewStructureUnity/Assets/Prefabs/Characters/FirstPersonController.prefab",
+      "source": "prefab",
+      "bytes": 13503,
+      "sha256": "983e8dcd65ed7c038f877b581f206c4baadaa1ad77551453d92ece6670eaf335",
+      "status": "already-in-project"
+    }
+  ],
+  "unresolved": [
+    {
+      "guid": "72ece51f2901e7445ab60da3685d6b5f",
+      "usedBy": "Resources/MainCamera.prefab"
+    },
+    {
+      "guid": "a79441f348de89743a2939f4d699eac1",
+      "usedBy": "Resources/MainCamera.prefab"
+    },
+    {
+      "guid": "d0353a89b1f911e48b9e16bdc9f2e058",
+      "usedBy": "Resources/MainCamera.prefab"
+    },
+    {
+      "guid": "62899f850307741f2a39c98a8b639597",
+      "usedBy": "Scripts/InputController/FirstPersonController/First Person Controller.prefab"
+    },
+    {
+      "guid": "73c176f402d2c2f4d929aa5da7585d17",
+      "usedBy": "Scripts/InputController/FirstPersonController/First Person Controller.prefab"
+    },
+    {
+      "guid": "45e653bab7fb20e499bda25e1b646fea",
+      "usedBy": "Scripts/InputController/FirstPersonController/First Person Controller.prefab"
+    },
+    {
+      "guid": "ac0b09e7857660247b1477e93731de29",
+      "usedBy": "Scripts/InputController/FirstPersonController/First Person Controller.prefab"
+    },
+    {
+      "guid": "bd6043bde05a7fc4cba197d06915c1e3",
+      "usedBy": "Scripts/InputController/FirstPersonController/First Person Controller.prefab"
+    }
+  ],
+  "excluded": [
+    {
+      "item": "来源工程的管理器/工具/事件骨架（GlobalInputMgr / GlobalCameraMgr / GlobalAssetsMgr / Log / 事件总线）",
+      "reason": "按既有边界只搬单个交互脚本的算法；管理器职责由本工程组件重新承载（docs/design/11）"
+    },
+    {
+      "item": "搬入的 .cs 的命名空间与依赖改写",
+      "reason": "由人手工移植（docs/design/11）；重跑本脚本按 GUID 跳过，不覆盖"
+    }
+  ],
+  "notes": [],
+  "docs": [
+    {
+      "from": "Assets/Scripts/InputController/CameraControl/CameraBg.md",
+      "to": "docs/research/10-input-controller-specs/CameraControl/CameraBg.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/CameraControl/README.md",
+      "to": "docs/research/10-input-controller-specs/CameraControl/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/BasicRigidBodyPush.md",
+      "to": "docs/research/10-input-controller-specs/Common/BasicRigidBodyPush.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/InputSystem/README.md",
+      "to": "docs/research/10-input-controller-specs/Common/InputSystem/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/InputSystem/StarterAssetsInputs.md",
+      "to": "docs/research/10-input-controller-specs/Common/InputSystem/StarterAssetsInputs.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/Common/README.md",
+      "to": "docs/research/10-input-controller-specs/Common/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FirstPersonController/FirstPersonController.md",
+      "to": "docs/research/10-input-controller-specs/FirstPersonController/FirstPersonController.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FirstPersonController/README.md",
+      "to": "docs/research/10-input-controller-specs/FirstPersonController/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FocusRotationController/FocusRotationControl.md",
+      "to": "docs/research/10-input-controller-specs/FocusRotationController/FocusRotationControl.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/FocusRotationController/README.md",
+      "to": "docs/research/10-input-controller-specs/FocusRotationController/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/InputControllerBase.md",
+      "to": "docs/research/10-input-controller-specs/InputControllerBase.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/README.md",
+      "to": "docs/research/10-input-controller-specs/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/ThirdPersonController/README.md",
+      "to": "docs/research/10-input-controller-specs/ThirdPersonController/README.md"
+    },
+    {
+      "from": "Assets/Scripts/InputController/ThirdPersonController/ThirdPersonController.md",
+      "to": "docs/research/10-input-controller-specs/ThirdPersonController/ThirdPersonController.md"
+    }
+  ]
+}

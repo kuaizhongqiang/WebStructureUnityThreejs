@@ -79,6 +79,19 @@ content/assets/**
 # 由 Plastic 渠道管理（DEC-60）；git 侧一律忽略，避免大文件进门禁（DEC-57/65）。
 NewStructureUnity/Assets/Models/
 NewStructureUnity/Assets/Sounds/
+# 结构任务（TaskType 8）搬进来的 **Unity 专属表现资产**：46 段拆装动画共 14.6 MB，
+# 只有 Unity 用得上（Three.js 侧那条链不碰它），与 Assets/Models/ 同类 ⇒ 同样走 Plastic。
+# 判据：**两条线共用的资产进 git（如 Assets/Sprites/Content，Web 也用），Unity 专属的大块走 Plastic**。
+NewStructureUnity/Assets/Animation/
+# 连它的文件夹 `.meta` 一起忽略：目录不入库，还留一个指向空目录的 .meta 只会让新克隆的仓库多一个悬空文件
+NewStructureUnity/Assets/Animation.meta
+
+# 资源包（AB）产物（DEC-108）：由菜单 `WSU3/Pack/一键打 AB 包（全部）` 一键重建，
+# 落 StreamingAssets/{包名首段}/，**是产物不是源**（源是包登记表 Assets/Resources/Config/）。
+# ⚠ 体积 47 MB、单个最大 9.66 MB —— **刚好卡在 10 MB 大文件门禁之下**，门禁抓不到，只能靠这条规则挡。
+# ⚠ 新增别的"包名首段"（如 UI/、CameraBg/）时要同步补规则；判据见 docs/design/12 §4.4。
+NewStructureUnity/Assets/StreamingAssets/Content/
+NewStructureUnity/Assets/StreamingAssets/Content.meta
 
 # ---------- 早期预留的旧落点（保留忽略规则以免误提交；正式落点见上） ----------
 /web/public/unity-build/
