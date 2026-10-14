@@ -269,7 +269,7 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 
 | # | 事项 | 说明 |
 |---|---|---|
-| a | **Web 侧落地面板** | `ui:request`（tips / ui / question）与 `ui:result` 的回执：契约与 Unity 侧已就绪，页面未实现 —— 期间步骤里的信息/答题条件会走"降级完成"并打告警（不卡流程）。落点：`web/src/`（消息处理与 DOM 面板） |
+| a | **Web 侧落地面板** | ✅ **已落地（2026-10-14，DEC-112）**：`UnitySession`（出站/入站与时序）+ `domain/step-panels.ts`（**一个请求只回一条**）+ `domain/step-content.ts`（内容数据索引）+ `components/StepPanelHost.vue`（B5 提示浮条 / D2 信息与答题面板）；出站 `app:init` / `scene:enter` / `scene:exit` / `input:enable` / `ui:result`，入站 `assets:ready` / `scene:ready` / `scene:exited` / `step:changed` / `task:completed` / `object:picked` / `ui:request` / `unity:error` / `debug:pong` 全部接上。落点纪律见 `docs/design/10` §9 |
 | b | **`Tool` / `Drag` 两种条件** | 本期有意不做（DEC-93）：工具面板与拖拽命中都还没有业务面。补的时候按 `ConditionBase` 的三阶段钩子加一个类即可 |
 | c | **连线的手感** | 现在只做"配对状态机 + 常驻线"；**临时线跟随鼠标**、吸附容差、错误提示未做（`ConditionLineConnect`） |
 | d | **步骤树挂进内容场景** | `1_Content` 里还没有 `StepManager` 节点；等 P2-6 内容装配落地时一起接，接法与自查清单见 `docs/design/10` §6 |
@@ -298,12 +298,25 @@ Blender 转出 13 个 GLB / 31.8 MB（BaseColor + Normal 已接）；0 失败**�
 | a | 零件脚本重新承载（`InteractiveObjBase` 派生，字段照留，去掉 HighlightPlus 门面调用） | ✅ **已落地（2026-10-14，DEC-104）**：`StructureObj` + 8 个器件共 **38 个零件**（`TODO.md` D-15 已关闭） | 无 |
 | b | 决定 HighlightPlus 怎么被业务代码用上 | ✅ **已定（2026-10-14，DEC-106）：给插件补 asmdef，`WSU3.Core` 引用 `HighlightPlus.Runtime`** | a |
 | c | **定"步骤数据落哪"** | ✅ **已定 + 已落地（2026-10-14，DEC-111）**：Unity 侧步骤节点 —— 预制体自带**全量** `StepManager → ProcessingHandler → StepHandler` 子树；8 个器件 **46 步**由 `StructureStepGenerator` 从只读来源工程生成（幂等；报告 `content/asset-structure-steps-report.json`），见 `design/10` §7 | — |
-| d | 实例化与初始化：进 `Structure` 站 → 装配预制体 → 相机 / 交互闸门 / 高亮 / 动画驱动 | `TODO.md` D-13。**实例化已落地**（DEC-110）；**初始化未做**（相机 / 闸门 / 高亮）；**动画驱动已就位**（每步自带 `animations[0]`：播放器 + clip + `ifHideOnFinish=false`） |
+| d | 实例化与初始化：进 `Structure` 站 → 装配预制体 → 相机 / 交互闸门 / 高亮 / 动画驱动 | `TODO.md` D-13。**实例化已落地**（DEC-110）；**Web 侧显示已落地**（DEC-112：步骤进度 / 提示条 / 信息面板 / 答题面板 / `object:picked` / `unity:error`）；**动画驱动已就位**（每步自带 `animations[0]`：播放器 + clip + `ifHideOnFinish=false`）；**初始化仍未做**（相机 / 闸门 / 高亮，与 `D-21` 合并） |
 | e | AB 打包与装载（`bundleName = Content/clip_<器件>`），接进 `assets:ready` / `scene:ready` | ✅ **已完成（2026-10-14，DEC-108）**：8 个包 / 45.3 MB，包名与 `content/asset-structure-report.json` 逐条一致；装载已接进任务流。⚠️ **预制体当晚又变了（46 步子树）⇒ 这 8 个包要重打一次**，见 `TODO.md` D-23 |
 | f | 编辑器里复核材质接管（重导 FBX）+ `timeRelay` 的嵌套预制体 | `TODO.md` D-18 | 无 |
 
 **验收**（未定则先按这条）：WebGL 里进结构站 → 点任一零件 → 播对应拆装动画 → 全部走完后 Web 收到 `structure:done`；
 `masterAppliance`（空壳、无步骤数据）**不发** `structure:done`（DEC-105，这是接受的结果）。
+
+### P2-9 免 Web 自测与 dev 期联调（2026-10-14，DEC-113 / DEC-114）
+
+**目标**：让"Unity 侧跑没跑通"与"Web 侧接没接对"两件事**各自都能单独验**，不必每次都拖着整页 Web 一起调。
+背景：`scene:enter` 只能由 Web 发（DEC-08），于是 WebGL 产物一旦离开页面就没有任何人能发指令 ——
+验收时只能看到"停在 `1_Content`、画面里什么都没有"，失败时也说不清是桥的问题还是装配的问题。
+
+| 步 | 内容 | 状态 |
+|---|---|---|
+| a | `0_Setup` 上的**免 Web 自测开关**（`StartupTestSwitch`）：指定 `taskType` + `projectClip` 自己进一个任务 | ✅ **已落地（DEC-113）**：默认**关**（产品路径零影响）；开时发的是与 Web **同一个** `SceneEnterRequestEvent`，走同一条装包 → 装配 → `scene:ready` 链路；WebGL 里可用 `?wsu3_test=8&wsu3_clip=clip_contactor` **免重打包**覆盖 |
+| b | dev 期把暂存的 Unity 产物挂进 `vite dev`（`/unity/**` + 合成 `/release-manifest.json`） | ✅ **已落地（DEC-114）**：`web/vite.config.ts` 的 `unityDevServe`；暂存根可用 `WSU3_UNITY_DEV_ROOT` 改道（测试隔离），`unity-stage.mjs` 配 `--stage-root` |
+| c | 桩构建的**协议仿真**（可选，默认关）：让"桥交互"进冒烟 | ✅ **已落地（DEC-114）**：`tools/pipeline/make-stub-unity.mjs`；冒烟新增 **18 条**桥交互断言（`scene:enter` → 信息面板 → 答题答错重问 → 答对 → `task:completed`） |
+| d | **真 WebGL 构建**的实机端到端验收 | ⏳ **未做** —— `TODO.md` D-24。⚠️ 桩只证明**契约两侧对得上**，不等于真产物跑得通 |
 
 ---
 

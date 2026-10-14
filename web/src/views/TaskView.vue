@@ -16,9 +16,20 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Check, ChevronRight, Move3d, Play, TriangleAlert, LoaderCircle } from 'lucide-vue-next'
 import AppShell from '@/components/AppShell.vue'
-import { TaskType, TASK_TYPES, BRIDGE_PROTOCOL_VERSION, ViewerStack } from '@/contracts'
+import StepPanelHost from '@/components/StepPanelHost.vue'
+import {
+  TaskType,
+  TASK_TYPES,
+  BRIDGE_PROTOCOL_VERSION,
+  UiPanelKind,
+  UiResultKind,
+  ViewerStack,
+  type StepPanelRequest,
+} from '@/contracts'
 import { labelOf, metaOf, stackOf, isUnityTask } from '@/domain/registry'
 import { showsPlaylist, videoNameAt, videoSectionsOf } from '@/domain/principle'
+import { StepPanelQueue } from '@/domain/step-panels'
+import { tipsOf, uiOf } from '@/domain/step-content'
 import { useSessionStore } from '@/stores/session'
 import { useProgressStore } from '@/stores/progress'
 import { useContentStore } from '@/stores/content'
@@ -28,6 +39,7 @@ import { ModelStage } from '@/viewer/ModelStage'
 import { deviceOfProject, loadSceneTables, modelOfDevice } from '@/viewer/scene-assets'
 import { loadVideoIndex, videoFileOf, videoUrlOf } from '@/viewer/video-assets'
 import { UnityBridge } from '@/unity/UnityBridge'
+import { UnitySession, type UnitySessionState } from '@/unity/UnitySession'
 import { mountUnity, type UnityFailure, type UnityHandle } from '@/unity/UnityLoader'
 
 const route = useRoute()
@@ -282,10 +294,12 @@ watch(viewerSignal, () => void nextTick(syncViewer))
 
 onMounted(async () => {
   session.switchTaskType(taskType.value)
-  // 内容先到位再挂视口：菜单 → 项目 → 题库，全部幂等（内容层自己缓存）
+  // 内容先到位再挂视口：菜单 → 项目 → 题库 → 步骤内容，全部幂等（内容层自己缓存）
   await content.ensureCatalog()
   await content.ensureProject(projectId.value)
   await content.loadBank()
+  // 步骤内容（提示条 / 信息面板的文案）：`ui:request` 随时可能来，进来就先读好
+  await content.loadStepContent()
   syncViewer()
   void runtime.load().then(syncUnity)
   syncUnity()
@@ -336,6 +350,101 @@ const bridge = new UnityBridge()
 
 const unityBuild = computed(() => runtime.unityBuildFor(taskType.value))
 
+// —— 会话层：桥的时序与状态（`UnitySession`）——
+/**
+ * 会话**必须早于 `mountUnity` 建**：`mountUnity` 内部会 `bridge.attach()`，
+ * 而 Unity 侧的握手可能紧跟着就来 —— 订阅晚一步就会丢掉那一次 `unity:ready`。
+ */
+let unitySession: UnitySession | null = null
+/** 桥的状态快照（响应式镜像；会话本身是纯逻辑，不碰 Vue） */
+const bridgeState = ref<UnitySessionState | null>(null)
+
+// —— 步骤面板：`ui:request` 的落地（DEC-16：教学界面在 DOM 层）——
+/**
+ * 回执纪律（**一个请求只回一条**）收在这个队列里，不散在视图里 ——
+ * 见 `domain/step-panels.ts` 的类注释与 `domain/step-panels.spec.ts`。
+ */
+const panelQueue = new StepPanelQueue()
+/** 正在等回执的面板（`ui` / `question`） */
+const panelRequest = ref<StepPanelRequest | null>(null)
+/** 右下角提示条（`tips`）—— **不需要回执**（Unity 侧 `ShowTip` 发出去就不管） */
+const tipRequest = ref<StepPanelRequest | null>(null)
+
+/** 提示条 / 信息面板 / 答题面板的内容：一律按 `refId` 查内容层，视图里不硬编码文案。 */
+const tipContent = computed(() =>
+  tipRequest.value ? tipsOf(content.stepContent, tipRequest.value.refId) : undefined,
+)
+const panelUiContent = computed(() =>
+  panelRequest.value?.kind === UiPanelKind.Ui
+    ? uiOf(content.stepContent, panelRequest.value.refId)
+    : undefined,
+)
+const panelQuestion = computed(() =>
+  panelRequest.value?.kind === UiPanelKind.Question
+    ? content.questionOf(panelRequest.value.refId)
+    : undefined,
+)
+
+/** 步骤进度（扁平序号）：直接来自 `step:changed`，不需要知道"进程"这层概念。 */
+const stepProgress = computed(() => bridgeState.value?.step ?? null)
+/** 最近一条 Unity 错误（`unity:error`；9001 那种非致命的也要显示出来）。 */
+const lastUnityError = computed(() => {
+  const errors = bridgeState.value?.errors ?? []
+  return errors.length > 0 ? errors[errors.length - 1] : null
+})
+/** 点中的部件（`object:picked`）。 */
+const pickedKey = computed(() => bridgeState.value?.picked ?? null)
+/** 完成事件（`task:completed`）；`score` 缺席表示 Unity 没给分（当前恒如此）。 */
+const completion = computed(() => bridgeState.value?.completion ?? null)
+
+function refreshBridgeState(): void {
+  bridgeState.value = unitySession?.snapshot ?? null
+}
+
+/** `ui:request` 到达：入队 → 更新两个 ref → 模态面板打开就关掉三维输入（docs/design/09 §6）。 */
+function onPanelRequest(request: StepPanelRequest): void {
+  const outcome = panelQueue.push(request.kind, request.refId, request.body)
+  refreshBridgeState()
+
+  if (outcome.request.kind === UiPanelKind.Tips) {
+    tipRequest.value = outcome.request
+    return
+  }
+  if (outcome.replacedPending) {
+    console.warn('[TaskView] 上一个步骤面板还没回执就来了新的：旧面板已被替换（Unity 侧也会丢弃旧的）。')
+  }
+  panelRequest.value = outcome.request
+  unitySession?.setInputEnabled(false)
+}
+
+/**
+ * 面板回执。**只有队列允许时才会真的发出去** ——
+ * 迟到的 / 重复的回执在这里被丢掉（纪律②），不会打到下一个请求上。
+ */
+function resolvePanel(result: UiResultKind, detail?: string): void {
+  const request = panelRequest.value
+  if (request === null) return
+  const reply = panelQueue.answerRequest(request, result, detail)
+  if (reply === null) return
+  unitySession?.answerPanel(reply.kind, reply.result, reply.detail)
+  panelRequest.value = panelQueue.pending
+  // 没有面板再等回执 ⇒ 把三维输入放回去（与打开时的 `setInputEnabled(false)` 成对）
+  if (!panelQueue.hasPending) unitySession?.setInputEnabled(true)
+  refreshBridgeState()
+}
+
+function dismissTip(): void {
+  panelQueue.dismissTip()
+  tipRequest.value = null
+}
+
+/** 收干净面板（切任务 / 卸载 Unity）—— 面板在 DOM 层，清推进栈带不走它（docs/design/10 §5）。 */
+function clearPanels(): void {
+  panelQueue.reset()
+  panelRequest.value = null
+  tipRequest.value = null
+}
+
 async function mountUnityView(): Promise<void> {
   if (unityHandle) return
   const build = unityBuild.value
@@ -346,6 +455,29 @@ async function mountUnityView(): Promise<void> {
   unityPhase.value = 'loading'
   unityProgress.value = 0
   unityFailure.value = null
+  clearPanels()
+
+  // 会话先建（订阅要先于 attach 到位，见上面 `unitySession` 的注释）
+  unitySession = new UnitySession(bridge, {
+    handlers: {
+      onHandshake: () => {
+        bridgeReady.value = true
+        refreshBridgeState()
+      },
+      onEngineProgress: refreshBridgeState,
+      onAssetsReady: refreshBridgeState,
+      onSceneReady: refreshBridgeState,
+      onSceneExited: refreshBridgeState,
+      onStep: refreshBridgeState,
+      onCompleted: refreshBridgeState,
+      onPicked: refreshBridgeState,
+      onError: refreshBridgeState,
+      onPong: refreshBridgeState,
+      onPanelRequest,
+    },
+  })
+  refreshBridgeState()
+
   try {
     unityHandle = await mountUnity({
       container: unityContainer.value,
@@ -357,29 +489,46 @@ async function mountUnityView(): Promise<void> {
     })
     unityKey.value = unityHandle.key
     unityPhase.value = 'ready'
-    // 握手是 Unity 侧主动调 `__WSU3_BRIDGE__.onReady` 完成的（DEC-07）——
-    // 这里轮询几秒把它读出来显示在状态条上，**让"握没握手"变成看得见的事实**
-    // （冒烟也断言这一条，否则"加载完成但协议没通"会被当成成功）。
-    const started = Date.now()
-    const poll = window.setInterval(() => {
-      if (bridge.isReady() === true) {
-        bridgeReady.value = true
-        window.clearInterval(poll)
-      } else if (Date.now() - started > 3000) {
-        window.clearInterval(poll)
-      }
-    }, 200)
+    // 握手是 Unity 侧主动调 `__WSU3_BRIDGE__.onReady` 完成的（DEC-07）。
+    // 正常路径由 `onHandshake` 事件驱动（不再轮询）；这里只兜一次"挂载时就已握上"的情况，
+    // 让"握没握手"这件事在状态条上始终是看得见的事实。
+    if (bridge.isReady() === true) bridgeReady.value = true
+    // 内容可能比 Unity 先到位：直接要求进入本任务（幂等；握手未完成时会话会在握手后补发）
+    enterCurrentTask()
   } catch (cause) {
+    unitySession?.dispose()
+    unitySession = null
+    bridgeState.value = null
     unityHandle = null
     unityFailure.value = cause as UnityFailure
     unityPhase.value = 'failed'
   }
 }
 
+/** 要求 Unity 进入"当前项目 + 当前任务"。幂等：同一个 `(taskType, clip)` 重复调用不会重复发。 */
+function enterCurrentTask(): void {
+  const clip = content.project?.id
+  if (unitySession === null || !clip || taskType.value === TaskType.None) return
+  unitySession.enterTask(taskType.value, clip)
+  refreshBridgeState()
+}
+
 async function unmountUnityView(): Promise<void> {
   const handle = unityHandle
   unityHandle = null
   unityKey.value = null
+  clearPanels()
+  bridgeReady.value = false
+
+  // 协议上应当先 `scene:exit` 再销毁，但本实现离开任务时**直接销毁 Unity 实例**（DEC-12）——
+  // 所以这一条多半来不及被处理。如实写明，不假装它生效了：
+  // "实例常驻、只换资源包"是 DEC-81 的目标，要等容器在任务之间常驻（而不是随 `practice` 分支被摘掉）
+  // 之后才谈得上。见 `docs/design/09` §2/§5。
+  unitySession?.exitTask()
+  unitySession?.dispose()
+  unitySession = null
+  bridgeState.value = null
+
   if (handle) await handle.unmount()
   if (unityPhase.value !== 'absent') unityPhase.value = 'idle'
 }
@@ -393,6 +542,8 @@ function syncUnity(): void {
 // 挂载/卸载 Unity 的时机：任务变化、或发布清单读完（清单决定"有没有构建"）——
 // 首次进入的调用在主 `onMounted` 里（那时才保证内容已到位）。
 watch([taskType, () => runtime.unityState], () => void nextTick(syncUnity))
+// 进任务：项目 / 任务 / 挂载状态任一变化都重新对齐（幂等，重复调用只发一次 `scene:enter`）
+watch([taskType, projectId, unityPhase, () => content.project?.id], () => enterCurrentTask())
 onBeforeUnmount(() => void unmountUnityView())
 
 /**
@@ -429,7 +580,8 @@ function finish(): void {
     :status-right="
       unity
         ? `桥协议 v${BRIDGE_PROTOCOL_VERSION} · ` +
-          (bridgeReady ? '已握手' : unityBuild?.bridge ? '待握手' : '该构建未声明桥支持')
+          (bridgeReady ? '已握手' : unityBuild?.bridge ? '待握手' : '该构建未声明桥支持') +
+          (stepProgress ? ` · 步骤 ${stepProgress.index + 1}/${stepProgress.total}` : '')
         : `桥协议 v${BRIDGE_PROTOCOL_VERSION} · 进度已存本机`
     "
     @select-task="goTo"
@@ -652,6 +804,65 @@ function finish(): void {
             <div class="ui-alert ui-alert--info">
               <span class="ui-alert__icon">i</span>
               <span>移动端说明：进入 Unity 类任务会先尝试加载，失败再提示（DEC-53），不提前阻拦。</span>
+            </div>
+
+            <!-- ── 步骤与桥状态：`step:changed` / `object:picked` / `task:completed` / `unity:error`
+                 四条**真实读数**都落在这里。以前 Web 侧这四条一条都没处理，所以"Unity 那边在跑、
+                 页面这边什么都不显示" —— 现在把它们变成看得见的事实，而不是靠猜。 ── -->
+            <div v-if="bridgeState" class="ui-col" style="gap: var(--sp-2)">
+              <div class="ui-small" style="font-weight: 600; color: var(--text-1)">步骤与桥状态</div>
+              <div class="ui-row" style="flex-wrap: wrap">
+                <span class="ui-badge" :class="bridgeState.handshake ? 'ui-badge--ok' : 'ui-badge--warn'">
+                  {{ bridgeState.handshake ? '已握手' : '待握手' }}
+                </span>
+                <span class="ui-badge" :class="bridgeState.assetsReady ? 'ui-badge--ok' : ''">
+                  {{ bridgeState.assetsReady ? '资产就绪' : '资产未就绪' }}
+                </span>
+                <span class="ui-badge" :class="bridgeState.sceneReady ? 'ui-badge--ok' : ''">
+                  {{ bridgeState.sceneReady ? '可交互' : '装配中' }}
+                </span>
+                <span v-if="pickedKey" class="ui-badge ui-badge--info">点中：{{ pickedKey }}</span>
+              </div>
+
+              <!-- 步骤进度：扁平序号，直接画（不用再关心"进程"这层概念） -->
+              <div v-if="stepProgress">
+                <div class="ui-row">
+                  <span class="ui-small">步骤 {{ stepProgress.index + 1 }} / {{ stepProgress.total }}</span>
+                  <span v-if="stepProgress.name" class="ui-small ui-muted">{{ stepProgress.name }}</span>
+                </div>
+                <div class="ui-progress">
+                  <div
+                    class="ui-progress__bar"
+                    :style="{
+                      width: `${((stepProgress.index + 1) / Math.max(1, stepProgress.total)) * 100}%`,
+                    }"
+                  />
+                </div>
+              </div>
+              <div v-else class="ui-small ui-muted">
+                还没有步骤推进 —— 进站后由 Unity 侧发 <code>step:changed</code>。
+              </div>
+
+              <!-- 完成：`score` 缺席就只说用时（成绩体系未建，**不编造分数**） -->
+              <div v-if="completion" class="ui-alert ui-alert--ok">
+                <Check :size="14" />
+                <span>
+                  任务完成（用时 {{ (completion.elapsedMs / 1000).toFixed(1) }}s）<template
+                    v-if="completion.score !== undefined"
+                    >，得分 {{ completion.score }}</template
+                  >。
+                </span>
+              </div>
+
+              <!-- Unity 侧错误：**非致命的也要显示**（9001"登记表里没有这个 clip"就是这么用的） -->
+              <div
+                v-if="lastUnityError"
+                class="ui-alert"
+                :class="lastUnityError.fatal ? 'ui-alert--err' : 'ui-alert--warn'"
+              >
+                <TriangleAlert :size="14" />
+                <span>[{{ lastUnityError.code }}] {{ lastUnityError.message }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -900,6 +1111,21 @@ function finish(): void {
           </div>
         </div>
       </div>
+
+      <!--
+        步骤落地面板（`ui:request` 的 DOM 落地）：提示条 / 信息面板 / 答题面板三档。
+        `.ui-tips-float` 与 `.ui-mask` 都是 `position:absolute`，最近的定位祖先是 `.app-main`，
+        所以这块面板正好盖住页面主体（不含顶部站点线与底部状态条），与排版稿 B5 / D2 的观感一致。
+      -->
+      <StepPanelHost
+        :request="panelRequest"
+        :tip="tipRequest"
+        :tips-content="tipContent"
+        :ui-content="panelUiContent"
+        :question="panelQuestion"
+        @resolve="resolvePanel"
+        @dismiss-tip="dismissTip"
+      />
     </div>
   </AppShell>
 </template>

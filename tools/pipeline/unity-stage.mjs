@@ -27,8 +27,17 @@ import { basename, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)))
-const STAGE_ROOT = join(repoRoot, 'unity', 'builds')
-const MANIFEST = join(STAGE_ROOT, 'manifest.json')
+const DEFAULT_STAGE_ROOT = join(repoRoot, 'unity', 'builds')
+
+/**
+ * 暂存根目录与清单路径。
+ *
+ * 为什么是 `let` 而不是 `const`：`--stage-root` 允许把暂存**挪到别处**（默认 `unity/builds`）。
+ * 用途是"测试隔离"——例如渲染冒烟用一份桩构建验证桥交互时，不该覆盖负责人真打好放在
+ * `unity/builds/` 里的产物。命令行给了就以命令行为准。
+ */
+let STAGE_ROOT = DEFAULT_STAGE_ROOT
+let MANIFEST = join(STAGE_ROOT, 'manifest.json')
 
 /** 构建输出里必须出现的四种文件（允许 .br / .gz 后缀的预压缩形态）。 */
 const REQUIRED = [
@@ -39,12 +48,13 @@ const REQUIRED = [
 ]
 
 function parseArgs(argv) {
-  const args = { key: '', from: '', taskTypes: [], force: false, bridge: false, extra: [] }
+  const args = { key: '', from: '', taskTypes: [], force: false, bridge: false, extra: [], stageRoot: '' }
   let legacyTaskType = null
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
     if (token === '--from') args.from = argv[++i]
     else if (token === '--key') args.key = argv[++i]
+    else if (token === '--stage-root') args.stageRoot = argv[++i]
     else if (token === '--task-types') {
       args.taskTypes.push(
         ...String(argv[++i] ?? '')
@@ -79,6 +89,7 @@ const HELP = `用法：node tools/pipeline/unity-stage.mjs --from <目录> --key
                 Unity 类任务通常是 4 电路连接 / 5 仿真实验 / 8 结构 / 9 检测（见 docs/design/05 §3.2）
   --extra <目录> 构建目录之外的产物（Addressables 内容常在 ServerData/WebGL），复制到暂存产物根下
   --bridge      声明该构建实现了协议桥（会调 __WSU3_BRIDGE__.onReady）；壳冒烟据此决定是否要求握手
+  --stage-root <目录> 暂存根（默认 unity/builds）。给测试用：把桩构建暂存到临时目录，不动真产物
   --force       源目录形状校验失败也照搬（慎用，仅用于排查）
 `
 
@@ -126,6 +137,12 @@ async function main() {
     process.stdout.write(HELP)
     process.exitCode = args.help ? 0 : 1
     return
+  }
+
+  // —— ⓪ 暂存根（可被 --stage-root 改到别处，见文件头的说明）
+  if (args.stageRoot) {
+    STAGE_ROOT = resolve(repoRoot, args.stageRoot)
+    MANIFEST = join(STAGE_ROOT, 'manifest.json')
   }
 
   // —— ⓪ 声明校验：一个构建必须声明"能承载哪些 TaskType"，否则它永远选不中（DEC-81）

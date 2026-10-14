@@ -29,8 +29,10 @@ import {
   type ContentSection,
   type ContentTask,
 } from '@/domain/adopted-content'
+import { EMPTY_STEP_CONTENT, toStepContentIndex, type StepContentIndex } from '@/domain/step-content'
 
 export type { ContentMenuItem, ContentProject, ContentQuestion, ContentSection, ContentTask }
+export type { StepContentIndex }
 
 /** 兜底演示内容的 id（同时也是 `content/projects/` 下的文件名）。 */
 export const DEMO_PROJECT_ID = 'demo-temperature'
@@ -67,6 +69,14 @@ export const useContentStore = defineStore('content', () => {
   /** 当前项目（任务页在用的那个） */
   const project = ref<ContentProject | null>(null)
   const bank = ref<ContentQuestion[]>([])
+  /**
+   * 步骤内容（`StepContentData.json`）的两份索引：`ui:request` 要显示的提示条与信息面板。
+   *
+   * 为什么也放内容层：它和题库一样是"被采纳的内容数据"，只是**由步骤系统按 id 点名取用**
+   * （`tipsKey` / `uiId`），而不是由任务页整体渲染。
+   */
+  const stepContent = ref<StepContentIndex>(EMPTY_STEP_CONTENT)
+  let stepContentLoaded = false
   const source = ref<Source>('builtin')
   const loading = ref(false)
   /** 目录级错误（内容数据本身读不到）—— 菜单页显示 */
@@ -183,11 +193,30 @@ export const useContentStore = defineStore('content', () => {
     return bank.value
   }
 
+  /** 按 id 取一道题（步骤里的答题面板用；查不到返回 `undefined`，不拿别的题凑）。 */
+  function questionOf(id: string): ContentQuestion | undefined {
+    return id === '' ? undefined : bank.value.find((item) => item.id === id)
+  }
+
+  /**
+   * 读步骤内容（幂等）。
+   *
+   * 用**独立的加载标志**而不是"索引非空"判断：数据缺失时索引本来就是空的，
+   * 靠非空判断会每次调用都重新 fetch 一遍（而且看起来像"数据一直没到"）。
+   */
+  async function loadStepContent(): Promise<StepContentIndex> {
+    if (stepContentLoaded) return stepContent.value
+    stepContent.value = toStepContentIndex(await fetchJson(`${DATA_DIR}StepContentData.json`))
+    stepContentLoaded = true
+    return stepContent.value
+  }
+
   return {
     menu,
     projects,
     project,
     bank,
+    stepContent,
     source,
     loading,
     error,
@@ -201,5 +230,7 @@ export const useContentStore = defineStore('content', () => {
     ensureCatalog,
     ensureProject,
     loadBank,
+    questionOf,
+    loadStepContent,
   }
 })

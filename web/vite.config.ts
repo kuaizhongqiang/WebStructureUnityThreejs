@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { createReadStream, existsSync, statSync } from 'node:fs'
-import { copyFile, mkdir, readdir, stat, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { extname, join, relative, resolve, sep } from 'node:path'
 // `vitest/config` re-exports vite's defineConfig with the `test` field typed.
 import { defineConfig, type Plugin } from 'vitest/config'
@@ -67,6 +67,18 @@ const ASSET_MIME: Readonly<Record<string, string>> = {
   // 原理视频（DEC-99）：mp4 必须给对 MIME，否则 <video> 直接拒播
   '.mp4': 'video/mp4',
   '.webm': 'video/webm',
+  // Unity 产物（dev 期由下面的 unityDevServe 用同一张表发出去）。
+  // `.wasm` 必须是 `application/wasm`：给错了 `WebAssembly.instantiateStreaming` 会直接拒绝，
+  // 而报错只说"格式不合法"，很难联想到 MIME。口径与 `tools/pipeline/pack.mjs` 的 `serving.mime` 一致。
+  '.wasm': 'application/wasm',
+  '.data': 'application/octet-stream',
+  '.unityweb': 'application/octet-stream',
+  '.mem': 'application/octet-stream',
+  '.js': 'text/javascript; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.txt': 'text/plain; charset=utf-8',
 }
 
 /** 仓库根（`web/vite.config.ts` → 上一级是仓库根）。 */
@@ -250,14 +262,141 @@ function assetsBuild(): Plugin {
   }
 }
 
+// ---------------------------------------------------------------------------
+// dev：把暂存的 Unity 产物挂到 `/unity/**`，并按实际暂存内容合成 `release-manifest.json`
+// ---------------------------------------------------------------------------
+
+/**
+ * 暂存根：默认 `unity/builds`（`unity-stage.mjs` 的默认落点）。
+ *
+ * `WSU3_UNITY_DEV_ROOT` 可以把它改到别处 —— 给**测试隔离**用：渲染冒烟要暂存一份桩构建
+ * 验证桥交互时，不该覆盖负责人真打好放在 `unity/builds/` 里的产物（配合 `unity-stage --stage-root`）。
+ */
+const UNITY_DEV_ROOT = process.env.WSU3_UNITY_DEV_ROOT
+  ? resolve(REPO_ROOT, process.env.WSU3_UNITY_DEV_ROOT)
+  : join(REPO_ROOT, 'unity', 'builds')
+
+/**
+ * 按 `unity/builds/manifest.json` 合成一份 dev 用的发布清单。
+ *
+ * 只做**如实转述**：暂存了几个构建就报几个；一个都没有就 `unity.included=false` 并写明原因。
+ * 绝不"假设有" —— DEC-79 的口径是缺席必须明说，dev 里放宽这条只会让人在打包后才发现问题。
+ */
+async function readDevReleaseManifest(): Promise<string> {
+  let unity: { included: boolean; builds: unknown[]; reason: string } = {
+    included: false,
+    builds: [],
+    reason: '本机没有 Unity 暂存产物（先跑 tools/pipeline/unity-stage.mjs 暂存一个构建）',
+  }
+  const stagedPath = join(UNITY_DEV_ROOT, 'manifest.json')
+  if (existsSync(stagedPath)) {
+    try {
+      const staged = JSON.parse(await readFile(stagedPath, 'utf8')) as {
+        builds?: Array<Record<string, unknown>>
+      }
+      // 形状与 `tools/pipeline/pack.mjs` 写进 `release-manifest.json` 的 `unity.builds[]` 一致，
+      // 页面读到的就是同一份东西（`web/src/stores/runtime.ts` 的 `UnityBuildEntry`）。
+      const builds = (staged.builds ?? []).map((build) => ({
+        key: build.key,
+        // DEC-81：一个构建承载多个 TaskType；旧清单的单值 taskType 仍兼容
+        taskTypes: Array.isArray(build.taskTypes)
+          ? build.taskTypes
+          : build.taskType != null
+            ? [build.taskType]
+            : [],
+        entry: build.entry,
+        loader: build.loader,
+        bridge: Boolean(build.bridge),
+        fileCount: build.fileCount,
+        totalBytes: build.totalBytes,
+        stagedAt: build.stagedAt,
+        treeSha256: build.treeSha256,
+      }))
+      unity = {
+        included: builds.length > 0,
+        builds,
+        reason: builds.length > 0 ? `已包含 ${builds.length} 个 Unity 构建（dev 暂存）` : '暂存清单为空',
+      }
+    } catch (cause) {
+      unity = {
+        included: false,
+        builds: [],
+        reason: `暂存清单读不动：${cause instanceof Error ? cause.message : String(cause)}`,
+      }
+    }
+  }
+  // `dev: true` 是给排查用的标记：一眼看出这份清单不是 `pack.mjs` 产出的
+  const manifest = { version: 1, generatedAt: new Date().toISOString(), dev: true, unity }
+  return `${JSON.stringify(manifest, null, 2)}\n`
+}
+
+/**
+ * dev：`/unity/<key>/**` → `<暂存根>/<key>/**`，并补一份 `/release-manifest.json`。
+ *
+ * WHY 需要它：产品链路里这两样一直**只有壳的静态服务器**（`electron/server.js`）提供，
+ * 于是 `vite dev` 下点进 Unity 任务永远走"产物未就位"那条分支 ——
+ * 人工联调必须先打包，改一行前端都要重来一遍；自动化冒烟也没法验桥交互。
+ *
+ * 用同一张 `ASSET_MIME` 发文件（所以 `.wasm` 的 MIME 是对的），Range 也走同一个 `sendAsset`。
+ * 预压缩（`.br` / `.gz`）在 dev 不做内容协商：开发时用的是未压缩产物，压缩交给部署方（见发布清单 `serving`）。
+ */
+function unityDevServe(): Plugin {
+  return {
+    name: 'wsu3-unity-dev-serve',
+    apply: 'serve',
+    configureServer(server) {
+      // 注意：中间件在这里注册（而不是 return 一个函数）＝ 排在 Vite 内部中间件**之前**。
+      // 否则 `/release-manifest.json` 会先被 SPA 兜底接走，返回一份 200 的 index.html，
+      // 页面 `response.json()` 解析失败后**静默**退化成"没读到清单"—— 正是最难查的那种。
+      server.middlewares.use((request, response, next) => {
+        const pathname = (request.url ?? '/').split('?')[0] ?? '/'
+        if (pathname !== '/release-manifest.json') return next()
+        void readDevReleaseManifest().then((body) => {
+          response.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Length': Buffer.byteLength(body),
+            'Cache-Control': 'no-cache',
+          })
+          response.end(body)
+        })
+        return
+      })
+
+      server.middlewares.use('/unity', (request, response, next) => {
+        let relativePath: string
+        try {
+          // connect 已经把挂载前缀 `/unity` 剥掉，这里拿到的是 `/<key>/Build/xxx.wasm`
+          relativePath = decodeURIComponent((request.url ?? '/').split('?')[0] ?? '/').replace(/^\/+/, '')
+        } catch {
+          return next()
+        }
+        if (relativePath === '') return next()
+
+        const target = resolve(UNITY_DEV_ROOT, relativePath)
+        // 越界（`../`）一律当作不存在：dev 服务器也不该能被读出仓库外的文件
+        if (target !== UNITY_DEV_ROOT && !target.startsWith(UNITY_DEV_ROOT + sep)) return next()
+        if (!existsSync(target) || !statSync(target).isFile()) {
+          // ⚠️ 这里**必须**自己回 404，不能 `next()`：交给后面的处理器会命中 Vite 的 SPA 兜底，
+          // 于是 `/unity/main/Build/x.loader.js` 拿到一份 **200 的 index.html** ——
+          // 浏览器报的是"语法错误"而不是"404"，排查时会被带到完全错误的方向。
+          // 壳的静态服务器（electron/server.js）在这里也是回 404，两边行为对齐。
+          response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+          response.end(`404 /unity/${relativePath}\n`)
+          return
+        }
+        sendAsset(request, response, target)
+      })
+    },
+  }
+}
+
 // base: './' keeps the build usable from any sub-path. If the target server
 // fixes a deployment prefix, set VITE_BASE (e.g. VITE_BASE=/sim/) instead.
 // See docs/research/02-web-threejs-line.md section 6 and DEC-22.
 const base = process.env.VITE_BASE ?? './'
-
 export default defineConfig({
   base,
-  plugins: [vue(), assetsServe(), assetsBuild()],
+  plugins: [vue(), assetsServe(), assetsBuild(), unityDevServe()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

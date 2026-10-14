@@ -46,8 +46,108 @@ const buildName = `stub-${args.key}`
  *   ② 上报进度（DEC-12：加载必须有进度）；
  *   ③ 调桥的 onReady 完成握手（DEC-07：版本不匹配要报错）；
  *   ④ 提供 SendMessage / Quit（DEC-12：退出必须显式销毁）。
+ *
+ * 另外内置一份**可选的协议仿真**（`__wsu3StubProtocol`）：默认**关**，桩就是一画布加一次握手；
+ * 显式打开（`window.__WSU3_STUB_PROTOCOL__ = true` 或 URL 带 `?wsu3_stub=protocol`）后，
+ * 它会按契约回消息 —— 于是"Web 侧到底有没有把 `app:init` / `scene:enter` 发对、
+ * `assets:ready` / `scene:ready` / `step:changed` / `ui:request` 有没有被处理、
+ * `ui:result` 有没有回、`task:completed` 有没有落地"这一整条**能在浏览器里自动验**，
+ * 不必等真 WebGL 构建就位（DEC-59 要求构建前关编辑器，那条路很慢）。
+ *
+ * 仿真用的 refId 取**真实内容数据里的 id**（`contactor_ui_measure` /
+ * `contactor_q_mainContact` / `contactor_measure_step1_tips`），所以它顺带验了
+ * "内容数据 → 面板文案"这一段；可用 `window.__WSU3_STUB_UI_REF__` 等覆盖。
  */
 const loader = `// 桩 loader（由 tools/pipeline/make-stub-unity.mjs 生成，不是真 Unity 产物）
+function __wsu3StubEmulationEnabled() {
+  if (window.__WSU3_STUB_PROTOCOL__ === true) return true
+  return /(^|[?&])wsu3_stub=protocol(&|$)/.test(String(window.location.search || ''))
+}
+
+function __wsu3StubProtocol(config) {
+  var enabled = __wsu3StubEmulationEnabled()
+  var seq = 0
+  var taskType = 0
+  var questionAttempts = 0
+  var state = {
+    readyAt: null, appInit: null, entered: null, inputEnabled: null,
+    replies: [], exited: null, completed: null,
+  }
+  window.__WSU3_STUB_STATE__ = state
+
+  var STEPS = 3
+  var uiRef = window.__WSU3_STUB_UI_REF__ || 'contactor_ui_measure'
+  var questionRef = window.__WSU3_STUB_QUESTION_REF__ || 'contactor_q_mainContact'
+  var tipsRef = window.__WSU3_STUB_TIPS_REF__ || 'contactor_measure_step1_tips'
+
+  function post(type, payload) {
+    var bridge = window.__WSU3_BRIDGE__
+    if (!bridge || typeof bridge.post !== 'function') return
+    seq += 1
+    bridge.post(JSON.stringify({
+      type: type, version: Number(config.protocolVersion || 1), seq: seq, payload: payload,
+    }))
+  }
+  function later(ms, fn) { setTimeout(fn, ms) }
+
+  // 进任务：两条就绪（DEC-84 的顺序）→ 步骤 → 提示条 → 信息面板
+  function enter() {
+    later(40, function () { post('assets:ready', { taskType: taskType }) })
+    later(80, function () { post('unity:progress', { progress: 0.5 }) })
+    later(120, function () { post('scene:ready', { taskType: taskType }) })
+    later(180, function () { post('step:changed', { stepIndex: 0, stepTotal: STEPS, stepName: 'Step_1' }) })
+    later(200, function () { post('ui:request', { kind: 'tips', refId: tipsRef }) })
+    later(260, function () { post('ui:request', { kind: 'ui', refId: uiRef }) })
+  }
+
+  function handle(payload) {
+    if (!enabled) return
+    var message
+    try { message = JSON.parse(payload) } catch (error) { return }
+    if (!message || !message.type) return
+    var body = message.payload || {}
+
+    if (message.type === 'app:init') { state.appInit = body; return }
+    if (message.type === 'input:enable') { state.inputEnabled = body.enabled; return }
+    if (message.type === 'debug:ping') { post('debug:pong', { at: body.at }); return }
+    if (message.type === 'scene:exit') { state.exited = true; post('scene:exited', { taskType: taskType }); return }
+
+    if (message.type === 'scene:enter') {
+      taskType = body.taskType
+      state.entered = body
+      questionAttempts = 0
+      enter()
+      return
+    }
+
+    if (message.type === 'ui:result') {
+      state.replies.push(body)
+      if (body.kind === 'question') {
+        if (body.result === 'success') {
+          later(40, function () { post('step:changed', { stepIndex: 2, stepTotal: STEPS, stepName: 'Step_3' }) })
+          later(90, function () {
+            state.completed = { taskType: taskType, elapsedMs: 4321 }
+            post('task:completed', { taskType: taskType, elapsedMs: 4321 })
+          })
+          return
+        }
+        // 答错：按 ConditionQuestion 的口径"再问一次"（上限 3 次）
+        questionAttempts += 1
+        if (questionAttempts < 3) {
+          later(60, function () { post('ui:request', { kind: 'question', refId: questionRef }) })
+        }
+        return
+      }
+      if (body.kind === 'ui') {
+        later(40, function () { post('step:changed', { stepIndex: 1, stepTotal: STEPS, stepName: 'Step_2' }) })
+        later(80, function () { post('ui:request', { kind: 'question', refId: questionRef }) })
+      }
+    }
+  }
+
+  return { handle: handle }
+}
+
 var createUnityInstance = function (canvas, config, onProgress) {
   return new Promise(function (resolve, reject) {
     var ctx = canvas.getContext('2d')
@@ -67,10 +167,12 @@ var createUnityInstance = function (canvas, config, onProgress) {
           ctx.font = '12px sans-serif'
           ctx.fillText('build: ' + config.dataUrl, 20, 68)
         }
+        var emulator = __wsu3StubProtocol(config)
         var instance = {
           SendMessage: function (object, method, payload) {
             window.__WSU3_STUB_CALLS__ = (window.__WSU3_STUB_CALLS__ || [])
             window.__WSU3_STUB_CALLS__.push({ object: object, method: method, payload: payload })
+            emulator.handle(payload)
           },
           Quit: function () {
             window.__WSU3_STUB_QUIT__ = true
@@ -82,6 +184,7 @@ var createUnityInstance = function (canvas, config, onProgress) {
         setTimeout(function () {
           try {
             if (window.__WSU3_BRIDGE__ && window.__WSU3_BRIDGE__.onReady) {
+              if (window.__WSU3_STUB_STATE__) window.__WSU3_STUB_STATE__.readyAt = Date.now()
               window.__WSU3_BRIDGE__.onReady(String(config.protocolVersion || 1))
             }
           } catch (error) {
