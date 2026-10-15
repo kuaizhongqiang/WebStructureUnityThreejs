@@ -197,11 +197,6 @@ namespace WSU3.Core.Managers.FunctionManager
 
             Debug.Log($"[TaskFlow] scene:enter → {target}（projectId={request.ProjectId}, version={request.ContentVersion}）");
 
-            // 颜色相机后处理按任务类型定：**结构任务必须关**（后处理会把 alpha 写死 1，画布就透不了）。
-            // 关的是**颜色相机**（渲染进 Color.renderTexture 的那台 = 颜色路），不是主相机 ——
-            // 规定与原因见 CameraManager.ApplyPostProcessingPolicy / docs/design/13 §4.4。
-            GlobalManager.CameraManager.ApplyPostProcessingPolicy(target);
-
             // ① 装载项目资源包：一个 clip 一个内容包（DEC-87 纪律①）
             bool packReady = false;
 
@@ -312,9 +307,6 @@ namespace WSU3.Core.Managers.FunctionManager
                 EventBus<TaskExitedEvent>.Publish(new TaskExitedEvent { TaskType = TaskType.None });
                 yield break;
             }
-
-            // 退出即回默认（颜色相机后处理回到预制体原值）—— 结构任务那次"关"只属于结构任务
-            GlobalManager.CameraManager.ApplyPostProcessingPolicy(TaskType.None);
 
             // ① 先销毁本次任务装配出来的实例 —— **顺序不能反**：先卸包会让存活实例的材质引用到已释放资源（变粉，DEC-87 纪律②）
             StructureTaskManager structure = StructureTaskManager.Instance;

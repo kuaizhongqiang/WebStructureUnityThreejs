@@ -1,10 +1,8 @@
 /**
  * PNG 像素统计（共享模块）。
  *
- * 谁在用：
- *   · `tools/render-smoke.mjs` —— 判断"画布不是纯色白屏"；
- *   · `tools/verify-unity-transparency.mjs` —— 判断"画布真的透出来了、不是一整块黑"。
- * 两处都要同一套口径，所以抽出来一份，避免两套判据漂移。
+ * 谁在用：`tools/render-smoke.mjs` —— 判断"画布不是纯色白屏"。
+ * （原 `tools/verify-unity-transparency.mjs` 已随"结构站画布透明"需求撤销删除，见 DEC-158。）
  *
  * 只支持 Playwright 截图那种格式（8bit / 非隔行 / RGB 或 RGBA）；不支持的格式直接抛错，
  * 而不是悄悄返回零值（"量不到"不能当成"通过"）。

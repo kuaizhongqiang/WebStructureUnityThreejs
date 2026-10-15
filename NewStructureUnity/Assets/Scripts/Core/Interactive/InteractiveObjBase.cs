@@ -10,7 +10,7 @@ namespace WSU3.Core.Interactive
     /// 三维交互物基类：**自注册 + 被动接收交互**。
     ///
     /// 检测在谁手里：**在 <see cref="Managers.FunctionManager.InteractiveManager"/> 的 `CoreUpdate()` 里**
-    /// —— 每帧一次 `Camera.ViewportPointToRay` + `Physics.Raycast`，命中后按需调本类的
+    /// —— 每帧一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，命中后按需调本类的
     /// <see cref="InvokeEnter"/> / <see cref="InvokeExit"/> / <see cref="InvokeDown"/> / <see cref="InvokeUp"/> / <see cref="InvokeClick"/>。
     ///
     /// 因此本类**不实现** Unity 的 `IPointer*Handler`：注册表的意义就是"由管理器统一检测、统一派发"，

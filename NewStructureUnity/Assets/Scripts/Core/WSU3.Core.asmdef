@@ -8,8 +8,7 @@
     "Cinemachine",
     "Unity.InputSystem",
     "Unity.Addressables",
-    "Unity.ResourceManager",
-    "Unity.RenderPipelines.Universal.Runtime"
+    "Unity.ResourceManager"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
