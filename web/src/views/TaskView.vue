@@ -14,7 +14,7 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Check, ChevronDown, ChevronRight, Move3d, Play } from 'lucide-vue-next'
+import { Check, ChevronDown, ChevronRight, LoaderCircle, Move3d, Play } from 'lucide-vue-next'
 import AppShell from '@/components/AppShell.vue'
 import BridgeStatusPanel from '@/components/BridgeStatusPanel.vue'
 import StepPanelHost from '@/components/StepPanelHost.vue'

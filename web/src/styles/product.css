@@ -175,6 +175,12 @@
   overflow: hidden;
   background: none;
 }
+/* 视口嵌在面板里时把高度撑满：.ui-panel 是 flex 列、__body 有 flex:1 的确定高度，
+   但 __body 本身是 block —— 上面那条 flex:1 不生效，视口只剩 min-height 在撑
+   （实测真 Unity 起来后画布被压成 220px 高的一条，其余全是面板底）。 */
+.ui-panel__body > .app-viewport {
+  height: 100%;
+}
 .app-viewport > canvas {
   display: block;
   width: 100% !important;

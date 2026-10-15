@@ -52,6 +52,7 @@
 | D-26 | **"材质接管"的根治**（DEC-115 / `design/12` §4.3）：现在靠打包前**强制重导 FBX** 事后补救（`ModelMaterialBindingFixer`），根因是接管时**替换**了 FBX 自动抽出的同名 `.mat`（GUID 变 → FBX 内部绑定悬空）。⚠️ 该修复只落在本机 `Library`，**切换 Build Target 就会退化一次**，靠自愈兜着 | 未做。根治要改成**不替换**那些材质：保留 FBX 抽出的 `.mat`（保住 GUID），只改它的 shader 与属性（`content/asset-material-spec.json` 那套口径本来就是这个思路）；落点是重做 `tools/pipeline/import-structure-assets.mjs` 的材质那一段 |
 | D-27 | **动画运行模式（DEC-121）没有"从 Web 侧切换"的入口**：现在只能由脚本 / Inspector 改 `StepManager.RunMode` | 未做。若产品需要"演示模式由页面触发"，要接一条桥消息（`BridgeMessageType` 双向各加一条 + Web 侧契约 + 快照 + `check-contracts` 门禁）。**要负责人定要不要做** |
 | D-28 | **AB 时代的产物目录 `Assets/StreamingAssets/Content/**`（8 个包 / 45.3 MB）已成无主残留**：迁 AA（DEC-118）后运行期不再读它 | 未删（本轮只清掉配置与代码）。删除前确认无回退需要；`.gitignore` / `ignore.conf` 里那几条规则建议**保留**（防误提交）。⚠️ 同理 `Library/com.unity.addressables/aa/WebGL/` 是 AA 产物的正常落点、**不属于"残留"**，别顺手删 |
+| D-30 | **Unity 的启动时机不对（负责人 2026-10-15 指示）**：现在是进了 task 页才开始挂 Unity 实例、装包、播 Unity 启动画面 —— 用户要**等加载进度条**才能看到内容 | 要改成：实例**提前到 `start → login → menu` 阶段就创建并预装**（`preload:task` 协议已预留，DEC-81 的常驻形态），进入 task 时内容已经在场、**直接可交互**，不再出现加载进度条与 Unity 启动画面。与 D-25（实例在任务间常驻、`scene:exit` 有意义）是同一件事的两段：先解决"第一次进场不等"，再解决"换任务不重载"。**谁拍板**：预装哪个/哪些 clip（全部 9 组 ~50 MB 还是当前项目）待负责人定 |
 
 ## 3 已进 git、只剩 Unity 侧（Plastic）待提交
 

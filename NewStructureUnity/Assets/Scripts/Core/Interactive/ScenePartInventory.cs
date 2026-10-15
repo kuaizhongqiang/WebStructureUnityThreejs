@@ -39,7 +39,10 @@ namespace WSU3.Core.Interactive
             return parts;
         }
 
-        /// <summary>沿实例内部向上找最近的 StructureObj；出了实例根（或根上没有部件）就是 null = 顶层。</summary>
+        /// <summary>
+        /// 沿实例内部向上找最近的 StructureObj；出了实例根（或根上没有部件）就是**空串 = 顶层**
+        /// （"顶层"是明确的值，不是缺失 —— 与桥层"parentKey 空串当根"的口径一致）。
+        /// </summary>
         private static string FindParentKey(Transform node, Transform root)
         {
             Transform current = node.parent;
@@ -51,7 +54,7 @@ namespace WSU3.Core.Interactive
                 current = current.parent;
             }
 
-            return null;
+            return string.Empty;
         }
 
         private static string NullIfEmpty(string value)

@@ -22,14 +22,21 @@ namespace WSU3.Editor.BuildTools
     public static class WebGLBaselineBuild
     {
         private const string OutputDir = "Builds/webgl-baseline";
-        private const string ScenePath = "Assets/Scenes/SampleScene.unity";
+
+        /// <summary>启动链的两个场景（0_Setup 自检引导 → single 切到 1_Content）。
+        /// ⚠ 不要写 SampleScene：场景重组（DEC-87）后它已不存在，写死旧路径会让构建直接 Failed。</summary>
+        private static readonly string[] Scenes =
+        {
+            "Assets/Scenes/0_Setup.unity",
+            "Assets/Scenes/1_Content.unity",
+        };
 
         [MenuItem("WSU3/Build/WebGL Baseline")]
         public static void RunBaseline()
         {
             var options = new BuildPlayerOptions
             {
-                scenes = new[] { ScenePath },
+                scenes = Scenes,
                 locationPathName = OutputDir,
                 target = BuildTarget.WebGL,
                 options = BuildOptions.None,
@@ -50,7 +57,7 @@ namespace WSU3.Editor.BuildTools
             if (!Directory.Exists(OutputDir))
             {
                 Debug.LogError("[WSU3] 构建产物目录不存在，构建很可能失败。");
-                EditorApplication.Exit(1);
+                if (Application.isBatchMode) EditorApplication.Exit(1); // 仅批处理退出进程；交互模式不能把编辑器带崩
                 return;
             }
 
@@ -80,9 +87,9 @@ namespace WSU3.Editor.BuildTools
             Debug.Log($"[WSU3] report written to {reportPath}");
             Debug.Log("[WSU3] ===== end =====");
 
-            if (summary.result != BuildResult.Succeeded)
+            if (summary.result != BuildResult.Succeeded && Application.isBatchMode)
             {
-                EditorApplication.Exit(1);
+                EditorApplication.Exit(1); // 同上：只在批处理下退出进程
             }
         }
     }
