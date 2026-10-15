@@ -30,6 +30,7 @@ import {
   type StepPanelRequest,
 } from '@/contracts'
 import { labelOf, metaOf, stackOf, isUnityTask } from '@/domain/registry'
+import { STATION_TRANSITION, stationKeyOf } from '@/domain/page-transition'
 import { buildPartTree } from '@/domain/part-tree'
 import { showsPlaylist, videoNameAt, videoSectionsOf } from '@/domain/principle'
 import { StepPanelQueue } from '@/domain/step-panels'
@@ -62,6 +63,12 @@ const taskType = computed<TaskType>(() => {
   return TASK_TYPES.includes(raw as TaskType) ? (raw as TaskType) : TaskType.Purpose
 })
 const meta = computed(() => metaOf(taskType.value))
+/**
+ * 站间过渡的 key（Issue #57）：**Unity 站之间恒定**、其余站逐站一个值 —— 所以
+ * Unity ↔ Unity 翻站不触发过渡、不重建 DOM，常驻画布（DEC-145）原地不动。
+ * 口径与理由见 `domain/page-transition.ts`；过渡本身由外壳（`AppShell`）套在主内容区上。
+ */
+const stationKey = computed(() => stationKeyOf(taskType.value))
 /**
  * 当前任务在**本项目**里的内容。`undefined` = 这个项目没启用这个任务
  * （采纳数据里每个 clip 只有一部分槽位非空，见 `domain/adopted-content.ts`）。
@@ -662,6 +669,8 @@ function finish(): void {
           (stepProgress ? ` · 步骤 ${stepProgress.index + 1}/${stepProgress.total}` : '')
         : `桥协议 v${BRIDGE_PROTOCOL_VERSION} · 进度已存本机`
     "
+    :transition="STATION_TRANSITION"
+    :transition-key="stationKey"
     @select-task="goTo"
     @back="back"
   >

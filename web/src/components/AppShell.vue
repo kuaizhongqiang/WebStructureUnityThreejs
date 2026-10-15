@@ -16,6 +16,7 @@ import RouteBar from './RouteBar.vue'
 import ShellCard from './ShellCard.vue'
 import QualityDialog from './QualityDialog.vue'
 import { TaskType } from '@/contracts'
+import { PAGE_TRANSITION } from '@/domain/page-transition'
 
 const props = withDefaults(
   defineProps<{
@@ -31,6 +32,20 @@ const props = withDefaults(
     exit?: boolean
     statusLeft?: string
     statusRight?: string
+    /**
+     * 主内容区的过渡名（Issue #57，如 `ui-station`）。
+     *
+     * 为什么过渡落在外壳上：被过渡的是 `.app-main` 里的内容区，而这个盒子归外壳所有；
+     * 页面只提供"什么时候算换了一次内容"的 `transitionKey`。这样页面样式里就不必套一层
+     * 纯为动画存在的包裹元素（多一层包裹会把每个页面的模板整体缩进、diff 变成整文件重排）。
+     *
+     * 缺省 = 路由级的淡入淡出；页面给别的名字就换那一套（如任务页的站间过渡多一个极短位移）。
+     * 名字必须是 `components.css` §22 里真实存在的一套，否则 Vue 挂上的类名没有样式、
+     * 表现为"没有过渡"（不会报错，所以别写错）。
+     */
+    transition?: string
+    /** 过渡的 key：**变了才播过渡**（同一 key 只就地更新，不重建 DOM）。 */
+    transitionKey?: string | number
   }>(),
   {
     crumb: '',
@@ -41,6 +56,8 @@ const props = withDefaults(
     exit: false,
     statusLeft: '[ 就绪 ]',
     statusRight: 'v0.2 · 脚手架',
+    transition: PAGE_TRANSITION,
+    transitionKey: '',
   },
 )
 
@@ -102,8 +119,24 @@ const qualityOpen = ref(false)
       </div>
     </div>
 
+    <!--
+      主内容区过渡（Issue #57）：换内容时淡入淡出。
+
+      **不用 `mode="out-in"`**：out-in 会把新内容推迟到离场结束（160ms）之后才创建，而页面里的挂载
+      逻辑（watch → nextTick → 往 ref 容器挂 Three 视口 / Unity 搬挂点 / `<video>`）都假设"换完之后
+      新 DOM 已经就位"。改成两份短暂共存 + 离场层脱流（`components.css` §22 的 `.ui-station-leave-active`），
+      交叉淡入淡出，新 DOM 在同一个 patch 里就位。
+
+      包裹层 `.app-main__body` **故意不定位**：`.ui-tips-float` / `.ui-mask` 这些绝对定位叠层的
+      定位祖先是 `.app-main`（见 product.css），这里一旦写上 position 就会把叠层挪到另一套坐标系里。
+      它只负责把高度铺满，让页面里的 `height: 100%` 照旧生效。
+    -->
     <main class="app-main">
-      <slot />
+      <Transition :name="transition">
+        <div :key="transitionKey" class="app-main__body">
+          <slot />
+        </div>
+      </Transition>
     </main>
 
     <QualityDialog v-if="qualityOpen" @close="qualityOpen = false" />

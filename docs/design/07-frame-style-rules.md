@@ -114,3 +114,25 @@ box-shadow: var(--elev-panel | --elev-prominent | --elev-soft);
   要更暗/更亮就调令牌，不要在 `product.css` 里写第二次颜色。
 - **落点**：`web/src/styles/product.css` 的 `.app-root`；换图只需替换同名文件，样式不用动。
 - **评审可见**：`docs/ui-mockups/index.html` 第九节有深浅两档对照展示（硬纪律：样式成果页看不到的样式视为未完成）。
+
+## 10 动效：页面 / 站间过渡（2026-10-15，DEC-157）
+
+页面切换**不再瞬切**，但只做"够用"的一点动效 —— 教学软件不做演出感。
+
+- **两处、一套节奏**：路由级 `ui-page`（换整视图，纯淡入淡出）与站间级 `ui-station`（任务页只换主内容区，同节奏 + 6px 位移）。
+  节奏只认 `tokens.css` §22 的三个令牌：`--dur-page`（160ms）/ `--ease-page` / `--page-shift`（6px）。
+  **不要在过渡类里写零散时长**：要改节奏就改令牌（两处同时变，节奏才不会走散）。
+- **为什么路由级不带位移**：它换的是整屏（含整页底图），位移会把底图一起挪、边沿露出底色缝；
+  位移只给"区域级"的站间过渡（由 `.app-main` 的 `overflow: hidden` 收住）。
+- **站间过渡不能用 `out-in`**：`out-in` 把新内容推迟到离场结束之后才创建，而任务页的挂载逻辑是
+  `watch → nextTick → 往模板 ref 容器里挂视口`（Three `Viewer` / Unity 搬挂点 / `<video>`）——
+  实测会直接坏掉（画布重建失败、原理页卡在载入中）。所以用"两份短暂共存 + 离场层脱流"的交叉淡入淡出。
+- **Unity 画布不参与站间过渡**（DEC-145 红线的延续）：Unity 站之间共用一个过渡 key
+  （`domain/page-transition.ts` 的 `stationKeyOf()`）⇒ 不触发过渡、不重建 DOM、画布原地不动。
+  只有跨栈翻站（Unity ↔ Three）才走过渡 —— 那时画布本来就要搬进/搬出。
+- **「减少动态效果」是全局兜底**：`components.css` §20.6 的 `@media (prefers-reduced-motion: reduce)`
+  把所有 `transition-duration` / `animation-duration` 压到 0.01ms，因此令牌**不需要**再给一份媒体查询；
+  新增动效时也照这条走（别再各自写媒体查询，否则偏好一开总有几个漏网）。
+- **评审可见**：`docs/ui-mockups/index.html` 有"页面过渡"一节，用同一对令牌的循环动画演示两种过渡
+  （演示动画在 `mockup-shell.css`，属评审外壳，产品不引入）。
+- ⚠️ 过渡的**类型与时长待负责人拍板**（Issue #57 原文要求）；本条按暂定口径实现，改节奏只动令牌。

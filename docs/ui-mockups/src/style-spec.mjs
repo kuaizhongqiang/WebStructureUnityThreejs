@@ -568,6 +568,58 @@ export const styleSpecSectionsRound2 = [
       },
     ],
   },
+  // 本节不排进"九/十"那套编号：成果页的编号节（框体令牌 / 页面索引 / 图标 / 说明）是
+  // render.mjs 里后来追加的，底图那节已经与它撞过一次号；这里索性只给标题，不再制造第三个"九"。
+  {
+    title: '页面过渡（2026-10-15，Issue #57）',
+    items: [
+      {
+        name: '路由级淡入淡出（整视图切换）',
+        desc:
+          '启动 / 登录 / 目录 / 任务页之间换整屏：只做淡入淡出，<b>不带位移</b> —— ' +
+          '换的是整屏（含整页底图），位移会把底图一起挪、边沿露出底色缝。' +
+          '下图演示同一条节奏（本页用 CSS 循环动画演；产品里由 Vue 的 ' +
+          '<code>Transition name="ui-page"</code> 挂类名驱动，落点 <code>web/src/App.vue</code> ' +
+          '的 <code>router-view</code>）',
+        cls: '.ui-page-enter-active / .ui-page-enter-from（components.css §22）',
+        html: `<div style="display:flex;gap:18px;align-items:center">
+          <div class="spec-motion spec-motion--fade" style="width:220px;height:120px;border-radius:var(--r-2);
+            border:0.5px solid var(--line-1);background:var(--glass-panel);padding:10px 12px">
+            <div class="ui-small ui-muted">页面内容</div>
+            <div style="margin-top:8px;height:8px;border-radius:4px;background:var(--inter-hover)"></div>
+            <div style="margin-top:6px;height:8px;width:70%;border-radius:4px;background:var(--inter-hover)"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-3);line-height:1.9">
+            单程 <b>--dur-page</b> = 160ms（out-in 两段合计约 320ms）<br>
+            缓动 <b>--ease-page</b>，出场与入场共用一条 → 节奏统一<br>
+            系统「减少动态效果」打开即压到瞬时（components.css §20.6）
+          </div>
+        </div>`,
+      },
+      {
+        name: '站间过渡（任务页内容区，含极短位移）',
+        desc:
+          '沿站点线前后翻站时<b>只换主内容区</b>：外壳（浮卡 / 站点线 / 状态条）留在原地，' +
+          '内容淡入淡出 + 6px 位移。节奏与路由级同源（同一对令牌），差别只有位移；' +
+          '产品里落点 <code>TaskView</code> → <code>AppShell</code> 的 <code>.app-main__body</code>，' +
+          'key 由 <code>domain/page-transition.ts</code> 的 <code>stationKeyOf()</code> 给',
+        cls: '.ui-station-enter-active / -enter-from / -leave-to（components.css §22）',
+        html: `<div style="display:flex;gap:18px;align-items:center">
+          <div class="spec-motion" style="width:220px;height:120px;border-radius:var(--r-2);
+            border:0.5px solid var(--line-1);background:var(--glass-panel);padding:10px 12px">
+            <div class="ui-small ui-muted">本站内容</div>
+            <div style="margin-top:8px;height:8px;border-radius:4px;background:var(--inter-hover)"></div>
+            <div style="margin-top:6px;height:8px;width:70%;border-radius:4px;background:var(--inter-hover)"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-3);line-height:1.9">
+            进入自下方、退出向上：<b>--page-shift</b> = 6px<br>
+            ⚠️ <b>Unity 画布不参与</b>：Unity 站之间共用一个过渡 key ⇒<br>
+            Vue 不触发过渡、不重建 DOM，常驻画布（DEC-145）原地不动
+          </div>
+        </div>`,
+      },
+    ],
+  },
 ]
 
 export const pageIndexGroups = [
