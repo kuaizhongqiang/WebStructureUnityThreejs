@@ -24,7 +24,6 @@
 | 内存 | 初始 32MB / 上限 2048MB / 几何增长 | 大场景若报 OOM，先看 §3 的排查 |
 | `webGLTemplate` | `APPLICATION:Default` | 我们**不使用**它的 `index.html`（同页挂载，见 DEC-07），但 `Build/` 必须完整 |
 | `insecureHttpOption` | ⚠️ **工程里当前是 `2 = AlwaysAllowed`**（**本地自测态**，见 §7）；**交付值 = `0 = NotAllowed`** | 允许明文 `http://` 拉 Addressables 内容 —— 出交付产物前必须关掉 |
-| `preserveFramebufferAlpha` | **`0`**（2026-10-15 实测） | 相机 RT 有没有 alpha 通道；结构站画布透明的前提，与渲染器资产的 `IntermediateTextureMode = Auto` 配套（见 [`13-unity-canvas-transparency.md`](./13-unity-canvas-transparency.md) §5.1；**这条是否必须置 `1` 待真产物复核**，见该文 §7.9） |
 | 质量档 `m_CurrentQuality` | **`2 = High`**（2026-10-15 由 `0 = Low` 改） | **WebGL 上运行时切档无效，构建时选哪档就是哪档** ⇒ 改档等于改画质与开销 |
 | 平台模块 | WebGL 已装 ✓ | — |
 

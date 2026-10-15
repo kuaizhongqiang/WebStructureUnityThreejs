@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7896781124832159171}
   - component: {fileID: 7887339541624137318}
   - component: {fileID: 4458370525770095442}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 7406529571802878013}
   - component: {fileID: 7856317096863977962}
   - component: {fileID: 3106177917690343542}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch09
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 4205118084327763224}
   - component: {fileID: 3057711585533041717}
   - component: {fileID: 3414572120818097345}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -717,7 +717,7 @@ GameObject:
   - component: {fileID: 5871885043390786644}
   - component: {fileID: 7811629342408183232}
   - component: {fileID: 7931563634285547647}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -800,7 +800,7 @@ GameObject:
   - component: {fileID: 583437379068315379}
   - component: {fileID: 1012619110253068436}
   - component: {fileID: 5162408175538158653}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -885,7 +885,7 @@ GameObject:
   - component: {fileID: 124426333629488830}
   - component: {fileID: 5540713780155699099}
   - component: {fileID: 2093863562528960168}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1007,7 +1007,7 @@ GameObject:
   - component: {fileID: 2937089841683596626}
   - component: {fileID: 2173722955209318519}
   - component: {fileID: 8403883465003974009}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1092,7 +1092,7 @@ GameObject:
   - component: {fileID: 768881872054552909}
   - component: {fileID: 2290552438233046614}
   - component: {fileID: 7406828948368063664}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch19
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1215,7 +1215,7 @@ GameObject:
   - component: {fileID: 462023591737694443}
   - component: {fileID: 80473268135779608}
   - component: {fileID: 3680459778771873860}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1298,7 +1298,7 @@ GameObject:
   - component: {fileID: 8945427449791170199}
   - component: {fileID: 4089258148296451061}
   - component: {fileID: 1414460484778854371}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1381,7 +1381,7 @@ GameObject:
   - component: {fileID: 2663921711410792337}
   - component: {fileID: 5151547454580178765}
   - component: {fileID: 2328843928730618288}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1464,7 +1464,7 @@ GameObject:
   - component: {fileID: 2423253043928572097}
   - component: {fileID: 2438805602311420414}
   - component: {fileID: 2965336067849187751}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1547,7 +1547,7 @@ GameObject:
   - component: {fileID: 911113479777371681}
   - component: {fileID: 1714022293347346526}
   - component: {fileID: 5351942543725275280}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1752,7 +1752,7 @@ GameObject:
   - component: {fileID: 4055779181437900897}
   - component: {fileID: 6905244181930762717}
   - component: {fileID: 5262583039427615589}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1926,7 +1926,7 @@ GameObject:
   - component: {fileID: 3965201504679939845}
   - component: {fileID: 6104994596629829786}
   - component: {fileID: 6421040715402082714}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch20
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2011,7 +2011,7 @@ GameObject:
   - component: {fileID: 677868595557004076}
   - component: {fileID: 7257572328298312779}
   - component: {fileID: 8554008094869291914}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch08
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2133,7 +2133,7 @@ GameObject:
   - component: {fileID: 6547051181575316717}
   - component: {fileID: 3291707779732560624}
   - component: {fileID: 1632110203438528938}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2216,7 +2216,7 @@ GameObject:
   - component: {fileID: 1882663112224443841}
   - component: {fileID: 1419487685026485174}
   - component: {fileID: 7743572024497603892}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2299,7 +2299,7 @@ GameObject:
   - component: {fileID: 2095399062704257748}
   - component: {fileID: 1245689078934435817}
   - component: {fileID: 5797797744544646694}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2382,7 +2382,7 @@ GameObject:
   - component: {fileID: 5114971073299816164}
   - component: {fileID: 8497585613345750719}
   - component: {fileID: 3139950910272589513}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2560,7 +2560,7 @@ GameObject:
   - component: {fileID: 8005862860795548342}
   - component: {fileID: 7549116664520963481}
   - component: {fileID: 1532077631901119371}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2641,7 +2641,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8614169888051051055}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: CombinationSwitch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
