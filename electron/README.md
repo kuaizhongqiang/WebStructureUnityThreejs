@@ -107,7 +107,7 @@ cd ../electron && npm run dist   # → release/WSU3-Shell-<version>-portable.exe
 
 ## 还没做（别当成已完成）
 
-- **打包分发**（electron-builder / 安装包 / 图标 / 签名）—— 现在只跑开发态；
+- **安装包 / 图标 / 正式签名** —— portable exe（DEC-77）已能出，但非 portable 的安装包形态、应用图标与正式签名还没做；
 - 自动更新；
 - Windows/macOS 平台差异处理（`sandbox` 下部分能力受限，届时按需开 `ipcMain` 通道）。
 
