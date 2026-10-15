@@ -211,7 +211,6 @@ ${Array.from({ length: 10 })
     body: `
       <div style="position:absolute;inset:0">
         <div class="ui-viewport" style="position:absolute;inset:0">
-          <div class="ui-viewport__hint">Unity WebGL · 漫游场景</div>
           <div class="ui-viewport__center">三维画布区域（Unity 侧 UI 暂不设计）</div>
         </div>
         ${topRight('<button class="ui-iconbtn">◎ 复位</button>')}
@@ -407,7 +406,6 @@ ${Array.from({ length: 10 })
     body: `
       <div style="position:absolute;inset:0">
         <div class="ui-viewport" style="position:absolute;inset:0">
-          <div class="ui-viewport__hint">Unity WebGL · 仿真实验</div>
           <div class="ui-viewport__center">三维画布区域（Unity 侧 UI 暂不设计）</div>
         </div>
         ${topRight('')}

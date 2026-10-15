@@ -9,10 +9,14 @@
  *     8 个项目各只有 1 段视频，故本页改为"单段形态"（右栏 = 原理说明），多段形态见样式成果页第八节
  *   - C6 简介：改为"左三维模型 + 右一段文字"
  *   - C5 / C7：样式待重做，页面上带 TODO 标记（见 TODO.md T2 / T3）
- *   - C8~C11：Unity 侧，UI 暂不设计（保留第一轮样式，仅作占位）
+ *   - C8~C11：Unity 侧，UI 暂不设计（只剩第一轮的底部提示栏 `tips()`）
+ *   - C8~C11 第四轮修订（2026-10-15）：导航换成站点线 `route()`，旧页签栏 `tabs()`
+ *     与 `.ui-tabs` 组件样式一并删除（原先只有这四页还在用旧页签栏）；角落 fab
+ *     （`corners()`）换成与 C6「简介」相同的右上按钮组 `topRight()`；
+ *     画布上不再摆叠层（`viewport(..., { bare: true })`，去掉左上技术栈标 / 右上工具组 / 底部悬浮条）
  */
 import { icon } from './icons.mjs'
-import { route, tipsFloat, topRight, tabs, tips, corners, viewport } from './parts.mjs'
+import { route, tipsFloat, topRight, tips, viewport } from './parts.mjs'
 
 const RIGHT = '<span class="ui-badge ui-badge--ok">已完成 3 / 11</span><span class="ui-badge ui-badge--info">高清</span><span class="ui-badge">游客</span>'
 const CRUMB = '目录 / <b>温度传感器特性测量</b>'
@@ -343,15 +347,11 @@ ${viewport('Three.js', '整机 / 场景模型', '../../model-preview/index.html?
     state: 'UI · TaskType.LineConnection',
     crumb: CRUMB,
     right: RIGHT,
-    body: `${tabs('LineConnection', ['Purpose'])}
+    statusbar: false,
+    body: `${route('LineConnection', ['Purpose'])}
       <div class="ui-layout-3d">
         <div class="ui-layout-3d__view">
 ${viewport('Unity WebGL', '接线场景 · 正交俯视相机')}
-          <div class="ui-floatbar">
-            <button class="ui-btn ui-btn--sm">红表笔</button>
-            <button class="ui-btn ui-btn--sm ui-btn--primary">黑表笔</button>
-            <button class="ui-btn ui-btn--sm">撤销上一根</button>
-          </div>
         </div>
         <div class="ui-layout-3d__side">
           <div class="ui-panel">
@@ -369,7 +369,7 @@ ${tips('把红色表笔接到 V+ 端子', '先确认电源已断电', false)}
           </div>
         </div>
       </div>
-      ${corners()}
+      ${topRight('')}
       <div class="note">C8 · <b>Unity 侧</b> · UI 暂不设计（审核意见），本页仍是第一轮样式，不作为评审对象</div>`,
   },
   {
@@ -379,15 +379,11 @@ ${tips('把红色表笔接到 V+ 端子', '先确认电源已断电', false)}
     state: 'UI · TaskType.Training',
     crumb: CRUMB,
     right: RIGHT,
-    body: `${tabs('Training', ['Purpose']) }
+    statusbar: false,
+    body: `${route('Training', ['Purpose']) }
       <div class="ui-layout-3d">
         <div class="ui-layout-3d__view">
 ${viewport('Unity WebGL', '仿真实训场景 · 自由相机')}
-          <div class="ui-floatbar">
-            <button class="ui-btn ui-btn--sm">视角：自由</button>
-            <button class="ui-btn ui-btn--sm">记录数据</button>
-            <button class="ui-btn ui-btn--sm">生成曲线</button>
-          </div>
           <div class="ui-row" style="position:absolute;left:18px;top:18px;gap:10px">
             <span class="ui-meter"><span class="ui-meter__label">当前温度</span><span class="ui-meter__value">26.4<span class="ui-meter__unit">°C</span></span></span>
             <span class="ui-meter"><span class="ui-meter__label">输出电压</span><span class="ui-meter__value">0.512<span class="ui-meter__unit">V</span></span></span>
@@ -409,7 +405,7 @@ ${tips('调节旋钮，使读数稳定在 0.5V 附近', '读数稳定后点击�
           </div>
         </div>
       </div>
-      ${corners()}
+      ${topRight('')}
       <div class="note">C9 · <b>Unity 侧</b> · UI 暂不设计，本页不作为评审对象</div>`,
   },
   {
@@ -419,20 +415,20 @@ ${tips('调节旋钮，使读数稳定在 0.5V 附近', '读数稳定后点击�
     state: 'UI · TaskType.Structure',
     crumb: CRUMB,
     right: RIGHT,
-    body: `${tabs('Structure')}
+    statusbar: false,
+    body: `${route('Structure')}
       <div class="ui-layout-3d">
         <div class="ui-layout-3d__view">
 ${viewport('Unity WebGL', '结构剖切 · 正交相机')}
-          <div class="ui-floatbar">
-            <span class="ui-small ui-muted">爆炸程度</span>
-            <input class="ui-input" style="width:200px" value="42%">
-            <button class="ui-btn ui-btn--sm">还原</button>
+          <div class="ui-parttip" style="left:44%;top:40%">
+            <span class="ui-parttip__name">灭弧罩</span>
+            <span class="ui-parttip__en">Arc Chute</span>
           </div>
         </div>
         <div class="ui-layout-3d__side">
           <div class="ui-panel">
             <div class="ui-panel__head">部件树</div>
-            <div class="ui-panel__body ui-col ui-panel__body--flush" style="gap:4px;padding:12px">
+            <div class="ui-panel__body ui-col ui-panel__body--flush" style="gap:12px;padding:12px">
               <div class="ui-list__item">${icon('chevron-down', 14)} 传感器本体</div>
               <div class="ui-list__item ui-list__item--active" style="margin-left:18px">感温元件</div>
               <div class="ui-list__item" style="margin-left:18px">接线端子</div>
@@ -443,7 +439,7 @@ ${tips('点击「感温元件」查看结构说明', '拖动滑杆可逐级爆�
           </div>
         </div>
       </div>
-      ${corners()}
+      ${topRight('')}
       <div class="note">C10 · <b>Unity 侧</b> · UI 暂不设计，本页不作为评审对象</div>`,
   },
   {
@@ -453,18 +449,14 @@ ${tips('点击「感温元件」查看结构说明', '拖动滑杆可逐级爆�
     state: 'UI · TaskType.Inspection',
     crumb: CRUMB,
     right: RIGHT,
-    body: `${tabs('Inspection')}
+    statusbar: false,
+    body: `${route('Inspection')}
       <div class="ui-layout-3d">
         <div class="ui-layout-3d__view">
 ${viewport('Unity WebGL', '检测工位 · 第一人称相机')}
           <div class="ui-row" style="position:absolute;left:18px;top:18px;gap:10px">
             <span class="ui-meter"><span class="ui-meter__label">表笔</span><span class="ui-meter__value">红</span></span>
             <span class="ui-meter"><span class="ui-meter__label">实测值</span><span class="ui-meter__value">1.204<span class="ui-meter__unit">kΩ</span></span></span>
-          </div>
-          <div class="ui-floatbar">
-            <button class="ui-btn ui-btn--sm ui-btn--primary">红表笔</button>
-            <button class="ui-btn ui-btn--sm">黑表笔</button>
-            <button class="ui-btn ui-btn--sm">记录本次测量</button>
           </div>
         </div>
         <div class="ui-layout-3d__side">
@@ -480,7 +472,7 @@ ${tips('用红表笔接触感温元件端子', '读数稳定 2 秒后自动采�
           </div>
         </div>
       </div>
-      ${corners()}
+      ${topRight('')}
       <div class="note">C11 · <b>Unity 侧</b> · UI 暂不设计，本页不作为评审对象</div>`,
   },
 ]
