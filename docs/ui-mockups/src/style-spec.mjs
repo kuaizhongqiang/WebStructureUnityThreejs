@@ -264,9 +264,28 @@ export const styleSpecSections = [
     items: [
       {
         name: '三维视口',
-        desc: '网格底纹表示画布；左上标技术栈与场景名，右上工具组',
+        desc: '毛玻璃底 + 0.5px 发丝 + 28px 圆角（与「简介」页三维区同款）；居中是占位说明。原先的"网格底纹"已退役',
         cls: '.ui-viewport',
-        html: '<div class="ui-viewport" style="width:280px;height:140px;position:relative"><div class="ui-viewport__hint">Unity · 接线场景</div><div class="ui-viewport__center" style="font-size:11px">画布区域</div></div>',
+        html: '<div class="ui-viewport" style="width:280px;height:140px;position:relative"><div class="ui-viewport__center" style="font-size:11px">画布区域</div></div>',
+      },
+      {
+        name: '画布占位叠层（页面上已不用，只在本页留档）',
+        desc: '左上技术栈标 + 右上工具组：2026-10-15 整体退役（各页一律按「结构」页的样式来，画布上不摆壳层装饰）',
+        cls: '.ui-viewport__hint / .ui-viewport__tools / .ui-viewport__tool',
+        html: `<div class="ui-viewport" style="width:280px;height:140px;position:relative">
+          <div class="ui-viewport__hint">Unity · 接线场景</div>
+          <div class="ui-viewport__tools"><div class="ui-viewport__tool">${icon('rotate-cw', 16)}</div><div class="ui-viewport__tool">${icon('maximize', 16)}</div></div>
+          <div class="ui-viewport__center" style="font-size:11px">画布区域</div>
+        </div>`,
+      },
+      {
+        name: '部件名称悬浮提示（画布上）',
+        desc: '鼠标移入三维部件时**由 Web 侧画**的名字浮标（Unity 侧不做这个 UI）：强玻璃底 + 发丝阴影边、主名 14px（英文副名 12px）；可只给中文，也可中英两行。`pointer-events: none` —— 不抢手势、不挡点击',
+        cls: '.ui-parttip / .ui-parttip__name / .ui-parttip__en',
+        html: `<div style="display:flex;gap:16px;align-items:flex-start">
+          <div class="ui-parttip" style="position:static"><span class="ui-parttip__name">灭弧罩</span></div>
+          <div class="ui-parttip" style="position:static"><span class="ui-parttip__name">灭弧罩</span><span class="ui-parttip__en">Arc Chute</span></div>
+        </div>`,
       },
       {
         name: '悬浮工具条',

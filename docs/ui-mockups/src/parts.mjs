@@ -5,7 +5,9 @@
  *   - tabs()  → route()         站点线导航（"点线连接"概念），替代页签栏
  *   - tips()  → tipsFloat()     浮窗式提示，替代底部固定提示栏
  *   - corners() → topRight()    右上按钮组（含返回），替代角落 fab
- * 旧函数保留，仅供尚未重做的页面（C8~C11 Unity 侧）使用。
+ * 第四轮修订（2026-10-15）：C8~C11 也换用 `route()`，`tabs()` 与其 `.ui-tabs` 样式一并删除
+ * （原先只有这四页还在用旧页签栏），角落 fab `corners()` 换成与 C6 相同的 `topRight()`。
+ * 剩下的旧片段只有 `tips()`（C8~C11 的底部提示栏）与 `corners()`（现只剩 D1 在用）。
  *
  * 图标：一律用 `icons.mjs` 的 icon()（矢量，Lucide，跟随 currentColor），**不要再用 emoji 或 ✓✕← 这类字形**。
  */
@@ -84,52 +86,31 @@ export function topRight(extra = '') {
 }
 
 /**
- * 三维视口。
+ * 三维视口。**两种形态都只留画布**。
  *
- * · 不传 `liveSrc`：**占位**（网格底纹表示画布）—— 排版稿的常规做法。
+ * · 不传 `liveSrc`：**占位**（毛玻璃底 + 居中说明），框由 `.ui-viewport` 自己给。
  * · 传 `liveSrc`：里面装一个 **iframe 指向 `docs/model-preview/index.html?embed=1&model=…`**，
  *   于是这里显示的是**真实渲染**（同一套环境 / 贴图后加载 / 材质解算），而不是占位块。
- *   叠层（左上标技术栈、右上工具组）保留在 iframe 之上，但 `pointer-events:none` ——
- *   否则它们会挡住画布的旋转/缩放手势。
+ *   此时**不要底与描边**：框由外层 `.ui-panel` 给（见 `pages-c.mjs`），
+ *   这里再画一层就是两层半透明叠加，会比旁边的框明显深。
+ *
+ * ⚠️ 左上技术栈标（`.ui-viewport__hint`）与右上工具组（`.ui-viewport__tools`）这两块**占位叠层**
+ * 已于 2026-10-15 **整体退役**（T-13：各页一律按 C10「结构」的样式来 —— 画布上不摆壳层装饰，
+ * 这些操作将来由 Unity / Three 侧自己出）。两个组件只在**样式成果页**留档，页面不再使用
+ * （同 `.ui-selectbox`：成果页有展示、页面暂时不用）。`label` 于是改由居中说明承担。
  */
 export function viewport(stack, label, liveSrc = null) {
-  /**
-   * 真实画布（`liveSrc`）：**只留画布**。
-   *
-   * 左上技术栈标（`.ui-viewport__hint`）与右上工具组（`.ui-viewport__tools`）是**占位态**的叠层 ——
-   * 它们的作用是"说明这里将来会有一块画布"，真画布进来后既多余（占位文案会与真实画面打架），
-   * 又会压在手势区上。自己也**不要底与描边**：框由外层 `.ui-panel` 给（见 `pages-c.mjs`），
-   * 这里再画一层就是两层半透明叠加，会比旁边的框明显深。
-   */
   if (liveSrc) {
     return `<div class="ui-viewport" style="position:absolute;inset:0;background:none;border:0">
          <iframe class="ui-viewport__live" src="${liveSrc}" title="${stack} 实时渲染（模型检视页 · 嵌入模式）" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
        </div>`
   }
   return `<div class="ui-viewport" style="position:absolute;inset:0">
-         <div class="ui-viewport__hint">${stack} · ${label}</div>
-         <div class="ui-viewport__tools">
-           <div class="ui-viewport__tool">${icon('rotate-cw', 16)}</div>
-           <div class="ui-viewport__tool">${icon('expand', 16)}</div>
-           <div class="ui-viewport__tool">${icon('maximize', 16)}</div>
-           <div class="ui-viewport__tool">${icon('crosshair', 16)}</div>
-         </div>
-         <div class="ui-viewport__center">三维画布区域 —— 由 ${stack} 承载，本稿只表示占位与叠层 UI 的位置</div>
+         <div class="ui-viewport__center">三维画布区域 —— 由 ${stack} 承载（${label}），本稿只表示占位画布的位置</div>
        </div>`
 }
 
-/* ------------------------------------------------- 以下为旧组件（仅 C8~C11 使用） */
-
-export function tabs(active, done = []) {
-  return `<nav class="ui-tabs">
-${TASK_TABS.map(([key, label, stack]) => {
-  const cls = ['ui-tab']
-  if (key === active) cls.push('ui-tab--active')
-  if (done.includes(key)) cls.push('ui-tab--done')
-  return `        <div class="${cls.join(' ')}">${label}<span class="ui-tab__stack ui-tab__stack--${stack}">${stack === 'unity' ? 'Unity' : 'Three'}</span></div>`
-}).join('\n')}
-      </nav>`
-}
+/* -------------------------------------- 以下为旧组件：`tips()` 仍被 C8~C11 使用、`corners()` 只剩 D1 */
 
 export function tips(stepText, opText, withImage = true) {
   return `<div class="ui-tips">

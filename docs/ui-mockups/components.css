@@ -80,32 +80,11 @@
 .ui-fab:hover { border-color: var(--accent); color: var(--text-1); }
 .ui-fab__icon { font-size: var(--fs-16); }
 
-/* --------------------------------------------------------------- 6. 页签栏 */
-.ui-tabs {
-  display: flex; align-items: center; gap: 2px;
-  padding: var(--sp-2) var(--sp-4);
-  background: #121a25; border-bottom: 0.5px solid var(--line-1);
-}
-.ui-tab {
-  padding: 9px 20px; border-radius: var(--r-2) var(--r-2) 0 0;
-  font-size: var(--fs-14); color: var(--text-2); cursor: pointer;
-  border: 0.5px solid transparent; border-bottom: none;
-  display: flex; align-items: center; gap: var(--sp-2);
-}
-.ui-tab:hover { color: var(--text-1); background: var(--bg-2); }
-.ui-tab--active {
-  color: #fff; font-weight: 600;
-  background: var(--glass-panel); border-color: var(--line-2);
-  box-shadow: inset 0 2px 0 var(--accent);
-}
-.ui-tab--done::after { content: "✓"; color: var(--ok); font-size: var(--fs-12); }
-.ui-tab--disabled { color: var(--text-3); cursor: not-allowed; opacity: 0.55; }
-.ui-tab__stack {
-  font-size: var(--fs-11); padding: 1px 5px; border-radius: var(--r-1);
-  border: 1px solid currentColor; opacity: 0.8;
-}
-.ui-tab__stack--three { color: var(--three); }
-.ui-tab__stack--unity { color: var(--unity); }
+/* --------------------------------------------------------------- 6. 页签栏（已删除）
+ * 旧页签栏 `.ui-tabs` / `.ui-tab` / `.ui-tab__stack` 于 2026-10-15 删除：它被 §16.1 的
+ * 站点线 `.ui-route` 取代后，只剩 C8~C11 四页还在用（`src/parts.mjs` 的 `tabs()`），
+ * 是"第二套导航"：没吃到 §19/§21 的左右避让、也没吃到站点线的"去底"（压在三维画布上会糊）。
+ * 四页改走 `route()` 后，整份排版稿只剩一套导航。 */
 
 /* --------------------------------------------------------------- 7. 面板/卡片 */
 .ui-panel {
@@ -284,11 +263,21 @@
 .ui-step__line { width: 40px; height: 1px; background: var(--line-2); }
 
 /* ------------------------------------------------------- 10. 三维视口 */
+/* 画布框 = C6「简介」三维区同款：**毛玻璃底 + 模糊**。
+   原先的"占位网格 + `--bg-0` 深色实底"已于 2026-10-15 整体退役（DEC-124 / T-13：
+   各页一律按 C10「结构」的样式来，负责人："底图/边框参考 info 的三维部分样式"）。
+   描边与圆角本来就在 §20.1 按"主围合面"档给（0.5px `--line-1` / 28px），不必重复写。 */
 .ui-viewport {
   position: relative; border-radius: var(--r-3); overflow: hidden;
-  background: var(--grid); background-color: var(--bg-0);
+  background: var(--glass-panel);
   border: 0.5px solid var(--line-1);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
+/* 嵌在面板里的画布**不要自己再画一层**：两层半透明叠加会比旁边的框明显深，
+   框由外层 `.ui-panel__body` 那一层给（见 `src/parts.mjs` 里 `viewport()` 的注释）。
+   独立摆放的画布（三维页的 `.ui-layout-3d__view`、漫游页 / AI 页的整屏画布）才由上面那条承担玻璃。 */
+.ui-panel__body .ui-viewport { background: none; border: 0; }
 .ui-viewport__hint {
   position: absolute; left: var(--sp-3); top: var(--sp-3);
   padding: 4px 10px; border-radius: var(--r-1);
@@ -308,6 +297,21 @@
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   font-size: var(--fs-13); color: var(--text-3); text-align: center; padding: 0 40px;
 }
+/* 部件名称悬浮提示：鼠标移入三维部件时，**由 Web 侧（DOM 层）画出的名字浮标** ——
+   三维里不做 UI（DEC-16 教学界面在 DOM 层、DEC-104 零件名显示归 Web 侧）。
+   两条关键约束：
+     ① `pointer-events: none` —— 它跟着指针走，绝不能把画布的旋转/缩放手势吃掉，
+        也不能让它自己成为 hover 目标（否则会和 Unity 侧的移入/移出事件打架）；
+     ② 位置由宿主给（内联 `left` / `top`，或跟着指针 `transform`），组件本身只管长相。
+   可只给中文（一行），也可中英两行（`.ui-parttip__en`）。 */
+.ui-parttip {
+  position: absolute; z-index: 45;
+  display: flex; flex-direction: column; gap: 1px;
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-sm);
+  font-size: var(--fs-14); color: var(--text-1); white-space: nowrap;
+  pointer-events: none;
+}
+.ui-parttip__en { font-size: var(--fs-12); color: var(--text-3); }
 /* 悬浮在三维之上的工具条（接线/实训页） */
 .ui-floatbar {
   position: absolute; left: 50%; bottom: var(--sp-5); transform: translateX(-50%);
@@ -419,14 +423,22 @@
 .ui-center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 
 /* 三维页布局：画布铺满 + 侧栏 + 底部提示 */
-.ui-layout-3d { position: absolute; inset: 0; display: flex; }
+.ui-layout-3d {
+  position: absolute; inset: var(--layout-3d-top) 0 0 0; display: flex;
+  gap: var(--layout-3d-gap);
+  padding: 0 var(--layout-3d-gutter) var(--layout-3d-bottom);
+}
 .ui-layout-3d__view { flex: 1; position: relative; }
+/* 右侧栏**只当容器**，框由里面的 `.ui-panel` 自己给 —— 与 C6「简介」的右栏同款
+   （负责人 2026-10-15："`ui-panel` 这个元素的 border 要换掉，改为 info 右侧部分的样子"）。
+   原先这里是"贴边栏"（`border-left` + `--bg-2` 铺满到底 + 里面的面板去边框去圆角），
+   布局改成左右各让 50px 之后，贴边那套已经不成立。 */
 .ui-layout-3d__side {
-  width: 380px; flex: none; border-left: 0.5px solid var(--line-1); background: var(--bg-2);
+  width: 380px; flex: none;
   display: flex; flex-direction: column;
   position: relative; z-index: 30;
 }
-.ui-layout-3d__side .ui-panel { border: none; border-radius: 0; height: 100%; }
+.ui-layout-3d__side .ui-panel { height: 100%; }
 
 /* ============================================================================
  * 16. 第二轮修订新增/替换的组件（依据 2026-10-12 的排版审核意见）
@@ -639,8 +651,8 @@
 }
 
 /* 统一挂模糊（含 bar / 面板 / 浮层 / 卡片 / 条目 / 控件 / 规格页卡片） */
-.ui-titlebar, .ui-statusbar, .ui-route, .ui-tabs,
-.ui-panel, .ui-card, .ui-dialog, .ui-ai, .ui-tips-float, .ui-toast,
+.ui-titlebar, .ui-statusbar, .ui-route,
+.ui-panel, .ui-card, .ui-dialog, .ui-ai, .ui-tips-float, .ui-toast, .ui-parttip,
 .ui-list__item, .ui-tile, .ui-iconitem, .ui-option, .ui-alert, .ui-btn,
 .ui-iconbtn, .ui-fab, .ui-floatbar, .ui-meter, .ui-question__analysis,
 .ui-player__ctrl, .spec-item, .spec-token, .spec-page-link {
@@ -655,11 +667,10 @@
 }
 .ui-statusbar { background: var(--glass-bar); border-top: 0.5px solid var(--glass-border); }
 .ui-route { background: var(--glass-bar); border-bottom: 0.5px solid var(--glass-border); }
-.ui-tabs { background: var(--glass-bar); border-bottom: 0.5px solid var(--glass-border); }
 
 /* ---- 浮层：要压住下方内容，用更强的玻璃 ---- */
 .ui-dialog, .ui-ai { background: var(--glass-strong); border-color: var(--glass-border); }
-.ui-tips-float { background: var(--glass-strong); border-color: var(--glass-border); }
+.ui-tips-float, .ui-parttip { background: var(--glass-strong); border-color: var(--glass-border); }
 .ui-toast { background: var(--glass-strong); border-color: var(--glass-border); }
 .ui-floatbar { background: var(--glass-strong); border-color: var(--glass-border); }
 .ui-iconbtn, .ui-fab { background: var(--glass-bar); border-color: var(--glass-border); }
@@ -714,9 +725,8 @@
 .ui-iconbtn--back { background: var(--accent-weak); border-color: var(--info-border); color: var(--info-text); }
 .ui-iconbtn--back:hover { color: var(--info-text); border-color: var(--accent); }
 
-/* ---- 站点线 / 页签：当前项文字改用主题文字色（原来硬编码 #fff）---- */
+/* ---- 站点线：当前项文字改用主题文字色（原来硬编码 #fff）---- */
 .ui-route__stop--current .ui-route__label { color: var(--text-1); }
-.ui-tab--active { color: var(--text-1); }
 .ui-route__stop--done .ui-route__dot { color: #fff; }
 
 /* ---- 顶部防撞（审核第 14 条）----
@@ -756,7 +766,6 @@
 .ui-tips__tag--step { color: var(--info-text); border-color: var(--info-border); }
 .ui-tips__tag--op { color: var(--accent2-text); border-color: var(--accent2-border); }
 .ui-step--done .ui-step__dot { color: var(--ok-text); }
-.ui-tab__stack { color: var(--text-2); }
 
 /* ---- 危险按钮（审核第 1 条）---- */
 .ui-btn--danger { background: var(--err-weak); border-color: var(--err-border); color: var(--err-text); }
@@ -867,17 +876,14 @@
 /* 徽章 / 标签 = 8（比原来的 4 更"软"，但不做药丸，避免全站变胶囊） */
 .ui-badge { border-radius: var(--radius-sm); }
 .ui-meter { border-radius: var(--radius-md); }
-/* 微件：站线/页签上的堆叠小标（9~11px 字体）用最小档 */
+/* 微件：站点线上的堆叠小标（9px 字体）用最小档 */
 .ui-route__stack { border-radius: var(--radius-xs); }
-.ui-tab__stack { border-radius: var(--radius-xs); }
-/* 边到边对接的容器不圆角（贴边面由外层裁剪） */
-.ui-layout-3d__side .ui-panel { border-radius: 0; }
 
 /* ------------------------------------------------ 20.2 浮起材质：border:0 + elevation */
 /* 铁律：浮层不许再有中性 border，边由阴影第一层的发丝承担。 */
 .ui-dialog, .ui-tips-float, .ui-toast, .ui-floatbar { border: 0; box-shadow: var(--elev-prominent); }
 .ui-ai { border: 0; box-shadow: var(--elev-panel); }
-.ui-viewport__hint, .ui-viewport__tool { border: 0; box-shadow: var(--elev-panel); }
+.ui-viewport__hint, .ui-viewport__tool, .ui-parttip { border: 0; box-shadow: var(--elev-panel); }
 
 /* ------------------------------------------------ 20.3 交互态统一为"叠加层" */
 /* 规则：hover/按压只叠一层半透明，不换底色、不改圆角尺寸（见 docs/design/07 §4） */
@@ -886,7 +892,7 @@
 .ui-btn--ghost:hover { background: var(--inter-hover); }
 .ui-btn--primary:hover { background: var(--btn-primary-hover); border-color: var(--accent); }
 .ui-btn--danger:hover { background: var(--inter-hover-danger); border-color: var(--err); }
-.ui-list__item:hover, .ui-tile:hover, .ui-tab:hover, .ui-iconitem:hover,
+.ui-list__item:hover, .ui-tile:hover, .ui-iconitem:hover,
 .ui-playlist__item:hover, .spec-page-link:hover { background: var(--inter-hover); }
 .ui-row-hover-accent:hover { background: var(--inter-hover-accent); }
 /* 焦点环：键盘可见、鼠标不可见 */
@@ -980,7 +986,6 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 /* ---- 伪元素里的图标：无法内联 SVG，改用 mask ----
    mask 只取 alpha 通道，所以 SVG 里 stroke 写 black 就够（还省掉 # 的 URL 转义）。
    颜色由 `background-color: currentColor` 决定，因此继承了原来规则里的 color。 */
-.ui-tab--done::after,
 .ui-menu__item--current::after,
 .ui-btn[disabled]::before,
 .ui-btn--disabled::before {
@@ -992,7 +997,6 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
 }
-.ui-tab--done::after,
 .ui-menu__item--current::after {
   -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");
   mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M20 6 9 17l-5-5'/></svg>");

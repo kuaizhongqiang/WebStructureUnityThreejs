@@ -38,36 +38,68 @@
         </div>
       </header>
   <div class="board__body">
-<nav class="ui-tabs">
-        <div class="ui-tab">空类型<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab ui-tab--done">任务目的<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验仪器<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">实验原理<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">电路连接<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab ui-tab--active">仿真实验<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">小测验<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">简介<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
-        <div class="ui-tab">结构<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">检测<span class="ui-tab__stack ui-tab__stack--unity">Unity</span></div>
-        <div class="ui-tab">考核<span class="ui-tab__stack ui-tab__stack--three">Three</span></div>
+<nav class="ui-route">
+<div class="ui-route__stop">
+          <span class="ui-route__dot">1</span>
+          <span class="ui-route__label">空类型</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--done">
+          <span class="ui-route__dot"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <span class="ui-route__label">任务目的</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">3</span>
+          <span class="ui-route__label">实验仪器</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">4</span>
+          <span class="ui-route__label">实验原理</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">5</span>
+          <span class="ui-route__label">电路连接</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop ui-route__stop--current">
+          <span class="ui-route__dot">6</span>
+          <span class="ui-route__label">仿真实验</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">7</span>
+          <span class="ui-route__label">小测验</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">8</span>
+          <span class="ui-route__label">简介</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">9</span>
+          <span class="ui-route__label">结构</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">10</span>
+          <span class="ui-route__label">检测</span>
+          <span class="ui-route__stack" style="color:var(--unity)">Unity</span>
+        </div>
+<span class="ui-route__seg"></span><div class="ui-route__stop">
+          <span class="ui-route__dot">11</span>
+          <span class="ui-route__label">考核</span>
+          <span class="ui-route__stack" style="color:var(--three)">Three</span>
+        </div>
       </nav>
       <div class="ui-layout-3d">
         <div class="ui-layout-3d__view">
 <div class="ui-viewport" style="position:absolute;inset:0">
-         <div class="ui-viewport__hint">Unity WebGL · 仿真实训场景 · 自由相机</div>
-         <div class="ui-viewport__tools">
-           <div class="ui-viewport__tool"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg></div>
-           <div class="ui-viewport__tool"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 15 6 6" /><path d="m15 9 6-6" /><path d="M21 16v5h-5" /><path d="M21 8V3h-5" /><path d="M3 16v5h5" /><path d="m3 21 6-6" /><path d="M3 8V3h5" /><path d="M9 9 3 3" /></svg></div>
-           <div class="ui-viewport__tool"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></svg></div>
-           <div class="ui-viewport__tool"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><line x1="22" x2="18" y1="12" y2="12" /><line x1="6" x2="2" y1="12" y2="12" /><line x1="12" x2="12" y1="6" y2="2" /><line x1="12" x2="12" y1="22" y2="18" /></svg></div>
-         </div>
-         <div class="ui-viewport__center">三维画布区域 —— 由 Unity WebGL 承载，本稿只表示占位与叠层 UI 的位置</div>
+         <div class="ui-viewport__center">三维画布区域 —— 由 Unity WebGL 承载（仿真实训场景 · 自由相机），本稿只表示占位画布的位置</div>
        </div>
-          <div class="ui-floatbar">
-            <button class="ui-btn ui-btn--sm">视角：自由</button>
-            <button class="ui-btn ui-btn--sm">记录数据</button>
-            <button class="ui-btn ui-btn--sm">生成曲线</button>
-          </div>
           <div class="ui-row" style="position:absolute;left:18px;top:18px;gap:10px">
             <span class="ui-meter"><span class="ui-meter__label">当前温度</span><span class="ui-meter__value">26.4<span class="ui-meter__unit">°C</span></span></span>
             <span class="ui-meter"><span class="ui-meter__label">输出电压</span><span class="ui-meter__value">0.512<span class="ui-meter__unit">V</span></span></span>
@@ -92,22 +124,17 @@
           </div>
         </div>
       </div>
-      <div class="ui-corner ui-corner--rt">
-        <div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg></span>目录</div>
-        <div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></svg></span>全屏</div>
-        <div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5H3" /><path d="M12 19H3" /><path d="M14 3v4" /><path d="M16 17v4" /><path d="M21 12h-9" /><path d="M21 19h-5" /><path d="M21 5h-7" /><path d="M8 10v4" /><path d="M8 12H3" /></svg></span>画质</div>
-      </div>
-      <div class="ui-corner ui-corner--lb">
-        <div class="ui-fab"><span class="ui-fab__icon"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg></span>菜单</div>
-      </div>
+      <div class="ui-topright">
+          <button class="ui-iconbtn ui-iconbtn--back"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg> 返回目录</button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="全屏"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></svg></button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5H3" /><path d="M12 19H3" /><path d="M14 3v4" /><path d="M16 17v4" /><path d="M21 12h-9" /><path d="M21 19h-5" /><path d="M21 5h-7" /><path d="M8 10v4" /><path d="M8 12H3" /></svg></button>
+          <button class="ui-iconbtn ui-iconbtn--icon" title="帮助"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg></button>
+          
+        </div>
       <div class="note">C9 · <b>Unity 侧</b> · UI 暂不设计，本页不作为评审对象</div>
 
   </div>
 
-      <footer class="ui-statusbar">
-        <span>[ 就绪 ] 无后端模式（DEC-21）</span>
-        <span class="ui-statusbar__right">v0.2 · 排版稿 · docs/ui-mockups</span>
-      </footer>
 </div></div>
 
 <div class="board-nav">

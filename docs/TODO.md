@@ -24,8 +24,11 @@
 | T-08 | 原理页要不要"看完即完成" | 现在**只发进入、不发完成**：原理页没有"标记完成"控件（与排版稿 C4 一致，也同 DEC-98 对 `Info` 的处理），`principle:done` 因此不会发 | 定：保持"只有进入"，还是按 `<video>` 的 `ended` 发 `principle:done`（DEC-99 未闭合 b） |
 | T-09 | **进度分母三处不齐**：任务页徽标按全契约 **11** 算、菜单页按全部项目的启用任务（今天 **33**）算、站点线按**当前项目**算（**4** 或 **1**） | DEC-100 按要求只改了站点线，其余两处未动；同一页上"已完成 X / 11"与站点线上的 4 站并排，看着像两套口径 | 定：三处**统一成哪个分母**（建议统一按"当前项目的启用任务"，与站点线/下一站同口径），还是各自保留 |
 | T-10 | **结构件实例的挂载根**（DEC-110，**由 AI 定**、待确认）：进 `Structure` 站时结构件实例挂哪 | 现在是"场景里有 `StructureRoot` 节点就用它、没有就运行期在管理器节点下自动建一个"（`DataStructure`/`Assets/Scripts/Core/DataStruct/DataStructMapping.cs` 的 `GetStructureRoot`）。`1_Content` 里目前没有这个节点，所以走的是自动建 | 定：就这样（运行期自动建），还是你在 `1_Content` 里预摆一个 `StructureRoot` 并把它交给我的位置/父级口径 |
+| T-12 | **C8~C11 的 UI 是否自此纳入评审范围**：2026-10-15 已按负责人要求把四页的**导航**（站点线，DEC-122）、**右上/左下按钮**（右上按钮组，DEC-123）、**画布框与画布上的叠层**（DEC-124 / DEC-125）、**右侧栏**（DEC-126）逐项归队 B 组规范，**局部撤回**了 T4 的"Unity 侧 UI 暂不设计、不要按它们评审 B 组规范" | 四页**只剩底部固定提示栏**（`tips()`）是第一轮样式，没换成 §16.2 浮窗提示；另外 D1「成绩结算」仍在用角落 fab（`corners()`） | 定：① 底部提示栏要不要也换 `tipsFloat()`；② D1 的角落 fab 要不要一起换（明细见 `docs/ui-mockups/TODO.md` T4）。**负责人 2026-10-15："T-12 先不动"** |
 
-来源：T-01 / T-02 → `DECISIONS.md` §19.2；T-03 / T-04 → 本轮对话；T-05 → §19.4；T-06 → `DECISIONS.md` 末尾未闭合表；T-08 → `DECISIONS.md` DEC-99 未闭合 b；T-09 → `DECISIONS.md` DEC-100 未闭合 a。
+| T-13 | **占位画布的那行说明文字要不要提对比度**：`.ui-viewport__center` 仍是 `--text-3`，落在毛玻璃上偏淡 | 2026-10-15 已按负责人"按照结构 type 的样式调整"把**网格底与占位叠层全线退役**（DEC-128，九个页面量取通过），但文字颜色**照结构页原样保留**为 `--text-3`；`--text-2` 会更清楚、但那是脱离参照的一步 | 定：保留 `--text-3`（= 与结构页一致），还是提到 `--text-2` |
+
+来源：T-01 / T-02 → `DECISIONS.md` §19.2；T-12 → `DECISIONS.md` §29（DEC-122 ~ DEC-126）与 2026-10-15 对话；T-13 → `DECISIONS.md` §29 第 29.6 节 c；T-03 / T-04 → 本轮对话；T-05 → §19.4；T-06 → `DECISIONS.md` 末尾未闭合表；T-08 → `DECISIONS.md` DEC-99 未闭合 b；T-09 → `DECISIONS.md` DEC-100 未闭合 a。**（T-11 / T-14 已于 2026-10-15 办完删除，落 DEC-127 / DEC-129；T-13 的第 ① 问已办，落 DEC-128。）**
 
 ## 2 待做（方向已定，缺实施）
 
@@ -54,6 +57,7 @@
 | D-26 | **"材质接管"的根治**（DEC-115 / `design/12` §4.3）：现在靠打包前**强制重导 FBX** 事后补救（`ModelMaterialBindingFixer`），根因是接管时**替换**了 FBX 自动抽出的同名 `.mat`（GUID 变 → FBX 内部绑定悬空）。⚠️ 该修复只落在本机 `Library`，**切换 Build Target 就会退化一次**，靠自愈兜着 | 未做。根治要改成**不替换**那些材质：保留 FBX 抽出的 `.mat`（保住 GUID），只改它的 shader 与属性（`content/asset-material-spec.json` 那套口径本来就是这个思路）；落点是重做 `tools/pipeline/import-structure-assets.mjs` 的材质那一段 |
 | D-27 | **动画运行模式（DEC-121）没有"从 Web 侧切换"的入口**：现在只能由脚本 / Inspector 改 `StepManager.RunMode` | 未做。若产品需要"演示模式由页面触发"，要接一条桥消息（`BridgeMessageType` 双向各加一条 + Web 侧契约 + 快照 + `check-contracts` 门禁）。**要负责人定要不要做** |
 | D-28 | **AB 时代的产物目录 `Assets/StreamingAssets/Content/**`（8 个包 / 45.3 MB）已成无主残留**：迁 AA（DEC-118）后运行期不再读它 | 未删（本轮只清掉配置与代码）。删除前确认无回退需要；`.gitignore` / `ignore.conf` 里那几条规则建议**保留**（防误提交）。⚠️ 同理 `Library/com.unity.addressables/aa/WebGL/` 是 AA 产物的正常落点、**不属于"残留"**，别顺手删 |
+| D-29 | **"部件名称悬浮提示"缺上游 hover 消息**（DEC-130）：Web 侧要画 `.ui-parttip` 就得从 Unity 拿到"移入 / 移出了哪个部件 + 部件名（中/英）+ 屏幕坐标"，而桥协议里**只有 `object:picked`（点击）**、没有任何 hover 通道 | 未做。要做需**三处同批改**（`AGENT.md` §4 硬纪律）：`web/src/contracts/*`（TS）+ `content/contracts/snapshot.json`（快照）+ `NewStructureUnity/Assets/Scripts/Contracts/EnumAll.cs`（C#），只改一侧会被 `check-contracts` 与 CI 拦下。另需定两件事：坐标口径（Unity 视口归一化坐标 → Web 像素）与**节流**（逐帧上报 hover 会把桥淹掉，需按"移入/移出 + 限频"发） |
 
 ## 3 已进 git、只剩 Unity 侧（Plastic）待提交
 
