@@ -9,8 +9,18 @@
 //       信封的解析在 `WSU3.Web.BridgeJson` / `WebBridgeBehaviour`，本文件只描述载荷。
 // ============================================================================
 
+using System.Collections.Generic;
+
 namespace WSU3.Contracts.Events
 {
+    /// <summary>`scene:parts` 里的一条部件（Core 收集，桥转成出站载荷）。</summary>
+    public class ScenePartEntryData
+    {
+        public string Key;
+        public string Name;
+        public string NameEn;
+        public string ParentKey;
+    }
     /// <summary>`app:init`：启动配置（语言 / 画质 / 协议版本）。</summary>
     public class AppInitEvent
     {
@@ -129,5 +139,25 @@ namespace WSU3.Contracts.Events
         public int Code;
         public string Message;
         public bool Fatal;
+    }
+
+    /// <summary>
+    /// 意图：结构任务的**部件清单已收集**（对应 `scene:parts`，DEC-131 —— 装配完成后进站上报一次）。
+    /// 条目由 <c>WSU3.Core.Interactive.ScenePartInventory</c> 收集：扁平条目，ParentKey 指向最近的"部件父级"。
+    /// </summary>
+    public class ScenePartsReportEvent
+    {
+        public List<ScenePartEntryData> Parts;
+    }
+
+    /// <summary>
+    /// 意图：**悬停目标变化**（对应 `object:hover`，DEC-130 —— 只在目标进出时发布，不逐帧发）。
+    /// Key 空串 = 移出；X/Y 为相对画布左上角的归一化坐标（0~1，Web 侧拿它定位 `.ui-parttip`）。
+    /// </summary>
+    public class ObjectHoverEvent
+    {
+        public string Key;
+        public float X;
+        public float Y;
     }
 }

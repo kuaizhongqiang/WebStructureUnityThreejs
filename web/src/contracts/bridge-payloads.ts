@@ -118,6 +118,39 @@ export interface ObjectPickedPayload {
   objectKey: string
 }
 
+/**
+ * `scene:parts` 里的一条：**扁平**的部件条目。
+ *
+ * 为什么给扁平清单 + `parentKey` 而不是直接给树：Unity 侧如实报 Transform 层级（它只有这个），
+ * 成树是**展示**的事，放 Web 侧做（`domain/part-tree.ts`，可单测）。
+ * 部件名（`objName` / `objName_en`）**随预制体走**（DEC-104），所以只能由 Unity 上报、不进内容 JSON。
+ */
+export interface PartEntry {
+  /** 部件键：与 `object:picked` / `object:hover` / `view:focus` 用的是同一套键 */
+  key: string
+  name: string
+  nameEn?: string
+  /** 父部件的键；根部件为空（Unity 侧取 `Transform.parent` 上那个部件，不是层级里每个节点） */
+  parentKey?: string
+}
+
+/** `scene:parts`：进站装配完成后上报的部件清单（含层级）。 */
+export interface ScenePartsPayload {
+  parts: PartEntry[]
+}
+
+/**
+ * `object:hover`：指针移入 / 移出了哪个部件。
+ *
+ * `key` 为空串表示**移出**（回到空处）—— Unity 侧 `JsonUtility` 把 null 串写成 `""`，所以用空串而不是 null。
+ * `x` / `y` 是**归一化坐标**（0~1，相对 Unity 画布左上角），Web 侧据此把名字浮标放到指针附近。
+ */
+export interface ObjectHoverPayload {
+  key: string
+  x: number
+  y: number
+}
+
 export interface UiRequestPayload {
   kind: UiPanelKind
   /** 内容数据的键（`tipsKey` / `uiId` / `questionId`） */
@@ -194,4 +227,20 @@ export interface StepUiContent {
   id: string
   title: string
   pages: string[]
+}
+
+/** 部件树的一个节点（由 `scene:parts` 的扁平清单组装；视图直接吃它）。 */
+export interface PartNode {
+  key: string
+  name: string
+  nameEn?: string
+  children: PartNode[]
+}
+
+/** 指针当前停在哪个部件上（`object:hover` 的页面侧形状）；`null` = 没停在任何部件上。 */
+export interface PartHover {
+  key: string
+  /** 归一化坐标（0~1，相对画布），浮标据此定位 */
+  x: number
+  y: number
 }

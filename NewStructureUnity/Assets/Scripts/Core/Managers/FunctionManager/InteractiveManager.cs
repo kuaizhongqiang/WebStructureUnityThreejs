@@ -152,6 +152,7 @@ namespace WSU3.Core.Managers.FunctionManager
                 if (hoverTarget != null) hoverTarget.InvokeExit();
                 hoverTarget = hit;
                 if (hoverTarget != null) hoverTarget.InvokeEnter();
+                PublishHoverChanged();
             }
 
             // ② 左键：按下 / 抬起 / 点击（同一物体上按下并抬起才算点击）
@@ -197,6 +198,23 @@ namespace WSU3.Core.Managers.FunctionManager
             if (hoverTarget == null) return;
             hoverTarget.InvokeExit(); // InvokeExit 不受闸门约束：必须能收尾
             hoverTarget = null;
+            PublishHoverChanged(); // 闸门关闭也必须把"移出"报给 Web，否则页面上的名字浮标会卡住
+        }
+
+        /// <summary>
+        /// 悬停目标变化 → 发布 `object:hover` 意图（上网由 Runtime 侧的 <c>WebBridgeBehaviour</c> 完成）。
+        /// 只在目标进出时发布 —— enter / exit 本身就是天然限频，**不逐帧发**（逐帧上报会把桥淹掉，DEC-130）。
+        /// 坐标是相对画布**左上角**的归一化值（Unity 的 mousePosition 原点在左下，这里翻 Y 与 CSS 同原点）。
+        /// </summary>
+        private void PublishHoverChanged()
+        {
+            Vector2 mouse = Input.mousePosition;
+            EventBus<ObjectHoverEvent>.Publish(new ObjectHoverEvent
+            {
+                Key = hoverTarget != null ? hoverTarget.ObjectKey : string.Empty,
+                X = mouse.x / Mathf.Max(1f, Screen.width),
+                Y = 1f - mouse.y / Mathf.Max(1f, Screen.height),
+            });
         }
 
         private static bool IsPointerOverNativeUi()

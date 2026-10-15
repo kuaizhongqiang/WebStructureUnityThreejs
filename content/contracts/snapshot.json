@@ -88,7 +88,9 @@
       "object:picked",
       "ui:request",
       "unity:error",
-      "debug:pong"
+      "debug:pong",
+      "scene:parts",
+      "object:hover"
     ]
   }
 }

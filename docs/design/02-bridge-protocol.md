@@ -33,7 +33,9 @@ Web 侧：mount Unity 容器
    └─ scene:enter {taskType, contentId, payload}  ─▶
                                     ◀─ unity:progress {0..1} * N
                                     ◀─ scene:ready {taskType}
-   └─ view:focus {objectKey} / ui:set-locale ...  ─▶
+                                    ◀─ scene:parts {parts[]}          ← 部件清单（含层级）
+                                    └─ view:focus {objectKey} / ui:set-locale ...  ─▶
+                                    ◀─ object:hover {objectKey, x, y}  ← 悬停（只在变化时报）
                                     ◀─ step:changed {...} * N
                                     ◀─ task:completed {score, elapsed}
    └─ scene:exit ─▶  ◀─ scene:exited  →  unityInstance.Quit()  →  bridge.detach()
@@ -76,6 +78,8 @@ Web 侧：mount Unity 容器
 | `ui:request` | `{ kind: "tips" \| "ui" \| "question", refId: string, body?: { title?, content?, questionType?, options?: string[], tips? } }` | Unity 请求 Web 侧弹 UI（**因为教学界面在 DOM 层**，DEC-16）。`refId` 是内容数据的键（`tipsKey` / `uiId` / `questionId`）；`body` 只带**展示用**字段，**不含答案** —— 判定留在界面层（Web 持有同一份题库），结果用 `ui:result` 回执（DEC-91） |
 | `unity:error` | `{ code: number, message: string, fatal: boolean }` | 错误上报 |
 | `debug:pong` | `{ at: number }` | 自检回应 |
+| `scene:parts` | `{ parts: [{ key: string, name: string, nameEn?: string, parentKey?: string }] }` | **部件清单（含层级）**：装配完成后上报一次，Web 侧的右侧"部件树"靠它渲染（DEC-131）。`key` 与 `object:picked` / `object:hover` / `view:focus` 是**同一套键**；`parentKey` 指向**最近的"部件父级"**（不是每一个 Transform 节点）—— 成树放在 Web 侧（`web/src/domain/part-tree.ts`，脏输入在那里面挡住）。部件名（`objName` / `objName_en`）**随预制体走**（DEC-104），所以只能由 Unity 上报、**不进内容 JSON** |
+| `object:hover` | `{ key: string, x: number, y: number }` | 指针**移入 / 移出了哪个部件**（DEC-130）：Web 侧据此在画布上画"部件名称悬浮提示"（`.ui-parttip`，由 DOM 层画、Unity 不做这个 UI）。`key` 为空串表示**移出**（`JsonUtility` 把 null 串写成 `""`）；`x` / `y` 是**归一化坐标**（0~1，相对 Unity 画布左上角），Web 侧夹到 0~1 后再定位浮标。**只在目标变化时上报**（另加限频）—— 逐帧发会把桥淹掉 |
 
 ### 3.3 错误码
 

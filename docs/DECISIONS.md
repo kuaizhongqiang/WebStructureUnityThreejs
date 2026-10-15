@@ -1810,3 +1810,34 @@ public void EnterAnimationMode();  public void EnterStepByStepMode();
 | a | **T4 的其余部分仍是第一轮样式** | C8~C11 的**底部固定提示栏**（`tips()`）还没换成 §16.2 浮窗提示（`tipsFloat()`）；D1 仍在用 `corners()`。**负责人 2026-10-15 明确"先不动"**，留在 `TODO.md` T-12 |
 | b | **C8~C11 的 UI 是否自此纳入评审范围** | 原 T4 写着"Unity 侧 UI 暂不设计、不要按它们评审 B 组规范"；本次 DEC-122 ~ DEC-126 都是按负责人要求改的，等于局部撤回。见 `TODO.md` T-12 |
 | c | **占位画布的文字对比度** | `.ui-viewport__center` 仍是 `--text-3`（本次按"照结构页的样子"原样保留），落在毛玻璃上偏淡。要不要提到 `--text-2`，见 `TODO.md` T-13 |
+
+---
+
+## 30 第十七轮（2026-10-15）：结构任务的部件清单与悬停上报（DEC-131 ~ DEC-133）
+
+**背景**：DEC-130 在 Web 侧落了 `.ui-parttip` 样式，但桥协议里只有 `object:picked`（点击），没有 hover 通道（`TODO.md` D-29）；
+结构页（C10 / DEC-131 的骨架）也没有数据源来渲染右侧部件树。负责人 2026-10-15 指派"契约三处同批 + 两端实现 + 桩冒烟 + Unity 上报 + 文档提交"一条龙。
+
+### 30.1 决定
+
+| # | 决定 |
+|---|---|
+| **DEC-131** | **结构任务的部件清单走 `scene:parts`**：装配完成后 Unity 侧上报一次（`StructureTaskManager` 实例化即收集 —— **没有步骤流程也报**，结构认知不依赖步骤系统）。清单 = 扁平条目 `{ key, name, nameEn?, parentKey? }`；`parentKey` 指向**实例内最近的部件父级**（只认 `StructureObj`，纯 Transform 中间层被跳过、不越实例根，收集器 `ScenePartInventory`）；**成树在 Web 侧**（`web/src/domain/part-tree.ts`，缺父/自环/成环都在那里面挡）。部件名随预制体走（DEC-104），没填时回落 objectKey（空名条目 Web 侧会丢，宁可显示 key） |
+| **DEC-132** | **悬停走 `object:hover`**：只在目标进出时上报（enter/exit 本身就是天然限频，**不逐帧发**——逐帧会把桥淹掉）；`key` 空串 = 移出（闸门关闭时的 `ClearHover` 也必须报，否则 Web 浮标卡住）；`x`/`y` 是相对画布**左上角**的归一化坐标（Unity 的 mousePosition 原点在左下，上报前翻 Y，与 CSS 同原点）。名字浮标（`.ui-parttip`）由 DOM 层画，Unity 不做这个 UI |
+| **DEC-133** | **右树点选的选中态在 Web 侧本地记**：点部件行发 `view:focus{objectKey, animate}`，但 Unity **不会**为它回 `object:picked`（那是"三维里点中"的语义）——所以"当前亮着哪一行"的优先序是：悬停 key > 右树点选的本地回显（`focusedPartKey`）> Unity 报的 picked。`scene:exit` / 重新挂载时本地回显清零 |
+
+### 30.2 落地与验证
+
+- **契约**：TS / 快照 / C# 三方同批（26 条桥消息，`check-contracts` 过）；载荷形状 `PartEntry` / `ScenePartsPayload` / `ObjectHoverPayload` / `PartNode` / `PartHover`（`web/src/contracts/bridge-payloads.ts`）。
+- **Web 侧**：`part-tree.ts`（6 测试）、`UnitySession`（读写 + 坐标夹取 + 状态清理 + `focusPart`）、`TaskView` structure 分支（部件树 + 浮标 + `BridgeStatusPanel`）。
+- **Unity 侧**：`BridgeProtocol.cs` 出站载荷与 `WebBridge.SceneParts / ObjectHover`；`BridgeEvents.cs` 意图事件（`ScenePartsReportEvent` / `ObjectHoverEvent`，照 Core 只发意图、Runtime 上网的分层）；`ScenePartInventory`（新，纯收集器）；`StructureTaskManager` / `InteractiveManager` 两个发布点；`WebBridgeBehaviour` 转发。
+- **桩与冒烟**：`make-stub-unity.mjs` 会说新协议（`scene:enter{taskType:8}` 自动发清单、`__WSU3_STUB_HOVER__` 驱动口、`view:focus` 记录到 stub state）；冒烟新增第 2c 节 **7 条断言**（成树 / 浮标出现与定位 / 移出消失 / 出站 `view:focus` / 选中态），**64 → 71 项全过**。过程中修掉一个真 bug：`TaskView` 的 handlers 漏接 `onParts` / `onHover`（部件树能渲染纯属后到消息顺带刷新的光，浮标永远不会出现）。
+- **Unity 编译**：2026-10-15 负责人实机确认 **0 error**（`ScenePartInventoryTests` 等新增 EditMode 见 `Assets/Tests/EditMode/`）。
+
+### 30.3 未闭合
+
+| # | 事项 | 现状 |
+|---|---|---|
+| a | **EditMode 全量重跑**（新增 `ScenePartInventoryTests` 5 条 + 出站契约闸扩到 12 条） | 编译已过，测试待负责人在 Test Runner 里跑一遍 |
+| b | **实机 Play 验收**：进结构站看部件树渲染、悬停浮标跟随、点行高亮 —— 与 `TODO.md` D-24 的实机端到端合并做 | 待真 WebGL / Play |
+| c | **镜头推进**：`view:focus` 的 `animate` 目前只影响日志（P2-6 接） | 未做 |

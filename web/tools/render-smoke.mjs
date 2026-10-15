@@ -12,6 +12,9 @@
  *   7) **站点线跟着数据走**（第 5 节）：只画当前项目启用的任务，换项目即换站。
  *   8) **启动流程真的点得通**（第 4b 节）：`start → login → menu` 且目录页能退出回登录；
  *      登录页**不该有输入框**（DEC-101：本期只允许游客）。
+ *   9) **结构任务的新桥协议**（第 2c 节）：桩会说 `scene:parts`（部件树成树）、
+ *      `object:hover`（`.ui-parttip` 浮标出现 / 移出消失）、点部件行出站 `view:focus`
+ *      （DEC-130 / DEC-131；悬停由冒烟经 `__WSU3_STUB_HOVER__` 在稳定时机触发）。
  *
  * 说明：三维断言用 `#/task/8`（结构）而不是 `#/task/2`（实验仪器）—— 采纳数据里
  * 接触器启用了结构槽位，"实验仪器"的槽位是 `null`（会正确地显示"本项目未启用"）。
@@ -427,6 +430,77 @@ try {
     String(finished.inputEnabled),
   )
   await page.screenshot({ path: resolve(artifactsDir, 'task-unity-completed.png'), fullPage: false })
+
+  // ---------- 2c. 结构任务的新协议：scene:parts / object:hover / view:focus（DEC-130 / DEC-131）----------
+  // 桩在 scene:enter{taskType:8} 后自动发 scene:parts；悬停与移出由冒烟在稳定时机经
+  // __WSU3_STUB_HOVER__ 触发（避免与对话框时序赛跑）；点选部件行的出站 view:focus 由桩记录。
+  // 此时 2b 的面板已全部关完，点击不会被 .ui-mask 挡住。
+  await page.waitForFunction(() => document.querySelectorAll('.ui-list__item').length >= 4, null, {
+    timeout: 15000,
+  })
+  const partRows = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('.ui-list__item')).map((el) =>
+      (el.innerText ?? '').replace(/\s+/g, ' ').trim(),
+    ),
+  )
+  check(
+    partRows.length === 4,
+    '结构新协议：scene:parts → 右侧部件树渲染 4 行（含计数徽标的数据源）',
+    partRows.join(' | '),
+  )
+  check(
+    partRows[0]?.includes('交流接触器') &&
+      partRows[1]?.includes('线圈') &&
+      partRows[2]?.includes('主触点') &&
+      partRows[3]?.includes('辅助触点'),
+    '结构新协议：buildPartTree 按 parentKey 成树（根在前、子随其后，DFS 序）',
+    partRows.join(' | '),
+  )
+
+  // ① 悬停 → .ui-parttip 出现（中英文名）
+  await page.evaluate(() => window.__WSU3_STUB_HOVER__('contactor/MainContact', 0.62, 0.38))
+  await page.waitForSelector('.ui-parttip', { timeout: 5000 })
+  const tipShown = await page.evaluate(() => {
+    const el = document.querySelector('.ui-parttip')
+    return {
+      text: (el?.innerText ?? '').replace(/\s+/g, ' ').trim(),
+      left: el ? el.style.left : '',
+    }
+  })
+  check(
+    tipShown.text.includes('主触点') && tipShown.text.includes('Main Contact'),
+    '结构新协议：object:hover → .ui-parttip 出现（中英文名）',
+    tipShown.text,
+  )
+  check(
+    tipShown.left === 'calc(62.00% + var(--sp-3))',
+    '结构新协议：浮标位置按归一化坐标换算（x=0.62 → left 以 62% 计）',
+    tipShown.left,
+  )
+  await page.screenshot({ path: resolve(artifactsDir, 'task-structure-parttip.png'), fullPage: false })
+
+  // ② 移出（key=""）→ 浮标消失
+  await page.evaluate(() => window.__WSU3_STUB_HOVER__(''))
+  await page.waitForSelector('.ui-parttip', { state: 'detached', timeout: 5000 })
+  check(true, '结构新协议：object:hover{key:""}（移出）→ 浮标消失')
+
+  // ③ 点部件行 → 出站 view:focus{objectKey}，行进入选中态
+  await page.locator('.ui-list__item', { hasText: '线圈' }).click()
+  await page.waitForFunction(() => Boolean(window.__WSU3_STUB_STATE__?.focused), null, {
+    timeout: 5000,
+  })
+  const focused = await page.evaluate(() => window.__WSU3_STUB_STATE__?.focused ?? null)
+  check(
+    focused?.objectKey === 'contactor/Coil' && focused?.animate === false,
+    '结构新协议：点部件行 → 出站 view:focus{objectKey, animate}',
+    JSON.stringify(focused),
+  )
+  const activeRow = await page.evaluate(() => {
+    const el = document.querySelector('.ui-list__item--active')
+    return el ? (el.innerText ?? '').replace(/\s+/g, ' ').trim() : ''
+  })
+  check(activeRow.includes('线圈'), '结构新协议：点中的行带选中态（.ui-list__item--active）', activeRow)
+  await page.screenshot({ path: resolve(artifactsDir, 'task-structure-parts.png'), fullPage: false })
 
   // ---------- 3. 回到 Three 页（覆盖 Unity → Three 的重建路径）----------
   await page.goto(`${base}/#/task/2?project=demo-temperature`, { waitUntil: 'load' })

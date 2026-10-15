@@ -163,15 +163,17 @@
 }
 
 /* ------------------------------------------------ 三维视口：按容器比例自适应
-   页面**不给**宽高，只给"必须占满剩余空间"；相机 aspect / CanvasScaler 在内部处理。 */
+   页面**不给**宽高，只给"必须占满剩余空间"；相机 aspect / CanvasScaler 在内部处理。
+   **不铺底色**（DEC-128 同一条规则：嵌在 `.ui-panel__body` 里的画布不再自画一层）——
+   框与底由外层 `.ui-panel` 的毛玻璃给，这里再铺一层就是两层半透明叠加、比旁边的框明显深。
+   原先这里是"网格 + `--bg-0` 深色实底"（排版稿里已退役的那套）。 */
 .app-viewport {
   position: relative;
   flex: 1;
   min-height: 220px;
   border-radius: var(--radius-panel);
   overflow: hidden;
-  background: var(--grid);
-  background-color: var(--bg-0);
+  background: none;
 }
 .app-viewport > canvas {
   display: block;

@@ -19,6 +19,7 @@ export type TaskPageKind =
   | 'quiz' // 题目控件（小测验）
   | 'exam' // 考核（题目 + 计时 + 结算）
   | 'practice' // 仿真操作（Unity 承载）
+  | 'structure' // 结构认知（Unity 承载）：左画布 + 右部件树（与排版稿 C10 同构，DEC-131）
 
 export interface TaskTypeMeta {
   readonly type: TaskType
@@ -39,7 +40,8 @@ const META: Readonly<Record<TaskType, Omit<TaskTypeMeta, 'type'>>> = {
   [TaskType.Test]: { icon: 'list-checks', kind: 'quiz', hint: '小测验' },
   // DEC-98：简介页 = 左三维 + 右图文（排版稿 C6 的形态；三维由 ModelStage 承载）
   [TaskType.Info]: { icon: 'book-open', kind: 'model', hint: '实验简介与背景' },
-  [TaskType.Structure]: { icon: 'boxes', kind: 'practice', hint: '结构认知（Unity 承载）' },
+  // DEC-131：结构页 = 左画布 + 右部件树（排版稿 C10 的形态；部件清单由 Unity 的 `scene:parts` 上报）
+  [TaskType.Structure]: { icon: 'boxes', kind: 'structure', hint: '结构认知（Unity 承载）' },
   [TaskType.Inspection]: { icon: 'search-check', kind: 'practice', hint: '故障检测（Unity 承载）' },
   [TaskType.Exam]: { icon: 'clipboard-check', kind: 'exam', hint: '考核与结算' },
 }
