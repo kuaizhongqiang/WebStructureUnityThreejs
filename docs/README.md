@@ -90,6 +90,7 @@
 | `research/08-webgl-baseline.md` | **WebGL 基线实测**：空场景构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）+ 逐文件占用，是资源预算与"包体是首要敌人"的实测依据 |
 | `research/09-adopted-content-data.md` | **被采纳的内容数据与三维资产测绘**：7 份 JSON 的体积与用途、9 个项目、19 FBX / 284 PNG / 5 PSD 的体积分布、可搬运性与剔除项（第二层：允许保留被调研对象名称，本机路径用占位符） |
 | `research/10-input-controller-specs/` | **底层操控层的行为规格原文**（14 份 `.md`，随 DEC-107 的移植一起搬入，**原文照录、未改写**）：控制器基类 / 第一人称 / 第三人称 / 聚焦环绕 / 相机背景 / 输入缓存 / 刚体推动。⚠️ 里面写的是**参照工程的旧命名与旧路径**，本工程的实现与命名以 `../design/11-input-and-camera.md` 为准（第二层：允许保留被调研对象名称） |
+| `research/11-unity-webgl-transparent-background.md` | **Unity WebGL 透明背景调研**（Issue #49）：官方 2022.3 / Unity 6 均无透明开关；社区"三层全通"配方（相机 alpha=0 + 模板 canvas 透明 + 宿主不遮盖）、后处理写死 alpha 的杀手项、Linear 色彩空间与 `file://` 坑、本项目现状盘点与三条候选路线（供拍板） |
 
 > ⚠️ `research/` 各篇里的 `★` 是**当时的建议**，可能已被 `DECISIONS.md` 取代；**冲突时以 `DECISIONS.md` 为准**。
 
