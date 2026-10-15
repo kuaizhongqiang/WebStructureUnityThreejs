@@ -1,7 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using WSU3.Contracts;
+using WSU3.Contracts.Events;
 using WSU3.Core.DataStruct;
+using WSU3.Core.Interactive;
 using WSU3.Core.Managers.FunctionManager;
 using WSU3.Core.Models;
 using WSU3.Core.Models.Addressable;
@@ -81,6 +84,10 @@ namespace WSU3.Core.Managers.TaskManager
             m_Instance = addressables.InstantiatePrefab(prefab, config.id, ResolveRoot());
             if (m_Instance == null) yield break;
 
+            // 部件清单：进站上报一次（`scene:parts`，DEC-130 / DEC-131 —— 部件名随预制体走，
+            // 层级由 parentKey 表达，成树在 Web 侧）。没有 StepManager 也要报：结构认知不依赖步骤流程。
+            PublishSceneParts();
+
             // 步骤：预制体自带 StepManager 子树时直接驱动它
             m_Step = m_Instance.GetComponentInChildren<StepManager>();
 
@@ -140,6 +147,16 @@ namespace WSU3.Core.Managers.TaskManager
 
             return ContentNaming.ConfigId(
                 ContentNaming.DeviceOf(clipId), ContentNaming.TaskStructure, ContentNaming.ResourceModel);
+        }
+
+        /// <summary>
+        /// 收集并发布部件清单（意图事件；上网由 Runtime 侧的 <c>WebBridgeBehaviour</c> 完成 —— Core 不碰桥）。
+        /// </summary>
+        private void PublishSceneParts()
+        {
+            List<ScenePartEntryData> parts = ScenePartInventory.Collect(m_Instance);
+            EventBus<ScenePartsReportEvent>.Publish(new ScenePartsReportEvent { Parts = parts });
+            Debug.Log($"{LogTag} 已上报部件清单：{parts.Count} 条（scene:parts）");
         }
 
         /// <summary>实例的挂载根：场景里有就复用、没有就运行时建一个（见 <see cref="DataStructMapping.GetStructureRoot"/>）。</summary>
