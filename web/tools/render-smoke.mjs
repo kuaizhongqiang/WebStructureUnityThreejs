@@ -39,9 +39,27 @@ const artifactsDir = resolve(here, 'smoke', 'artifacts')
 
 const failures = []
 
+/**
+ * GitHub Actions 的**注解**（`::error title=…::message`）。
+ *
+ * 为什么要有：冒烟的读数只在 job 日志里，而日志要仓库权限才看得到（check-runs API 上看不到）——
+ * 于是"CI 红了一条、但只知道 exit 1"就得翻几百行日志。写成注解后，**PR 的 Checks 面板与
+ * check-runs API 都能直接看到"哪一条失败、当时的读数/异常是什么"**，不用登录也能定位。
+ * 本地不在 Actions 里（没有 `GITHUB_ACTIONS`）就不打印，输出与以前逐字一致。
+ */
+function annotate(level, title, message) {
+  if (process.env.GITHUB_ACTIONS !== 'true') return
+  const escape = (text) =>
+    String(text).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A').slice(0, 900)
+  console.log(`::${level} title=${escape(title)}::${escape(message)}`)
+}
+
 function check(ok, label, detail = '') {
   console.log(`[${ok ? 'PASS' : 'FAIL'}] ${label}${detail ? ` — ${detail}` : ''}`)
-  if (!ok) failures.push(label)
+  if (!ok) {
+    failures.push(label)
+    annotate('error', '冒烟断言失败', detail ? `${label} — ${detail}` : label)
+  }
 }
 
 // ---------- 0. 冒烟自备的 Unity 桩构建（隔离在临时目录，**绝不**覆盖 unity/builds）----------
@@ -1011,6 +1029,10 @@ try {
   )
 
   check(pageErrors.length === 0, '全程无 JS 异常 / console.error', pageErrors.slice(0, 3).join(' | '))
+} catch (error) {
+  // 中断（定位器超时、断言外的异常）也要变成一条注解：否则 CI 上只剩"exit code 1"
+  annotate('error', '冒烟中断', error instanceof Error ? error.message : String(error))
+  throw error
 } finally {
   await browser.close()
   await server.close()
