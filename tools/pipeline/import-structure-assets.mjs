@@ -30,8 +30,9 @@
  *
  * **落点**（`docs/design/03-layout-and-assets.md` §5 / §7）：
  *   · 器件材质 → `NewStructureUnity/Assets/Models/<器件>/Materials/<名>.mat`
- *     **接管**：Unity 从 FBX 自动抽出的同名材质（`_BaseMap` 为空的那个）被源材质覆盖 ——
- *     源材质才是"对的"，且它连 `.meta` 一起覆盖，GUID 因此与源预制体里的引用对得上；
+ *     **接管（D-26 嫁接口径）**：目标已存在（Unity 从 FBX 自动抽出的同名材质）时**不覆盖 `.meta`**（GUID 保留，
+ *     FBX 内部绑定不断），只把源材质 `m_Shader:` 之后的 shader / 关键字 / 属性**移植**进目标文件；
+ *     目标不存在（新材质）时才整份拷贝（连 `.meta`）。
  *     自动抽出的那份 GUID 不同，只有按下述规则放到同名位才会被 FBX 重导时复用。
  *   · 其余全部**保持来源工程的 `Assets/` 相对路径**（如 `Assets/Prefabs/Models/StructureObjs/`、
  *     `Assets/Animation/Model/Structure/`、`Assets/Plugins/HighlightPlus/`）——路径可预测、重跑幂等，
@@ -244,13 +245,34 @@ function targetOf(absFile, assetsRoot, folders) {
   return { path: join(UNITY_ASSETS, rel), kind: kindOf(absFile), replace: false }
 }
 
-/** 复制一个资产**连同它的 `.meta`**（GUID 必须跟着走，否则引用全断）。 */
+/**
+ * 材质"嫁接"（D-26 / 根治 DEC-115 的后续）：**保留目标 .mat 的 GUID（不动 `.meta`）**，
+ * 只把源材质 `m_Shader:` 之后的整段（shader 引用 / 关键字 / `m_SavedProperties`）移植进目标文件。
+ * 这样 Unity 自动抽出的材质还是那一份（FBX 内部绑定不断），但 shader 与属性变成源工程的对的值。
+ * 结构不合（任一侧没有 `m_Shader:`）返回 null，调用方退回整体覆盖。
+ */
+function graftMaterial(targetText, sourceText) {
+  const tailOf = (text) => {
+    const i = text.indexOf('m_Shader:')
+    return i < 0 ? null : text.slice(i)
+  }
+  const tail = tailOf(sourceText)
+  const head = targetText.indexOf('m_Shader:')
+  if (tail === null || head < 0) return null
+  return targetText.slice(0, head) + tail
+}
+
+/** 复制一个资产**连同它的 `.meta`**（GUID 必须跟着走，否则引用全断）。
+ *  ⚠️ 例外：器件材质"接管"目标已存在的同名材质时走**嫁接**（见 {@link graftMaterial}）——
+ *  `.meta` 不覆盖、GUID 保留，根治"FBX 内部绑定悬空"（D-26）。 */
 async function copyWithMeta(sourceFile, targetFile, options) {
   const { dryRun, force, replace, kind, report, sourceRoot, planned, alreadyInProject, plugin } = options
   const meta = `${sourceFile}.meta`
+  // 嫁接条件：接管型材质 + 目标已存在（= 抽出的材质在位）+ 目标自己的 .meta 在位（GUID 有得保）
+  const grafting = kind === 'material' && replace && existsSync(targetFile) && existsSync(`${targetFile}.meta`)
   for (const [from, to] of [
     [sourceFile, targetFile],
-    ...(existsSync(meta) ? [[meta, `${targetFile}.meta`]] : []),
+    ...(existsSync(meta) && !grafting ? [[meta, `${targetFile}.meta`]] : []),
   ]) {
     const entry = {
       from: relative(sourceRoot, from).split('\\').join('/'),
@@ -275,12 +297,18 @@ async function copyWithMeta(sourceFile, targetFile, options) {
     }
     if (!dryRun) {
       await mkdir(dirname(to), { recursive: true })
-      await cp(from, to)
+      if (grafting && to === targetFile) {
+        const grafted = graftMaterial(await readFile(to, 'utf8'), await readFile(from, 'utf8'))
+        if (grafted === null) await cp(from, to) // 结构不合：退回整体覆盖（旧行为）
+        else await writeFile(to, grafted)
+      } else {
+        await cp(from, to)
+      }
     }
-    report.files.push({
-      ...entry,
-      status: dryRun ? (existedBefore ? 'would-replace' : 'planned') : existedBefore ? 'replaced' : 'copied',
-    })
+    const status = grafting && to === targetFile
+      ? dryRun ? (existedBefore ? 'would-graft' : 'planned') : 'grafted'
+      : dryRun ? (existedBefore ? 'would-replace' : 'planned') : existedBefore ? 'replaced' : 'copied'
+    report.files.push({ ...entry, status })
   }
 }
 
@@ -514,7 +542,10 @@ async function main() {
   console.log(`已在目标工程（GUID 相同，跳过）：${countOf('already-in-project')} 个`)
   console.log(`已存在（文件已在位，未覆盖）：${countOf('exists')} 个`)
   console.log(
-    `覆盖：${countOf('replaced') + countOf('would-replace')} 个（器件材质接管 Unity 自动抽出的同名材质）`,
+    `嫁接（GUID 保留，shader/属性移植）：${countOf('grafted') + countOf('would-graft')} 个`,
+  )
+  console.log(
+    `覆盖：${countOf('replaced') + countOf('would-replace')} 个（含嫁接失败退回整体覆盖的情况）`,
   )
   console.log(`剔除/待办：${report.excluded.length} 条 · 缺失：${report.missing.length} 条 · 留意：${report.notes.length} 条`)
   for (const item of report.notes) {
