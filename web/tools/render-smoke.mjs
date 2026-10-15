@@ -62,6 +62,49 @@ function check(ok, label, detail = '') {
   }
 }
 
+/** 过渡类名（页面级 / 站间级，见 `docs/ui-mockups/components.css` §22 与 DEC-157）。 */
+const TRANSITION_SELECTOR =
+  '.ui-page-enter-active, .ui-page-leave-active, .ui-station-enter-active, .ui-station-leave-active'
+
+/**
+ * 等这一次**换页 / 换站**的过渡跑完（Issue #57，DEC-157）。
+ *
+ * 为什么需要：换页现在是 160ms 级的过渡（路由级 `out-in` 两段、合计约 320ms），
+ * 原先"点一下 + `waitForTimeout(400)` 再读页面"的写法在慢 runner 上只剩几十毫秒余量 ——
+ * CI 实测就这么红了两条（"欢迎页主按钮"、"登录页游客入口"：读到的还是上一屏）。
+ *
+ * ⚠️ 不能只等"过渡类消失"：hash 路由的 `push` 是异步的，点完立刻查会在导航还没起来时
+ * 误判成"已经稳定"（本地实测把 `#/login` 读成了 `#/start`）。所以**先等过渡出现**，
+ * 等不到才认为这次没换页（例如整页加载出来的首屏）—— 那时调用方本来也不该等过渡。
+ */
+async function settle(page, { startTimeout = 3000, endTimeout = 10_000 } = {}) {
+  const started = await page
+    .waitForFunction((selector) => Boolean(document.querySelector(selector)), TRANSITION_SELECTOR, {
+      timeout: startTimeout,
+    })
+    .then(() => true)
+    .catch(() => false)
+  if (!started) return
+  await page
+    .waitForFunction((selector) => !document.querySelector(selector), TRANSITION_SELECTOR, {
+      timeout: endTimeout,
+    })
+    .catch(() => {})
+}
+
+/**
+ * 等**已经起来**的过渡收干净（不推动任何导航）。
+ *
+ * 与 `settle()` 的分工：`settle()` 用在"我刚点了一下、过渡即将开始"之后；
+ * `quiet()` 用在"我马上要开始数过渡类"之前 —— 否则上一屏的离场影子
+ * （站间过渡是交叉淡入淡出，离场层会留在 DOM 里约 160ms）会被记进这一轮。
+ */
+async function quiet(page, timeout = 10_000) {
+  await page
+    .waitForFunction((selector) => !document.querySelector(selector), TRANSITION_SELECTOR, { timeout })
+    .catch(() => {})
+}
+
 // ---------- 0. 冒烟自备的 Unity 桩构建（隔离在临时目录，**绝不**覆盖 unity/builds）----------
 // 为什么需要：`/unity/**` 与 `release-manifest.json` 原本只有壳的静态服务器提供，于是"点进 Unity 任务"
 // 在冒烟里永远走"产物未就位"那条分支 —— 整条桥交互没有任何自动化证据。真 WebGL 构建又要求先关编辑器
@@ -470,7 +513,7 @@ try {
 
   // ---------- 4. 欢迎页（A1）：主视觉 + 外壳浮卡 + 设计系统令牌真的加载了 ----------
   await page.goto(`${base}/#/start`, { waitUntil: 'load' })
-  await page.waitForTimeout(400)
+  await settle(page)
   const home = await page.evaluate(() => {
     const style = getComputedStyle(document.documentElement)
     return {
@@ -553,7 +596,7 @@ try {
   // ---------- 4b. 启动流程（DEC-101）：start → login → menu，且目录页能退出回登录 ----------
   // 判据是**真的点**（不是读路由表）：本期只允许游客，所以登录页**不该有输入框**。
   await page.click('button.ui-btn--primary') // 「开始实验」
-  await page.waitForTimeout(400)
+  await settle(page)
   const loginPage = await page.evaluate(() => ({
     hash: location.hash,
     text: document.body.innerText,
@@ -570,7 +613,8 @@ try {
   await page.screenshot({ path: resolve(artifactsDir, 'login.png'), fullPage: false })
 
   await page.click('button.ui-btn--primary') // 「以游客身份进入」
-  await page.waitForTimeout(700)
+  await settle(page)
+  await page.waitForTimeout(700) // 目录要等内容层（文案/卡片）到位，过渡之外还得给它时间
   const menuAfterLogin = await page.evaluate(() => ({
     hash: location.hash,
     tiles: document.querySelectorAll('.ui-tile-grid .ui-tile').length,
@@ -585,7 +629,7 @@ try {
   check(menuAfterLogin.text.includes('退出'), '项目目录：有「退出」入口（DEC-101）')
 
   await page.click('button.ui-iconbtn--back') // 「退出」
-  await page.waitForTimeout(400)
+  await settle(page)
   const afterExit = await page.evaluate(() => location.hash)
   check(afterExit === '#/login', '项目目录：退出 → 回到登录页', afterExit)
 
@@ -930,9 +974,10 @@ try {
   )
 
   // 8b. 路由级：目录页点项目 → 任务页（换整个视图 ⇒ `ui-page-*`，且不该混进站间那套）
+  await quiet(page) // 装探针前先收干净，别把上一屏的离场记进这一轮
   await watchTransitions()
   await page.locator('.ui-tile-grid .ui-tile').first().click()
-  await page.waitForTimeout(700)
+  await settle(page) // 等这次换页的过渡整段跑完（类才记全）
   const routeClasses = await readTransitions()
   check(
     routeClasses.some((name) => name.startsWith('ui-page-')),
@@ -962,6 +1007,7 @@ try {
     `当前站=${canvasBefore.current}`,
   )
 
+  await quiet(page) // 上一屏（换到结构站）的离场层收干净再开始数
   await watchTransitions()
   await clickStation('检测') // 8 → 9：同为 Unity
   await page.waitForTimeout(600)
@@ -991,9 +1037,10 @@ try {
   // 8d. 站间（Three → Three）：同一节奏的站间过渡**真的播**，且不触发路由级那套
   await clickStation('简介') // 8(Unity) → 7(Three)：跨栈
   await page.waitForTimeout(800)
+  await quiet(page) // 跨栈那一次的离场层收干净
   await watchTransitions()
   await clickStation('实验原理') // 7 → 3：同为 Three
-  await page.waitForTimeout(700)
+  await settle(page) // 等这次换站的过渡整段跑完
   const stationClasses = await readTransitions()
   check(
     stationClasses.some((name) => name.startsWith('ui-station-')),
