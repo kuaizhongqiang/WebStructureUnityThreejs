@@ -73,6 +73,16 @@ MIME 写错 `<video>` 直接拒播，没有 `Range` 则拖不动进度条（Safa
 `preload.js` 只暴露常量、版本号、`captionHeight` 与 `setTheme`（后者用于把主题同步给原生窗口，2026-10-12 加入），
 **没有业务能力**（DEC-24：预留接口点，当期不实现）。将来接既有系统（单点登录、成绩上传、本机授权）时：方法加在 `preload.js` + 主进程 `ipcMain`，业务侧仍只认 `window.wsu3Shell.*`。
 
+## 应用图标（2026-10-15，DEC-150）
+
+窗口/任务栏/exe 三处用的是**同一份** `assets/app-icon.ico`：
+
+- **矢量源**：`assets/app-icon.svg`（深色圆角方 + 插头闪电图形，图形取自我们已在用的图标库，许可见 `docs/DECISIONS.md` DEC-150）；
+- **生成**：`cd ../web && npm run icon`（等价于 `node web/tools/make-app-icon.mjs`）—— 用 web 侧已有的 Chromium 光栅化出 16/24/32/48/64/128/256 七档，打包成 ICO（PNG 负载），另出一张 `app-icon-512.png` 供肉眼核对；
+- **产物不手改**：改图标 = 改 SVG 再重跑脚本（脚本会同时刷新 ico 与 png）；
+- **接线**：打包侧 `package.json` 的 `build.win.icon`，运行期 `main.js` 的 `BrowserWindow({ icon })`；
+- 这是**临时版**图标（先把"没有图标"这件事去掉），后续换正式品牌图标时同样走上面这条生成链。
+
 ## 窗口外观（2026-10-12 追加）
 
 窗口外观只做了**最省、最稳的一条**，其余一律不碰：
@@ -103,11 +113,11 @@ cd ../electron && npm run dist   # → release/WSU3-Shell-<version>-portable.exe
 - **打包版没有控制台**，stdout 会被丢掉 —— 所以 `--smoke` 会同时把结果写一份 JSON
   （默认与 exe 同目录，可用 `WSU3_SMOKE_REPORT=<path>` 指定）。"能打开"这件事因此**有可读证据**，
   而不是"看起来没报错"。
-- 图标还没做（用的是 Electron 默认图标），签名用的是 electron-builder 的测试证书 —— 都不是发布态。
+- ~~图标还没做（用的是 Electron 默认图标）~~ → **2026-10-15 已接上**（临时版矢量图标，见上「应用图标」）；签名用的仍是 electron-builder 的测试证书 —— 不是发布态。
 
 ## 还没做（别当成已完成）
 
-- **安装包 / 图标 / 正式签名** —— portable exe（DEC-77）已能出，但非 portable 的安装包形态、应用图标与正式签名还没做；
+- **安装包 / 正式图标 / 正式签名** —— portable exe（DEC-77）已能出、临时图标已接（DEC-150），但非 portable 的安装包形态、正式品牌图标与正式签名还没做；
 - 自动更新；
 - Windows/macOS 平台差异处理（`sandbox` 下部分能力受限，届时按需开 `ipcMain` 通道）。
 
