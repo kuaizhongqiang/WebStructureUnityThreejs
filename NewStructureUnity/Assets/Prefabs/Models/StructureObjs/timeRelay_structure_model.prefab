@@ -878,8 +878,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8854\u94c1"
+  objName_en: Armature
 --- !u!1 &822326551494579180 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -616971847841711202, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
@@ -922,8 +922,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u77ac\u65f6\u89e6\u70b9"
+  objName_en: Instantaneous contact
 --- !u!1 &5170596396917631574 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -4910954405215469020, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
@@ -966,8 +966,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7ebf\u5708"
+  objName_en: Coil
 --- !u!1 &7312784421760204249 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1829961543782520235, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
@@ -1010,8 +1010,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u94c1\u82af"
+  objName_en: Core
 --- !u!4 &8904697861811457945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
