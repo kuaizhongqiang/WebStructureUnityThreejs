@@ -3,7 +3,7 @@
  * 站点线导航（对应排版稿 A7/B2 的 `.ui-route`）。
  *
  * **画哪几站由内容数据决定**（DEC-100）：只画**当前项目真正启用**的任务
- * （`stores/content` 的 `enabledTypesOf()`，顺序仍按契约 `TASK_TYPES`）——
+ * （`stores/content` 的 `enabledTypesOf()`，顺序按站点线呈现顺序 DEC-148）——
  * 数据里那个槽位是 `null` / `taskActive:false` 的任务**不出现**；
  * 一个启用的任务都没有（数据没到位、项目为空）时，**整条站点线不渲染**，不画一条空壳。
  * 理由：站点线是导航，"点得进去的站"才算一站，把没有内容的任务画上去等于把用户送进空页面；
@@ -34,7 +34,7 @@ const emit = defineEmits<{ select: [TaskType] }>()
 const content = useContentStore()
 const progress = useProgressStore()
 
-/** 本项目启用的任务（契约顺序）。空数组 = 这一页没有任务可导航 ⇒ 站点线整条不画。 */
+/** 本项目启用的任务（站点线呈现顺序，DEC-148）。空数组 = 这一页没有任务可导航 ⇒ 站点线整条不画。 */
 const types = computed(() => content.enabledTypesOf())
 
 const items = computed(() =>

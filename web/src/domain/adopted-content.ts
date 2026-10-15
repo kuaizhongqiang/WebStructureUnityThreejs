@@ -17,7 +17,7 @@
  *     "缺字段"必须解释成 `Exam`，否则一多半题会被静默丢掉；
  *   · `questionType` / `usage` 在 JSON 里是**名字**（`"SingleChoice"` / `"Step"`），不是序号。
  */
-import { QuestionType, QuestionUsage, TASK_TYPES, TaskType } from '@/contracts'
+import { QuestionType, QuestionUsage, TaskType } from '@/contracts'
 
 // ---------------------------------------------------------------------------
 // 页面用的内容模型（视图只认这个，不直接读原始 JSON）
@@ -99,6 +99,25 @@ export const TASK_SLOT_FIELD: Readonly<Record<TaskType, string>> = {
   [TaskType.Inspection]: 'taskInspectionData',
   [TaskType.Exam]: 'taskExamData',
 }
+
+/**
+ * 站点线**呈现顺序**（DEC-148）：按**来源工程的装配顺序**，不按契约序号。
+ * 来源：来源工程（只读，DEC-69）`ProjectData.cs` 的 `ProjectClip.Tasks` 装配顺序 ——
+ * 四步在前（简介 / 结构 / 原理 / 检测），旧实验线在后（目的 / 仪器 / 连接 / 仿真 / 测验 / 考核）。
+ * 契约 `TASK_TYPES`（序号序）仍是**协议**权威（枚举值 / 桥载荷），这里只决定"排给用户看的顺序"。
+ */
+export const TASK_PRESENTATION_ORDER: readonly TaskType[] = [
+  TaskType.Info,
+  TaskType.Structure,
+  TaskType.Principle,
+  TaskType.Inspection,
+  TaskType.Purpose,
+  TaskType.Equipment,
+  TaskType.LineConnection,
+  TaskType.Training,
+  TaskType.Test,
+  TaskType.Exam,
+]
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -210,13 +229,13 @@ export function toContentTask(taskType: TaskType, slot: unknown): ContentTask | 
   }
 }
 
-/** 单个 clip → 项目。任务按**契约顺序**排列，只含启用的槽位。 */
+/** 单个 clip → 项目。任务按**站点线呈现顺序**（来源工程装配顺序，DEC-148）排列，只含启用的槽位。 */
 export function toContentProject(clip: unknown): ContentProject | null {
   if (!isRecord(clip)) return null
   const id = text(clip.id)
   if (id === '') return null
 
-  const tasks = TASK_TYPES.flatMap((taskType) => {
+  const tasks = TASK_PRESENTATION_ORDER.flatMap((taskType) => {
     // TaskType.None 没有对应槽位（空串键），读出来必然是 undefined ⇒ 天然被跳过
     const slot = clip[TASK_SLOT_FIELD[taskType]]
     const task = toContentTask(taskType, slot)
@@ -265,7 +284,7 @@ export function toQuestionBank(raw: unknown): ContentQuestion[] {
   })
 }
 
-/** 项目里启用的任务类型（按契约顺序）—— 站点线、上下页、进度都按它走。 */
+/** 项目里启用的任务类型（按站点线呈现顺序，DEC-148）—— 站点线、上下页、进度都按它走。 */
 export function enabledTaskTypesOf(project: ContentProject | null): TaskType[] {
   return project ? project.tasks.map((task) => task.taskType) : []
 }

@@ -647,7 +647,7 @@ try {
 
   // ---------- 5. 站点线：**只画本项目启用的站**（DEC-100）+ 契约标签 + 技术栈标注 ----------
   // 站点由**内容数据**决定（不再是"契约里 11 个都画"）：接触器只填了
-  // 实验原理 / 简介 / 结构 / 检测 四个槽位，其余七个在数据里是 `null` ⇒ 不该出现。
+  // 简介 / 结构 / 实验原理 / 检测 四个槽位，其余七个在数据里是 `null` ⇒ 不该出现。
   await page.goto(`${base}/#/task/8?project=clip_contactor`, { waitUntil: 'load' })
   await page.waitForTimeout(600)
   const route = await page.evaluate(() => {
@@ -660,8 +660,8 @@ try {
   })
   check(route.count === 4, '站点线：只画本项目启用的 4 站（数据驱动，DEC-100）', `count=${route.count}`)
   check(
-    route.labels.join('/') === '实验原理/简介/结构/检测',
-    '站点线：顺序按契约、标签逐字来自契约',
+    route.labels.join('/') === '简介/结构/实验原理/检测',
+    '站点线：顺序按来源工程装配顺序（DEC-148）、标签逐字来自契约',
     route.labels.join('/'),
   )
   check(

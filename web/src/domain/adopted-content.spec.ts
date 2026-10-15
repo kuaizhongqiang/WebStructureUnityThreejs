@@ -10,11 +10,12 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { QuestionType, QuestionUsage, TaskType } from '@/contracts'
+import { QuestionType, QuestionUsage, TASK_TYPES, TaskType } from '@/contracts'
 import {
   enabledTaskTypesOf,
   questionTypeOf,
   questionUsageOf,
+  TASK_PRESENTATION_ORDER,
   toContentMenu,
   toContentMenuItem,
   toContentProject,
@@ -84,24 +85,37 @@ describe('TaskType ↔ 槽位', () => {
   it('未启用（null）与 taskActive:false 的槽位不产生任务', () => {
     const project = toContentProject(CLIP)
     const types = project?.tasks.map((task) => task.taskType)
-    // 契约顺序，且 Purpose/Equipment（null）与 Structure（taskActive:false）都在
-    expect(types).toEqual([TaskType.Principle, TaskType.Info, TaskType.Exam])
+    // 呈现顺序（DEC-148），且 Purpose/Equipment（null）与 Structure（taskActive:false）都不在
+    expect(types).toEqual([TaskType.Info, TaskType.Principle, TaskType.Exam])
   })
 
-  it('任务顺序按**契约**而不是数据里的字段顺序（站点线靠它）', () => {
-    // 夹具里 Info 写在 Principle 之前，但契约里 Principle=3 在 Info=7 前面
+  it('任务顺序按**呈现顺序**（来源工程装配顺序，DEC-148）而不是数据里的字段顺序（站点线靠它）', () => {
+    // 夹具里 JSON 字段顺序会把 Principle 排在 Info 前（字段声明序），
+    // 但来源工程装配顺序是简介(Info)在前、原理(Principle)在后
     const project = toContentProject({ ...CLIP, taskStructureData: null })
     const types = project?.tasks.map((task) => task.taskType) ?? []
-    expect(types.indexOf(TaskType.Principle)).toBeLessThan(types.indexOf(TaskType.Info))
+    expect(types.indexOf(TaskType.Info)).toBeLessThan(types.indexOf(TaskType.Principle))
+  })
+
+  it('呈现顺序是契约槽位的**排列**（不多不少，None 不在其中）—— 防"加了新任务忘了排进站点线"', () => {
+    const slots = TASK_TYPES.filter((type) => type !== TaskType.None)
+    expect([...TASK_PRESENTATION_ORDER].sort((a, b) => a - b)).toEqual([...slots].sort((a, b) => a - b))
+    // 且开头就是来源工程装配顺序的四步：简介 → 结构 → 原理 → 检测
+    expect(TASK_PRESENTATION_ORDER.slice(0, 4)).toEqual([
+      TaskType.Info,
+      TaskType.Structure,
+      TaskType.Principle,
+      TaskType.Inspection,
+    ])
   })
 
   it('站点线的两个前置条件：项目为空 ⇒ 无站可画（整条不渲染），有项目 ⇒ 只给启用的站（DEC-100）', () => {
     // 内容没到位 / 兜底项目也读不到时 `project` 为 null ⇒ 空数组 ⇒ 站点线不渲染
     expect(enabledTaskTypesOf(null)).toEqual([])
-    // 有项目时给的就是"启用的任务"（未启用与 taskActive:false 的都不在），顺序按契约
+    // 有项目时给的就是"启用的任务"（未启用与 taskActive:false 的都不在），顺序按呈现顺序
     expect(enabledTaskTypesOf(toContentProject(CLIP))).toEqual([
-      TaskType.Principle,
       TaskType.Info,
+      TaskType.Principle,
       TaskType.Exam,
     ])
   })
