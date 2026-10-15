@@ -15,7 +15,7 @@
 
 | 设置 | 本仓当前值 | 含义与约束 |
 |---|---|---|
-| `webGLCompressionFormat` | **0 = Brotli** | 产物是 `*.wasm.br` / `*.data.br` / `*.framework.js.br` |
+| `webGLCompressionFormat` | ⚠️ **工程里当前是 `2 = Disabled`**（**本地自测态**，见 §7）；**交付值 = `0 = Brotli`** | 交付态产物是 `*.wasm.br` / `*.data.br` / `*.framework.js.br`；自测态下是未压缩的 `.wasm` / `.data` / `.framework.js`（2026-10-15 实测头部：`UnityWebData1.0` / `00 61 73 6D`） |
 | `webGLDecompressionFallback` | **0 = 关** | ⚠️ **服务器必须自己附 `Content-Encoding: br`**。壳内置服务器已实现（`electron/server.js` 命中 `X.br` 就带编码）；将来换静态托管也必须配，否则浏览器拿到 Brotli 二进制当明文解析 → 白屏 |
 | `webGLThreadsSupport` | **0 = 关** | 关着就**不需要** COOP/COEP。若你为了性能打开它 → 壳要 `WSU3_COOP_COEP=1`，且目标静态托管也必须发 COOP/COEP，否则 `SharedArrayBuffer` 拿不到 |
 | `webGLDataCaching` | **1 = 开** | 会用 IndexedDB 缓存 `.data`。⚠️ **重建后可能仍跑旧场景** —— 见 §3；我们的加载器已按产物指纹加 `?v=` 规避 |
@@ -23,6 +23,9 @@
 | `webGLExceptionSupport` | 1 | 只支持显式抛出，体积友好。别为了调试改成 2（全量异常），那个会明显变大 |
 | 内存 | 初始 32MB / 上限 2048MB / 几何增长 | 大场景若报 OOM，先看 §3 的排查 |
 | `webGLTemplate` | `APPLICATION:Default` | 我们**不使用**它的 `index.html`（同页挂载，见 DEC-07），但 `Build/` 必须完整 |
+| `insecureHttpOption` | ⚠️ **工程里当前是 `2 = AlwaysAllowed`**（**本地自测态**，见 §7）；**交付值 = `0 = NotAllowed`** | 允许明文 `http://` 拉 Addressables 内容 —— 出交付产物前必须关掉 |
+| `preserveFramebufferAlpha` | **`0`**（2026-10-15 实测） | 相机 RT 有没有 alpha 通道；结构站画布透明的前提，与渲染器资产的 `IntermediateTextureMode = Auto` 配套（见 [`13-unity-canvas-transparency.md`](./13-unity-canvas-transparency.md) §5.1；**这条是否必须置 `1` 待真产物复核**，见该文 §7.9） |
+| 质量档 `m_CurrentQuality` | **`2 = High`**（2026-10-15 由 `0 = Low` 改） | **WebGL 上运行时切档无效，构建时选哪档就是哪档** ⇒ 改档等于改画质与开销 |
 | 平台模块 | WebGL 已装 ✓ | — |
 
 ## 2 构建前：三条红线（DEC-14 记录）
@@ -70,9 +73,11 @@ node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/<name> \
 ## 4 构建步骤
 
 1. **关掉编辑器里的 Play 模式**，降到空闲（构建会占满 CPU；批处理构建更不允许编辑器里同时改工程 —— DEC-59：编辑器占用要协调）。
-2. 确认场景与输出目录：现有工具 `WSU3/Build/WebGL Baseline`（`Assets/Editor/BuildTools/WebGLBaselineBuild.cs`）
-   写死了 `SampleScene` → `Builds/webgl-baseline`，且**只输出这些数字**（它是给容量预算用的基线工具）。
-   要做**正式交付构建**，需要新增一个"按 key 输出"的构建入口（见 §5）。
+2. 确认场景与输出目录：`WSU3/Build/WebGL Baseline`（`Assets/Editor/BuildTools/WebGLBaselineBuild.cs`）输出到
+   `Builds/webgl-baseline`，**场景 = `0_Setup` + `1_Content`**（2026-10-15 已修：原先写死的 `SampleScene` 在场景重组后
+   已不存在 ⇒ 构建直接 Failed；另外 `EditorApplication.Exit(1)` **只在批处理模式生效**，交互模式下它会把整个编辑器退掉）。
+   构建完读 `Builds/webgl-baseline/baseline-report.txt`（文件数 / 总字节，给容量核算用）。
+   要做**按 key 输出**的正式交付构建，见 §5。
 3. 构建完成后先看控制台尾部：`[WSU3] result=Succeeded fileCount=… totalBytes=…`，以及 `Builds/<name>/baseline-report.txt`。
 4. 暂存进仓库（**不要手工拷进 `web/public/`**）：
 
@@ -116,6 +121,10 @@ node tools/pipeline/pack.mjs --skip-web   # 只重打包（web 产物没变时�
 
 ⚠️ **这两条是"本地自测"设置，不是交付设置**：忘了改回来，压缩关掉会让首屏体积明显变大，
 `AlwaysAllowed` 也会把"允许明文 HTTP"带进交付产物。改了就一定在提交前恢复成 §1 的值。
+
+⚠️ **现状（2026-10-15 收尾读盘）**：工程里 `webGLCompressionFormat = 2` 与 `insecureHttpOption = 2`
+**当前就是自测态**（且这两个值早已在版本库里，不是某次未提交的临时改动）⇒
+**出交付产物前必须按上面的"交付值"改回**，已登记为 GitHub Issue #59（§1 表里两处 ⚠️ 就是这条的索引）。
 
 > 另一条路（**不用改任何设置**）：用壳的静态服务器跑 —— `node tools/pipeline/pack.mjs` 之后跑打包产物，
 > 或按 `release-manifest.json` 的 `serving` 段自己配一个会附 `Content-Encoding` 的服务器。

@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "smoke": "node tools/render-smoke.mjs",
+    "verify:unity": "node tools/verify-unity-transparency.mjs",
     "icon": "node tools/make-app-icon.mjs"
   },
   "dependencies": {

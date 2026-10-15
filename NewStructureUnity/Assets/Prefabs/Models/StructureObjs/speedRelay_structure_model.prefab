@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8138978673322957357}
   - component: {fileID: 8877610516959032721}
   - component: {fileID: 8327770305626595642}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay34
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1058588448018065957}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 5796784950234393068}
   - component: {fileID: 3537160179104100120}
   - component: {fileID: 3399349813155423139}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay25
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 4877685087804453486}
   - component: {fileID: 8218094581386668538}
   - component: {fileID: 2339839872762477646}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -424,7 +424,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u5b9a\u5b50"
+  objName: "\u5B9A\u5B50"
   objName_en: Stator
 --- !u!1 &1266219109335714622
 GameObject:
@@ -437,7 +437,7 @@ GameObject:
   - component: {fileID: 1847006051321903645}
   - component: {fileID: 2594763026759703196}
   - component: {fileID: 7867758785386112720}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -520,7 +520,7 @@ GameObject:
   - component: {fileID: 3876399554009559444}
   - component: {fileID: 1216079128582176165}
   - component: {fileID: 4330653751409415607}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay19
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -603,7 +603,7 @@ GameObject:
   - component: {fileID: 2189189991772035914}
   - component: {fileID: 8799085344811329471}
   - component: {fileID: 7542401373667991954}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay07
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -686,7 +686,7 @@ GameObject:
   - component: {fileID: 6265182592141543825}
   - component: {fileID: 4485419367071011211}
   - component: {fileID: 5040325738984780476}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay20
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -769,7 +769,7 @@ GameObject:
   - component: {fileID: 5278822902450771365}
   - component: {fileID: 2678333588916802503}
   - component: {fileID: 6320360335944061773}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -907,7 +907,7 @@ GameObject:
   - component: {fileID: 1358324459274309980}
   - component: {fileID: 9060378585545146746}
   - component: {fileID: 1409000341301699498}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay33
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1140,7 +1140,7 @@ GameObject:
   - component: {fileID: 2870545848390973758}
   - component: {fileID: 3821895226768614551}
   - component: {fileID: 1227011127099992901}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay06
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1249,7 +1249,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u8f6c\u5b50"
+  objName: "\u8F6C\u5B50"
   objName_en: Rotor
 --- !u!1 &2651226208103653602
 GameObject:
@@ -1262,7 +1262,7 @@ GameObject:
   - component: {fileID: 6027773606769581285}
   - component: {fileID: 8216666450732701511}
   - component: {fileID: 4608085677942189041}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1345,7 +1345,7 @@ GameObject:
   - component: {fileID: 5172143431653200212}
   - component: {fileID: 7528175466855752199}
   - component: {fileID: 8046768953837172242}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay36
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1493,7 +1493,7 @@ GameObject:
   - component: {fileID: 4577454593445200935}
   - component: {fileID: 4735298478873033874}
   - component: {fileID: 4911929752103207126}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay38
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1602,7 +1602,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u89e6\u70b9/\u62e8\u6746"
+  objName: "\u89E6\u70B9/\u62E8\u6746"
   objName_en: Contact / toggle lever
 --- !u!1 &3120678430977017458
 GameObject:
@@ -1615,7 +1615,7 @@ GameObject:
   - component: {fileID: 2282507929835283771}
   - component: {fileID: 8449342758415258263}
   - component: {fileID: 4525687047483830052}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay35
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1698,7 +1698,7 @@ GameObject:
   - component: {fileID: 8256082623569221622}
   - component: {fileID: 814174030895458454}
   - component: {fileID: 1529721074536219755}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay24
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1781,7 +1781,7 @@ GameObject:
   - component: {fileID: 5894278467887912059}
   - component: {fileID: 8818924935163028852}
   - component: {fileID: 7851285341084934031}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1930,7 +1930,7 @@ GameObject:
   - component: {fileID: 1467430525322160746}
   - component: {fileID: 2755994351716342346}
   - component: {fileID: 8356407305608460534}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay27
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2079,7 +2079,7 @@ GameObject:
   - component: {fileID: 2497698090472839298}
   - component: {fileID: 8211320670932512138}
   - component: {fileID: 8157371917862597261}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay08
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2162,7 +2162,7 @@ GameObject:
   - component: {fileID: 3628964269106749566}
   - component: {fileID: 7743544506633619766}
   - component: {fileID: 7702900024508725393}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2245,7 +2245,7 @@ GameObject:
   - component: {fileID: 8736433323080648310}
   - component: {fileID: 6306565635681358999}
   - component: {fileID: 5402778290113201192}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2328,7 +2328,7 @@ GameObject:
   - component: {fileID: 6346694163722432773}
   - component: {fileID: 711872650378184480}
   - component: {fileID: 1597208459370584980}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2411,7 +2411,7 @@ GameObject:
   - component: {fileID: 7872884878888516365}
   - component: {fileID: 7498830580009101337}
   - component: {fileID: 6664301471738983546}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay39
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2562,7 +2562,7 @@ GameObject:
   - component: {fileID: 7459659261917816774}
   - component: {fileID: 4154446170749516856}
   - component: {fileID: 1737857339450833995}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2671,7 +2671,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u63a5\u7ebf\u76d2\u76d6"
+  objName: "\u63A5\u7EBF\u76D2\u76D6"
   objName_en: Terminal box cover
 --- !u!1 &5879597773522014437
 GameObject:
@@ -2686,7 +2686,7 @@ GameObject:
   - component: {fileID: 4981326165809981453}
   - component: {fileID: 2645606223242324779}
   - component: {fileID: 5130627435617991955}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2795,7 +2795,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u8054\u63a5\u5668"
+  objName: "\u8054\u63A5\u5668"
   objName_en: Coupling
 --- !u!1 &6492547055012034782
 GameObject:
@@ -2806,7 +2806,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 123502978042019608}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Rotate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2876,7 +2876,7 @@ GameObject:
   - component: {fileID: 115231311146156572}
   - component: {fileID: 6447917013063214280}
   - component: {fileID: 2246733126295562494}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay28
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2959,7 +2959,7 @@ GameObject:
   - component: {fileID: 8552761794272838071}
   - component: {fileID: 6364693438416150000}
   - component: {fileID: 8673579196646473312}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay37
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3042,7 +3042,7 @@ GameObject:
   - component: {fileID: 2734768019635244808}
   - component: {fileID: 6206633628041056530}
   - component: {fileID: 7781638175178679200}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay41
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3125,7 +3125,7 @@ GameObject:
   - component: {fileID: 4685728230537705086}
   - component: {fileID: 8591909942018196904}
   - component: {fileID: 6366883087805895576}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay09
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3208,7 +3208,7 @@ GameObject:
   - component: {fileID: 8453832309531240829}
   - component: {fileID: 5886764386184660942}
   - component: {fileID: 2667442893304556660}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay30
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3291,7 +3291,7 @@ GameObject:
   - component: {fileID: 3569929141185363919}
   - component: {fileID: 787527457698586839}
   - component: {fileID: 34687236350516633}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay31
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3374,7 +3374,7 @@ GameObject:
   - component: {fileID: 559680257524887845}
   - component: {fileID: 6755962571932135391}
   - component: {fileID: 5921187196950131395}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay26
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3457,7 +3457,7 @@ GameObject:
   - component: {fileID: 428807672692038672}
   - component: {fileID: 6009518472657156686}
   - component: {fileID: 6538616690039975499}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3540,7 +3540,7 @@ GameObject:
   - component: {fileID: 5183744985704285817}
   - component: {fileID: 4185025231092302258}
   - component: {fileID: 2829775000723745090}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay23
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3689,7 +3689,7 @@ GameObject:
   - component: {fileID: 6959071606937252625}
   - component: {fileID: 7195764492513822441}
   - component: {fileID: 6719481218911830437}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3772,7 +3772,7 @@ GameObject:
   - component: {fileID: 6979462919980107521}
   - component: {fileID: 998389148239331588}
   - component: {fileID: 5621745948688090915}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3855,7 +3855,7 @@ GameObject:
   - component: {fileID: 2912198213860946707}
   - component: {fileID: 2920671884221544535}
   - component: {fileID: 8134856684433616867}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3938,7 +3938,7 @@ GameObject:
   - component: {fileID: 7070259902310754786}
   - component: {fileID: 917933826865927512}
   - component: {fileID: 8623622682074095535}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay40
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4136,7 +4136,7 @@ GameObject:
   - component: {fileID: 5929506502363431013}
   - component: {fileID: 3292274490773105002}
   - component: {fileID: 5078538929753561172}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4219,7 +4219,7 @@ GameObject:
   - component: {fileID: 2693956083920977624}
   - component: {fileID: 299077905041239575}
   - component: {fileID: 2614376109893995780}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4302,7 +4302,7 @@ GameObject:
   - component: {fileID: 6168996055636685461}
   - component: {fileID: 8508331069913271260}
   - component: {fileID: 379140739057350216}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay29
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4387,7 +4387,7 @@ GameObject:
   - component: {fileID: 572716445528150605}
   - component: {fileID: 1991401781434835890}
   - component: {fileID: 4925042069126430381}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SpeedRelay02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4496,7 +4496,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u7aef\u76d6"
+  objName: "\u7AEF\u76D6"
   objName_en: End cover
 --- !u!1 &9212831080585204598
 GameObject:

@@ -8,7 +8,7 @@ namespace WSU3.Core.Steps.Conditions
     /// <summary>
     /// 点击条件：点击指定交互物即完成。
     ///
-    /// 点击由 `InteractiveManager` 统一检测（`ScreenPointToRay + Physics.Raycast`）后经
+    /// 点击由 `InteractiveManager` 统一检测（`ViewportPointToRay + Physics.Raycast`）后经
     /// `GlobalInteractionEventData` 派发；本条件**不自己订阅**事件，等 `StepManager` 在 Waiting 期间转发
     /// （见 `ConditionBase.OnInteraction` 的说明）。
     ///
