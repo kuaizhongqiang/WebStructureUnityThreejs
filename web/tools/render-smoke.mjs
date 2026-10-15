@@ -28,93 +28,9 @@ import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
-import { inflateSync } from 'node:zlib'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
-
-/**
- * 解码 PNG 并统计色彩分布 —— 用来**确定性**地判断"画布不是纯色白屏"，
- * 而不是靠人眼看图（8bit / 非隔行 / RGB 或 RGBA，Playwright 截图即此格式）。
- */
-function pngStats(buffer) {
-  let offset = 8
-  let width = 0
-  let height = 0
-  let bitDepth = 0
-  let colorType = 0
-  const idat = []
-  while (offset < buffer.length) {
-    const length = buffer.readUInt32BE(offset)
-    const type = buffer.toString('ascii', offset + 4, offset + 8)
-    const data = buffer.subarray(offset + 8, offset + 8 + length)
-    if (type === 'IHDR') {
-      width = data.readUInt32BE(0)
-      height = data.readUInt32BE(4)
-      bitDepth = data[8]
-      colorType = data[9]
-    } else if (type === 'IDAT') {
-      idat.push(data)
-    } else if (type === 'IEND') {
-      break
-    }
-    offset += 12 + length
-  }
-  const channels = colorType === 6 ? 4 : colorType === 2 ? 3 : 0
-  if (channels === 0 || bitDepth !== 8) {
-    throw new Error(`不支持的 PNG 格式：colorType=${colorType} bitDepth=${bitDepth}`)
-  }
-  const raw = inflateSync(Buffer.concat(idat))
-  const stride = width * channels
-  const pixels = Buffer.alloc(height * stride)
-  let pos = 0
-  for (let y = 0; y < height; y += 1) {
-    const filter = raw[pos]
-    pos += 1
-    const line = raw.subarray(pos, pos + stride)
-    pos += stride
-    const prev = y === 0 ? null : pixels.subarray((y - 1) * stride, y * stride)
-    const cur = pixels.subarray(y * stride, (y + 1) * stride)
-    for (let x = 0; x < stride; x += 1) {
-      const a = x >= channels ? cur[x - channels] : 0
-      const b = prev ? prev[x] : 0
-      const c = prev && x >= channels ? prev[x - channels] : 0
-      let v = line[x]
-      if (filter === 1) v = (v + a) & 0xff
-      else if (filter === 2) v = (v + b) & 0xff
-      else if (filter === 3) v = (v + ((a + b) >> 1)) & 0xff
-      else if (filter === 4) {
-        const p = a + b - c
-        const pa = Math.abs(p - a)
-        const pb = Math.abs(p - b)
-        const pc = Math.abs(p - c)
-        v = (v + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c)) & 0xff
-      } else if (filter !== 0) {
-        throw new Error(`未知 PNG 过滤器：${filter}`)
-      }
-      cur[x] = v
-    }
-  }
-
-  const unique = new Set()
-  let minLum = 255
-  let maxLum = 0
-  for (let y = 0; y < height; y += 2) {
-    for (let x = 0; x < width; x += 2) {
-      const i = y * stride + x * channels
-      unique.add((pixels[i] << 16) | (pixels[i + 1] << 8) | pixels[i + 2])
-      const lum = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3
-      if (lum < minLum) minLum = lum
-      if (lum > maxLum) maxLum = lum
-    }
-  }
-  return {
-    width,
-    height,
-    uniqueColors: unique.size,
-    minLum: Math.round(minLum),
-    maxLum: Math.round(maxLum),
-  }
-}
+import { pngStats } from './lib/png-stats.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const webRoot = resolve(here, '..')

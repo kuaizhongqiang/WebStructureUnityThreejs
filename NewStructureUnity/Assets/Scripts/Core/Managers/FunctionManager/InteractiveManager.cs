@@ -10,7 +10,7 @@ namespace WSU3.Core.Managers.FunctionManager
     /// <summary>
     /// 交互管理器：**三维拾取、交互派发与登记的唯一落点**（DEC-80 / DEC-84）。
     ///
-    /// 检测就在这里：`CoreUpdate()` 每帧做一次 `Camera.ScreenPointToRay` + `Physics.Raycast`，
+    /// 检测就在这里：`CoreUpdate()` 每帧做一次 `Camera.ViewportPointToRay` + `Physics.Raycast`，
     /// 命中后按需调物体上的 `InvokeEnter / InvokeExit / InvokeDown / InvokeUp / InvokeClick`
     /// （物体是**被动**的，见 <see cref="InteractiveObjBase"/>）——
     /// **注册表的意义就是"由管理器统一检测、统一派发"**，所以不再依赖 EventSystems 的指针回调。
@@ -112,7 +112,9 @@ namespace WSU3.Core.Managers.FunctionManager
 
         public override void Init(Action isInitComplete = null)
         {
-            cam = GlobalManager.MainCamera;
+            // 拾取相机 = **出画面的那台**（结构站是主相机的子对象 `ColorCamera`：它把模型渲染进 RT，
+            // 再由合成铺满画布）—— 口径与原因见 `CameraManager.GetPickCamera`。
+            cam = CameraManager.GetPickCamera();
             EnsureEventSystem();
 
             EventBus<ViewFocusRequestEvent>.Subscribe(OnViewFocus);
@@ -183,10 +185,23 @@ namespace WSU3.Core.Managers.FunctionManager
         /// <summary>当前指针下的交互物（不可交互的返回 null，等价于"没点到"）。</summary>
         private InteractiveObjBase RaycastTarget()
         {
+            if (cam == null) cam = CameraManager.GetPickCamera();
             if (cam == null) cam = Camera.main;
             if (cam == null) return null;
 
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+            // ⚠️ 必须用**归一化视口坐标**，不能再用 `ScreenPointToRay(Input.mousePosition)`：
+            //   `ScreenPointToRay` 是按**相机自己的 `pixelWidth/pixelHeight`** 把屏幕像素折成 NDC 的，
+            //   而挂了 `targetTexture` 的相机这两个值**就是 RT 的尺寸**（不是画布尺寸）——
+            //   结构站的拾取相机（颜色相机）正挂着 1920×1080 的 RT，浏览器里画布却是视口尺寸，
+            //   于是"点哪儿都不中、悬停也没高光"（2026-10-15 实测：画布正中处射线偏 20.6°、指到左下）。
+            //   而 `ViewportPointToRay` 只认"画面里的比例"，与 RT 尺寸、画布尺寸都无关，
+            //   正好对上"合成把 RT 拉伸铺满画布"的显示口径（相机没挂 RT 时两者等价，实测 0.00°）。
+            Vector3 mouse = Input.mousePosition;
+            Vector3 viewport = new Vector3(
+                mouse.x / Mathf.Max(1f, Screen.width),
+                mouse.y / Mathf.Max(1f, Screen.height),
+                0f);
+            Ray ray = cam.ViewportPointToRay(viewport);
             if (!Physics.Raycast(ray, out RaycastHit hit, RayMaxDistance)) return null;
 
             InteractiveObjBase obj = hit.collider.GetComponentInParent<InteractiveObjBase>();

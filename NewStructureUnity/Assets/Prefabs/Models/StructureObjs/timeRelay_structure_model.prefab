@@ -757,17 +757,17 @@ PrefabInstance:
     - target: {fileID: -4910954405215469020, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -616971847841711202, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -7793677036479767, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
@@ -777,7 +777,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
@@ -787,17 +787,17 @@ PrefabInstance:
     - target: {fileID: 1829961543782520235, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 2546011262575794211, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7590529331409283412, guid: ebabb0a3dc1a6414694d80c1379e2b4c,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -878,7 +878,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u8854\u94c1"
+  objName: "\u8854\u94C1"
   objName_en: Armature
 --- !u!1 &822326551494579180 stripped
 GameObject:
@@ -922,7 +922,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u77ac\u65f6\u89e6\u70b9"
+  objName: "\u77AC\u65F6\u89E6\u70B9"
   objName_en: Instantaneous contact
 --- !u!1 &5170596396917631574 stripped
 GameObject:
@@ -966,7 +966,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u7ebf\u5708"
+  objName: "\u7EBF\u5708"
   objName_en: Coil
 --- !u!1 &7312784421760204249 stripped
 GameObject:
@@ -1010,7 +1010,7 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: "\u94c1\u82af"
+  objName: "\u94C1\u82AF"
   objName_en: Core
 --- !u!4 &8904697861811457945 stripped
 Transform:
