@@ -209,6 +209,20 @@ try {
   // 让桩构建按契约"回消息"（等价于在地址栏加 `?wsu3_stub=protocol`，见 tools/pipeline/make-stub-unity.mjs）
   await page.addInitScript(() => {
     window.__WSU3_STUB_PROTOCOL__ = true
+    // 预置"画质已选过"（A4 首启弹窗不出现）—— 仅在**没有**本机存档时播种（不覆盖冒烟过程积累的进度）；
+    // A4 自己的断言在 4c 节：清掉这个键再专门验首启弹窗。
+    if (!localStorage.getItem('wsu3.progress')) {
+      localStorage.setItem(
+        'wsu3.progress',
+        JSON.stringify({
+          version: 1,
+          user: { type: 'unknown', name: '' },
+          tasks: {},
+          attempts: [],
+          settings: { quality: 'high', theme: 'dark', qualityChosen: true },
+        }),
+      )
+    }
   })
 
   // ---------- 1. Three.js 任务页（TaskType.Equipment = 2 → list 骨架 + Three 三维视口）----------
@@ -551,6 +565,46 @@ try {
   )
   check(home.theme === 'dark' || home.theme === 'light', '主题属性已设置', home.theme)
   await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
+
+  // ---------- 4c. A4 画质 / 首次设置：首启弹窗（三档卡片）+「使用推荐值」写存档 ----------
+  // 前面各节都带着"画质已选过"的种子跑；这里显式写入 qualityChosen:false 模拟首启
+  // （不能 removeItem —— addInitScript 见键缺失会重新播种），首启弹窗应当出现，
+  // 桌面环境点「使用推荐值」= 高清 + 记"已选过"，之后弹窗不再出现。
+  await page.evaluate(() => {
+    localStorage.setItem(
+      'wsu3.progress',
+      JSON.stringify({
+        version: 1,
+        user: { type: 'unknown', name: '' },
+        tasks: {},
+        attempts: [],
+        settings: { quality: 'high', theme: 'dark', qualityChosen: false },
+      }),
+    )
+  })
+  // ⚠️ hash 导航不会重载页面 —— store 在首次启动时就读过存档了，必须**真 reload** 才能让
+  // qualityChosen:false 生效（这也是首启弹窗的真实场景：第一次进页面时就读到 false）。
+  await page.reload({ waitUntil: 'load' })
+  await page.waitForSelector('.ui-mask .ui-dialog', { timeout: 10000 })
+  const qualityText = await page.evaluate(
+    () => document.querySelector('.ui-dialog__body')?.innerText.replace(/\s+/g, ' ') ?? '',
+  )
+  check(
+    qualityText.includes('选择画面质量') && qualityText.includes('标清') && qualityText.includes('超清'),
+    'A4 画质：首启弹窗出现（三档卡片齐全）',
+    qualityText.slice(0, 60),
+  )
+  await page.screenshot({ path: resolve(artifactsDir, 'a4-quality.png'), fullPage: false })
+  await page.locator('.ui-dialog__foot .ui-btn', { hasText: '使用推荐值' }).click()
+  await page.waitForSelector('.ui-dialog', { state: 'detached', timeout: 5000 })
+  const savedSettings = await page.evaluate(
+    () => JSON.parse(localStorage.getItem('wsu3.progress') ?? '{}')?.settings ?? {},
+  )
+  check(
+    savedSettings.qualityChosen === true && savedSettings.quality === 'high',
+    'A4 画质：使用推荐值 → 存档写入（高清 + 已选标记，桌面推荐=高清）',
+    JSON.stringify(savedSettings),
+  )
 
   // ---------- 4b. 启动流程（DEC-101）：start → login → menu，且目录页能退出回登录 ----------
   // 判据是**真的点**（不是读路由表）：本期只允许游客，所以登录页**不该有输入框**。

@@ -43,6 +43,7 @@ import { ModelStage } from '@/viewer/ModelStage'
 import { deviceOfProject, loadSceneTables, modelOfDevice } from '@/viewer/scene-assets'
 import { loadVideoIndex, videoFileOf, videoUrlOf } from '@/viewer/video-assets'
 import { unityBridge } from '@/unity/unity-bridge-instance'
+import { unityQualityOf } from '@/platform/device'
 import { attachHost, detachHost, ensureUnityInstance } from '@/unity/UnityHost'
 import { UnitySession, type UnitySessionState } from '@/unity/UnitySession'
 import type { UnityFailure } from '@/unity/UnityLoader'
@@ -534,6 +535,8 @@ async function mountUnityView(): Promise<void> {
     })
     // 会话按任务建/弃；构造函数里"桥已握手"会立刻补发 onHandshake（app:init 不丢）
     unitySession = new UnitySession(unityBridge, {
+      // 画质随本机存档（A4：首启弹窗 / 右上「画质」按钮写入；超清对 Unity 归 high）
+      qualityProfile: unityQualityOf(progress.settings.quality),
       handlers: {
         onHandshake: () => {
           bridgeReady.value = true

@@ -13,6 +13,11 @@ const MOBILE_UA_PATTERN = /Android|iPhone|iPad|iPod|Mobile/i
 
 export type QualityProfile = 'low' | 'high'
 
+/** 存档画质档（`low` / `high` / `ultra`，A4 三档）→ Unity 画质档（超清归 high）。 */
+export function unityQualityOf(quality: 'low' | 'high' | 'ultra'): QualityProfile {
+  return quality === 'low' ? 'low' : 'high'
+}
+
 export interface DeviceProfile {
   readonly isWeChat: boolean
   readonly isMobile: boolean

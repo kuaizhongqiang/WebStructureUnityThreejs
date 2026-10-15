@@ -14,6 +14,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ArrowLeft, LogOut, Maximize, SlidersHorizontal, CircleHelp } from 'lucide-vue-next'
 import RouteBar from './RouteBar.vue'
 import ShellCard from './ShellCard.vue'
+import QualityDialog from './QualityDialog.vue'
 import { TaskType } from '@/contracts'
 
 const props = withDefaults(
@@ -61,6 +62,9 @@ onBeforeUnmount(() => media?.removeEventListener('change', syncNarrow))
 
 const showRoute = computed(() => props.route)
 const showTopright = computed(() => props.actions || props.exit)
+
+/** A4：右上「画质」按钮重开画质设置弹窗（首启的那次由 App.vue 挂出）。 */
+const qualityOpen = ref(false)
 </script>
 
 <template>
@@ -85,7 +89,7 @@ const showTopright = computed(() => props.actions || props.exit)
           <button class="ui-iconbtn ui-iconbtn--icon" title="全屏">
             <Maximize :size="14" />
           </button>
-          <button class="ui-iconbtn ui-iconbtn--icon" title="画质">
+          <button class="ui-iconbtn ui-iconbtn--icon" title="画质" @click="qualityOpen = true">
             <SlidersHorizontal :size="14" />
           </button>
           <button class="ui-iconbtn ui-iconbtn--icon" title="帮助">
@@ -101,6 +105,8 @@ const showTopright = computed(() => props.actions || props.exit)
     <main class="app-main">
       <slot />
     </main>
+
+    <QualityDialog v-if="qualityOpen" @close="qualityOpen = false" />
 
     <footer class="app-statusbar">
       <div class="ui-statusbar">

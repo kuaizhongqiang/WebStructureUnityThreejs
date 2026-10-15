@@ -28,7 +28,12 @@ export interface ProgressFile {
   tasks: Record<string, TaskProgress>
   /** 成绩记录（结构预留：多次作答/多次考核都要能存） */
   attempts: Array<{ taskType: number; score: number; at: string }>
-  settings: { quality: 'low' | 'high' | 'ultra'; theme: 'dark' | 'light' }
+  settings: {
+    quality: 'low' | 'high' | 'ultra'
+    theme: 'dark' | 'light'
+    /** A4：用户是否已主动选过画质（false = 首启，根组件挂出画质设置弹窗） */
+    qualityChosen: boolean
+  }
 }
 
 const STORAGE_KEY = 'wsu3.progress'
@@ -43,7 +48,7 @@ function emptyFile(): ProgressFile {
     user: { type: 'unknown', name: '' }, // 当期以游客进入，进入后再置 student（DEC-04 不拦游客）
     tasks,
     attempts: [],
-    settings: { quality: 'high', theme: 'dark' },
+    settings: { quality: 'high', theme: 'dark', qualityChosen: false },
   }
 }
 
@@ -80,6 +85,9 @@ export const useProgressStore = defineStore('progress', () => {
   const statusOf = (type: TaskType): CompletionStatus =>
     file.value.tasks[String(type)]?.status ?? 'unfinished'
 
+  /** 本机设置（画质 / 主题 / 是否已选过画质）—— 视图只读这里，不挖 `file`。 */
+  const settings = computed(() => file.value.settings)
+
   const scoreOf = (type: TaskType): number | null => file.value.tasks[String(type)]?.score ?? null
 
   function complete(type: TaskType, score: number | null = null): void {
@@ -98,6 +106,13 @@ export const useProgressStore = defineStore('progress', () => {
     persist()
   }
 
+  /** A4：用户在画质设置弹窗里主动选档（写档位 + 记"已选过"，首启弹窗不再出现）。 */
+  function chooseQuality(quality: ProgressFile['settings']['quality']): void {
+    file.value.settings.quality = quality
+    file.value.settings.qualityChosen = true
+    persist()
+  }
+
   function setTheme(theme: ProgressFile['settings']['theme']): void {
     file.value.settings.theme = theme
     persist()
@@ -105,6 +120,7 @@ export const useProgressStore = defineStore('progress', () => {
 
   return {
     file,
+    settings,
     completedCount,
     total,
     percent,
@@ -113,6 +129,7 @@ export const useProgressStore = defineStore('progress', () => {
     complete,
     reset,
     setQuality,
+    chooseQuality,
     setTheme,
     persist,
   }
