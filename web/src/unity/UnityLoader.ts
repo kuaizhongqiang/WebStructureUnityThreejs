@@ -86,7 +86,7 @@ export function unityBaseUrl(key: string): string {
  * **预压缩版本（.br/.gz）不在这里拼** —— 交给服务器按 `Accept-Encoding` 命中并附 `Content-Encoding`，
  * 这正是 electron/server.js 已经实现的行为，也是 Unity 推荐的服务端配置方式。
  */
-function resolveUrls(base: string, loaderPath: string, version?: string) {
+export function resolveUrls(base: string, loaderPath: string, version?: string) {
   const normalized = loaderPath.replace(/\\/g, '/')
   const prefix = normalized.replace(/\.loader\.js$/, '')
   // ★ 版本指纹必须带上：Unity 的 dataCaching 会按 **URL** 把 `.data` 存进 IndexedDB，
@@ -101,7 +101,7 @@ function resolveUrls(base: string, loaderPath: string, version?: string) {
   }
 }
 
-function injectScript(src: string): Promise<void> {
+export function injectScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>(`script[data-wsu3-unity="${src}"]`)
     if (existing) {
@@ -131,7 +131,7 @@ function injectScript(src: string): Promise<void> {
 }
 
 /** 超时包装：Unity 卡在 wasm 编译时不会自己 reject，必须由我们判超时。 */
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`加载超时（${timeoutMs / 1000}s）`)), timeoutMs)
     promise.then(

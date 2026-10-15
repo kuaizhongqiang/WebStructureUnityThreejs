@@ -24,7 +24,13 @@ class FakeBridge {
   readonly sent: SentMessage[] = []
   /** false 模拟"Unity 实例还没挂上"（真桥此时会抛 `BridgeProtocolError`） */
   attached = true
+  /** 模拟"桥已经握过手"（单实例常驻时后来者会话会走这条路径，D-25） */
+  ready: boolean | null = false
   private readonly handlers = new Map<string, Set<BridgeHandler>>()
+
+  isReady(): boolean | null {
+    return this.ready
+  }
 
   on(type: string, handler: BridgeHandler): () => void {
     let set = this.handlers.get(type)

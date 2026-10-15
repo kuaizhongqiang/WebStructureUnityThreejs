@@ -165,6 +165,11 @@ export class UnitySession {
     this.qualityProfile = options.qualityProfile ?? 'high'
     this.contentVersion = options.contentVersion ?? '1'
     this.subscribe()
+
+    // 单实例常驻（DEC-145 / D-25）：桥是模块级单例、实例常驻 —— 本会话作为"后来者"挂上来时
+    // 握手可能早就发生过了（unity:ready 只在 onReady 那一刻分发一次）。
+    // 立刻补发 onHandshake，否则 app:init 不会发、任务页的状态条会永远停在"未握手"。
+    if (bridge.isReady() === true) this.onHandshake(BRIDGE_PROTOCOL_VERSION)
   }
 
   /** 只读状态快照（每次读到的都是新对象，视图可以安全地塞进响应式容器）。 */
@@ -275,6 +280,14 @@ export class UnitySession {
   ping(): void {
     this.pingSentAt = Date.now()
     this.post('debug:ping', { at: this.pingSentAt })
+  }
+
+  /**
+   * 恢复运行（`runtime:resume`）：常驻画布从停泊区搬回任务页容器后调一次。
+   * 隐藏期间 Unity 的 rAF 不暂停，但宿主可见性 / 输入闸门需要对齐（Unity 侧 TaskFlowManager 订阅）。
+   */
+  resume(): void {
+    this.post('runtime:resume', {})
   }
 
   /** 取消订阅。**卸载 Unity 前必须调**（否则订阅会留在被清空的桥里，语义含混）。 */

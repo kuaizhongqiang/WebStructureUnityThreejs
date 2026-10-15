@@ -42,9 +42,10 @@ import { Viewer } from '@/viewer/Viewer'
 import { ModelStage } from '@/viewer/ModelStage'
 import { deviceOfProject, loadSceneTables, modelOfDevice } from '@/viewer/scene-assets'
 import { loadVideoIndex, videoFileOf, videoUrlOf } from '@/viewer/video-assets'
-import { UnityBridge } from '@/unity/UnityBridge'
+import { unityBridge } from '@/unity/unity-bridge-instance'
+import { attachHost, detachHost, ensureUnityInstance } from '@/unity/UnityHost'
 import { UnitySession, type UnitySessionState } from '@/unity/UnitySession'
-import { mountUnity, type UnityFailure, type UnityHandle } from '@/unity/UnityLoader'
+import type { UnityFailure } from '@/unity/UnityLoader'
 
 const route = useRoute()
 const router = useRouter()
@@ -354,17 +355,16 @@ const unityProgress = ref(0)
 const unityFailure = ref<UnityFailure | null>(null)
 /** Unity 侧是否已完成协议握手（DEC-07）；显示在状态条上，冒烟也断言它 */
 const bridgeReady = ref(false)
-let unityHandle: UnityHandle | null = null
-/** 已挂载的构建键（响应式：模板要显示它，**不能**直接引用非响应式的 `unityHandle`） */
+/** 已挂载的构建键（响应式：模板要显示它） */
 const unityKey = ref<string | null>(null)
-const bridge = new UnityBridge()
 
 const unityBuild = computed(() => runtime.unityBuildFor(taskType.value))
 
 // —— 会话层：桥的时序与状态（`UnitySession`）——
 /**
- * 会话**必须早于 `mountUnity` 建**：`mountUnity` 内部会 `bridge.attach()`，
- * 而 Unity 侧的握手可能紧跟着就来 —— 订阅晚一步就会丢掉那一次 `unity:ready`。
+ * 会话按任务建/弃；桥与实例都是**模块级常驻**（`unity-bridge-instance` / `UnityHost`，D-25）——
+ * 实例创建那一刻桥就接上了（UnityHost 内部），所以这里不存在"晚订阅丢握手"的问题；
+ * 会话构造函数还会在"桥已握手"时立刻补发 onHandshake（app:init 不丢）。
  */
 let unitySession: UnitySession | null = null
 /** 桥的状态快照（响应式镜像；会话本身是纯逻辑，不碰 Vue） */
@@ -514,66 +514,62 @@ function clearPanels(): void {
 }
 
 async function mountUnityView(): Promise<void> {
-  if (unityHandle) return
   const build = unityBuild.value
   if (!build || !unityContainer.value) {
     unityPhase.value = 'absent'
     return
   }
+  if (unityPhase.value === 'loading') return // 幂等：加载中的重复触发不重复挂
   unityPhase.value = 'loading'
   unityProgress.value = 0
   unityFailure.value = null
   focusedPartKey.value = null
   clearPanels()
 
-  // 会话先建（订阅要先于 attach 到位，见上面 `unitySession` 的注释）
-  unitySession = new UnitySession(bridge, {
-    handlers: {
-      onHandshake: () => {
-        bridgeReady.value = true
-        refreshBridgeState()
-      },
-      onEngineProgress: refreshBridgeState,
-      onAssetsReady: refreshBridgeState,
-      onSceneReady: refreshBridgeState,
-      onSceneExited: () => {
-        focusedPartKey.value = null
-        refreshBridgeState()
-      },
-      onStep: refreshBridgeState,
-      onCompleted: refreshBridgeState,
-      onPicked: refreshBridgeState,
-      onParts: refreshBridgeState,
-      onHover: refreshBridgeState,
-      onError: refreshBridgeState,
-      onPong: refreshBridgeState,
-      onPanelRequest,
-    },
-  })
-  refreshBridgeState()
-
   try {
-    unityHandle = await mountUnity({
-      container: unityContainer.value,
-      build,
-      bridge,
-      onProgress: (value) => {
-        unityProgress.value = value
+    // 常驻实例（D-25 / DEC-145）：只在第一次真正加载；之后 attach 只是搬画布，瞬间完成。
+    // 桥在实例创建成功的那一刻就被接上（见 UnityHost），握手不会丢。
+    await ensureUnityInstance(build, (value) => {
+      unityProgress.value = value
+    })
+    // 会话按任务建/弃；构造函数里"桥已握手"会立刻补发 onHandshake（app:init 不丢）
+    unitySession = new UnitySession(unityBridge, {
+      handlers: {
+        onHandshake: () => {
+          bridgeReady.value = true
+          refreshBridgeState()
+        },
+        onEngineProgress: refreshBridgeState,
+        onAssetsReady: refreshBridgeState,
+        onSceneReady: refreshBridgeState,
+        onSceneExited: () => {
+          focusedPartKey.value = null
+          refreshBridgeState()
+        },
+        onStep: refreshBridgeState,
+        onCompleted: refreshBridgeState,
+        onPicked: refreshBridgeState,
+        onParts: refreshBridgeState,
+        onHover: refreshBridgeState,
+        onError: refreshBridgeState,
+        onPong: refreshBridgeState,
+        onPanelRequest,
       },
     })
-    unityKey.value = unityHandle.key
+    refreshBridgeState()
+
+    // 挂靠：把常驻画布搬进本页视口容器（已就绪时这一步只是 DOM 搬挂，瞬间完成）
+    attachHost(unityContainer.value)
+    unityKey.value = build.key
     unityPhase.value = 'ready'
-    // 握手是 Unity 侧主动调 `__WSU3_BRIDGE__.onReady` 完成的（DEC-07）。
-    // 正常路径由 `onHandshake` 事件驱动（不再轮询）；这里只兜一次"挂载时就已握上"的情况，
-    // 让"握没握手"这件事在状态条上始终是看得见的事实。
-    if (bridge.isReady() === true) bridgeReady.value = true
+    // 从停泊区回来：让 Unity 侧对齐可见性 / 输入闸门（幂等，多发自晾）
+    unitySession.resume()
     // 内容可能比 Unity 先到位：直接要求进入本任务（幂等；握手未完成时会话会在握手后补发）
     enterCurrentTask()
   } catch (cause) {
     unitySession?.dispose()
     unitySession = null
     bridgeState.value = null
-    unityHandle = null
     unityFailure.value = cause as UnityFailure
     unityPhase.value = 'failed'
   }
@@ -588,22 +584,19 @@ function enterCurrentTask(): void {
 }
 
 async function unmountUnityView(): Promise<void> {
-  const handle = unityHandle
-  unityHandle = null
   unityKey.value = null
   clearPanels()
   bridgeReady.value = false
 
-  // 协议上应当先 `scene:exit` 再销毁，但本实现离开任务时**直接销毁 Unity 实例**（DEC-12）——
-  // 所以这一条多半来不及被处理。如实写明，不假装它生效了：
-  // "实例常驻、只换资源包"是 DEC-81 的目标，要等容器在任务之间常驻（而不是随 `practice` 分支被摘掉）
-  // 之后才谈得上。见 `docs/design/09` §2/§5。
+  // 单实例常驻（D-25 / DEC-145）：离开任务**不再销毁实例** ——
+  // 先发 `scene:exit`（现在 Unity 有充足时间处理了），会话弃掉，画布搬回停泊区隐藏。
+  // 下次进 Unity 任务时 attach 回来，直接可交互，没有加载进度条与 Unity 启动画面。
   unitySession?.exitTask()
   unitySession?.dispose()
   unitySession = null
   bridgeState.value = null
 
-  if (handle) await handle.unmount()
+  detachHost()
   if (unityPhase.value !== 'absent') unityPhase.value = 'idle'
 }
 
