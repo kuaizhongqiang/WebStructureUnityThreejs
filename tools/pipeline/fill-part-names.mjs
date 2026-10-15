@@ -43,12 +43,15 @@ async function readSource(file) {
   const map = new Map()
   for (const b of blocks) {
     if (b.classId !== 114 || !/^\s*structureName:/m.test(b.body)) continue
-    const goRef = b.body.match(/^\s*m_GameObject: \{fileID: (\d+)\}/m)
+    const goRef = b.body.match(/^\s*m_GameObject: \{fileID: (-?\d+)\}/m)
     const cn = b.body.match(/^\s*structureName: "?([^"\r\n]*?)"?\s*$/m)
     const en = b.body.match(/^\s*structureNameEn: (.+)$/m)
     if (!goRef || !cn?.[1]) continue
+    const value = { cn: unescapeUnity(cn[1]), en: en?.[1]?.trim() ?? '' }
     const name = gameObjectName(blocks, goRef[1])
-    if (name && !map.has(name)) map.set(name, { cn: unescapeUnity(cn[1]), en: en?.[1]?.trim() ?? '' })
+    // 双索引：GameObject 名（主）+ GO fileID（兜底，两侧同源时 fileID 一致）
+    if (name && !map.has(name)) map.set(name, value)
+    if (!map.has(goRef[1])) map.set(goRef[1], value)
   }
   return map
 }
@@ -69,10 +72,12 @@ function fillOurs(text, sourceMap) {
   for (const b of blocks) {
     if (b.classId !== 114 || !/^[ \t]*objName:/m.test(b.body)) continue
     if (!/^[ \t]*objName:[ \t]*$/m.test(b.body)) continue // 已有值不覆盖
-    const goRef = b.body.match(/^[ \t]*m_GameObject: \{fileID: (\d+)\}/m)
+    const goRef = b.body.match(/^[ \t]*m_GameObject: \{fileID: (-?\d+)\}/m)
     if (!goRef) continue
     const name = gameObjectName(blocks, goRef[1])
-    const value = name ? sourceMap.get(name) : undefined
+    // join 优先按 GameObject 名；名字对不上（如 timeRelay 的数字名部件）时按 **GO fileID** 兜底
+    // —— 两侧预制体同源搬运、fileID 一致（timeRelay：衔铁/瞬时触点/线圈/铁芯 就是这么对上的）。
+    const value = (name ? sourceMap.get(name) : undefined) ?? (goRef[1] ? sourceMap.get('#' + goRef[1]) : undefined) ?? sourceMap.get(goRef[1])
     if (!value) {
       unmatched.add(name ?? '(无名)')
       continue
