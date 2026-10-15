@@ -849,7 +849,7 @@
             "SpeedRelay_Coat"
           ],
           "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay01": [
-            "SpeedRelay"
+            "SpeedRelay_Coat"
           ],
           "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay28": [
             "SpeedRelay"
@@ -1052,7 +1052,7 @@
           "SpeedRelay_Coat"
         ],
         "speedRelay_structure_model/Scale/SpeedRelay/SpeedRelay01": [
-          "SpeedRelay"
+          "SpeedRelay_Coat"
         ],
         "speedRelay_structure_model/Scale/SpeedRelay/Rotate/SpeedRelay28": [
           "SpeedRelay"

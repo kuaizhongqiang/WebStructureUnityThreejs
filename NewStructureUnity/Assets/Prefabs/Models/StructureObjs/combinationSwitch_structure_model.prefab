@@ -122,8 +122,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8f6c\u8f74/\u5f39\u7c27"
+  objName_en: Shaft / spring
 --- !u!1 &908337945713036419
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,8 +994,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u51f8\u8f6e"
+  objName_en: Cam
 --- !u!1 &4186918671251904459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,8 +1202,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u52a8\u9759\u89e6\u70b9/\u63a5\u7ebf\u67f1"
+  objName_en: Moving and fixed contacts / terminals
 --- !u!1 &4752961661448471263
 GameObject:
   m_ObjectHideFlags: 0
@@ -1861,8 +1861,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u624b\u67c4"
+  objName_en: Handle
 --- !u!1 &7454493806774876481
 GameObject:
   m_ObjectHideFlags: 0
@@ -2120,8 +2120,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7edd\u7f18\u6746"
+  objName_en: Insulating rod
 --- !u!1 &7804782289434078962
 GameObject:
   m_ObjectHideFlags: 0

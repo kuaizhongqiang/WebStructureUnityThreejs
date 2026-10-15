@@ -236,8 +236,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u4e3b\u89e6\u70b9"
+  objName_en: Main contact
 --- !u!1 &242046656428643857
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,8 +712,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u5e95\u5ea7"
+  objName_en: Base
 --- !u!1 &2210617069592225273
 GameObject:
   m_ObjectHideFlags: 0
@@ -970,8 +970,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8854\u94c1"
+  objName_en: Armature
 --- !u!1 &2728989065770986172
 GameObject:
   m_ObjectHideFlags: 0
@@ -1280,8 +1280,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u706d\u5f27\u7f69"
+  objName_en: Arc chute
 --- !u!1 &3870746145198514815
 GameObject:
   m_ObjectHideFlags: 0
@@ -1403,8 +1403,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u4e3b\u89e6\u70b9"
+  objName_en: Main contact
 --- !u!1 &4276903627678891665
 GameObject:
   m_ObjectHideFlags: 0
@@ -1589,8 +1589,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7ebf\u5708"
+  objName_en: Coil
 --- !u!1 &4366199967863376124
 GameObject:
   m_ObjectHideFlags: 0
@@ -2004,8 +2004,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u87ba\u4e1d"
+  objName_en: Screw
 --- !u!1 &7425869190268788277
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,8 +2127,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u5f39\u7c27"
+  objName_en: Spring
 --- !u!1 &7463447304046755049
 GameObject:
   m_ObjectHideFlags: 0
@@ -2416,8 +2416,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u9759\u94c1\u82af"
+  objName_en: Fixed core
 --- !u!1 &8714608631996852159
 GameObject:
   m_ObjectHideFlags: 0
@@ -2539,5 +2539,5 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8f85\u52a9\u89e6\u70b9"
+  objName_en: Auxiliary contact

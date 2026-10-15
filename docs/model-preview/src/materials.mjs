@@ -217,8 +217,9 @@ export async function resolveMaterials({ gltf, device, stem, spec, lookup, log, 
           record.errors.push(String(error.message ?? error))
         }
       } else {
-        material.metalness = entry.scalars?.metallic ?? 0
-        material.roughness = 1 - (entry.scalars?.smoothness ?? 0.5)
+        // 无 mask 材质的常数钉死 m=0 / r=0.5（DEC-134②，与产品侧 ModelStage 同批同值）
+        material.metalness = 0
+        material.roughness = 0.5
       }
 
       // ③ 表面模式（MASK 靠贴图 alpha 裁，BLEND 靠 baseColor 的 α）
@@ -242,7 +243,8 @@ export async function resolveMaterials({ gltf, device, stem, spec, lookup, log, 
         material.depthWrite = true
       }
 
-      material.side = entry.doubleSided ? THREE.DoubleSide : THREE.FrontSide
+      // 双面渲染移除（DEC-134②）：一律单面（与产品侧同批）
+      material.side = THREE.FrontSide
       material.needsUpdate = true
     }
 
