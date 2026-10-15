@@ -14,8 +14,10 @@ import { useRouter } from 'vue-router'
 import AppShell from '@/components/AppShell.vue'
 import { useContentStore } from '@/stores/content'
 import { useProgressStore } from '@/stores/progress'
+import { useRuntimeStore } from '@/stores/runtime'
 import { labelOf } from '@/domain/registry'
-import type { TaskType } from '@/contracts'
+import { ensureUnityInstance } from '@/unity/UnityHost'
+import { TaskType } from '@/contracts'
 
 const router = useRouter()
 const content = useContentStore()
@@ -72,7 +74,30 @@ function exitToLogin(): void {
   void router.push({ name: 'login' })
 }
 
-onMounted(() => void content.ensureCatalog())
+onMounted(() => {
+  void content.ensureCatalog()
+  void preloadUnity()
+})
+
+/**
+ * Unity 常驻实例的**预载**（D-25 / DEC-145：负责人口径"进 task 直接可交互"）。
+ * 菜单页是 `start → login → menu` 的最后一段：在这里就把常驻实例建起来（幂等），
+ * 之后进任何 Unity 任务都只是"搬画布"，没有加载进度条与 Unity 启动画面。
+ *
+ * 失败静默 —— 任务页挂靠时会重试并把失败原因摆出来（UnityHost 的失败状态会被清掉允许重试）；
+ * 清单缺失（dev 直跑）时 `unityBuildFor` 返回 null，这里什么都不做。
+ */
+async function preloadUnity(): Promise<void> {
+  const runtime = useRuntimeStore()
+  await runtime.load()
+  const build = runtime.unityBuildFor(TaskType.Structure) ?? runtime.unityBuilds[0] ?? null
+  if (!build) return
+  try {
+    await ensureUnityInstance(build)
+  } catch (cause) {
+    console.warn('[menu] Unity 预载失败（进任务页会重试）：', cause)
+  }
+}
 </script>
 
 <template>

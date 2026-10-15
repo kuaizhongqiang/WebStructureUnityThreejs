@@ -1,16 +1,16 @@
 # docs/ 索引
 
-> 读者：AI 与人｜状态：2026-10-14 **v11（与仓库现状同步：DEC-01~DEC-121 / 各轮问答均已关闭 / "计划·待办·记录"三分 / 资源包**全量迁 Addressables**（DEC-118）/ 步骤系统新增动画运行模式与碰撞体闸门（DEC-119~121）/ Web⇄Unity 全量交互与免 Web 自测已落地）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
+> 读者：AI 与人｜状态：2026-10-15 **v12（计划与待办迁 GitHub Issues；`PLAN.md` / `TODO.md` / `PAGE-WORKLIST.md` 改为指针 stub；`RECORD.md` / `DECISIONS.md` 保留）**｜权威层级：`requirement/raw/raw-requirement.md` > `../AGENT.md` > **`DECISIONS.md`** > 其他。
 >
-> **"接下来做什么 / 还剩什么 / 做完了什么"三分**（2026-10-13 拆开，此前混在 `PLAN.md` 里）：
-> `PLAN.md`（只写计划）· `TODO.md`（只写待办）· `RECORD.md`（只写记录与证据）。
+> **"接下来做什么 / 还剩什么"在 GitHub Issues**（<https://github.com/kuaizhongqiang/WebStructureUnityThreejs/issues>；映射速查见 `TODO.md` stub 的 #30 ~ #42）；
+> **"做完了什么 / 已定什么"仍在仓库**：`RECORD.md`（记录与证据，只增不改）· `DECISIONS.md`（决策，只增不改）。
 
 ## 先看哪份（按角色）
 
 | 你是什么 | 顺序 |
 |---|---|
-| **人（决策者）** | `DECISIONS.md`（**已定的 101 条**；轮次与关闭状态以它为准，不在别处重复维护）→ `TODO.md`（**现在还剩什么**）→ `requirement/requirement-analysis.md` → `PAGE-WORKLIST.md` 与 `ui-mockups/index.html`（**当前正在审的就是这两份**） |
-| **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ `requirement/requirement-analysis.md` → 与任务相关的单篇 `research/` / `design/` |
+| **人（决策者）** | GitHub **Issues**（**现在还剩什么**）→ `DECISIONS.md`（已定事项，只增不改）→ `RECORD.md`（做完了什么 + 证据）→ `ui-mockups/index.html`（样式成果页） |
+| **AI（执行者）** | `../AGENT.md`（约定与纪律）→ `DECISIONS.md`（**先读，已定事项不许再问**）→ GitHub **Issues**（认领待办）→ 与任务相关的单篇 `research/` / `design/` |
 
 ## 文件清单
 
@@ -30,10 +30,10 @@
 | `OPEN-QUESTIONS-R2.md` | 第二轮问题清单（28 题）**原文保留**，答案已固化到 `DECISIONS.md` §10（DEC-35~62） | v1 已关闭 |
 | `OPEN-QUESTIONS-R3.md` | 第三轮问题清单（10 题）**原文保留**，答案已固化到 `DECISIONS.md` §14（DEC-63~72） | v1 已关闭 |
 | **`OPEN-QUESTIONS-R6.md`** | **第六轮问题清单**：Unity 脚手架的 **UI 形态**（"全部 UI 用 Web"与 DEC-14 的冲突）与**启动阶段 Web→Unity 事件 / 预加载 / 数据形状**；**26 条 + 补充 14 条（S1~S14）均已答**，已固化为 DEC-80 ~ DEC-88 | v1 已关闭 |
-| **`PLAN.md`** | **执行计划（活文档）**：**只写"接下来做什么"** —— 分批（P0→P1→P2）/ 落点 / 验收标准。已定结论在 `DECISIONS.md`、待办在 `TODO.md`、已完成的在 `RECORD.md` | **活文档** |
-| **`TODO.md`** | **待办（活文档）**：**只写"现在还剩什么"** —— §1 待拍板 / §2 待做 / §3 未提交；已合并此前散在 `DECISIONS.md` 未闭合表、`OPEN-QUESTIONS*`、`PAGE-WORKLIST.md`、`ui-mockups/TODO.md` 的待办（做法：一条索引 + 一句话状态 + 来源链接，不在两处重复写） | **活文档** |
-| **`RECORD.md`** | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表（原 `PLAN.md` §1 的表**整表迁入**）+ 日期 / 提交 / PR；只增不改 | **活文档** |
-| **`PAGE-WORKLIST.md`** | **页面工作清单**：按既有同类软件实测盘点的全部页面（6 组 / 11 个任务页 / 通用组件）+ 里程碑 + 照什么不照什么 | 待审 |
+| **`PLAN.md`** | ~~执行计划~~ → **指针 stub**（2026-10-15 起）：只保留"关键落点与纪律速查"（§3 / §3.1 Plastic 坑）；计划项已迁 **GitHub Issues** | 已迁移 |
+| **`TODO.md`** | ~~待办~~ → **指针 stub**（2026-10-15 起）：含 #30 ~ #42 的映射速查；新增待办直接开 Issue | 已迁移 |
+| **`RECORD.md`** | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表 + 日期 / 提交 / PR；**只增不改** | **活文档** |
+| **`PAGE-WORKLIST.md`** | ~~页面工作清单~~ → **指针 stub**（2026-10-15 起）：整表迁 Issue #30 | 已迁移 |
 | `ui-mockups/index.html` | **样式清单（UI 元件规范）** + 页面索引：设计令牌、组件分节、**第九节框体令牌（圆角 6 级 / 0.5px 描边阶梯 / elevation / 交互叠加层 / 焦点环）**、29 个页面入口 | 待审 |
 | `ui-mockups/pages/*.html` | **29 个页面的静态排版稿**（A 组 10 · B 组 5 · C 组 11 · D 组 3），逐页审核用 | 待审 |
 | `ui-mockups/tokens.css` | **令牌层（产品用）**：颜色 / 字号 / 间距 / 圆角 / 描边 α 阶梯 / elevation / 交互叠加层 / 焦点环 / 毛玻璃 / 亮色方案 | — |
@@ -101,11 +101,10 @@
    需要遵循外部规则时，把**规则本身摘录进 `docs/`** 再引用我们自己的文档（见 `AGENT.md` §4「文档里禁止出现外部引用」）。
 4. `DECISIONS.md` **只增不改**；推翻旧决策要新增条目并注明取代关系。
 5. **⚠️ 计划 / 待办 / 记录三分，各只有一个维护点**（完整纪律与联动节奏见 `AGENT.md` §4「文档三分」）：
-   - **接下来做什么** → `PLAN.md`（分批 / 落点 / 验收标准；**不写"已完成"、不写"待拍板"**）；
-   - **现在还剩什么** → `TODO.md`（§1 待拍板 / §2 待做 / §3 未提交；**所有新增待办只加这里**）；
+   - **接下来做什么 / 现在还剩什么** → **GitHub Issues**（新增待办直接开 Issue，标题带 `[待办]` / `[计划]` / `[暂缓]` 前缀）；
    - **做完了什么 + 证据** → `RECORD.md`（日期 / 结果 / 提交号 / PR；**只增不改**）；
    - **已定事项** → `DECISIONS.md`（只增不改）。
-   - **同一件事不许两处写**：待办在 `TODO.md` 只落一条（一句话 + 来源链接），细节留在来源文件里。
-   - **完成一项的动作**：从 `TODO.md` 删掉该条 → 在 `RECORD.md` 加一行（带证据）→ 若它还是 `PLAN.md` 的计划项，改状态或删除。
+   - **同一件事不许两处写**：Issue 里不写"已完成"（那是 `RECORD.md` 的事，Issue 只负责关闭）。
+   - **完成一项的动作**：关掉对应 Issue → 在 `RECORD.md` 加一行（带证据）。
 6. **不写外部引用**：本目录内（`requirement/` 与 `research/` 的摘录档案除外）**不得**出现外部仓库名、外部工程名、本机绝对路径；
    需要遵循外部规则时，把**规则本身**摘录进 `docs/design/NN-*.md`，再引用我们自己的文档（见 `AGENT.md` §4）。
