@@ -833,6 +833,7 @@ try {
       probe,
       hasElement: Boolean(element),
       src: element ? element.currentSrc || element.getAttribute('src') || '' : '',
+      controlsList: element ? String(element.controlsList ?? element.getAttribute('controlslist') ?? '') : '',
       readyState: element ? element.readyState : -1,
       videoWidth: element ? element.videoWidth : 0,
       videoHeight: element ? element.videoHeight : 0,
@@ -871,6 +872,11 @@ try {
       video.hasElement && /\/assets\/video\/.*\.mp4/.test(video.src),
       '原理页：<video> 指向产物里的视频（不是硬编路径）',
       video.src.slice(-44),
+    )
+    check(
+      video.controlsList.includes('nodownload'),
+      '原理页：播放器不带下载按钮（controlslist=nodownload）',
+      video.controlsList || '(空)',
     )
     check(
       video.paragraphs.some((item) => item.length > 10),

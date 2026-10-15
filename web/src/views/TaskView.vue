@@ -1040,6 +1040,7 @@ function finish(): void {
               class="app-video__el"
               :src="videoSrc"
               controls
+              controlslist="nodownload"
               playsinline
               preload="metadata"
               @error="onVideoError"
