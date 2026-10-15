@@ -8,7 +8,8 @@ namespace WSU3.Core.Interactive
     {
         [SerializeField] string objName;
         [SerializeField] string objName_en;
-
+        public string ObjectName => objName;
+        public string ObjectName_en => objName_en;
         protected override void Awake()
         {
             base.Awake();

@@ -178,9 +178,13 @@ export async function mountUnity(options: UnityMountOptions): Promise<UnityHandl
         } satisfies UnityFailure
       }
 
-      // ② 容器里准备画布（Unity 自己不会创建 canvas，必须由宿主给）
+      // ② 容器里准备画布（Unity 自己不会创建 canvas，必须由宿主给）。
+      //    ⚠ id 必须非空：真框架的 jsCanvasSelector() 用 `'#' + canvas.id` 解析画布
+      //    （run dependency 回调里就会调），空 id → 选择器 '#' → querySelector 抛
+      //    SyntaxError → main() 中断 → "Unity 加载失败"。官方模板默认 id 是 unity-canvas。
       container.innerHTML = ''
       const canvas = document.createElement('canvas')
+      canvas.id = 'unity-canvas'
       canvas.style.width = '100%'
       canvas.style.height = '100%'
       canvas.style.display = 'block'

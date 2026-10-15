@@ -163,15 +163,23 @@
 }
 
 /* ------------------------------------------------ 三维视口：按容器比例自适应
-   页面**不给**宽高，只给"必须占满剩余空间"；相机 aspect / CanvasScaler 在内部处理。 */
+   页面**不给**宽高，只给"必须占满剩余空间"；相机 aspect / CanvasScaler 在内部处理。
+   **不铺底色**（DEC-128 同一条规则：嵌在 `.ui-panel__body` 里的画布不再自画一层）——
+   框与底由外层 `.ui-panel` 的毛玻璃给，这里再铺一层就是两层半透明叠加、比旁边的框明显深。
+   原先这里是"网格 + `--bg-0` 深色实底"（排版稿里已退役的那套）。 */
 .app-viewport {
   position: relative;
   flex: 1;
   min-height: 220px;
   border-radius: var(--radius-panel);
   overflow: hidden;
-  background: var(--grid);
-  background-color: var(--bg-0);
+  background: none;
+}
+/* 视口嵌在面板里时把高度撑满：.ui-panel 是 flex 列、__body 有 flex:1 的确定高度，
+   但 __body 本身是 block —— 上面那条 flex:1 不生效，视口只剩 min-height 在撑
+   （实测真 Unity 起来后画布被压成 220px 高的一条，其余全是面板底）。 */
+.ui-panel__body > .app-viewport {
+  height: 100%;
 }
 .app-viewport > canvas {
   display: block;

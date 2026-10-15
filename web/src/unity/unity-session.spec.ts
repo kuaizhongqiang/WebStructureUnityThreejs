@@ -395,3 +395,78 @@ describe('UnitySession：出站与容错', () => {
     expect(session.snapshot.errors).toHaveLength(1)
   })
 })
+
+describe('UnitySession：部件清单与悬停（scene:parts / object:hover）', () => {
+  it('scene:parts 落到状态并触发回调（层级字段原样保留，成树是展示层的事）', () => {
+    const onParts = vi.fn()
+    const { bridge, session } = setup({ onParts })
+
+    bridge.emit('scene:parts', {
+      parts: [
+        { key: 'body', name: '传感器本体', nameEn: 'Sensor Body' },
+        { key: 'sensing', name: '感温元件', parentKey: 'body' },
+      ],
+    })
+
+    expect(onParts).toHaveBeenCalledTimes(1)
+    expect(session.snapshot.parts).toEqual([
+      { key: 'body', name: '传感器本体', nameEn: 'Sensor Body' },
+      { key: 'sensing', name: '感温元件', parentKey: 'body' },
+    ])
+  })
+
+  it('部件条目读不懂就丢掉（缺 key / 缺 name / parts 不是数组），不抛异常', () => {
+    const { bridge, session } = setup()
+
+    bridge.emit('scene:parts', {
+      parts: [{ key: 'ok', name: '好条目' }, { key: 'no-name' }, { name: '没有键' }, 'abc', null],
+    })
+    expect(session.snapshot.parts).toEqual([{ key: 'ok', name: '好条目' }])
+
+    bridge.emit('scene:parts', { parts: 'not-an-array' })
+    expect(session.snapshot.parts).toEqual([])
+  })
+
+  it('object:hover 带坐标落到状态；空串键 = 移出（null）', () => {
+    const onHover = vi.fn()
+    const { bridge, session } = setup({ onHover })
+
+    bridge.emit('object:hover', { key: 'sensing', x: 0.42, y: 0.31 })
+    expect(session.snapshot.hover).toEqual({ key: 'sensing', x: 0.42, y: 0.31 })
+
+    bridge.emit('object:hover', { key: '', x: 0, y: 0 })
+    expect(session.snapshot.hover).toBeNull()
+    expect(onHover).toHaveBeenLastCalledWith(null)
+  })
+
+  it('悬停坐标越界会被夹回 0~1（浮标不许跑到画布外）', () => {
+    const { bridge, session } = setup()
+    bridge.emit('object:hover', { key: 'body', x: 1.8, y: -0.5 })
+    expect(session.snapshot.hover).toEqual({ key: 'body', x: 1, y: 0 })
+  })
+
+  it('focusPart 发 view:focus（载荷 { objectKey, animate }，空键不发）', () => {
+    const { bridge, session } = setup()
+    session.focusPart('sensing')
+    expect(bridge.payload('view:focus')).toEqual({ objectKey: 'sensing', animate: false })
+
+    session.focusPart('  ', { animate: true })
+    expect(bridge.types('view:focus')).toBe(1)
+  })
+
+  it('换任务与退站都清空部件清单与悬停（部件键是按器件的，留着会串味）', () => {
+    const { bridge, session } = setup()
+    bridge.emit('scene:parts', { parts: [{ key: 'a', name: 'A' }] })
+    bridge.emit('object:hover', { key: 'a', x: 0.5, y: 0.5 })
+
+    session.enterTask(TaskType.Structure, 'clip_contactor')
+    expect(session.snapshot.parts).toEqual([])
+    expect(session.snapshot.hover).toBeNull()
+
+    bridge.emit('scene:parts', { parts: [{ key: 'b', name: 'B' }] })
+    bridge.emit('object:hover', { key: 'b', x: 0.1, y: 0.1 })
+    session.exitTask()
+    expect(session.snapshot.parts).toEqual([])
+    expect(session.snapshot.hover).toBeNull()
+  })
+})

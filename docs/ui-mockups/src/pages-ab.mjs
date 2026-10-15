@@ -286,7 +286,7 @@ ${Array.from({ length: 10 })
           </div>
         </div>
         <div class="ui-alert ui-alert--info">
-          <span class="u${icon('info', 14)}-alert__icon">i</span>
+          <span class="ui-alert__icon">${icon('info', 14)}</span>
           <span>规范：<b>钉在画布左上角，距上 / 左各 50px，宽度随内容自适应</b>（<code>width: max-content</code>，上限 <code>--shell-card-max-w: 560px</code>，超长内容走省略号），高约 70px；左 LOGO + 中英双行，右侧依次为 面包屑 → 进度 → 画质 → 用户。<b>顶栏不再横贯全宽</b>，因此内容区多出 84px 高度；站点线左端要为浮卡留 620px、右端留 268px（给页面右上按钮组）。<b>浮卡永不收起</b>（保证返回入口常驻）。</span>
         </div>
       </div>`,
@@ -323,7 +323,7 @@ ${Array.from({ length: 10 })
           <div class="ui-dialog__foot"><button class="ui-btn">再检查一下</button><button class="ui-btn ui-btn--primary">确认提交</button></div>
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
-          <span class="u${icon('info', 14)}-alert__icon">i</span>
+          <span class="ui-alert__icon">${icon('info', 14)}</span>
           <span>规范：宽 520px；标题 54px；正文 24px 内边距；底部右对齐双按钮（次按钮在左、主按钮在右）。4 类语义：返回 / 退出 / 跳转 / 提交。</span>
         </div>
       </div>`,
@@ -340,7 +340,7 @@ ${Array.from({ length: 10 })
     body: `
       <div style="padding:24px 32px;display:flex;flex-direction:column;gap:20px">
         <div class="ui-alert ui-alert--info">
-          <span class="u${icon('info', 14)}-alert__icon">i</span>
+          <span class="ui-alert__icon">${icon('info', 14)}</span>
           <span>
             <b>休眠不是遮罩。</b>无操作达到阈值后，把<b>可伸缩的功能条自动收起</b>（只留把手），并暂停三维渲染；
             鼠标移动 / 点击把手即恢复。<b>标题栏与右上返回按钮永不收起</b>，始终给用户出口。
@@ -592,7 +592,7 @@ ${route('LineConnection', ['Purpose', 'Equipment'], { narrow: true })}
         </div>
 
         <div class="ui-alert ui-alert--info">
-          <span class="u${icon('info', 14)}-alert__icon">i</span>
+          <span class="ui-alert__icon">${icon('info', 14)}</span>
           <span>返回是"离开当前页面"的唯一入口，必须在<b>标题栏下方的右上角</b>，不随功能条收起（见 A9）。</span>
         </div>
       </div>`,

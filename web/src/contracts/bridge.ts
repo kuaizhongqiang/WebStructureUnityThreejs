@@ -42,6 +42,8 @@ export const BRIDGE_MESSAGES_FROM_UNITY = [
   'ui:request', // 请求弹界面（教学界面在 DOM 层）
   'unity:error', // 错误上报
   'debug:pong', // 自检回应
+  'scene:parts', // 部件清单（含层级；供右侧部件树）
+  'object:hover', // 指针移入 / 移出某个部件（带归一化坐标，供名字浮标）
 ] as const
 
 export type BridgeMessageFromWeb = (typeof BRIDGE_MESSAGES_FROM_WEB)[number]

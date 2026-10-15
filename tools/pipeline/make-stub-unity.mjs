@@ -54,6 +54,12 @@ const buildName = `stub-${args.key}`
  * `ui:result` 有没有回、`task:completed` 有没有落地"这一整条**能在浏览器里自动验**，
  * 不必等真 WebGL 构建就位（DEC-59 要求构建前关编辑器，那条路很慢）。
  *
+ * 结构任务（TaskType 8，DEC-130 / DEC-131）额外会说**新协议**：
+ *   · 进站自动发一条 `scene:parts`（部件清单，扁平条目 + `parentKey` 表达层级，树由 Web 侧组装）；
+ *   · `object:hover` 不定时自动发 —— 冒烟脚本在稳定时机调 `window.__WSU3_STUB_HOVER__(key, x, y)`
+ *     手动触发（key 空串 = 移出），避免与对话框时序赛跑；
+ *   · Web 发来的 `view:focus`（部件树点选）记录在 `window.__WSU3_STUB_STATE__.focused`。
+ *
  * 仿真用的 refId 取**真实内容数据里的 id**（`contactor_ui_measure` /
  * `contactor_q_mainContact` / `contactor_measure_step1_tips`），所以它顺带验了
  * "内容数据 → 面板文案"这一段；可用 `window.__WSU3_STUB_UI_REF__` 等覆盖。
@@ -71,7 +77,7 @@ function __wsu3StubProtocol(config) {
   var questionAttempts = 0
   var state = {
     readyAt: null, appInit: null, entered: null, inputEnabled: null,
-    replies: [], exited: null, completed: null,
+    replies: [], exited: null, completed: null, focused: null,
   }
   window.__WSU3_STUB_STATE__ = state
 
@@ -79,6 +85,15 @@ function __wsu3StubProtocol(config) {
   var uiRef = window.__WSU3_STUB_UI_REF__ || 'contactor_ui_measure'
   var questionRef = window.__WSU3_STUB_QUESTION_REF__ || 'contactor_q_mainContact'
   var tipsRef = window.__WSU3_STUB_TIPS_REF__ || 'contactor_measure_step1_tips'
+
+  // 结构任务的部件清单（名字随意，关键是"扁平条目 + parentKey"这一形状与契约一致）：
+  // 根在前、子随 parentKey 挂下，Web 侧 buildPartTree 组装成树（缺父/成环在那里面挡住）。
+  var PARTS = [
+    { key: 'contactor/Root', name: '交流接触器', nameEn: 'AC Contactor' },
+    { key: 'contactor/Coil', name: '线圈', nameEn: 'Coil', parentKey: 'contactor/Root' },
+    { key: 'contactor/MainContact', name: '主触点', nameEn: 'Main Contact', parentKey: 'contactor/Root' },
+    { key: 'contactor/AuxContact', name: '辅助触点', nameEn: 'Aux Contact', parentKey: 'contactor/Root' },
+  ]
 
   function post(type, payload) {
     var bridge = window.__WSU3_BRIDGE__
@@ -98,6 +113,10 @@ function __wsu3StubProtocol(config) {
     later(180, function () { post('step:changed', { stepIndex: 0, stepTotal: STEPS, stepName: 'Step_1' }) })
     later(200, function () { post('ui:request', { kind: 'tips', refId: tipsRef }) })
     later(260, function () { post('ui:request', { kind: 'ui', refId: uiRef }) })
+    if (taskType === 8) {
+      // 结构任务：部件清单进站上报一次（层级由 parentKey 表达；悬停见 __WSU3_STUB_HOVER__）
+      later(140, function () { post('scene:parts', { parts: PARTS }) })
+    }
   }
 
   function handle(payload) {
@@ -109,6 +128,7 @@ function __wsu3StubProtocol(config) {
 
     if (message.type === 'app:init') { state.appInit = body; return }
     if (message.type === 'input:enable') { state.inputEnabled = body.enabled; return }
+    if (message.type === 'view:focus') { state.focused = body; return }
     if (message.type === 'debug:ping') { post('debug:pong', { at: body.at }); return }
     if (message.type === 'scene:exit') { state.exited = true; post('scene:exited', { taskType: taskType }); return }
 
@@ -143,6 +163,16 @@ function __wsu3StubProtocol(config) {
         later(80, function () { post('ui:request', { kind: 'question', refId: questionRef }) })
       }
     }
+  }
+
+  // 冒烟驱动口：在稳定时机手动发一条 object:hover（key 空串 = 移出）。
+  // 不自动定时发 —— 那会跟对话框时序赛跑，浮标"出现/消失"没法断言。
+  window.__WSU3_STUB_HOVER__ = function (key, x, y) {
+    post('object:hover', {
+      key: key || '',
+      x: typeof x === 'number' ? x : 0.5,
+      y: typeof y === 'number' ? y : 0.5,
+    })
   }
 
   return { handle: handle }

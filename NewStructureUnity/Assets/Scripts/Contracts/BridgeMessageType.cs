@@ -50,6 +50,16 @@ namespace WSU3.Contracts
         public const string UiRequest = "ui:request";
         public const string UnityError = "unity:error";
         public const string DebugPong = "debug:pong";
+        /// <summary>
+        /// 部件清单（含层级）：进站装配完成后上报一次，Web 侧的右侧"部件树"靠它渲染。
+        /// 部件名（`objName` / `objName_en`）**随预制体走**（DEC-104），所以只能由 Unity 上报，不进内容 JSON。
+        /// </summary>
+        public const string SceneParts = "scene:parts";
+        /// <summary>
+        /// 指针移入 / 移出了哪个部件（带归一化坐标）：Web 侧据此在画布上画"部件名称悬浮提示"。
+        /// 键为空串表示移出（回到空处）；只在**目标变化**时上报（另加限频），不要逐帧发。
+        /// </summary>
+        public const string ObjectHover = "object:hover";
 
         /// <summary>Web 会发给 Unity 的消息（订阅用）。</summary>
         public static readonly string[] FromWeb =
@@ -64,7 +74,7 @@ namespace WSU3.Contracts
         {
             UnityReady, UnityProgress, AssetsReady, SceneReady, SceneExited,
             StepChanged, TaskCompleted, ScoreReport, ObjectPicked, UiRequest,
-            UnityError, DebugPong,
+            UnityError, DebugPong, SceneParts, ObjectHover,
         };
 
         /// <summary>该 type 是否由 Web 发出。</summary>

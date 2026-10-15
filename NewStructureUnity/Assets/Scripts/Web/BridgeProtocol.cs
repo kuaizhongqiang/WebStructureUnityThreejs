@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using WSU3.Contracts;
+using WSU3.Contracts.Events;
 
 namespace WSU3.Web
 {
@@ -116,6 +118,31 @@ namespace WSU3.Web
     internal class ObjectPickedPayload
     {
         public string objectKey;
+    }
+
+    /// <summary>`scene:parts` 里的一条部件（扁平条目；层级靠 parentKey 表达，成树在 Web 侧）。</summary>
+    [Serializable]
+    internal class ScenePartEntryPayload
+    {
+        public string key;
+        public string name;
+        public string nameEn;
+        public string parentKey;
+    }
+
+    [Serializable]
+    internal class ScenePartsPayload
+    {
+        public List<ScenePartEntryPayload> parts = new List<ScenePartEntryPayload>();
+    }
+
+    /// <summary>`object:hover`：key 空串 = 移出；x/y 是相对画布**左上角**的归一化坐标（与 CSS 同原点）。</summary>
+    [Serializable]
+    internal class ObjectHoverPayload
+    {
+        public string key;
+        public float x;
+        public float y;
     }
 
     [Serializable]
@@ -298,6 +325,42 @@ namespace WSU3.Web
         public static void ObjectPicked(string objectKey)
         {
             Send(BridgeMessageType.ObjectPicked, new ObjectPickedPayload { objectKey = objectKey });
+        }
+
+        /// <summary>
+        /// 部件清单（`scene:parts`）：装配完成后上报一次，Web 侧据此渲染右侧"部件树"（DEC-131）。
+        /// 条目的 parentKey 指向**最近的"部件父级"**（不是每一个 Transform 节点）；
+        /// 部件名（`objName` / `objName_en`）随预制体走（DEC-104），不进内容 JSON。
+        /// 入参用契约层的 <see cref="ScenePartEntryData"/>（Core 的产物）—— 载荷映射收在这一层。
+        /// </summary>
+        public static void SceneParts(IReadOnlyList<ScenePartEntryData> parts)
+        {
+            var payload = new ScenePartsPayload();
+            if (parts != null)
+            {
+                for (int i = 0; i < parts.Count; i++)
+                {
+                    ScenePartEntryData part = parts[i];
+                    payload.parts.Add(new ScenePartEntryPayload
+                    {
+                        key = part?.Key ?? "",
+                        name = part?.Name ?? "",
+                        nameEn = part?.NameEn ?? "",     // JsonUtility 不认 null：统一空串，Web 侧视为"无"
+                        parentKey = part?.ParentKey ?? "", // 空串 = 顶层（Web 侧成树时当根）
+                    });
+                }
+            }
+
+            Send(BridgeMessageType.SceneParts, payload);
+        }
+
+        /// <summary>
+        /// 悬停目标变化（`object:hover`）：只在目标进出时上报（本身就是天然限频，不逐帧发 —— DEC-130）。
+        /// <paramref name="key"/> 空串 = 移出；x/y 为画布归一化坐标（0~1，原点左上）。
+        /// </summary>
+        public static void ObjectHover(string key, float x, float y)
+        {
+            Send(BridgeMessageType.ObjectHover, new ObjectHoverPayload { key = key, x = x, y = y });
         }
 
         /// <summary>

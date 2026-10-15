@@ -12,7 +12,7 @@
 | UI 外壳 | Vue 3.5 + Vue Router（hash 模式）+ Pinia | DEC-15 / DEC-16 |
 | 三维 | **裸 `three` 0.186**（自己封装 `Viewer` / `ModelStage`，不用 R3F / TresJS） | DEC-15 / DEC-98 |
 | 图标 | `lucide-vue-next`（与排版稿同一套图标） | — |
-| 测试 | Vitest（契约快照 + 内容适配 + 选件 + 原理页规则） | DEC-27 |
+| 测试 | Vitest（契约快照 + 内容适配 + 选件 + 原理页规则 + Unity 会话 / 部件树） | DEC-27 |
 | 规范 | ESLint + Prettier，**已进 pre-commit hook 与 CI** | DEC-52 |
 
 ## 命令
@@ -24,7 +24,7 @@ npm run typecheck     # vue-tsc --noEmit
 npm run lint          # eslint .
 npm run format        # prettier --write（门禁用 format:check）
 npm test              # vitest run
-npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线按数据画站 / 内容层 / Info 三维区 / 原理页视频（39 项断言）
+npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线按数据画站 / 内容层 / Info 三维区 / 原理页视频（64 项断言）
 npm run build         # 类型检查 + 生产构建 → dist/
 npm run preview       # 预览生产产物
 ```
@@ -65,6 +65,6 @@ npm run preview       # 预览生产产物
 
 ## 未完成（别当成已做）
 
-- Web 侧**步骤系统的落地面板**（`ui:request` / `ui:result` 的 DOM）与内容装配（`../docs/PLAN.md` P2-7a）。
+- ~~步骤系统的落地面板~~ **已落地**（2026-10-14，DEC-112：步骤进度 / 提示条 / 信息面板 / 答题面板，`object:picked` / `unity:error` 页面可见；结构任务的部件树 + `.ui-parttip` 见 DEC-130 与桥消息 `scene:parts` / `object:hover`）。**仍未做**的是 Unity 侧初始化（相机 / 交互闸门 / 高亮，`../docs/TODO.md` D-13 / D-21）。
 - 其余 C 组页面骨架（C2 任务目的 / C3 实验仪器 / C7 考核）仍与排版稿不同构（DEC-98 未闭合 c、DEC-99 已补 C4）。
-- 包体预算门禁（DEC-02）未落地，资产已到 39.6 MB + 视频 65.9 MB（`../docs/TODO.md` D-10）。
+- 包体预算门禁（DEC-02）未落地 —— 明细见 `../docs/TODO.md` D-10（GLB / 贴图 / HDR / 讲解视频 65.9 MB / AA 内容组按需下载，口径以那里为准）。

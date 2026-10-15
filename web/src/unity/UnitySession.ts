@@ -27,6 +27,8 @@ import { BRIDGE_PROTOCOL_VERSION, TASK_TYPES, type BridgeMessageFromUnity, TaskT
 import {
   UiPanelKind,
   UiResultKind,
+  type PartEntry,
+  type PartHover,
   type StepPanelRequest,
   type StepProgress,
   type TaskCompletion,
@@ -47,6 +49,8 @@ const MSG_OBJECT_PICKED = 'object:picked' satisfies BridgeMessageFromUnity
 const MSG_UI_REQUEST = 'ui:request' satisfies BridgeMessageFromUnity
 const MSG_UNITY_ERROR = 'unity:error' satisfies BridgeMessageFromUnity
 const MSG_DEBUG_PONG = 'debug:pong' satisfies BridgeMessageFromUnity
+const MSG_SCENE_PARTS = 'scene:parts' satisfies BridgeMessageFromUnity
+const MSG_OBJECT_HOVER = 'object:hover' satisfies BridgeMessageFromUnity
 
 /** Unity 侧只认这三个面板种类（见 `WebBridge.UiRequest`）；不认识的按 `ui` 处理（能弹就弹，弹不了回 unavailable）。 */
 const PANEL_KINDS: readonly string[] = [UiPanelKind.Tips, UiPanelKind.Ui, UiPanelKind.Question]
@@ -67,6 +71,10 @@ export interface UnitySessionState {
   completion: TaskCompletion | null
   /** 最近一次 `object:picked` 的部件 key */
   picked: string | null
+  /** 本任务的部件清单（`scene:parts`，**扁平**；成树见 `domain/part-tree.ts`） */
+  parts: readonly PartEntry[]
+  /** 指针当前停在哪（`object:hover`）；null = 没停在任何部件上 */
+  hover: PartHover | null
   /** 收到的错误（按时间升序，页面显示最近几条） */
   errors: readonly UnityErrorInfo[]
   /** 最近一次 `debug:pong` 的往返毫秒数（null = 没测过） */
@@ -82,6 +90,10 @@ export interface UnitySessionHandlers {
   onStep?(step: StepProgress): void
   onCompleted?(completion: TaskCompletion): void
   onPicked?(objectKey: string): void
+  /** `scene:parts` —— 本任务的部件清单（装配完成后一次） */
+  onParts?(parts: readonly PartEntry[]): void
+  /** `object:hover` —— 指针移入某个部件（`null` = 移出）；页面据此画名字浮标 */
+  onHover?(hover: PartHover | null): void
   /** `ui:request` —— 视图据此弹面板，然后用 `answer()` 回执（纪律见 `domain/step-panels.ts`） */
   onPanelRequest?(request: StepPanelRequest): void
   onError?(error: UnityErrorInfo): void
@@ -127,6 +139,8 @@ export class UnitySession {
     step: null,
     completion: null,
     picked: null,
+    parts: [],
+    hover: null,
     errors: [],
     latencyMs: null,
   }
@@ -197,6 +211,9 @@ export class UnitySession {
       step: null,
       completion: null,
       picked: null,
+      // 换任务 = 上一任务的部件清单与悬停全部作废（部件键是**按器件**的，留着会串味）
+      parts: [],
+      hover: null,
     }
     if (this.state.handshake) this.sendSceneEnter()
   }
@@ -206,7 +223,15 @@ export class UnitySession {
     if (this.intent === null) return
     this.intent = null
     this.enterDispatched = false
-    this.state = { ...this.state, assetsReady: false, sceneReady: false, step: null, picked: null }
+    this.state = {
+      ...this.state,
+      assetsReady: false,
+      sceneReady: false,
+      step: null,
+      picked: null,
+      parts: [],
+      hover: null,
+    }
     this.post('scene:exit', null)
   }
 
@@ -231,6 +256,19 @@ export class UnitySession {
    */
   answerPanel(kind: UiPanelKind, result: UiResultKind, detail?: string): void {
     this.post('ui:result', detail === undefined ? { kind, result } : { kind, result, detail })
+  }
+
+  /**
+   * 聚焦某个部件（`view:focus`）—— 右侧部件树点一行就调它，Unity 侧把它高亮
+   * （`InteractiveManager.OnViewFocus`：按 key 找物体、每次只亮一个、`scene:exit` 清掉）。
+   *
+   * 载荷是 `{ objectKey, animate }`；`animate` 目前**只影响 Unity 侧的日志**（镜头推进在 P2-6 接），
+   * 所以这里默认 false，不假装它已经会运镜。
+   */
+  focusPart(objectKey: string, options: { animate?: boolean } = {}): void {
+    const key = objectKey.trim()
+    if (key === '') return
+    this.post('view:focus', { objectKey: key, animate: options.animate === true })
   }
 
   /** 连通性自检（回包为 `debug:pong`，页面据此显示往返毫秒）。 */
@@ -265,6 +303,8 @@ export class UnitySession {
     on(MSG_UI_REQUEST, (payload) => this.onPanelRequest(payload))
     on(MSG_UNITY_ERROR, (payload) => this.onError(payload))
     on(MSG_DEBUG_PONG, (payload) => this.onPong(payload))
+    on(MSG_SCENE_PARTS, (payload) => this.onParts(payload))
+    on(MSG_OBJECT_HOVER, (payload) => this.onHover(payload))
   }
 
   private onHandshake(version: number): void {
@@ -320,7 +360,7 @@ export class UnitySession {
   }
 
   private onSceneExited = (taskType: TaskType): void => {
-    this.state = { ...this.state, assetsReady: false, sceneReady: false }
+    this.state = { ...this.state, assetsReady: false, sceneReady: false, parts: [], hover: null }
     this.handlers.onSceneExited?.(taskType)
   }
 
@@ -349,6 +389,19 @@ export class UnitySession {
     if (objectKey === '') return
     this.state = { ...this.state, picked: objectKey }
     this.handlers.onPicked?.(objectKey)
+  }
+
+  private onParts(payload: unknown): void {
+    const parts = readParts(payload)
+    this.state = { ...this.state, parts }
+    this.handlers.onParts?.(parts)
+  }
+
+  private onHover(payload: unknown): void {
+    // 键为空串 = 移出（Unity 侧把 null 串写成 ""），这里统一成 null
+    const hover = readHover(payload)
+    this.state = { ...this.state, hover }
+    this.handlers.onHover?.(hover)
   }
 
   private onPanelRequest(payload: unknown): void {
@@ -450,6 +503,39 @@ function readTaskType(payload: unknown): TaskType | null {
   const raw = readNumber(payload, 'taskType')
   if (!Number.isFinite(raw)) return null
   return TASK_TYPES.includes(raw as TaskType) ? (raw as TaskType) : null
+}
+
+/** `scene:parts.parts`：逐条防御式读（读不懂的条目**丢掉**，不抛异常、不阻断其余条目）。 */
+function readParts(payload: unknown): PartEntry[] {
+  const record = asRecord(payload)
+  const raw = record?.parts
+  if (!Array.isArray(raw)) return []
+  const parts: PartEntry[] = []
+  for (const item of raw) {
+    const key = readString(item, 'key')
+    const name = readString(item, 'name')
+    if (key === undefined || name === undefined) continue
+    const part: PartEntry = { key, name }
+    const nameEn = readString(item, 'nameEn')
+    const parentKey = readString(item, 'parentKey')
+    if (nameEn !== undefined) part.nameEn = nameEn
+    if (parentKey !== undefined) part.parentKey = parentKey
+    parts.push(part)
+  }
+  return parts
+}
+
+/** `object:hover`：键读不出（含空串）就是"移出"；坐标夹到 0~1，别让浮标跑到画布外。 */
+function readHover(payload: unknown): PartHover | null {
+  const key = readString(payload, 'key')
+  if (key === undefined) return null
+  const x = readNumber(payload, 'x')
+  const y = readNumber(payload, 'y')
+  return {
+    key,
+    x: Number.isFinite(x) ? Math.min(1, Math.max(0, x)) : 0,
+    y: Number.isFinite(y) ? Math.min(1, Math.max(0, y)) : 0,
+  }
 }
 
 function readBody(payload: unknown): UiRequestBody | undefined {

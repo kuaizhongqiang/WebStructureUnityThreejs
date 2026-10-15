@@ -14,9 +14,11 @@
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Check, ChevronRight, Move3d, Play, TriangleAlert, LoaderCircle } from 'lucide-vue-next'
+import { Check, ChevronDown, ChevronRight, LoaderCircle, Move3d, Play } from 'lucide-vue-next'
 import AppShell from '@/components/AppShell.vue'
+import BridgeStatusPanel from '@/components/BridgeStatusPanel.vue'
 import StepPanelHost from '@/components/StepPanelHost.vue'
+import UnityViewportPanel from '@/components/UnityViewportPanel.vue'
 import {
   TaskType,
   TASK_TYPES,
@@ -24,9 +26,11 @@ import {
   UiPanelKind,
   UiResultKind,
   ViewerStack,
+  type PartNode,
   type StepPanelRequest,
 } from '@/contracts'
 import { labelOf, metaOf, stackOf, isUnityTask } from '@/domain/registry'
+import { buildPartTree } from '@/domain/part-tree'
 import { showsPlaylist, videoNameAt, videoSectionsOf } from '@/domain/principle'
 import { StepPanelQueue } from '@/domain/step-panels'
 import { tipsOf, uiOf } from '@/domain/step-content'
@@ -387,15 +391,72 @@ const panelQuestion = computed(() =>
 
 /** 步骤进度（扁平序号）：直接来自 `step:changed`，不需要知道"进程"这层概念。 */
 const stepProgress = computed(() => bridgeState.value?.step ?? null)
-/** 最近一条 Unity 错误（`unity:error`；9001 那种非致命的也要显示出来）。 */
-const lastUnityError = computed(() => {
-  const errors = bridgeState.value?.errors ?? []
-  return errors.length > 0 ? errors[errors.length - 1] : null
-})
 /** 点中的部件（`object:picked`）。 */
 const pickedKey = computed(() => bridgeState.value?.picked ?? null)
-/** 完成事件（`task:completed`）；`score` 缺席表示 Unity 没给分（当前恒如此）。 */
-const completion = computed(() => bridgeState.value?.completion ?? null)
+// 注：`lastUnityError` 与 `completion` 两个派生值已随"步骤与桥状态"一起搬进
+// `components/BridgeStatusPanel.vue`（结构页与其余 Unity 页共用同一份口径）。
+
+// —— 结构页（DEC-131）：部件树与"部件名称悬浮提示" ——
+// 数据全部来自桥：清单是 `scene:parts`、悬停是 `object:hover`（名字随预制体走，DEC-104）。
+/** 本任务上报的部件清单（**扁平**，Unity 侧只报层级关系）。 */
+const reportedParts = computed(() => bridgeState.value?.parts ?? [])
+/** 成树；空键 / 认不出的父键 / 成环都在 `domain/part-tree.ts` 里挡住了。 */
+const partTree = computed(() => buildPartTree(reportedParts.value))
+
+/** 展平成"可渲染的行"：树是数据的形状，行是显示的形状（缩进按 depth）。 */
+interface PartRow {
+  key: string
+  name: string
+  nameEn?: string
+  depth: number
+  hasChildren: boolean
+}
+const partRows = computed<PartRow[]>(() => {
+  const rows: PartRow[] = []
+  const walk = (nodes: readonly PartNode[], depth: number): void => {
+    for (const node of nodes) {
+      const row: PartRow = { key: node.key, name: node.name, depth, hasChildren: node.children.length > 0 }
+      if (node.nameEn !== undefined) row.nameEn = node.nameEn
+      rows.push(row)
+      walk(node.children, depth + 1)
+    }
+  }
+  walk(partTree.value, 0)
+  return rows
+})
+
+/** 指针停在哪（`object:hover`）：把 key 换成有名字的那条 —— 名字只在上报的清单里。 */
+const hoveredPart = computed<{ name: string; nameEn?: string } | null>(() => {
+  const hover = bridgeState.value?.hover
+  if (hover === null || hover === undefined) return null
+  const found = partRows.value.find((row) => row.key === hover.key)
+  if (found === undefined) return null
+  return found.nameEn === undefined ? { name: found.name } : { name: found.name, nameEn: found.nameEn }
+})
+
+/**
+ * 浮标位置：**用 Unity 报的归一化坐标**（不是页面自己测的指针位置）——
+ * 三维里"指针压到哪个部件"只有 Unity 知道，页面自己去猜会在相机转动后错位。
+ * 偏移 12px 是为了别把被指的部件盖住。
+ */
+const partTipStyle = computed<Record<string, string>>((): Record<string, string> => {
+  const hover = bridgeState.value?.hover
+  if (hover === null || hover === undefined) return {}
+  return {
+    left: `calc(${(hover.x * 100).toFixed(2)}% + var(--sp-3))`,
+    top: `calc(${(hover.y * 100).toFixed(2)}% + var(--sp-3))`,
+  }
+})
+
+/** 当前"亮"着的那一行：悬停优先，其次右树点中的（`view:focus` 的本地回显 —— Unity 不会为它回 `object:picked`），再次 Unity 报的 picked。 */
+const focusedPartKey = ref<string | null>(null)
+const activePartKey = computed(() => bridgeState.value?.hover?.key ?? focusedPartKey.value ?? pickedKey.value)
+
+/** 点一行 = `view:focus`（Unity 侧按 key 找物体并高亮）。 */
+function focusPart(key: string): void {
+  focusedPartKey.value = key
+  unitySession?.focusPart(key)
+}
 
 function refreshBridgeState(): void {
   bridgeState.value = unitySession?.snapshot ?? null
@@ -455,6 +516,7 @@ async function mountUnityView(): Promise<void> {
   unityPhase.value = 'loading'
   unityProgress.value = 0
   unityFailure.value = null
+  focusedPartKey.value = null
   clearPanels()
 
   // 会话先建（订阅要先于 attach 到位，见上面 `unitySession` 的注释）
@@ -467,10 +529,15 @@ async function mountUnityView(): Promise<void> {
       onEngineProgress: refreshBridgeState,
       onAssetsReady: refreshBridgeState,
       onSceneReady: refreshBridgeState,
-      onSceneExited: refreshBridgeState,
+      onSceneExited: () => {
+        focusedPartKey.value = null
+        refreshBridgeState()
+      },
       onStep: refreshBridgeState,
       onCompleted: refreshBridgeState,
       onPicked: refreshBridgeState,
+      onParts: refreshBridgeState,
+      onHover: refreshBridgeState,
       onError: refreshBridgeState,
       onPong: refreshBridgeState,
       onPanelRequest,
@@ -806,124 +873,80 @@ function finish(): void {
               <span>移动端说明：进入 Unity 类任务会先尝试加载，失败再提示（DEC-53），不提前阻拦。</span>
             </div>
 
-            <!-- ── 步骤与桥状态：`step:changed` / `object:picked` / `task:completed` / `unity:error`
-                 四条**真实读数**都落在这里。以前 Web 侧这四条一条都没处理，所以"Unity 那边在跑、
-                 页面这边什么都不显示" —— 现在把它们变成看得见的事实，而不是靠猜。 ── -->
-            <div v-if="bridgeState" class="ui-col" style="gap: var(--sp-2)">
-              <div class="ui-small" style="font-weight: 600; color: var(--text-1)">步骤与桥状态</div>
-              <div class="ui-row" style="flex-wrap: wrap">
-                <span class="ui-badge" :class="bridgeState.handshake ? 'ui-badge--ok' : 'ui-badge--warn'">
-                  {{ bridgeState.handshake ? '已握手' : '待握手' }}
-                </span>
-                <span class="ui-badge" :class="bridgeState.assetsReady ? 'ui-badge--ok' : ''">
-                  {{ bridgeState.assetsReady ? '资产就绪' : '资产未就绪' }}
-                </span>
-                <span class="ui-badge" :class="bridgeState.sceneReady ? 'ui-badge--ok' : ''">
-                  {{ bridgeState.sceneReady ? '可交互' : '装配中' }}
-                </span>
-                <span v-if="pickedKey" class="ui-badge ui-badge--info">点中：{{ pickedKey }}</span>
-              </div>
-
-              <!-- 步骤进度：扁平序号，直接画（不用再关心"进程"这层概念） -->
-              <div v-if="stepProgress">
-                <div class="ui-row">
-                  <span class="ui-small">步骤 {{ stepProgress.index + 1 }} / {{ stepProgress.total }}</span>
-                  <span v-if="stepProgress.name" class="ui-small ui-muted">{{ stepProgress.name }}</span>
-                </div>
-                <div class="ui-progress">
-                  <div
-                    class="ui-progress__bar"
-                    :style="{
-                      width: `${((stepProgress.index + 1) / Math.max(1, stepProgress.total)) * 100}%`,
-                    }"
-                  />
-                </div>
-              </div>
-              <div v-else class="ui-small ui-muted">
-                还没有步骤推进 —— 进站后由 Unity 侧发 <code>step:changed</code>。
-              </div>
-
-              <!-- 完成：`score` 缺席就只说用时（成绩体系未建，**不编造分数**） -->
-              <div v-if="completion" class="ui-alert ui-alert--ok">
-                <Check :size="14" />
-                <span>
-                  任务完成（用时 {{ (completion.elapsedMs / 1000).toFixed(1) }}s）<template
-                    v-if="completion.score !== undefined"
-                    >，得分 {{ completion.score }}</template
-                  >。
-                </span>
-              </div>
-
-              <!-- Unity 侧错误：**非致命的也要显示**（9001"登记表里没有这个 clip"就是这么用的） -->
-              <div
-                v-if="lastUnityError"
-                class="ui-alert"
-                :class="lastUnityError.fatal ? 'ui-alert--err' : 'ui-alert--warn'"
-              >
-                <TriangleAlert :size="14" />
-                <span>[{{ lastUnityError.code }}] {{ lastUnityError.message }}</span>
-              </div>
-            </div>
+            <!-- 步骤与桥状态：四条真实读数的落点（抽成组件，与结构页共用同一份口径） -->
+            <BridgeStatusPanel :state="bridgeState" />
           </div>
         </div>
 
-        <div class="ui-panel" style="display: flex; flex-direction: column">
-          <div class="ui-panel__head">
-            三维视口（Unity）
-            <span class="ui-panel__right">
-              <span v-if="unityPhase === 'ready'" class="ui-badge ui-badge--ok">已挂载 · {{ unityKey }}</span>
-              <span v-else-if="unityPhase === 'loading'" class="ui-badge ui-badge--info">
-                <LoaderCircle :size="12" /> 加载中 {{ Math.round(unityProgress * 100) }}%
-              </span>
-              <span v-else-if="unityPhase === 'absent'" class="ui-badge ui-badge--warn">产物未就位</span>
-              <span v-else-if="unityPhase === 'failed'" class="ui-badge ui-badge--err">加载失败</span>
-              <span v-else class="ui-badge">待进入</span>
-            </span>
+        <UnityViewportPanel
+          :phase="unityPhase"
+          :progress="unityProgress"
+          :build-key="unityKey"
+          :failure="unityFailure"
+          @retry="unmountUnityView().then(mountUnityView)"
+          @back="back()"
+        >
+          <!-- 真 Unity 挂载点：由 UnityLoader 在这里创建 canvas -->
+          <div ref="unityContainer" style="position: absolute; inset: 0"></div>
+        </UnityViewportPanel>
+      </div>
+
+      <!-- structure：结构认知（DEC-131）—— 左画布 + 右部件树，与排版稿 C10 同构。
+           部件清单由 Unity 的 `scene:parts` 上报（部件名随预制体走，DEC-104），
+           悬停由 `object:hover` 上报、**名字浮标由 Web 侧画**（DEC-130）。 -->
+      <div v-else-if="meta.kind === 'structure'" class="app-split">
+        <UnityViewportPanel
+          :phase="unityPhase"
+          :progress="unityProgress"
+          :build-key="unityKey"
+          :failure="unityFailure"
+          @retry="unmountUnityView().then(mountUnityView)"
+          @back="back()"
+        >
+          <div ref="unityContainer" style="position: absolute; inset: 0"></div>
+
+          <!-- 部件名称悬浮提示：位置来自 Unity 报的归一化坐标（`object:hover`） -->
+          <div v-if="hoveredPart" class="ui-parttip" :style="partTipStyle">
+            <span class="ui-parttip__name">{{ hoveredPart.name }}</span>
+            <span v-if="hoveredPart.nameEn" class="ui-parttip__en">{{ hoveredPart.nameEn }}</span>
           </div>
-          <div class="ui-panel__body" style="flex: 1; min-height: 0; padding: 0">
-            <div class="app-viewport">
-              <!-- 真 Unity 挂载点：由 UnityLoader 在这里创建 canvas -->
-              <div ref="unityContainer" style="position: absolute; inset: 0"></div>
+        </UnityViewportPanel>
 
-              <div v-if="unityPhase === 'absent'" class="ui-viewport__center">
-                <TriangleAlert :size="18" style="color: var(--warn-text)" />
-                <div style="color: var(--text-1); font-weight: 600">Unity 产物未包含在本次发布里</div>
-                <div style="max-width: 520px; line-height: 1.8">
-                  这是一个<b>明确状态</b>，不是"加载中卡住"：发布清单（release-manifest.json）里没有该任务的构建。
-                  接入方式见 <code>docs/design/05-unity-packaging-pipeline.md</code>：<br />
-                  <code
-                    >node tools/pipeline/unity-stage.mjs --from &lt;Unity 构建目录&gt; --key main --task-types
-                    4,5,8,9</code
-                  >
+        <div class="ui-col" style="min-width: 0; min-height: 0; gap: var(--sp-4)">
+          <div class="ui-panel" style="flex: 1; min-height: 0">
+            <div class="ui-panel__head">
+              部件树
+              <span class="ui-panel__right">
+                <span class="ui-badge">{{ partRows.length }} 个部件</span>
+              </span>
+            </div>
+            <div class="ui-panel__body ui-col" style="gap: var(--sp-3); overflow: auto">
+              <template v-if="partRows.length > 0">
+                <!-- 点一行 = `view:focus` 聚焦该部件（Unity 侧高亮；DEC-112 的桥交互之一） -->
+                <div
+                  v-for="row in partRows"
+                  :key="row.key"
+                  class="ui-list__item"
+                  :class="{ 'ui-list__item--active': row.key === activePartKey }"
+                  :style="{ marginLeft: `${row.depth * 18}px` }"
+                  @click="focusPart(row.key)"
+                >
+                  <ChevronDown v-if="row.hasChildren" :size="14" />
+                  {{ row.name }}
+                  <span class="ui-list__meta">
+                    <span v-if="row.nameEn" class="ui-small ui-muted">{{ row.nameEn }}</span>
+                  </span>
                 </div>
-                <div v-if="runtime.unityState === 'unknown'" class="ui-muted" style="font-size: var(--fs-11)">
-                  （当前没读到发布清单 —— dev 直跑属正常；走
-                  <code>tools/pipeline/pack.mjs</code> 打包才会有清单）
-                </div>
+              </template>
+              <div v-else class="ui-small ui-muted">
+                还没有部件清单 —— 进站后由 Unity 侧发 <code>scene:parts</code>。
               </div>
+            </div>
+          </div>
 
-              <div v-else-if="unityPhase === 'failed'" class="ui-viewport__center">
-                <TriangleAlert :size="18" style="color: var(--err-text)" />
-                <div style="color: var(--text-1); font-weight: 600">Unity 加载失败</div>
-                <div style="max-width: 520px; line-height: 1.8">
-                  {{ unityFailure?.message ?? '未知原因' }}
-                  <br />（超时 25s、已重试 1 次 —— DEC-71 的落地参数）
-                </div>
-                <div class="ui-row" style="justify-content: center">
-                  <button class="ui-btn ui-btn--sm" @click="unmountUnityView().then(mountUnityView)">
-                    重试
-                  </button>
-                  <button class="ui-btn ui-btn--sm" @click="back()">返回目录</button>
-                </div>
-              </div>
-
-              <div v-else-if="unityPhase === 'loading'" class="ui-viewport__center">
-                <LoaderCircle :size="18" />
-                <div>正在加载 Unity WebGL…{{ Math.round(unityProgress * 100) }}%</div>
-                <div class="ui-muted" style="font-size: var(--fs-11)">
-                  超过 25s 会判定失败并给出出口（DEC-53/DEC-71）
-                </div>
-              </div>
+          <div class="ui-panel">
+            <div class="ui-panel__body">
+              <BridgeStatusPanel :state="bridgeState" />
             </div>
           </div>
         </div>

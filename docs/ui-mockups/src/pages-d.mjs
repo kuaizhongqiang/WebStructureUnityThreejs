@@ -49,7 +49,7 @@ export const pagesD = [
             <button class="ui-btn ui-btn--primary ui-btn--block">提交成绩</button>
             <button class="ui-btn ui-btn--ghost ui-btn--block">返回继续实验</button>
             <div class="ui-alert ui-alert--info">
-              <span class="u${icon('info', 14)}-alert__icon">i</span>
+              <span class="ui-alert__icon">${icon('info', 14)}</span>
               <span>本期无后端：提交后写入本机存档（DEC-54）；接后端时只换存档实现，界面不变。</span>
             </div>
           </div>
@@ -140,7 +140,7 @@ export const pagesD = [
           <div class="ui-row"><button class="ui-btn">查看解析</button><button class="ui-btn ui-btn--primary">下一题</button></div>
         </div>
         <div class="ui-alert ui-alert--info" style="grid-column:1 / -1">
-          <span class="u${icon('info', 14)}-alert__icon">i</span>
+          <span class="ui-alert__icon">${icon('info', 14)}</span>
           <span>规范：对错图标 72px 圆形；正确用 ok 绿、错误用 err 红；必须给出<b>解析</b>；得分变化用金色徽章展示。</span>
         </div>
       </div>`,

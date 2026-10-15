@@ -80,6 +80,8 @@ namespace WSU3.Web
             EventBus<SceneProgressEvent>.Subscribe(OnSceneProgress);
             EventBus<BridgeErrorEvent>.Subscribe(OnBridgeError);
             EventBus<GlobalInteractionEventData>.Subscribe(OnInteraction);
+            EventBus<ScenePartsReportEvent>.Subscribe(OnScenePartsReport);
+            EventBus<ObjectHoverEvent>.Subscribe(OnObjectHover);
 
             // 步骤进度与完成：Core 只发事件，真正上网在这一层（Core 不依赖桥）
             EventBus<StepChangedEvent>.Subscribe(OnStepChanged);
@@ -98,6 +100,8 @@ namespace WSU3.Web
             EventBus<SceneProgressEvent>.Unsubscribe(OnSceneProgress);
             EventBus<BridgeErrorEvent>.Unsubscribe(OnBridgeError);
             EventBus<GlobalInteractionEventData>.Unsubscribe(OnInteraction);
+            EventBus<ScenePartsReportEvent>.Unsubscribe(OnScenePartsReport);
+            EventBus<ObjectHoverEvent>.Unsubscribe(OnObjectHover);
 
             EventBus<StepChangedEvent>.Unsubscribe(OnStepChanged);
             EventBus<AllStepsCompletedEvent>.Unsubscribe(OnAllStepsCompleted);
@@ -143,6 +147,19 @@ namespace WSU3.Web
             if (e.Type != GlobalInteractionType.Click) return;
 
             WebBridge.ObjectPicked(e.Target.ObjectKey);
+        }
+
+        /// <summary>部件清单（`scene:parts`）：Core 收集好条目，映射与上网都在 WebBridge（DEC-131）。</summary>
+        private static void OnScenePartsReport(ScenePartsReportEvent e)
+        {
+            WebBridge.SceneParts(e?.Parts);
+        }
+
+        /// <summary>悬停目标变化（`object:hover`）：Key 空串 = 移出，坐标原点左上（Core 已翻好 Y）。</summary>
+        private static void OnObjectHover(ObjectHoverEvent e)
+        {
+            if (e == null) return;
+            WebBridge.ObjectHover(e.Key ?? "", e.X, e.Y);
         }
 
         /// <summary>步骤推进 → `step:changed`（序号用**扁平序号**，Web 侧进度条直接用）。</summary>

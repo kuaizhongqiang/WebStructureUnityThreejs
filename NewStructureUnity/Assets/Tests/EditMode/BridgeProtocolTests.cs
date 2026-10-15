@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools; // LogAssert：断言"该告警的告警了、该报错的报错了"
 using WSU3.Contracts;
+using WSU3.Contracts.Events;
 using WSU3.Web;
 
 namespace WSU3.Tests.EditMode
@@ -176,6 +177,11 @@ namespace WSU3.Tests.EditMode
             WebBridge.TaskCompleted(TaskType.Training, 88.5f, 12345L);
             WebBridge.ScoreReport(88.5f);
             WebBridge.ObjectPicked("contactor_coil");
+            WebBridge.SceneParts(new List<ScenePartEntryData>
+            {
+                new ScenePartEntryData { Key = "contactor/Root", Name = "交流接触器" },
+            });
+            WebBridge.ObjectHover("contactor/Coil", 0.62f, 0.38f);
             WebBridge.ReportError(9001, "占位错误", false);
             WebBridge.Pong(12345L);
 
@@ -183,8 +189,8 @@ namespace WSU3.Tests.EditMode
             {
                 BridgeMessageType.AssetsReady, BridgeMessageType.SceneReady, BridgeMessageType.SceneExited,
                 BridgeMessageType.UnityProgress, BridgeMessageType.StepChanged, BridgeMessageType.TaskCompleted,
-                BridgeMessageType.ScoreReport, BridgeMessageType.ObjectPicked, BridgeMessageType.UnityError,
-                BridgeMessageType.DebugPong,
+                BridgeMessageType.ScoreReport, BridgeMessageType.ObjectPicked, BridgeMessageType.SceneParts,
+                BridgeMessageType.ObjectHover, BridgeMessageType.UnityError, BridgeMessageType.DebugPong,
             };
 
             Assert.AreEqual(expected.Length, _sent.Count, "出站消息条数与预期不符");
@@ -214,6 +220,37 @@ namespace WSU3.Tests.EditMode
 
             StringAssert.Contains("\"code\":1005", _sent[0]);
             StringAssert.Contains("\"fatal\":true", _sent[0]);
+        }
+
+        [Test]
+        public void SceneParts_SerializesTheFlatEntryShape()
+        {
+            // 契约形状：{ parts: [{ key, name, nameEn?, parentKey? }]} —— 扁平条目 + parentKey 表层级（DEC-131）。
+            // JsonUtility 不认 null：没填的字符串字段必须落成空串（Web 侧 readString 视为"无"），不能是裸 null。
+            WebBridge.SceneParts(new List<ScenePartEntryData>
+            {
+                new ScenePartEntryData { Key = "contactor/Root", Name = "交流接触器", NameEn = "AC Contactor" },
+                new ScenePartEntryData { Key = "contactor/Coil", Name = "线圈", ParentKey = "contactor/Root" },
+            });
+
+            Assert.AreEqual(BridgeMessageType.SceneParts, LastType());
+            StringAssert.Contains("\"parts\":[", _sent[0]);
+            StringAssert.Contains("\"key\":\"contactor/Root\"", _sent[0]);
+            StringAssert.Contains("\"nameEn\":\"AC Contactor\"", _sent[0]);
+            StringAssert.Contains("\"parentKey\":\"\"", _sent[0]);      // 顶层：parentKey 空串
+            StringAssert.Contains("\"parentKey\":\"contactor/Root\"", _sent[0]); // 子件：指向最近部件父级
+        }
+
+        [Test]
+        public void ObjectHover_EmptyKeyMeansLeave_AndCarriesNormalizedPoint()
+        {
+            // 契约形状：{ key, x, y }（0~1，原点左上）；key 空串 = 移出（DEC-130）。
+            WebBridge.ObjectHover("", 0f, 0f);
+
+            Assert.AreEqual(BridgeMessageType.ObjectHover, LastType());
+            StringAssert.Contains("\"key\":\"\"", _sent[0]);
+            StringAssert.Contains("\"x\":0", _sent[0]);
+            StringAssert.Contains("\"y\":0", _sent[0]);
         }
     }
 
