@@ -15,44 +15,26 @@
 
 | # | 事项 | 现状 | 要你定什么 |
 |---|---|---|---|
-| T-01 | 检视页**环境取哪一套**（影棚 HDRI / 产品现状 / 灯光 + IBL / 仅环境光；含背景、曝光、色调映射） | 四档都在，默认「影棚 HDRI · Studio White Umbrella」 | 定下来我把默认值写进 `web/src/viewer/Viewer.ts` |
-| T-02 | **材质取值**：无 mask 材质的金属度 / 粗糙度常数定多少；`doubleSided` 保留否；要不要另出 metallicRoughness 贴图 | 有 mask 的已是**贴图驱动**（渲染期按 HDRP 通道重排为 ORM）；无 mask 的（贴花 / 玻璃 / 白件）走规格里的常数 | 常数定成多少、是否重排另出一张图 |
-| T-03 | `CombinationSwitch08` 用哪个材质 | 源工程数据是 `CombinationSwitch2`（白 0.6 半透）；**你的清单写"用原材质"** | 二选一（一条命令的事） |
-| T-04 | `speedRelay` 的 `SpeedRelay01` 是否也改成 Coat | 现为主干 `SpeedRelay`（与你早先清单一致）；你说过"01 也该是 Coat" | 二选一 |
-| T-05 | 预制体**自带的内置图元**（`Cube` / `Cylinder` / `jiexiankong`）要不要搬进 GLB | 现在不含这些几何，它们身上的 `Alpha`（α=0）材质无从应用 | 搬 or 不搬 |
-| T-06 | 微信内置浏览器**真机实测** / 亮色是否作默认主题 / 包体预算门禁脚本 | 分别：待设备、待拍板、待真产物接入。**真机实测现在多一项**：原理页的 mp4（H.264/AAC）能不能播、能不能拖进度条（DEC-99 未闭合 d） | 逐条定 |
-| T-08 | 原理页要不要"看完即完成" | 现在**只发进入、不发完成**：原理页没有"标记完成"控件（与排版稿 C4 一致，也同 DEC-98 对 `Info` 的处理），`principle:done` 因此不会发 | 定：保持"只有进入"，还是按 `<video>` 的 `ended` 发 `principle:done`（DEC-99 未闭合 b） |
-| T-09 | **进度分母三处不齐**：任务页徽标按全契约 **11** 算、菜单页按全部项目的启用任务（今天 **33**）算、站点线按**当前项目**算（**4** 或 **1**） | DEC-100 按要求只改了站点线，其余两处未动；同一页上"已完成 X / 11"与站点线上的 4 站并排，看着像两套口径 | 定：三处**统一成哪个分母**（建议统一按"当前项目的启用任务"，与站点线/下一站同口径），还是各自保留 |
-| T-10 | **结构件实例的挂载根**（DEC-110，**由 AI 定**、待确认）：进 `Structure` 站时结构件实例挂哪 | 现在是"场景里有 `StructureRoot` 节点就用它、没有就运行期在管理器节点下自动建一个"（`DataStructure`/`Assets/Scripts/Core/DataStruct/DataStructMapping.cs` 的 `GetStructureRoot`）。`1_Content` 里目前没有这个节点，所以走的是自动建 | 定：就这样（运行期自动建），还是你在 `1_Content` 里预摆一个 `StructureRoot` 并把它交给我的位置/父级口径 |
-| T-12 | **C8~C11 的 UI 是否自此纳入评审范围**：2026-10-15 已按负责人要求把四页的**导航**（站点线，DEC-122）、**右上/左下按钮**（右上按钮组，DEC-123）、**画布框与画布上的叠层**（DEC-124 / DEC-125）、**右侧栏**（DEC-126）逐项归队 B 组规范，**局部撤回**了 T4 的"Unity 侧 UI 暂不设计、不要按它们评审 B 组规范" | 四页**只剩底部固定提示栏**（`tips()`）是第一轮样式，没换成 §16.2 浮窗提示；另外 D1「成绩结算」仍在用角落 fab（`corners()`） | 定：① 底部提示栏要不要也换 `tipsFloat()`；② D1 的角落 fab 要不要一起换（明细见 `docs/ui-mockups/TODO.md` T4）。**负责人 2026-10-15："T-12 先不动"** |
+| T-06 | 微信内置浏览器**真机实测** / 亮色是否作默认主题 / 包体预算门禁脚本 | 分别：待设备、待拍板、待真产物接入。真机实测另含：原理页的 mp4（H.264/AAC）能不能播、能不能拖进度条（DEC-99 未闭合 d）。**负责人 2026-10-15：全部暂缓，暂不处理**（DEC-135） | 待设备与真产物，届时逐条定 |
 
-| T-13 | **占位画布的那行说明文字要不要提对比度**：`.ui-viewport__center` 仍是 `--text-3`，落在毛玻璃上偏淡 | 2026-10-15 已按负责人"按照结构 type 的样式调整"把**网格底与占位叠层全线退役**（DEC-128，九个页面量取通过），但文字颜色**照结构页原样保留**为 `--text-3`；`--text-2` 会更清楚、但那是脱离参照的一步 | 定：保留 `--text-3`（= 与结构页一致），还是提到 `--text-2` |
-
-来源：T-01 / T-02 → `DECISIONS.md` §19.2；T-12 → `DECISIONS.md` §29（DEC-122 ~ DEC-126）与 2026-10-15 对话；T-13 → `DECISIONS.md` §29 第 29.6 节 c；T-03 / T-04 → 本轮对话；T-05 → §19.4；T-06 → `DECISIONS.md` 末尾未闭合表；T-08 → `DECISIONS.md` DEC-99 未闭合 b；T-09 → `DECISIONS.md` DEC-100 未闭合 a。**（T-11 / T-14 已于 2026-10-15 办完删除，落 DEC-127 / DEC-129；T-13 的第 ① 问已办，落 DEC-128。）**
+> 其余 T 条目（T-01 ~ T-05 / T-08 ~ T-10 / T-12 / T-13）已于 2026-10-15 由负责人一次性拍板，落 **`DECISIONS.md` §31（DEC-134 ~ DEC-139）**，按纪律从本表删除、`RECORD.md` 留痕。
 
 ## 2 待做（方向已定，缺实施）
 
 | # | 事项 | 现状 |
 |---|---|---|
 | D-04 | `PAGE-WORKLIST.md` 里的未完成页面（考核页重做等） | 见 `docs/PAGE-WORKLIST.md` |
-| D-05 | 排版稿层面的待办（组件打磨、页面调整） | 见 `docs/ui-mockups/TODO.md` |
-| D-07 | `DECISIONS.md` 各章末尾的历史「未闭合」表：**整体删除、只留 `TODO.md` 一份**，还是保留作"每条决策自己的出处"？ | 现状：保留 + `TODO.md` 汇总回链（`AGENT.md` §5 已写明"状态以 `TODO.md` 为准"）；请负责人定 |
-| D-09 | **材质解算在产品与审核页各有一份**（DEC-98 未闭合 a）：审核页是无构建静态页、产品是打包 TS，两者无法共用源码而不把审核工具拖进产品构建链 | 现状：产品自带一份、行为逐项对齐；是否统一（抽成两边都能吃的纯 JS 模块）**待拍板** |
+| D-05 | 排版稿层面的待办（组件打磨、页面调整） | 见 `docs/ui-mockups/TODO.md`（其 T4 已随 DEC-139 作废，逐页调整时以页为单位处理） |
 | D-10 | **包体因此增大**（DEC-98 未闭合 b）：影棚 HDR 5.9 MB + 8 个 GLB 7.3 MB + 30 张贴图，**再加 DEC-99 的 8 段讲解视频 65.9 MB**（最大一段 30.57 MB），**再加 DEC-118 的 9 个内容 AA 组约 43 MB** | 待包体预算门禁（DEC-02 的 250~360 MB）落地时一并核算；发布清单里已单列 `content.assets` / `content.video`；AA 侧逐组字节见 `Builds/assetbundles/aa-build-report.json`（不进版本库）。⚠ AA 是**按需下载**的运行时内容、不是首屏负担，核算时要与"首屏"分开看。⚠ **迁 AA 后口径变了**：`WSU3_Shared`（32.9 MB 材质+贴图+ShaderGraph）被**所有 clip 共用**、只下载一次，而 AB 时代同一份材质在 8 个包里各存一份（8 个包合计 47.5 MB）—— 所以"总字节变小"与"单个 clip 包变小"都要按新口径重算 |
 | D-11 | 原理页的**多段视频**那一档（列表出现、可切段 + 换段换说明）已实现且有单测，但没有真实数据走过 | 采纳数据 8 个项目**全是单段**；等真内容出现时按实际数据复核一遍（DEC-99 未闭合 c） |
 | D-13 | **结构任务的"实例化 / 初始化"**：进 `Structure` 站怎么实例化结构件预制体、怎么初始化（相机 / 交互闸门 / 高亮 / 拆装动画驱动） | **实例化已落地**（2026-10-14，DEC-110 / `design/12` §6）：进站按 `prefabKey` 从 AB 包取件 → 实例化 → 登记实例归属 → 挂 `StructureRoot`。**步骤数据也已落地**（DEC-111：预制体自带 46 步子树，`StructureTaskManager` 会 `StartExecution()`）。**Web 侧的显示也已落地**（2026-10-14，DEC-112：步骤进度 / 提示条 / 信息面板 / 答题面板 + `object:picked` / `unity:error` 都能在页面上看见了）。**仍未做**：相机 / 交互闸门 / 高亮的初始化（比"实例化"更靠后的那一段，在 Unity 侧）—— 与 `D-21` 合并做 |
-| D-15 | **零件脚本的重新承载**（DEC-104）：`StructureTaskObj` 的字段（`structureName` / `structureNameEn` / `HoverOrTips`）要在本工程落一个 `InteractiveObjBase` 派生类；且**不再**在 `Awake` 里调 HighlightPlus 门面 | **已落地**（2026-10-14）：`StructureObj.cs` 承载零件字段（`objName` / `objName_en`，基类提供 `objectKey` / `isInteractable`）；生成器已把它补到 **8 个器件共 38 个零件**上（breaker 那 4 处是手工先做的），两个有意未搬脚本的 **Missing Script 40 处全清**（34 处 `StructureTaskObj` + 6 处 `InstControlledManager`，与来源工程逐器件核对过）。⚠️ 内容字段（`objName` 等）的值还没填 —— 生成器只管接线，不管文案 |
-| D-18 | **HighlightPlus 的 URP RendererFeature 要不要挂进 `Assets/Settings/URP-*.asset`**（后处理 pass） | 未定。**原"材质接管要重导 FBX"这半条已做完**：2026-10-14 在编辑器里对 `TimeRelay.fbx` / `MasterControlAppliances.fbx` 重导后，8 个预制体**空网格 0 / 空材质 0**（`DECISIONS.md` §21.1 有逐器件读数） |
-| D-19 | **主相机要不要换成带 `CinemachineBrain` 的 rig**（DEC-107）：操控层的缩放与视角控制**要 brain 才生效**，而本工程主相机是 `Assets/Resources/MainCamera.prefab`（精简相机，没 brain） | 二选一：把 `Assets/Prefabs/Camera/MainCameraRig.prefab` 顶替 `Resources/MainCamera`（画面行为随之变：背景板 + TAA + 后处理）／保留精简相机并另给它加 brain。**要负责人定** |
+| D-15 | **38 个零件的 `objName` / `objName_en` 内容还没填**（生成器只接线不管文案，DEC-146） | 负责人 2026-10-15 指示：**从低压电器项目（TK231）找对应的中英文名填进预制体**，填完重打 AA。脚本承载本身已落地（2026-10-14：`StructureObj.cs` + 生成器补齐 8 器件 38 零件，Missing Script 40 处全清） |
 | D-20 | **相机背景板的取图入口未接**（DEC-107 未闭合）：`CameraBg.LoadBgTextures()` 现在是"只告警不加载"的待办桩 —— 本工程的资源包链路（P2-6）未落地 | 资源包链路落地后按双纹理接进去（材质属性 `_Texture_1/_Texture_2/_TexOrColor/_CutTex` 都已在位） |
 | D-21 | **操控层没有任何实机验收**（DEC-107 未闭合）：角色预制体与相机 rig 都还没进场景，三条控制器一次都没跑过 | 与 `D-13`（结构任务的实例化 / 初始化）合并做：先把角色与虚拟相机放进 `1_Content`，再逐条验（移动 / 俯仰 / 缩放 / 瞬移 / 聚焦环绕） |
 | D-22 | **角色预制体的 `Capsule` 材质是空的**（**继承缺陷**，不是搬漏）：这条材质引用在参照工程里就断（清单 `unresolved` 的那条 guid） | 本项目自行给一个材质即可，不影响编译与脚本引用 |
 | D-24 | **真 WebGL 构建 + 实机端到端验收**：本轮的桥交互是用**桩构建**验的（`make-stub-unity.mjs` 的协议仿真，18 条冒烟断言），它证明的是**契约两侧对得上**，不等于真 Unity 产物跑得通 | **部分闭合（2026-10-14 晚报，DEC-117/118）**：负责人已实机确认「预制体 / 编辑器运行 / 打包后 Live Server 运行**都已 OK**」，并且**洋红这条已定案**——不是"变体裁剪被裁"（那一栏可以划掉）：真因是**编辑器加载 WebGL 平台的 bundle 时，包里每个 shader（含内置 URP/Lit）都拿不到可用 pass ⇒ 一律回退 error shader**（DEC-117，含三条对照实验）。**仍未做**：① 进结构站逐条走 46 步（拆装动画 / `object:picked` / `step:changed` / `task:completed`）；② `0_Setup` 免 Web 自测开关在**真 WebGL 构建**里确实能自启；②a 进站后部件树渲染、悬停浮标跟随、点行高亮（`scene:parts` / `object:hover` / `view:focus`，DEC-131 ~ DEC-133 的实机验收）；③ 步骤：Unity 切 WebGL 并构建（DEC-59：构建前关编辑器）→ `node tools/pipeline/unity-stage.mjs --from <构建目录> --key main --task-types 4,5,8,9 --bridge`（或菜单）→ 起 dev 服务器或 `node tools/pipeline/pack.mjs` 打包。⚠️ **迁 AA 之后这条多一个前置**：内容先跑 `WSU3/Pack/一键打 AA 包（全部）`（产物落 `Library/com.unity.addressables/aa/<平台>/`，Build Player 时由 Addressables 自动拷进 `Assets/StreamingAssets/aa/<平台>/`；**只跑 AA 构建不会让 StreamingAssets/aa 出现东西，这是设计如此**，见 `design/12` §6） |
-| D-25 | **Unity 实例在任务之间的常驻（DEC-81 的目标形态）未达**：本实现离开 Unity 任务时**直接销毁实例**（DEC-12），所以 `scene:exit` 发出去多半来不及被处理 —— `UnitySession.exitTask()` 的注释里如实写了这一点 | 未做。要做成"实例常驻、只换资源包"，得让 Unity 容器在任务之间常驻（而不是随 `practice` 分支一起被摘掉，见 `docs/design/09` §2/§5），并给不可见状态配"透明父层画布 + `runtime:resume`"。与此配套：`scene:exit` 才真正有意义 |
+| D-25 | **Unity 单实例常驻（DEC-81 目标形态 + DEC-145 修正口径）**：无论多少个 task，**只有一个 Unity 实例** —— 最早时机（web 启动后 Unity 稍延迟启动、`0_Setup` 自检通过停在 `1_Content`）创建并**常驻**，之后由 **JS 控制把同一实例挂到当前页面容器、或隐藏**；进 task 直接可交互，**不再出现加载进度条与 Unity 启动画面**（负责人 2026-10-15 指示，吸收原 D-30） | 未做。现状：离开 Unity 任务即销毁实例（DEC-12）、进 task 才挂载。要做的：① 实例创建前移到 `start → login → menu` 阶段（`preload:task` 协议已预留）；② Unity 容器不再随 `practice` 分支摘掉（`docs/design/09` §2/§5），不可见状态配"透明父层画布 + `runtime:resume`"；③ JS 侧把常驻画布搬挂到当前页容器或 `display:none`。配套：`scene:exit` 才真正有意义 |
 | D-26 | **"材质接管"的根治**（DEC-115 / `design/12` §4.3）：现在靠打包前**强制重导 FBX** 事后补救（`ModelMaterialBindingFixer`），根因是接管时**替换**了 FBX 自动抽出的同名 `.mat`（GUID 变 → FBX 内部绑定悬空）。⚠️ 该修复只落在本机 `Library`，**切换 Build Target 就会退化一次**，靠自愈兜着 | 未做。根治要改成**不替换**那些材质：保留 FBX 抽出的 `.mat`（保住 GUID），只改它的 shader 与属性（`content/asset-material-spec.json` 那套口径本来就是这个思路）；落点是重做 `tools/pipeline/import-structure-assets.mjs` 的材质那一段 |
-| D-27 | **动画运行模式（DEC-121）没有"从 Web 侧切换"的入口**：现在只能由脚本 / Inspector 改 `StepManager.RunMode` | 未做。若产品需要"演示模式由页面触发"，要接一条桥消息（`BridgeMessageType` 双向各加一条 + Web 侧契约 + 快照 + `check-contracts` 门禁）。**要负责人定要不要做** |
-| D-28 | **AB 时代的产物目录 `Assets/StreamingAssets/Content/**`（8 个包 / 45.3 MB）已成无主残留**：迁 AA（DEC-118）后运行期不再读它 | 未删（本轮只清掉配置与代码）。删除前确认无回退需要；`.gitignore` / `ignore.conf` 里那几条规则建议**保留**（防误提交）。⚠️ 同理 `Library/com.unity.addressables/aa/WebGL/` 是 AA 产物的正常落点、**不属于"残留"**，别顺手删 |
-| D-30 | **Unity 的启动时机不对（负责人 2026-10-15 指示）**：现在是进了 task 页才开始挂 Unity 实例、装包、播 Unity 启动画面 —— 用户要**等加载进度条**才能看到内容 | 要改成：实例**提前到 `start → login → menu` 阶段就创建并预装**（`preload:task` 协议已预留，DEC-81 的常驻形态），进入 task 时内容已经在场、**直接可交互**，不再出现加载进度条与 Unity 启动画面。与 D-25（实例在任务间常驻、`scene:exit` 有意义）是同一件事的两段：先解决"第一次进场不等"，再解决"换任务不重载"。**谁拍板**：预装哪个/哪些 clip（全部 9 组 ~50 MB 还是当前项目）待负责人定 |
 
 ## 3 已进 git、只剩 Unity 侧（Plastic）待提交
 

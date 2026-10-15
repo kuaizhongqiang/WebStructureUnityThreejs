@@ -424,8 +424,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u5b9a\u5b50"
+  objName_en: Stator
 --- !u!1 &1266219109335714622
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,8 +1249,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8f6c\u5b50"
+  objName_en: Rotor
 --- !u!1 &2651226208103653602
 GameObject:
   m_ObjectHideFlags: 0
@@ -1602,8 +1602,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u89e6\u70b9/\u62e8\u6746"
+  objName_en: Contact / toggle lever
 --- !u!1 &3120678430977017458
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,8 +2671,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u63a5\u7ebf\u76d2\u76d6"
+  objName_en: Terminal box cover
 --- !u!1 &5879597773522014437
 GameObject:
   m_ObjectHideFlags: 0
@@ -2795,8 +2795,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u8054\u63a5\u5668"
+  objName_en: Coupling
 --- !u!1 &6492547055012034782
 GameObject:
   m_ObjectHideFlags: 0
@@ -4496,8 +4496,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7aef\u76d6"
+  objName_en: End cover
 --- !u!1 &9212831080585204598
 GameObject:
   m_ObjectHideFlags: 0

@@ -1129,8 +1129,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u590d\u4f4d\u6309\u94ae"
+  objName_en: Reset button
 --- !u!1 &2165449520936406554
 GameObject:
   m_ObjectHideFlags: 0
@@ -1885,8 +1885,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u70ed\u5143\u4ef6"
+  objName_en: Thermal element
 --- !u!1 &3666786622229890460
 GameObject:
   m_ObjectHideFlags: 0
@@ -2731,8 +2731,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7edd\u7f18\u7275\u5f15\u677f"
+  objName_en: Insulating pull plate
 --- !u!1 &5005475313079743148
 GameObject:
   m_ObjectHideFlags: 0
@@ -3236,8 +3236,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u70ed\u5143\u4ef6\u63a5\u7ebf\u89e6\u70b9"
+  objName_en: Thermal element terminal contact
 --- !u!1 &6401729559892341779
 GameObject:
   m_ObjectHideFlags: 0
@@ -3443,8 +3443,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u52a8\u65ad/\u52a8\u5408\u89e6\u70b9"
+  objName_en: NC / NO contact
 --- !u!1 &6658119639825231311
 GameObject:
   m_ObjectHideFlags: 0
@@ -3824,8 +3824,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u64cd\u4f5c\u673a\u6784\u89e6\u5934\u7cfb\u7edf"
+  objName_en: Operating mechanism contact system
 --- !u!1 &7858498623804694747
 GameObject:
   m_ObjectHideFlags: 0

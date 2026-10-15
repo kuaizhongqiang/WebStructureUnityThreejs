@@ -70,6 +70,13 @@ const unity = computed(() => isUnityTask(taskType.value))
 const enabledTypes = computed(() => content.enabledTypesOf())
 const questions = computed(() => content.questionsOf(taskType.value))
 
+/** 进度徽标的**站点线口径**（DEC-137）：分母 = 当前项目的启用任务数，与站点线 / 下一站一致；
+ * 不再用全契约 11（T-09：同一页上出现两套口径就是这么来的）。 */
+const projectProgress = computed(() => ({
+  done: enabledTypes.value.filter((type) => progress.statusOf(type) === 'completed').length,
+  total: enabledTypes.value.length,
+}))
+
 // —— 三维视口：按容器比例自适应（页面不写死宽高，DEC-73）——
 const viewport = ref<HTMLElement | null>(null)
 /** 视口是否已挂载（响应式：模板里要显示按钮文案，不能只靠非响应式的 `viewer` 变量） */
@@ -611,6 +618,14 @@ function syncUnity(): void {
 watch([taskType, () => runtime.unityState], () => void nextTick(syncUnity))
 // 进任务：项目 / 任务 / 挂载状态任一变化都重新对齐（幂等，重复调用只发一次 `scene:enter`）
 watch([taskType, projectId, unityPhase, () => content.project?.id], () => enterCurrentTask())
+// 原理页"进入即完成"（DEC-136）：进入 Principle 站就记完成，不等视频看完（不设分数）
+watch(
+  taskType,
+  (type) => {
+    if (type === TaskType.Principle && progress.statusOf(type) !== 'completed') progress.complete(type)
+  },
+  { immediate: true },
+)
 onBeforeUnmount(() => void unmountUnityView())
 
 /**
@@ -636,7 +651,7 @@ function finish(): void {
   <AppShell
     :crumb="`目录 / ${content.project?.title ?? '未选择项目'}`"
     :badges="[
-      `已完成 ${progress.completedCount} / ${progress.total}`,
+      `已完成 ${projectProgress.done} / ${projectProgress.total}`,
       stackOf(taskType) === ViewerStack.Unity ? 'Unity' : 'Three',
       '游客',
     ]"

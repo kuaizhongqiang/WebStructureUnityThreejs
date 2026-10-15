@@ -24,7 +24,6 @@ export interface MaterialSpecEntry {
   /** 表面模式：`OPAQUE` / `MASK`（贴图 alpha 裁切）/ `BLEND` */
   surfaceMode?: string
   alphaCutoff?: number
-  doubleSided?: boolean
   normalStrength?: number
   baseColor?: number[]
   remap?: {

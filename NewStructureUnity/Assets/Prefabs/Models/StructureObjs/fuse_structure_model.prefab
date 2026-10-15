@@ -73,8 +73,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u52a8\u89e6\u70b9"
+  objName_en: Moving contact
 --- !u!1 &735415898658917815
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,8 +197,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7194\u4f53"
+  objName_en: Fuse element
 --- !u!1 &966602225846545229
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,8 +737,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u63a5\u7ebf\u5b54"
+  objName_en: Terminal hole
 --- !u!1 &2732919177723334791
 GameObject:
   m_ObjectHideFlags: 0

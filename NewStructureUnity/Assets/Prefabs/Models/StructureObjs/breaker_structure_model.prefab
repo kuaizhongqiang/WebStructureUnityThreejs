@@ -384,8 +384,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u624b\u52a8\u64cd\u4f5c\u673a\u6784"
+  objName_en: Manual operating mechanism
 --- !u!1 &764359909673159296
 GameObject:
   m_ObjectHideFlags: 0
@@ -1207,8 +1207,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u7535\u78c1\u8131\u6263\u5668"
+  objName_en: Electromagnetic trip
 --- !u!1 &2006784553236754455
 GameObject:
   m_ObjectHideFlags: 0
@@ -3500,8 +3500,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u706d\u5f27\u88c5\u7f6e"
+  objName_en: Arc-extinguishing device
 --- !u!1 &6019577631529948257
 GameObject:
   m_ObjectHideFlags: 0
@@ -5145,8 +5145,8 @@ MonoBehaviour:
   objectKey: 
   isInteractable: 1
   hovered: 0
-  objName: 
-  objName_en: 
+  objName: "\u70ed\u8131\u6263\u5668"
+  objName_en: Thermal trip
 --- !u!65 &6089148373086774061
 BoxCollider:
   m_ObjectHideFlags: 0

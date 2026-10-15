@@ -325,8 +325,10 @@ export class ModelStage {
             record.errors.push(cause instanceof Error ? cause.message : String(cause))
           }
         } else {
-          material.metalness = entry.scalars?.metallic ?? 0
-          material.roughness = 1 - (entry.scalars?.smoothness ?? 0.5)
+          // 无 mask 材质的常数**钉死**为 m=0 / r=0.5（DEC-134②：负责人 2026-10-15 拍板，
+          // 不再逐材质读规格里的标量 —— 贴花 / 玻璃 / 白件这套值就够）
+          material.metalness = 0
+          material.roughness = 0.5
         }
 
         const alpha = entry.baseColor?.[3] ?? 1
@@ -348,7 +350,8 @@ export class ModelStage {
           material.transparent = false
           material.depthWrite = true
         }
-        material.side = entry.doubleSided ? THREE.DoubleSide : THREE.FrontSide
+        // 双面渲染移除（DEC-134②）：一律单面 —— GLB 面向实验台拍摄机位，双面没有收益还拖透明排序
+        material.side = THREE.FrontSide
         material.needsUpdate = true
       }
 

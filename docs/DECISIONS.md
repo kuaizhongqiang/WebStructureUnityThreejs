@@ -1841,3 +1841,25 @@ public void EnterAnimationMode();  public void EnterStepByStepMode();
 | a | **EditMode 全量重跑**（新增 `ScenePartInventoryTests` 5 条 + 出站契约闸扩到 12 条） | 编译已过，测试待负责人在 Test Runner 里跑一遍 |
 | b | **实机 Play 验收**：进结构站看部件树渲染、悬停浮标跟随、点行高亮 —— 与 `TODO.md` D-24 的实机端到端合并做 | 待真 WebGL / Play |
 | c | **镜头推进**：`view:focus` 的 `animate` 目前只影响日志（P2-6 接） | 未做 |
+
+---
+
+## 31 第十八轮（2026-10-15）：待拍板批量收敛（DEC-134 ~ DEC-146）
+
+**背景**：`TODO.md` §1/§2 里累计 17 条等负责人拍板，2026-10-15 一次性答完（原文见对话记录）。本轮把答案固化、`TODO.md` 收敛为"只保留未确定与明确要做"（D-07 的口径），可实施的当场实施。
+
+| # | 决定 |
+|---|---|
+| **DEC-134**（T-01 ~ T-05，检视页与材质口径） | ① 环境取**影棚 HDRI**（Studio White Umbrella）为默认（现状已是默认，决策固化）；② 无 mask 材质常数 **metalness = 0 / roughness = 0.5**，**移除 `doubleSided`**，**不**另出 metallicRoughness 贴图；③ `CombinationSwitch08` 维持现状（不透明正确，此前已拍板，不再处理）；④ **`SpeedRelay01` 改 Coat**；⑤ 预制体内置图元维持现状不搬。审核页与产品侧**各改各的**（DEC-140：不抽公共模块） |
+| **DEC-135**（T-06，微信三件） | 微信真机实测 / 亮色默认主题 / 包体预算门禁 —— **全部暂缓不做**（待设备与真产物） |
+| **DEC-136**（T-08，原理页完成语义） | **进入即完成**：进入 Principle 站即发 `principle:done`，**不等**视频 `ended`（推翻"看完才算"的候选口径） |
+| **DEC-137**（T-09，进度分母） | 三处分母**统一为站点线口径**（当前项目的启用任务数）；"已完成 X / 11"这类全契约分母退役 |
+| **DEC-138**（T-10，结构件挂载根） | 查证 `1_Content` **没有**预摆 `StructureRoot` 节点（场景节点实测：灯光组 / Cube×6 / StructureTaskManager / TestSwitch）—— 负责人"已有相关节点"与文件实测不符，已反馈；**维持运行期自动建**（`DataStructMapping.GetStructureRoot` 的"有则用、无则建"逻辑两头都兼容，将来预摆零改动） |
+| **DEC-139**（T-12 / T-13，页面样式收尾策略） | C8~C11 底部提示栏 / D1 角落 fab / 占位画布文字对比度（`--text-3`）：**维持现状，每个页面逐步调整**，不做一次性收尾（T-12 / T-13 关闭，T4 明细随之作废） |
+| **DEC-140**（D-07 / D-09，文档与代码的收敛口径） | ① `TODO.md` **只保留"未确定"与"明确要做"**两类条目，历史已决即删、`RECORD.md` 留痕；② 材质解算**产品与审核页各留一份**，不抽公共模块（DEC-98 未闭合 a 关闭） |
+| **DEC-141**（D-18，HighlightPlus RendererFeature） | **已挂**，实测 `High/Middle/Low-Renderer.asset` 各含 1 处 HighlightPlus feature —— 条目闭合 |
+| **DEC-142**（D-19，主相机 rig） | 负责人口径"已带 brain"；**文件实测未检出**（`MainCameraRig.prefab` / `Resources/MainCamera.prefab` / 两场景 CinemachineBrain 均 0 命中，仅 FirstPersonController 引用 Cinemachine）—— 差异如实记录，**待 D-21 实机验收时核对**，本轮不改码 |
+| **DEC-143**（D-27，动画运行模式的 Web 入口） | **暂缓不做**，后续会考虑（条目删除；要做时按桥消息双向各加一条 + 三处同批门禁走） |
+| **DEC-144**（D-28，AB 残留） | `Assets/StreamingAssets/Content/**`（AB 时代 8 包）**移除**（`Data/**` 是内容 JSON 双份之一，保留） |
+| **DEC-145**（D-30，Unity 启动时机与形态——修正负责人口径） | **无论多少个 task，只有一个 Unity 实例**：最早时机（web 服务启动后 Unity 稍延迟启动，`0_Setup` 自检通过即停在 `1_Content`）创建并**常驻**；之后由 **JS 控制把同一实例挂到当前页面容器、或隐藏**（不是"每个 task 加载一次"，也不是"预装 N 个包"）。与 D-25（实例常驻、`scene:exit` 有意义）合并推进。R6-S3 的 preload 口径与此一致 |
+| **DEC-146**（D-15，零件命名来源） | 38 个零件的 `objName` / `objName_en` **从低压电器项目（TK231）找对应内容**，由 AI 填进预制体（填完重打 AA）—— 待实施 |
