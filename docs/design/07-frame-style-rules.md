@@ -101,3 +101,16 @@ box-shadow: var(--elev-panel | --elev-prominent | --elev-soft);
 
 以上规则全部通过 `tokens.css` 的令牌取值，两套主题（`[data-theme]`）各给一份数值。
 **改样式时不要写死数值**；要调就调令牌（例如"发丝太淡"→ 上调 `--border-3/4`，全站同时生效）。
+
+## 9 页面底图（2026-10-15，DEC-149）
+
+外壳**整页**铺一张展馆烘焙预览图：`web/public/bg/room-dark.jpg`（1920×1080 / 123KB，RGB×0.5 已烘焙进图）。
+面板是毛玻璃 —— 底图从面板底下透出来，这是排版稿"底板 + 毛玻璃"观感的来源，**不是背景装饰**。
+
+- **两层叠**（产品里不许用 `::after`：绝对定位层会盖到面板之上）：
+  上层 = 面纱 `linear-gradient(var(--board-veil), var(--board-veil))`（深色 alpha=0 不加纱；亮色 42% 白纱把深色照片抬亮），
+  下层 = `var(--bg-0)` + 照片本体（`center / cover no-repeat`，铺不满时露的是同色系底色，不留色块接缝）。
+- **取值只认令牌**：面纱 `--board-veil` 来自 `tokens.css`（深浅各一份），与排版稿 `mockup-shell.css` 的 `.board__bg::after` 同一口径；
+  要更暗/更亮就调令牌，不要在 `product.css` 里写第二次颜色。
+- **落点**：`web/src/styles/product.css` 的 `.app-root`；换图只需替换同名文件，样式不用动。
+- **评审可见**：`docs/ui-mockups/index.html` 第九节有深浅两档对照展示（硬纪律：样式成果页看不到的样式视为未完成）。
