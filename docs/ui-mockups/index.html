@@ -932,6 +932,24 @@
         </div>
       </div>
   </div>
+  <div class="spec-section-title">九、页面底图（2026-10-15，Issue #44）</div>
+  <div class="spec-grid">
+
+      <div class="spec-item">
+        <div class="spec-item__stage"><div style="display:flex;gap:14px">
+          <div style="width:200px;height:112px;border-radius:var(--r-2);border:0.5px solid var(--line-1);
+            background:linear-gradient(rgba(5,8,12,0),rgba(5,8,12,0)) center/cover no-repeat,var(--bg-0) url('assets/bg-room-dark.jpg') center/cover no-repeat"></div>
+          <div style="width:200px;height:112px;border-radius:var(--r-2);border:0.5px solid var(--line-1);
+            background:linear-gradient(rgba(240,244,249,0.42),rgba(240,244,249,0.42)) center/cover no-repeat,var(--bg-0) url('assets/bg-room-dark.jpg') center/cover no-repeat"></div>
+          <div style="font-size:11px;color:var(--text-3);line-height:1.9;align-self:flex-end">左：深色（无纱）<br>右：亮色（42% 白纱）</div>
+        </div></div>
+        <div class="spec-item__meta">
+          <div class="spec-item__name">页面底图（外壳铺满）</div>
+          <div class="spec-item__desc">外壳整页铺这张展馆烘焙预览图（RGB×0.5，1920×1080/123KB）。两层叠：上层是面纱令牌 --board-veil（深色 alpha=0 = 不加纱；亮色 42% 白纱把深色照片抬亮），下层是照片本体 + 平台底色 --bg-0（cover 铺不满时不留色块接缝）；面板是毛玻璃，图从底下透出来。落点：.app-root（web/src/styles/product.css），图放 web/public/bg/room-dark.jpg（产品侧一份，排版稿 assets/ 里是评审外壳那份）</div>
+          <div class="spec-item__cls">.app-root（product.css）</div>
+        </div>
+      </div>
+  </div>
 
   <div class="spec-section-title">九、框体令牌（2026-10-12 统一升级）</div>
   <div class="ui-small ui-muted" style="margin-bottom:10px">

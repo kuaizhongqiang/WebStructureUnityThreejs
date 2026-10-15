@@ -48,7 +48,16 @@
   overflow: hidden;
   /* 桌面壳预留标题栏高度；浏览器下为 0，完全不影响 */
   padding-top: var(--shell-caption-h);
-  background: var(--bg-0);
+  /* 页面底图（Issue #44）：与排版稿同一张图（`docs/ui-mockups` 的 `.board__bg`）。
+     两层：上层是"空气感"面纱 `--board-veil`（深色下 alpha=0 = 不加纱；亮色下是白纱，把深色照片抬亮），
+     下层是照片本体 + 平台底色 `--bg-0`（图与底色同色系，cover 铺不满时不留色块接缝）。
+     面纱用**令牌**而不是另写一遍颜色 —— 这正是排版稿 `mockup-shell.css` 的 `.board__bg::after` 口径，
+     但产品里不能用 ::after（绝对定位的层会盖到面板上面），所以合进 background 分层里。
+     面板是毛玻璃 —— 底图从面板底下透出来，就是排版稿里"底板 + 毛玻璃"的观感。
+     换图：替换 web/public/bg/room-dark.jpg（保持同名），样式不用动。 */
+  background:
+    linear-gradient(var(--board-veil), var(--board-veil)) center / cover no-repeat,
+    var(--bg-0) url('/bg/room-dark.jpg') center / cover no-repeat;
   color: var(--text-1);
 }
 

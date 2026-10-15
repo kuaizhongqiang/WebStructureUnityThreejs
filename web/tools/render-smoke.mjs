@@ -546,6 +546,10 @@ try {
       caption: style.getPropertyValue('--shell-caption-h').trim(),
       theme: document.documentElement.getAttribute('data-theme') ?? '',
       hasCard: Boolean(document.querySelector('.ui-titlebar.ui-titlebar--float')),
+      // 页面底图（Issue #44）：外壳的 background-image 里要有那张图（深浅两套主题都铺，
+      // 差别在面纱 `--board-veil`：深色 0、亮色 42% 白纱）
+      rootBg: getComputedStyle(document.querySelector('.app-root') ?? document.body).backgroundImage,
+      veil: style.getPropertyValue('--board-veil').trim(),
     }
   })
   check(
@@ -564,6 +568,12 @@ try {
     `--shell-caption-h=${home.caption}`,
   )
   check(home.theme === 'dark' || home.theme === 'light', '主题属性已设置', home.theme)
+  check(
+    /room-dark\.jpg/.test(home.rootBg),
+    '外壳：页面底图已铺（Issue #44，与排版稿同一张图）',
+    home.rootBg.slice(0, 90) || '(空)',
+  )
+  check(home.veil !== '', '外壳：底图面纱走令牌 --board-veil（不写第二次颜色）', home.veil)
   await page.screenshot({ path: resolve(artifactsDir, 'start.png'), fullPage: false })
 
   // ---------- 4c. A4 画质 / 首次设置：首启弹窗（三档卡片）+「使用推荐值」写存档 ----------
