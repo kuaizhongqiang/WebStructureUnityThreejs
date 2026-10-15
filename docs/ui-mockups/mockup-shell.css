@@ -131,3 +131,21 @@
   z-index: 40;
   max-width: min(var(--shell-card-max-w), calc(100% - var(--shell-top-x) * 2));
 }
+
+/* ---- 成果页演示：页面 / 站间过渡（Issue #57）----
+   产品里的过渡是 **Vue 挂类名 + 令牌驱动**（`components.css` §22，落点 `web/src/App.vue`
+   与 `TaskView`→`AppShell`）；静态成果页没有路由，也没有 Vue，所以这里用**同一对令牌**
+   做一条循环动画，把这条节奏演出来。评审外壳专用，产品不引入。 */
+@keyframes spec-motion-fade {
+  0%, 35% { opacity: 1; }
+  45%, 85% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes spec-motion-shift {
+  0%, 35% { opacity: 1; transform: translateY(0); }
+  45%, 85% { opacity: 0; transform: translateY(calc(-1 * var(--page-shift))); } /* 离场：向上淡出 */
+  86% { opacity: 0; transform: translateY(var(--page-shift)); }                /* 入场起点：自下方 */
+  100% { opacity: 1; transform: translateY(0); }
+}
+.spec-motion { animation: spec-motion-shift 2.6s var(--ease-page) infinite; }
+.spec-motion--fade { animation-name: spec-motion-fade; }

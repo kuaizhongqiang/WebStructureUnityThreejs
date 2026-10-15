@@ -1066,3 +1066,54 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 
 /* ---- 排版稿里把浮层钉在字段下方；产品里由浮层定位逻辑给出坐标 ---- */
 .ui-selectbox__pop { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 50; }
+
+/* ============================================================================
+ * 22. 页面 / 站间过渡（2026-10-15，Issue #57）
+ *
+ * 两条过渡，**节奏同源**（同一对令牌 `--dur-page` / `--ease-page`），差别只在位移：
+ *
+ *   `.ui-page-*`    路由级：启动 / 登录 / 目录 / 任务页之间换**整个视图**。
+ *                   **只做淡入淡出，不做位移** —— 换的是整屏（含整页底图），
+ *                   位移会让底图跟着挪、边沿露出 6px 底色缝，观感是"画面在抖"而不是过渡。
+ *   `.ui-station-*` 站间级：任务页内沿站点线前后翻站，只换 `AppShell` 主内容区。
+ *                   同一节奏 + **极短位移**（进入自下方、退出向上），
+ *                   区域被 `.app-main` 的 `overflow: hidden` 收住，不会带动整屏。
+ *
+ * 类名由 Vue 的 `<Transition name="ui-page|ui-station">` 自动挂上
+ * （`-enter-from` / `-enter-active` / `-enter-to` / `-leave-from` / `-leave-active` / `-leave-to`），
+ * 落点：`ui-page` 在 `web/src/App.vue` 的 `<router-view>`；`ui-station` 由 `TaskView` 传 key、
+ * 由 `web/src/components/AppShell.vue` 套在 `.app-main__body` 上。
+ *
+ * ⚠️ **Unity 画布红线**（DEC-145）：常驻 Unity 实例的画布**不许**跟着淡出再淡入（会看到 WebGL 画布闪断）。
+ * 站间切换因此按"画布要不要留在原地"分两种：**Unity 站之间共用一个过渡 key ⇒ Vue 不触发过渡、不重建 DOM**
+ * （口径与理由见 `web/src/domain/page-transition.ts`）；只有跨栈翻站（Unity ↔ Three）才走上面这套。
+ *
+ * 「减少动态效果」由本文件 §20.6 的全局 `prefers-reduced-motion` 兜底（时长压到 0.01ms），
+ * 本节不重复声明媒体查询。
+ * ========================================================================== */
+.ui-page-enter-active,
+.ui-page-leave-active {
+  transition: opacity var(--dur-page) var(--ease-page);
+}
+.ui-page-enter-from,
+.ui-page-leave-to { opacity: 0; }
+
+.ui-station-enter-active,
+.ui-station-leave-active {
+  transition:
+    opacity var(--dur-page) var(--ease-page),
+    transform var(--dur-page) var(--ease-page);
+}
+/* ⚠️ 站间过渡**不用 `out-in`**：out-in 会把新内容推迟到离场结束之后才创建，
+   而任务页的挂载逻辑是「watch → nextTick → 往模板 ref 的容器里挂视口」
+   （Three 的 `Viewer`、Unity 的搬挂点、`<video>` 都这样），它要求"换站后新 DOM 已经就位"。
+   实测（2026-10-15）：out-in 下 Unity → Three 切回画布重建失败、原理页卡在载入中。
+   所以两份内容短暂共存（交叉淡入淡出），离场的那份**脱流叠在原地**，不参与布局。 */
+.ui-station-leave-active {
+  position: absolute;
+  inset: 0;
+  /* 叠在上面的是离场层：它已经不可交互了，不许吃掉点击 */
+  pointer-events: none;
+}
+.ui-station-enter-from { opacity: 0; transform: translateY(var(--page-shift)); }
+.ui-station-leave-to { opacity: 0; transform: translateY(calc(-1 * var(--page-shift))); }

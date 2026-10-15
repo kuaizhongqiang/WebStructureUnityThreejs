@@ -24,7 +24,7 @@ npm run typecheck     # vue-tsc --noEmit
 npm run lint          # eslint .
 npm run format        # prettier --write（门禁用 format:check）
 npm test              # vitest run
-npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线按数据画站 / 内容层 / Info 三维区 / 原理页视频（64 项断言）
+npm run smoke         # 真 Chromium 渲染冒烟：三维 / 设计系统 / 站点线按数据画站 / 内容层 / Info 三维区 / 原理页视频 / 页面过渡（89 项断言）
 npm run build         # 类型检查 + 生产构建 → dist/
 npm run preview       # 预览生产产物
 ```
@@ -36,9 +36,9 @@ npm run preview       # 预览生产产物
 | 路径 | 职责 | 纪律 |
 |---|---|---|
 | `src/contracts/` | **双端共享契约**（`SceneState` / `TaskType` / 中文标签 / 分流映射 / 协议版本 / 题目枚举） | 只许往后追加；改值必须同批改 C# 与基准快照，且 `contracts.spec.ts` 通过（DEC-09 / DEC-10） |
-| `src/domain/` | **表现层登记表与内容适配**：`registry.ts`（TaskType → 页面骨架）、`adopted-content.ts`（采纳 JSON → 页面模型）、`principle.ts`（原理页规则） | 不复制契约里的标签与顺序；适配层是**纯函数**，坑要用单测锁住 |
+| `src/domain/` | **表现层登记表与内容适配**：`registry.ts`（TaskType → 页面骨架）、`adopted-content.ts`（采纳 JSON → 页面模型）、`principle.ts`（原理页规则）、`page-transition.ts`（页面/站间过渡的口径与 key，DEC-157） | 不复制契约里的标签与顺序；适配层是**纯函数**，坑要用单测锁住 |
 | `src/views/` | 页面：`StartView` / `LoginView`（**只提供游客入口**，DEC-101） / `MenuView` / **`TaskView`（登记表驱动，一种骨架一个分支）** / `DebugView`（骨架自检） / `PlaceholderView` | 新增 TaskType 先改契约与登记表，**不要**新写一页；启动流程是 `start → login → menu`，改它要同批改 `router/index.ts` 与冒烟（DEC-101） |
-| `src/components/` | 外壳组件：`AppShell` / `ShellCard`（左上浮卡）/ `RouteBar`（站点线） | 样式只走 `@ds`（`tokens.css` + `components.css`），**禁止** import `mockup-shell.css`（DEC-74） |
+| `src/components/` | 外壳组件：`AppShell`（含**主内容区过渡**的挂点与 `transition` / `transitionKey` 两个 prop，DEC-157）/ `ShellCard`（左上浮卡）/ `RouteBar`（站点线） | 样式只走 `@ds`（`tokens.css` + `components.css`），**禁止** import `mockup-shell.css`（DEC-74）；过渡时长/缓动只认令牌（DEC-157） |
 | `src/viewer/` | 三维与**大资产取数**：`Viewer`（裸 three 封装）、`ModelStage`（Info 页舞台，DEC-98）、`scene-assets.ts` / `video-assets.ts`（只认产物里的元数据表与清单） | 谁创建谁 `dispose()`；渲染循环由 `Viewer` 独占；**不硬编**资产路径（DEC-57 / DEC-98 / DEC-99） |
 | `src/unity/` | Unity WebGL 桥 | 消息全 JSON、带版本号、不提供状态查询、退出显式 `detach()`（DEC-07 / DEC-08 / DEC-12） |
 | `src/stores/` | 状态：`session`（会话**真源**，DEC-08）、`content`（内容层，幂等缓存）、`progress`（本机单 JSON，DEC-54）、`runtime`（**发布清单**驱动的 Unity 选件） | 状态变更必须发事件；不暴露"查询当前状态"给跨模块调用方 |

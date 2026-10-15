@@ -55,7 +55,7 @@
 | `design/04-data-model.md` | **数据模型草案**：内容数据（项目/任务/步骤/题目）与本地数据（进度/成绩/设置），含字段表与示例 JSON | 草案待确认 |
 | `design/05-unity-packaging-pipeline.md` | **Unity 产物与打包流水线**：三段式（人工构建 → 暂存校验 → 打包）、`unity/builds/<key>/` 落点、`release-manifest.json` 发布清单、服务端 MIME/压缩/缓存清单、明确未做项 | **已实现**（DEC-79） |
 | `design/06-unity-manual-build-checklist.md` | **Unity 手动构建检查清单**：本仓 WebGL 设置实值（Brotli / 无回退 / 无多线程 / 开数据缓存）及其对服务器的要求、中文 TMP 字形与 StreamingAssets 红线、构建后三个必查、桥未落地时的预期表现 | 照做即可 |
-| `design/07-frame-style-rules.md` | **框体样式规则（本项目自持）**：描边 α 阶梯 + 0.5px 发丝、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版、明确不做的五项 | **生效**（落地在 `ui-mockups` 的 tokens/components） |
+| `design/07-frame-style-rules.md` | **框体样式规则（本项目自持）**：描边 α 阶梯 + 0.5px 发丝、圆角 6 级按角色、浮层 elevation、交互叠加层、键盘焦点环、中文排版、明确不做的五项；**§9 页面底图**（DEC-149）、**§10 动效：页面 / 站间过渡**（DEC-157：两处过渡一套节奏、站间不许用 `out-in` 的原因、Unity 画布红线、减少动态效果的全局兜底） | **生效**（落地在 `ui-mockups` 的 tokens/components） |
 | `design/08-content-data-adoption.md` | **内容数据的采用与"双份"口径**（DEC-82/83）：两份落点、门禁比对什么、数据形状与十个任务槽位、枚举写名字、资源 key 命名规则、未采用项 | **生效** |
 | `design/09-startup-orchestration.md` | **启动编排与桥消息落地**（DEC-80/81/84，§11~§12 为 DEC-112~114）：preload 的定义、场景结构、启动链、两条就绪、进度合成、实例常驻与恢复、输入开关、构建粒度；**§11 Web 侧接线的三条纪律**（`app:init` 必须握手后发 / `scene:enter` 幂等且可补发 / `input:enable` 握前只记状态）；**§12 免 Web 自测开关与 dev 期联调**（`StartupTestSwitch`、`unityDevServe`、桩构建协议仿真） | **生效** |
 | `design/10-step-system.md` | **步骤系统**（DEC-89 ~ DEC-93）：进程 → 步骤 → 条件的三级结构、数据挂在条件上的取舍、协程三阶段与动画原语、跳转从 P0S0 重置与快进、协作式打断、面板端口与 `ui:request`/`ui:result` 接线、场景接线自查清单、条件一览与遗留项 | **生效** |

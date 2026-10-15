@@ -136,6 +136,15 @@
   overflow: hidden;
 }
 
+/* 主内容区的过渡包裹层（Issue #57，落点在 `components/AppShell.vue`）：
+   **只负责把高度铺满**，让页面里的 `height: 100%` 照旧成立（这些页面原先直接挂在 `.app-main` 下）。
+   ⚠️ 不许给它 `position` —— `.ui-tips-float` / `.ui-mask` 等绝对定位叠层靠"最近的定位祖先"
+   落在 `.app-main` 上；这里一旦定位，叠层会整体挪位。
+   过渡的位移由 `.ui-station-*` 给（见 `docs/ui-mockups/components.css` §22）。 */
+.app-main__body {
+  height: 100%;
+}
+
 .app-statusbar {
   flex: none;
   height: var(--shell-statusbar-h);

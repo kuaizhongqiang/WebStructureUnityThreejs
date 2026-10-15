@@ -39,9 +39,70 @@ const artifactsDir = resolve(here, 'smoke', 'artifacts')
 
 const failures = []
 
+/**
+ * GitHub Actions 的**注解**（`::error title=…::message`）。
+ *
+ * 为什么要有：冒烟的读数只在 job 日志里，而日志要仓库权限才看得到（check-runs API 上看不到）——
+ * 于是"CI 红了一条、但只知道 exit 1"就得翻几百行日志。写成注解后，**PR 的 Checks 面板与
+ * check-runs API 都能直接看到"哪一条失败、当时的读数/异常是什么"**，不用登录也能定位。
+ * 本地不在 Actions 里（没有 `GITHUB_ACTIONS`）就不打印，输出与以前逐字一致。
+ */
+function annotate(level, title, message) {
+  if (process.env.GITHUB_ACTIONS !== 'true') return
+  const escape = (text) =>
+    String(text).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A').slice(0, 900)
+  console.log(`::${level} title=${escape(title)}::${escape(message)}`)
+}
+
 function check(ok, label, detail = '') {
   console.log(`[${ok ? 'PASS' : 'FAIL'}] ${label}${detail ? ` — ${detail}` : ''}`)
-  if (!ok) failures.push(label)
+  if (!ok) {
+    failures.push(label)
+    annotate('error', '冒烟断言失败', detail ? `${label} — ${detail}` : label)
+  }
+}
+
+/** 过渡类名（页面级 / 站间级，见 `docs/ui-mockups/components.css` §22 与 DEC-157）。 */
+const TRANSITION_SELECTOR =
+  '.ui-page-enter-active, .ui-page-leave-active, .ui-station-enter-active, .ui-station-leave-active'
+
+/**
+ * 等这一次**换页 / 换站**的过渡跑完（Issue #57，DEC-157）。
+ *
+ * 为什么需要：换页现在是 160ms 级的过渡（路由级 `out-in` 两段、合计约 320ms），
+ * 原先"点一下 + `waitForTimeout(400)` 再读页面"的写法在慢 runner 上只剩几十毫秒余量 ——
+ * CI 实测就这么红了两条（"欢迎页主按钮"、"登录页游客入口"：读到的还是上一屏）。
+ *
+ * ⚠️ 不能只等"过渡类消失"：hash 路由的 `push` 是异步的，点完立刻查会在导航还没起来时
+ * 误判成"已经稳定"（本地实测把 `#/login` 读成了 `#/start`）。所以**先等过渡出现**，
+ * 等不到才认为这次没换页（例如整页加载出来的首屏）—— 那时调用方本来也不该等过渡。
+ */
+async function settle(page, { startTimeout = 3000, endTimeout = 10_000 } = {}) {
+  const started = await page
+    .waitForFunction((selector) => Boolean(document.querySelector(selector)), TRANSITION_SELECTOR, {
+      timeout: startTimeout,
+    })
+    .then(() => true)
+    .catch(() => false)
+  if (!started) return
+  await page
+    .waitForFunction((selector) => !document.querySelector(selector), TRANSITION_SELECTOR, {
+      timeout: endTimeout,
+    })
+    .catch(() => {})
+}
+
+/**
+ * 等**已经起来**的过渡收干净（不推动任何导航）。
+ *
+ * 与 `settle()` 的分工：`settle()` 用在"我刚点了一下、过渡即将开始"之后；
+ * `quiet()` 用在"我马上要开始数过渡类"之前 —— 否则上一屏的离场影子
+ * （站间过渡是交叉淡入淡出，离场层会留在 DOM 里约 160ms）会被记进这一轮。
+ */
+async function quiet(page, timeout = 10_000) {
+  await page
+    .waitForFunction((selector) => !document.querySelector(selector), TRANSITION_SELECTOR, { timeout })
+    .catch(() => {})
 }
 
 // ---------- 0. 冒烟自备的 Unity 桩构建（隔离在临时目录，**绝不**覆盖 unity/builds）----------
@@ -452,7 +513,7 @@ try {
 
   // ---------- 4. 欢迎页（A1）：主视觉 + 外壳浮卡 + 设计系统令牌真的加载了 ----------
   await page.goto(`${base}/#/start`, { waitUntil: 'load' })
-  await page.waitForTimeout(400)
+  await settle(page)
   const home = await page.evaluate(() => {
     const style = getComputedStyle(document.documentElement)
     return {
@@ -535,7 +596,7 @@ try {
   // ---------- 4b. 启动流程（DEC-101）：start → login → menu，且目录页能退出回登录 ----------
   // 判据是**真的点**（不是读路由表）：本期只允许游客，所以登录页**不该有输入框**。
   await page.click('button.ui-btn--primary') // 「开始实验」
-  await page.waitForTimeout(400)
+  await settle(page)
   const loginPage = await page.evaluate(() => ({
     hash: location.hash,
     text: document.body.innerText,
@@ -552,7 +613,8 @@ try {
   await page.screenshot({ path: resolve(artifactsDir, 'login.png'), fullPage: false })
 
   await page.click('button.ui-btn--primary') // 「以游客身份进入」
-  await page.waitForTimeout(700)
+  await settle(page)
+  await page.waitForTimeout(700) // 目录要等内容层（文案/卡片）到位，过渡之外还得给它时间
   const menuAfterLogin = await page.evaluate(() => ({
     hash: location.hash,
     tiles: document.querySelectorAll('.ui-tile-grid .ui-tile').length,
@@ -567,7 +629,7 @@ try {
   check(menuAfterLogin.text.includes('退出'), '项目目录：有「退出」入口（DEC-101）')
 
   await page.click('button.ui-iconbtn--back') // 「退出」
-  await page.waitForTimeout(400)
+  await settle(page)
   const afterExit = await page.evaluate(() => location.hash)
   check(afterExit === '#/login', '项目目录：退出 → 回到登录页', afterExit)
 
@@ -843,7 +905,181 @@ try {
   const menuAfter = await page.evaluate(() => document.querySelectorAll('.ui-tile-grid .ui-tile').length)
   check(menuAfter >= 9, '坏链接之后目录仍然是完整的（一次坏链接不能污染全局状态）', `count=${menuAfter}`)
 
+  // ---------- 8. 页面过渡（Issue #57）：路由级 / 站间级，以及"常驻画布不许跟着淡" ----------
+  // 判据是 **Vue 真的把过渡类挂上过**（MutationObserver 收 class 属性变化），
+  // 不是"截图看着像在淡" —— 后者复跑不稳，也没法机器判定。
+  // 类名与令牌口径：docs/ui-mockups/components.css §22、web/src/domain/page-transition.ts。
+  const watchTransitions = () =>
+    page.evaluate(() => {
+      window.__WSU3_T_CLASSES__ = []
+      const observer = new MutationObserver((records) => {
+        for (const record of records) {
+          const target = record.target
+          if (!(target instanceof Element)) continue
+          for (const name of target.classList) window.__WSU3_T_CLASSES__.push(name)
+        }
+      })
+      // 只听 class 属性（不监听 childList）：探针元素自己插入 / 移除不会被记成"播过过渡"
+      observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] })
+      window.__WSU3_T_OBSERVER__ = observer
+    })
+  const readTransitions = () =>
+    page.evaluate(() => {
+      window.__WSU3_T_OBSERVER__?.disconnect()
+      const seen = [...new Set(window.__WSU3_T_CLASSES__ ?? [])]
+      return seen.filter((name) => /^ui-(page|station)-(enter|leave)-(active|from|to)$/.test(name))
+    })
+  /** 就地量一个过渡类的 computed 时长（用于证明"时长真的来自令牌"）。 */
+  const measureTransition = (className) =>
+    page.evaluate((name) => {
+      const probe = document.createElement('div')
+      probe.className = name
+      document.body.appendChild(probe)
+      const duration = getComputedStyle(probe).transitionDuration
+      probe.remove()
+      const root = getComputedStyle(document.documentElement)
+      return {
+        duration,
+        token: root.getPropertyValue('--dur-page').trim(),
+        easing: root.getPropertyValue('--ease-page').trim(),
+        shift: root.getPropertyValue('--page-shift').trim(),
+      }
+    }, className)
+  /**
+   * 点站点线的一站。
+   *
+   * 用 DOM `click()` 而不是 Playwright 的命中测试：站点线末尾几站会被右上按钮组
+   * （`.app-topright`，z 在画布之上）压住，Playwright 会一直等"不被遮挡"直到超时；
+   * 而这里要的是"点这一站"这件事本身（点击事件照走组件的 `@click` 处理）。
+   */
+  const clickStation = (title) =>
+    page.evaluate((name) => {
+      const stop = [...document.querySelectorAll('.ui-route__stop')].find(
+        (el) => el.getAttribute('title') === name,
+      )
+      if (!stop) throw new Error(`站点线里没有「${name}」站`)
+      stop.click()
+    }, title)
+
+  // 8a. 外壳给主内容区留了过渡包裹层，且**不许定位**（`ui:request` 的叠层靠"最近的定位祖先"）
+  const shellBox = await page.evaluate(() => {
+    const body = document.querySelector('.app-main > .app-main__body')
+    return { exists: Boolean(body), position: body ? getComputedStyle(body).position : '' }
+  })
+  check(shellBox.exists, '过渡：主内容区有外壳提供的过渡包裹层（AppShell 的 .app-main__body）')
+  check(
+    shellBox.position === 'static',
+    '过渡：包裹层不定位于（.ui-tips-float / .ui-mask 的定位祖先必须仍是 .app-main）',
+    `position=${shellBox.position}`,
+  )
+
+  // 8b. 路由级：目录页点项目 → 任务页（换整个视图 ⇒ `ui-page-*`，且不该混进站间那套）
+  await quiet(page) // 装探针前先收干净，别把上一屏的离场记进这一轮
+  await watchTransitions()
+  await page.locator('.ui-tile-grid .ui-tile').first().click()
+  await settle(page) // 等这次换页的过渡整段跑完（类才记全）
+  const routeClasses = await readTransitions()
+  check(
+    routeClasses.some((name) => name.startsWith('ui-page-')),
+    '过渡：路由级切换播了页面过渡（ui-page-*）',
+    routeClasses.join(' ') || '(一个类都没挂上)',
+  )
+  check(
+    !routeClasses.some((name) => name.startsWith('ui-station-')),
+    '过渡：路由级切换不带站间过渡（两套各管一段）',
+    routeClasses.join(' '),
+  )
+
+  // 8c. 站间（Unity → Unity）：**不许播过渡**（画布会被搬走并淡出再淡入 = 闪断，DEC-145）
+  await page.goto(`${base}/#/task/8?project=clip_contactor`, { waitUntil: 'load' })
+  await page.waitForTimeout(900)
+  const canvasBefore = await page.evaluate(() => {
+    const canvas = document.querySelector('#unity-canvas')
+    if (canvas) canvas.dataset.wsu3Mark = 'kept'
+    return {
+      hasCanvas: Boolean(canvas),
+      current: document.querySelector('.ui-route__stop--current .ui-route__label')?.textContent?.trim() ?? '',
+    }
+  })
+  check(
+    canvasBefore.hasCanvas,
+    '过渡：结构站已挂上 Unity 画布（下面"画布不许被搬"才有对象可查）',
+    `当前站=${canvasBefore.current}`,
+  )
+
+  await quiet(page) // 上一屏（换到结构站）的离场层收干净再开始数
+  await watchTransitions()
+  await clickStation('检测') // 8 → 9：同为 Unity
+  await page.waitForTimeout(600)
+  await clickStation('结构') // 9 → 8：回到有构建的那一站
+  await page.waitForTimeout(700)
+  const unityStation = await page.evaluate(() => ({
+    sameCanvas: document.querySelector('#unity-canvas')?.dataset.wsu3Mark === 'kept',
+    insideViewport: Boolean(document.querySelector('.app-viewport #unity-canvas')),
+  }))
+  const unityStationClasses = await readTransitions()
+  check(
+    unityStationClasses.length === 0,
+    '过渡：Unity ↔ Unity 翻站**不播过渡**（画布不许跟着淡出再淡入）',
+    unityStationClasses.join(' ') || '(没有过渡类)',
+  )
+  check(
+    unityStation.sameCanvas,
+    '过渡：Unity ↔ Unity 翻站后是**同一块画布**（没被重建）',
+    `同节点=${unityStation.sameCanvas}`,
+  )
+  check(
+    unityStation.insideViewport,
+    '过渡：翻站回来后画布仍在视口里（常驻实例只是被搬挂，没有被丢掉）',
+    `在视口内=${unityStation.insideViewport}`,
+  )
+
+  // 8d. 站间（Three → Three）：同一节奏的站间过渡**真的播**，且不触发路由级那套
+  await clickStation('简介') // 8(Unity) → 7(Three)：跨栈
+  await page.waitForTimeout(800)
+  await quiet(page) // 跨栈那一次的离场层收干净
+  await watchTransitions()
+  await clickStation('实验原理') // 7 → 3：同为 Three
+  await settle(page) // 等这次换站的过渡整段跑完
+  const stationClasses = await readTransitions()
+  check(
+    stationClasses.some((name) => name.startsWith('ui-station-')),
+    '过渡：站间切换播了站间过渡（ui-station-*）',
+    stationClasses.join(' ') || '(一个类都没挂上)',
+  )
+  check(
+    !stationClasses.some((name) => name.startsWith('ui-page-')),
+    '过渡：站间切换不触发路由级过渡（同一组件实例换站，不该换整屏）',
+    stationClasses.join(' '),
+  )
+
+  // 8e. 时长 / 缓动**走令牌**，不是零散字面值；「减少动态效果」一开就压到瞬时
+  const measured = await measureTransition('ui-station-enter-active')
+  check(
+    measured.token === '160ms' && measured.duration.startsWith('0.16s'),
+    '过渡：站间过渡时长等于令牌 --dur-page（不是写死值）',
+    `token=${measured.token} computed=${measured.duration}`,
+  )
+  check(
+    measured.shift !== '' && measured.easing.includes('cubic-bezier'),
+    '过渡：位移与缓动也来自令牌',
+    `--page-shift=${measured.shift} --ease-page=${measured.easing}`,
+  )
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  const reduced = await measureTransition('ui-station-enter-active')
+  await page.emulateMedia({ reducedMotion: null })
+  check(
+    Number.parseFloat(reduced.duration) < 0.01,
+    '过渡：系统「减少动态效果」打开后过渡被压到瞬时（§20.6 全局兜底）',
+    `computed=${reduced.duration}`,
+  )
+
   check(pageErrors.length === 0, '全程无 JS 异常 / console.error', pageErrors.slice(0, 3).join(' | '))
+} catch (error) {
+  // 中断（定位器超时、断言外的异常）也要变成一条注解：否则 CI 上只剩"exit code 1"
+  annotate('error', '冒烟中断', error instanceof Error ? error.message : String(error))
+  throw error
 } finally {
   await browser.close()
   await server.close()
