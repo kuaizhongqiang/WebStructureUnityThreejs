@@ -46,7 +46,7 @@ const META: Readonly<Record<TaskType, Omit<TaskTypeMeta, 'type'>>> = {
   [TaskType.Exam]: { icon: 'clipboard-check', kind: 'exam', hint: '考核与结算' },
 }
 
-/** 按契约顺序导出（顺序即站点线顺序，不得自行排序）。 */
+/** 按契约序号导出（协议序）。站点线的**呈现**顺序另见 adopted-content 的 `TASK_PRESENTATION_ORDER`（DEC-148）。 */
 export const TASK_REGISTRY: readonly TaskTypeMeta[] = Object.values(TaskType)
   .filter((value): value is TaskType => typeof value === 'number')
   .map((type) => ({ type, ...META[type] }))

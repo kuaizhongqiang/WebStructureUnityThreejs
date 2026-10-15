@@ -68,7 +68,7 @@ const meta = computed(() => metaOf(taskType.value))
  */
 const task = computed(() => content.taskOf(taskType.value))
 const unity = computed(() => isUnityTask(taskType.value))
-/** 本项目启用的任务（契约顺序）—— 上一/下一站、可达性都按它走，不按全局契约顺序 */
+/** 本项目启用的任务（站点线呈现顺序，DEC-148）—— 上一/下一站、可达性都按它走，不按全局契约顺序 */
 const enabledTypes = computed(() => content.enabledTypesOf())
 const questions = computed(() => content.questionsOf(taskType.value))
 
@@ -625,7 +625,7 @@ watch(
 onBeforeUnmount(() => void unmountUnityView())
 
 /**
- * 下一站 = **本项目启用的任务**里的下一个（契约顺序），不是全局 `TASK_TYPES`。
+ * 下一站 = **本项目启用的任务**里的下一个（站点线呈现顺序，DEC-148），不是全局 `TASK_TYPES`。
  * 采纳数据里每个器件只启用一部分槽位（例：接触器只有 原理/简介/结构/测量），
  * 按全局顺序走会一路撞上"本项目未启用"。
  */

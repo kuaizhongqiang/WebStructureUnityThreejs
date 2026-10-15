@@ -27,7 +27,7 @@ interface MenuCard {
   id: string
   title: string
   projectId: string
-  /** 该项目启用的任务（契约顺序）；空 = 项目数据没到位 */
+  /** 该项目启用的任务（站点线呈现顺序，DEC-148）；空 = 项目数据没到位 */
   types: TaskType[]
   summary: string
   /** 下一站：本项目里第一个未完成的任务 */

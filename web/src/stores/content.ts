@@ -88,7 +88,7 @@ export const useContentStore = defineStore('content', () => {
     return projects.value.find((item) => item.id === id) ?? null
   }
 
-  /** 项目里启用的任务（按契约顺序）—— 站点线、上一/下一站、进度都按它走。 */
+  /** 项目里启用的任务（按站点线呈现顺序，DEC-148）—— 站点线、上一/下一站、进度都按它走。 */
   function enabledTypesOf(id?: string): TaskType[] {
     const target = id ? projectOf(id) : project.value
     return target ? target.tasks.map((task) => task.taskType) : []
