@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="虚拟仿真教学平台 图标">
+  <!--
+    应用图标（矢量源，**临时版**）。
+
+    构成：
+      · 底层 —— 512 圆角方，产品的外壳深色（--bg-2 → --bg-0 的竖直渐变），圆角按超大图标档取 112；
+      · 图形 —— 插头 + 闪电的线性图标（stroke 2/24 的原始比例，等比放大 12.5 倍到 300×300，
+               线宽随之变成 25，视觉粗细与 24px 下的原始图标一致），描边用主色渐变（--accent → --accent-2）；
+      · 图形不带底色块 —— 深色底本身已经把它托住了，小尺寸下也不糊。
+
+    换图：替换本文件后重跑 `node web/tools/make-app-icon.mjs`（同一个 SVG 出 ico 与 png，不要手改产物）。
+    来源与许可见 docs/DECISIONS.md 的 DEC-150（含必须随包保留的版权声明）。
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16202e" />
+      <stop offset="1" stop-color="#0b0f16" />
+    </linearGradient>
+    <linearGradient id="glyph" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6" />
+      <stop offset="1" stop-color="#22d3ee" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bg)" />
+  <rect x="6" y="6" width="500" height="500" rx="106" ry="106" fill="none" stroke="#22d3ee" stroke-opacity="0.18" stroke-width="6" />
+
+  <g transform="translate(106 106) scale(12.5)" fill="none" stroke="url(#glyph)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.3 20.3a2.4 2.4 0 0 0 3.4 0L12 18l-6-6-2.3 2.3a2.4 2.4 0 0 0 0 3.4Z" />
+    <path d="m2 22 3-3" />
+    <path d="M7.5 13.5 10 11" />
+    <path d="M10.5 16.5 13 14" />
+    <path d="m18 3-4 4h6l-4 4" />
+  </g>
+</svg>

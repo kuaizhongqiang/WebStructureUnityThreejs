@@ -127,6 +127,9 @@ function createWindow() {
     backgroundColor: THEME_CHROME[currentTheme].background,
     autoHideMenuBar: true,
     title: '虚拟仿真教学平台',
+    // 窗口/任务栏图标（与 exe 图标同一个 .ico，见 electron/assets/app-icon.ico）。
+    // 生成物不手改：改图标请改 app-icon.svg 后重跑 `node web/tools/make-app-icon.mjs`。
+    icon: join(__dirname, 'assets', 'app-icon.ico'),
     // Windows：隐藏原生标题栏，只留系统浮层按钮（拖动/双击最大化仍由系统负责）
     ...(IS_WINDOWS
       ? {

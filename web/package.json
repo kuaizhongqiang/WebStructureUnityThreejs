@@ -15,7 +15,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "smoke": "node tools/render-smoke.mjs"
+    "smoke": "node tools/render-smoke.mjs",
+    "icon": "node tools/make-app-icon.mjs"
   },
   "dependencies": {
     "lucide-vue-next": "^1.0.0",

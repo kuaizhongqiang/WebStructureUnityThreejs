@@ -22,7 +22,7 @@
     "directories": {
       "output": "release"
     },
-    "files": ["main.js", "preload.js", "server.js", "package.json"],
+    "files": ["main.js", "preload.js", "server.js", "package.json", "assets/app-icon.ico"],
     "extraResources": [
       {
         "from": "../web/dist",
@@ -35,6 +35,7 @@
     ],
     "win": {
       "target": ["portable"],
+      "icon": "assets/app-icon.ico",
       "artifactName": "WSU3-Shell-${version}-portable.${ext}"
     },
     "portable": {
