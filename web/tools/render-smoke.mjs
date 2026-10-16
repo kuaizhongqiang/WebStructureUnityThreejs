@@ -62,6 +62,22 @@ function check(ok, label, detail = '') {
   }
 }
 
+/**
+ * 目录页（A5 环形菜单）**开场旋转**的时长 + 余量。
+ *
+ * 产品 `MenuView.vue` 的 `SPIN_MS = 1900`：进目录后环先转一圈再精确停在环序 1
+ * （负责人 2026-10-16 需求）。旋转期间 `applyRing()` 每帧改 `--a5r-dx / --a5r-dy`，
+ * 而卡片的屏幕位置**全部**由这两枚变量表达 ⇒ 每张卡都在动。
+ *
+ * 为什么冒烟必须等它：Playwright 的点击要"元素在两次取样之间不动"。
+ * 不断言这一条的话会踩两种表现（同一根因）：
+ *   ① 旋转期间点 `.a5r-card.is-focus` ⇒ `element is not stable`，一直重试到超时；
+ *   ② 侥幸稳定下来时 `.is-focus` 还在换卡 ⇒ 点到的是别人（或复检撞上运动中的环）。
+ * 还要注意 `MenuView.vue` 的**点击语义**（`onCardClick`）：点非焦点卡只把它转到前方正中、
+ * **不进项目** —— 只有点当前焦点卡才等价于"点一张项目卡进项目"。
+ */
+const MENU_INTRO_MS = 2200
+
 /** 过渡类名（页面级 / 站间级，见 `docs/ui-mockups/components.css` §22 与 DEC-157）。 */
 const TRANSITION_SELECTOR =
   '.ui-page-enter-active, .ui-page-leave-active, .ui-station-enter-active, .ui-station-leave-active'
@@ -614,10 +630,10 @@ try {
 
   await page.click('button.ui-btn--primary') // 「以游客身份进入」
   await settle(page)
-  await page.waitForTimeout(700) // 目录要等内容层（文案/卡片）到位，过渡之外还得给它时间
+  await page.waitForTimeout(MENU_INTRO_MS) // 目录要等内容层（文案/卡片）到位 + 环形开场旋转收尾（见 MENU_INTRO_MS）
   const menuAfterLogin = await page.evaluate(() => ({
     hash: location.hash,
-    tiles: document.querySelectorAll('.ui-tile-grid .ui-tile').length,
+    tiles: document.querySelectorAll('.a5r-card').length,
     text: document.body.innerText,
   }))
   check(
@@ -680,9 +696,9 @@ try {
 
   // ---------- 7. 内容层：真的吃到了被采纳的数据 ----------
   await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
-  await page.waitForTimeout(900)
+  await page.waitForTimeout(MENU_INTRO_MS)
   const menu = await page.evaluate(() => {
-    const tiles = [...document.querySelectorAll('.ui-tile-grid .ui-tile')]
+    const tiles = [...document.querySelectorAll('.a5r-card')]
     return {
       count: tiles.length,
       names: tiles.map((el) => el.querySelector('.ui-tile__name')?.textContent?.trim() ?? ''),
@@ -901,8 +917,8 @@ try {
   check(stale.includes('找不到项目'), '坏链接：状态条明说“找不到项目”并退到兜底内容（不静默）')
 
   await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
-  await page.waitForTimeout(500)
-  const menuAfter = await page.evaluate(() => document.querySelectorAll('.ui-tile-grid .ui-tile').length)
+  await page.waitForTimeout(MENU_INTRO_MS)
+  const menuAfter = await page.evaluate(() => document.querySelectorAll('.a5r-card').length)
   check(menuAfter >= 9, '坏链接之后目录仍然是完整的（一次坏链接不能污染全局状态）', `count=${menuAfter}`)
 
   // ---------- 8. 页面过渡（Issue #57）：路由级 / 站间级，以及"常驻画布不许跟着淡" ----------
@@ -976,7 +992,9 @@ try {
   // 8b. 路由级：目录页点项目 → 任务页（换整个视图 ⇒ `ui-page-*`，且不该混进站间那套）
   await quiet(page) // 装探针前先收干净，别把上一屏的离场记进这一轮
   await watchTransitions()
-  await page.locator('.ui-tile-grid .ui-tile').first().click()
+  // 环形卡点**非焦点卡**只把它转到前方正中（不换页），只有点焦点卡才进项目
+  // ⇒ 这里必须点 `.is-focus` 那张，才等价于原来"点一张项目卡进项目"。
+  await page.locator('.a5r-card.is-focus').click()
   await settle(page) // 等这次换页的过渡整段跑完（类才记全）
   const routeClasses = await readTransitions()
   check(
