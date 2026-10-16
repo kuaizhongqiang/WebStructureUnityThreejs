@@ -36,6 +36,11 @@ namespace WSU3.Contracts
         /// 没有它，`ConditionUI` / `ConditionQuestion` 只能"发出去就再也等不到结果"。
         /// </summary>
         public const string UiResult = "ui:result";
+        /// <summary>
+        /// 主题：Web 侧在深色 / 亮色之间切换后同步给 Unity（取值见 <see cref="ThemeKind"/>）。
+        /// 消费端目前是主相机背景板（`WSU3.Core.Controllers.CameraBg` 按它换材质）。
+        /// </summary>
+        public const string UiSetTheme = "ui:set-theme";
 
         // ── Unity → Web（声明顺序 = 契约顺序）──────────────────────────
         public const string UnityReady = "unity:ready";
@@ -66,7 +71,7 @@ namespace WSU3.Contracts
         {
             AppInit, PreloadTask, PreloadCancel, SceneEnter, SceneExit,
             ViewFocus, UiSetLocale, UiSetQuality, InputEnable, RuntimeResume, DebugPing,
-            UiResult,
+            UiResult, UiSetTheme,
         };
 
         /// <summary>Unity 会发给 Web 的消息（发送用）。</summary>

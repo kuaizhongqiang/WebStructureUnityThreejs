@@ -101,6 +101,15 @@ namespace WSU3.Contracts.Events
         public string Detail;
     }
 
+    /// <summary>
+    /// `ui:set-theme`：Web 侧主题（深色 / 亮色）—— 消费端按它换表现，不改场景内容。
+    /// 取值见 `ThemeKind`；当前订阅方是主相机背景板（`WSU3.Core.Controllers.CameraBg`）。
+    /// </summary>
+    public class ThemeChangedEvent
+    {
+        public string Theme;
+    }
+
     // ========================================================================
     // Unity → Web 的「出站意图」
     //

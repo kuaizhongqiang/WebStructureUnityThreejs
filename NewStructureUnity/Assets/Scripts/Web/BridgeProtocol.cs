@@ -71,6 +71,13 @@ namespace WSU3.Web
         public string detail;
     }
 
+    /// <summary>`ui:set-theme` 的载荷：`theme` 取值见契约层 <see cref="WSU3.Contracts.ThemeKind"/>。</summary>
+    [Serializable]
+    public class ThemePayload
+    {
+        public string theme;
+    }
+
     // 注：入站消息对应的**事件类**不在本文件 —— 它们放在契约层的
     // `Assets/Scripts/Contracts/Events/BridgeEvents.cs`（namespace WSU3.Contracts.Events）：
     // 订阅方既有 Runtime（编排）也有 Core（交互管理器要接 view:focus），

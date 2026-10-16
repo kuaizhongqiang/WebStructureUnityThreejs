@@ -333,6 +333,18 @@ namespace WSU3.Web
                     return;
                 }
 
+                case BridgeMessageType.UiSetTheme:
+                {
+                    var p = BridgeJson.ParsePayload<ThemePayload>(envelope.Payload);
+                    if (p == null)
+                    {
+                        Debug.LogWarning("[WebBridge] ui:set-theme 载荷解析失败，已忽略。");
+                        return;
+                    }
+                    EventBus<ThemeChangedEvent>.Publish(new ThemeChangedEvent { Theme = p.theme });
+                    return;
+                }
+
                 default:
                     Debug.LogWarning(
                         $"[WebBridge] 未知消息类型 '{envelope.Type}'，已忽略。" +

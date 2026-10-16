@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using WSU3.Contracts;
+using WSU3.Contracts.Events;
 using WSU3.Core.Managers;
 
 namespace WSU3.Core.Controllers
@@ -9,6 +11,10 @@ namespace WSU3.Core.Controllers
     ///
     /// 材质约定（与来源工程的相机背景 shader 对齐，资产见 `Assets/Shaders/Models/CamBgUnlitShader.shadergraph`）：
     ///   `_Texture_1` / `_Texture_2` 两张背景图；`_TexOrColor` 0=颜色 1=纹理；`_CutTex` 0~1 两张图之间的平滑切换。
+    ///
+    /// **主题**：Web 侧的 `ui:set-theme` 到达时（`EventBus<ThemeChangedEvent>`）把这块板换成对应材质
+    /// （`darkMaterial` / `lightMaterial`，取值见 `ThemeKind`）。两枚材质都是 **prefab 上的序列化引用** ——
+    /// 不走 Resources、不走资源包（全局包登记表当前为空，见 `docs/design/12` §9）。
     ///
     /// ⚠️ **未闭合**：背景图的**取图入口**没接 —— 本工程的资源包链路（P2-6）尚未落地，
     /// 所以启动时**不加载**背景图（材质保持默认颜色），也不做静默降级假造数据。
@@ -25,6 +31,12 @@ namespace WSU3.Core.Controllers
         Material material;
         Coroutine TexFadeCoroutine;
 
+        [Header("主题材质（由 Web 的 ui:set-theme 驱动）")]
+        [Tooltip("深色主题的背景板材质")]
+        [SerializeField] Material darkMaterial;
+        [Tooltip("亮色主题的背景板材质")]
+        [SerializeField] Material lightMaterial;
+
         const string MatTexture_1 = "_Texture_1";
         const string MatTexture_2 = "_Texture_2";
         const string ChangeTextureBool = "_TexOrColor";         // 这是一个 float 属性数据：0 = 颜色、1 = 纹理
@@ -35,6 +47,52 @@ namespace WSU3.Core.Controllers
             StartCoroutine(DelayInit());
             screenSize = new Vector2(Screen.width, Screen.height);
             InitMesh();
+
+            // 订阅放在 Awake（与 StepManager 同一条理由：EditMode 测试里 Start / OnEnable 不会跑）
+            EventBus<ThemeChangedEvent>.Subscribe(OnThemeChanged);
+        }
+
+        void OnDestroy()
+        {
+            EventBus<ThemeChangedEvent>.Unsubscribe(OnThemeChanged);
+        }
+
+        /// <summary>Web 侧主题切换（`ui:set-theme`）。</summary>
+        void OnThemeChanged(ThemeChangedEvent e)
+        {
+            ApplyTheme(e?.Theme);
+        }
+
+        /// <summary>
+        /// 按主题换上对应的背景板材质（取值见 <see cref="ThemeKind"/>）。
+        ///
+        /// 认不出的主题 / 那个主题没配材质 ⇒ **只告警、不动现场**：换上 null 会让整块背景直接消失，
+        /// 而"背景没跟上主题"只是观感问题，不该把画面弄坏。
+        /// </summary>
+        public void ApplyTheme(string theme)
+        {
+            Material target;
+            if (theme == ThemeKind.Light) target = lightMaterial;
+            else if (theme == ThemeKind.Dark) target = darkMaterial;
+            else
+            {
+                Debug.LogWarning(
+                    $"[CameraBg] 认不出的主题 '{theme}'（只认 {ThemeKind.Dark} / {ThemeKind.Light}），已忽略");
+                return;
+            }
+
+            if (target == null)
+            {
+                Debug.LogWarning($"[CameraBg] 主题 '{theme}' 没配材质（prefab 上的 darkMaterial / lightMaterial 要补齐），保持原材质");
+                return;
+            }
+
+            if (meshRenderer == null) meshRenderer = GetComponent<MeshRenderer>();
+            if (meshRenderer == null) return;
+
+            meshRenderer.sharedMaterial = target;
+            // 同步本类自己缓存的引用：它按材质读 _CutTex / 写背景图，留着旧的会静默失效
+            material = target;
         }
 
         IEnumerator DelayInit()
