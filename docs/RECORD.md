@@ -448,7 +448,7 @@
 |---|---|---|
 | `web/src/views/MenuView.vue` | 环形版（`+680 / −45`） | tag **`a5-web-ring-wip` → `14509da`** 里的那一版；落地后 `git hash-object` = **`b846fbf290584993ea425005adbc9548e3a7e346`**，与 tag 内 blob **逐字节相同** |
 | `web/src/styles/product.css` | **+39**（「目录页（A5）」一节：面板高度链） | 工作区既有未提交改动（§5.8 第 3 条要求"产品批还要带上它"） |
-| `web/tools/render-smoke.mjs` | 4 处 `.ui-tile-grid .ui-tile` → `.a5r-card`（其中 8b 那一步是 `.a5r-card.is-focus`）；新增 `waitForMenuSettled()` 并在 3 处目录页改用它（**不再**用固定等待） | 同上（工作区既有未提交改动 + 本批补上的时序修；固定等待那版在独立复核后换掉，见本节 3-b） |
+| `web/tools/render-smoke.mjs` | 4 处 `.ui-tile-grid .ui-tile` → `.a5r-card`（其中 8b 那一步是 `.a5r-card.is-focus`）；新增 `waitForMenuSettled()` 并在 3 处目录页改用它（**判据是帧级"环不动"，不是固定等待**；初版的 `MENU_INTRO_MS = 2200` 已被本节 3-b 换掉） | 工作区既有未提交改动 + 本批补上的时序修 |
 
 **2. 冒烟：从"红"到"全绿"**
 
@@ -515,6 +515,25 @@
 | tag 不是 `main` 的祖先（`14509da` 是旁支快照，含 README / DECISIONS / RECORD 差异，`HEAD..tag` 3 个提交） | **如实记**：本批不是 cherry-pick `14509da`，而是**只取**该 tag 的 `MenuView.vue` blob（其余 4 个文件未取），所以 tag 里那几份文档的旧版本**不会**回流 `main` |
 
 复核**未做**（如实记）：没有跑 `npm run smoke`，也没有复现"修复前面板塌到 46px"——那两条的独立证据在本节 2 / 4。
+
+---
+
+### 5.11 产品批的合并落地与 issue 关闭（2026-10-16）
+
+> 性质：同 §5.5~§5.10 —— **只增不改**，上文一个字不动。
+
+| 项 | 读数 |
+|---|---|
+| **PR** | **#96**，分支 `ship/a5-menu-product` → `main`；**squash 合并**，合并提交 **`ad8d7ba`**（`ad8b7ba644b0cd1b60b4580dd5874037cc79d288`，2026-10-16T08:12:01Z） |
+| **PR 上的门禁** | 「契约与资产门禁」**pass 10s** ·「Web 构建与渲染冒烟」**pass 1m50s**（run `38871828498`） |
+| **PR 的两条提交** | `50e7b99`（产品批三项前置收口）· `4e17503`（冒烟改帧级判据 + 独立复核结论）⇒ squash 成 `ad8d7ba` |
+| **`main` 上的门禁** | 合并后 `gate` 运行 **completed / success**（run `38872107660`） |
+| **合并范围** | **6 个文件**：3 个 `web/**`（`MenuView.vue` +680/−45 · `product.css` +39 · `render-smoke.mjs`）+ 3 份文档（`RECORD.md` · `DECISIONS.md` §34 · `design/14` 附 E） |
+| **issue** | **#80 已关闭**（`state_reason = COMPLETED`，关闭评论即证据链）；**#74 / #75 / #31 / #30 保持 open**（与本轮无关，与 §6.2 的表一致） |
+| **本地同步** | 本地 `main` 曾与远端分叉（本地 2 条原提交 vs 远端 1 条 squash，内容等价）⇒ 按"提交身份以远端为准"做 `git reset --hard origin/main`（**未动任何未跟踪文件**）；同步后 `main...origin/main` 齐平 |
+| **工作区（合并不受影响，原样保留）** | Unity 那条工作线的 **24 项**（`NewStructureUnity/**` 的 M / D / ??）· 评审脚手架 `.tmp-a5-verify/` · `.tmp-w4-build/` · `.tmp-a5-fix/` · `.tmp-gate/` · `ISSUE-SWEEP-2026-10-16.md` · `docs/requirement/issue-74-75-quiz-exam-redo.md` |
+
+> **一处如实记录**：合并信息里写的是 ``Issue #80``（**行内代码**），GitHub 的关闭关键字**不识别代码块内**的引用 ⇒ **没有**自动关闭，改为**手动关闭并附证据链评论**（合并提交 + 两条门禁读数 + 三条前置条件的实测证据 + 独立复核结论 + 未闭合三项）。下次若要走自动关闭，关键字要写成裸文本 `Closes #80` / `Fix #80`。
 
 ---
 
