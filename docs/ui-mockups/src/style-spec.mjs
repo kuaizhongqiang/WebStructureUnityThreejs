@@ -622,15 +622,265 @@ export const styleSpecSectionsRound2 = [
   },
 ]
 
+// ============================================================================
+// 第三轮追加：A5 菜单页手写重做 · 五个方案的新增样式（Issue #73 / T1，2026-10-16）
+//
+// 契约权威：`docs/design/13-a5-menu-redo-contract.md`（FR-1 类名 / FR-2 进度环）。
+// 硬纪律（上游 §5 X6）：**看不到的样式算未完成** —— 本节是 A5-R6 的落点，
+// `components.css` §24 的**每一个类**都必须在这里出现一次。
+// ============================================================================
+
+/** 进度环（契约 FR-2）：viewBox 固定 0 0 48 48，三档只差半径/描边/显示尺寸。 */
+const ringSizes = {
+  sm: { r: 16, sw: 3, dash: 100.53 },
+  md: { r: 22, sw: 4, dash: 138.23 },
+  lg: { r: 28, sw: 5, dash: 175.93 },
+}
+
+const ring = (size, done = false, num = '3/4') => {
+  const { r, sw, dash } = ringSizes[size]
+  const offset = done ? 0 : Math.round(dash * 0.25 * 100) / 100
+  return `<div class="ui-progress-ring ui-progress-ring--${size} ${done ? 'ui-progress-ring--done' : 'ui-progress-ring--partial'}">
+        <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+          <circle class="ui-progress-ring__track" cx="24" cy="24" r="${r}" fill="none" stroke-width="${sw}"></circle>
+          <circle class="ui-progress-ring__value" cx="24" cy="24" r="${r}" fill="none" stroke-width="${sw}" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"></circle>
+        </svg>
+        <span class="ui-progress-ring__num">${num}</span>
+        <span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+      </div>`
+}
+
+const ringWide = (size, done = false, num = '3/4') =>
+  ring(size, done, num).replace(`ui-progress-ring--${size}`, `ui-progress-ring--${size} ui-progress-ring--wide`)
+
+/** 9 个项目的示例数据（契约 FR-3，五页同源）。 */
+const A5_ITEMS = [
+  ['01', '交流接触器', 4, 4, '已完成'],
+  ['02', '热继电器', 4, 4, '已完成'],
+  ['03', '时间继电器', 4, 3, '检测'],
+  ['04', '主令电器', 4, 2, '原理'],
+  ['05', '熔断器', 4, 2, '结构'],
+  ['06', '断路器', 4, 0, '简介'],
+  ['07', '速度继电器', 3, 0, '简介'],
+  ['08', '组合开关', 3, 0, '简介'],
+  ['09', '综合小测验', 1, 0, '测验'],
+]
+
+const a5Meta = (d, n, next) => `${d} 站 · 下一站：${next}`
+
+export const styleSpecSectionsRound3 = [
+  {
+    title: '本轮修订：A5 菜单页历史留档（②③⑦⑧ 已废案，保留在盘）',
+    items: [
+      {
+        name: '.ui-progress-ring（三档 + 完成态）',
+        desc:
+          '五页复用的**视觉主体**（上游 §10.1，替代缩略图素材：本轮不引位图）。内联 SVG 两个圆，' +
+          '底环取 <code>--border-3</code>、进度环取 <code>--accent</code>，靠 <code>stroke-dasharray</code> / ' +
+          '<code>stroke-dashoffset</code> 画比例；<b>分母 = 该项目自己的启用站数</b>（不是 11、不是 31）。' +
+          '三档 = <code>--sm 40</code> / <code>--md 56</code> / <code>--lg 72</code>（尺寸不是圆角，不违反 §2）。' +
+          '<b>完成态必须换形状</b>：<code>--done</code> 下环内给 <code>check</code> 图标 + 环变 <code>--ok</code>，' +
+          '不留"只靠颜色区分"。',
+        cls: '.ui-progress-ring(--sm|--md|--lg|--done|--partial|--wide) · __svg / __track / __value / __num / __check',
+        html: `<div style="display:flex;gap:22px;align-items:center">
+          ${ringWide('sm', false, '3/4')}${ringWide('md', false, '3/4')}${ringWide('lg', true, '4/4')}
+          <div style="font-size:11px;color:var(--text-3);line-height:1.8">
+            sm r16 sw3 dasharray 100.53<br>md r22 sw4 dasharray 138.23<br>lg r28 sw5 dasharray 175.93<br>
+            最右 = <b>--done</b>（勾 + 环变 --ok）
+          </div>
+        </div>`,
+      },
+      {
+        name: 'v1 · 伪三维卡片滚动（.a5v1-*）',
+        desc:
+          '9 张卡沿**水平轴**排开，<code>perspective()</code> + <code>translateZ()</code> 造近大远小，居中者得焦点态。' +
+          '卡片本体复用既有 <code>.ui-tile</code>（F4 口径：悬停 = 微抬 + 描边变主色；选中 = <code>--accent</code> 底 + <code>--glow-accent</code>）。' +
+          '居中判定用**序号差值**算 <code>transform</code>，不每帧 <code>getBoundingClientRect</code>。' +
+          '<b>静态降级靠换布局</b>：<code>.a5v1-axis--flat</code> 把纵深归零、横排改纵向单列（不写媒体查询 —— 全局兜底已在 components.css §20.6）。',
+        cls: '.a5v1-axis / .a5v1-axis--flat / .a5v1-card / .a5v1-card__idx / .a5v1-card__ring / .a5v1-hint',
+        html: `<div style="display:flex;gap:16px;align-items:flex-end">
+          <div class="a5v1-axis" style="height:auto;padding:0;gap:14px;perspective:900px;overflow:visible">
+            <div class="ui-tile a5v1-card a5v-enterable a5v-hoverlift" style="width:180px;min-height:200px;transform:perspective(900px) translateZ(-60px)">
+              <div class="a5v1-card__idx">01</div>
+              <div class="a5v1-card__ring">${ring('md', true, '4/4')}</div>
+              <div class="a5v-name">交流接触器</div>
+              <div class="a5v-meta">4 站 · 下一站：已完成</div>
+            </div>
+            <div class="ui-tile a5v1-card a5v-enterable a5v-hoverlift is-hit" style="width:180px;min-height:200px">
+              <div class="a5v1-card__idx">03</div>
+              <div class="a5v1-card__ring">${ring('md', false, '3/4')}</div>
+              <div class="a5v-name">时间继电器</div>
+              <div class="a5v-meta">4 站 · 下一站：检测</div>
+            </div>
+          </div>
+          <div class="a5v-hint" style="position:static">滚轮 / 拖拽换居中位 · ←/→ 移焦点</div>
+        </div>`,
+      },
+      {
+        name: 'v2 · 节点散射（.a5v2-*）',
+        desc:
+          '9 个节点散在一块**固定坐标**平面上（坐标写死在 <code>.a5v2-node:nth-child(n)</code>，不引物理引擎），' +
+          '<code>scale()</code> / <code>translate()</code> 做缩放平移聚焦。位置编码 = **按类别分两簇**（8 器件 / 1 小测验），' +
+          '类别差异只靠**描边样式**（<code>--quiz</code> 虚线；<code>--device</code> 是**故意无样式**的占位类，成对出现便于看出"两簇"怎么分），' +
+          '不靠位置或尺寸（尺寸一旦编码权重就撞筛除线 S3）。' +
+          '<b>暂定口径：只画节点、不画边</b> —— 边会把并列读成有向，撞 S2。' +
+          '列表档（<code>?view=list</code>）由 <code>.a5v2-field--list</code> 把固定坐标覆盖成单列列表（只换布局、仍不写媒体查询）。',
+        cls: '.a5v2-field / .a5v2-field--list / .a5v2-node / .a5v2-node--quiz / .a5v2-node--device / .a5v2-node__head',
+        html: `<div class="a5v2-field" style="width:100%;height:210px">
+          <div class="ui-tile a5v2-node a5v2-node--device a5v-enterable" style="left:3%;top:6%;width:150px;min-height:0">
+            <div class="a5v2-node__head">${ring('sm', false, '3/4')}<div class="a5v-col"><div class="a5v-name">时间继电器</div><div class="a5v-meta">4 站 · 检测</div></div></div>
+          </div>
+          <div class="ui-tile a5v2-node a5v2-node--device a5v-enterable" style="left:34%;top:34%;width:150px;min-height:0">
+            <div class="a5v2-node__head">${ring('sm', true, '4/4')}<div class="a5v-col"><div class="a5v-name">交流接触器</div><div class="a5v-meta">4 站 · 已完成</div></div></div>
+          </div>
+          <div class="ui-tile a5v2-node a5v2-node--quiz a5v-enterable" style="left:66%;top:22%;width:150px;min-height:0">
+            <div class="a5v2-node__head">${ring('sm', false, '0/1')}<div class="a5v-col"><div class="a5v-name">综合小测验</div><div class="a5v-meta">1 站 · 测验</div></div></div>
+          </div>
+        </div>`,
+      },
+      {
+        name: 'v3 · 六边形蜂窝（.a5v3-*）',
+        desc:
+          '正六边形平铺 3 行 × 3 格，第 2 行错位半格，<code>clip-path: polygon()</code> 造形（**不涉及圆角**）。' +
+          '格内文字必须**限行数**（<code>-webkit-line-clamp: 2</code>），否则长行溢出斜边；内容宽度收到 62% 以躲开斜边。' +
+          '<b>暂定口径：不新建样式</b> —— 格内卡片圆角走既有 <code>--radius-md</code>(12)。' +
+          '高亮"流动"停止后靠 <code>.a5v3-hex--static</code> 的**静态描边亮度差**区分当前格，不靠动。' +
+          '⚠️ <code>clip-path</code> 会裁掉 <code>outline</code>，所以键盘焦点环改用**内描边**替代。',
+        cls: '.a5v3-hexgrid / .a5v3-hexrow / .a5v3-hexrow--offset / .a5v3-hex / .a5v3-hex--current / .a5v3-hex--static / .a5v3-hex__body / .a5v3-hex__name / .a5v3-hex__meta',
+        html: `<div class="a5v3-hexgrid" style="--hex-w:150px;--hex-h:132px;height:auto;padding:0">
+          <div class="a5v3-hexrow">
+            <div class="a5v3-hex a5v5-focusable" tabindex="0"><div class="a5v3-hex__body"><div class="a5v3-hex__name">交流接触器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+            <div class="a5v3-hex a5v5-focusable a5v3-hex--current" tabindex="0"><div class="a5v3-hex__body">${ring('sm', false, '3/4')}<div class="a5v3-hex__name">时间继电器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+            <div class="a5v3-hex a5v5-focusable" tabindex="0"><div class="a5v3-hex__body"><div class="a5v3-hex__name">热继电器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+          </div>
+          <div class="a5v3-hexrow a5v3-hexrow--offset">
+            <div class="a5v3-hex a5v5-focusable" tabindex="0"><div class="a5v3-hex__body"><div class="a5v3-hex__name">主令电器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+            <div class="a5v3-hex a5v5-focusable" tabindex="0"><div class="a5v3-hex__body"><div class="a5v3-hex__name">熔断器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+            <div class="a5v3-hex a5v5-focusable" tabindex="0"><div class="a5v3-hex__body"><div class="a5v3-hex__name">断路器</div><div class="a5v3-hex__meta">4 站</div></div></div>
+          </div>
+        </div>`,
+      },
+      {
+        name: 'v4 · 档案抽屉（.a5v4-*）',
+        desc:
+          '**等厚**抽屉统一方向码放、名称朝外；拉开哪一格，哪一格滑出露内页（站数 / 下一站 / 简介）。' +
+          '其余格**只让位、不位移**（<code>flex-basis</code> 过渡）—— 位移会读成顺序。' +
+          '拉开态只需一个 <code>.is-open</code> 类，<b>不需 JS 布局计算</b>。' +
+          '静止态**看不到内页**（视觉主体藏在拉开态里）—— 这是它与其它四页最大的差别。' +
+          '减少动态效果档下"挤压让位"消失，但"拉开"仍在（拉开是状态不是动画）。' +
+          '窄屏走 <code>.a5v4-drawer--stacked</code> 竖排手风琴，一屏两三格、语义不变。',
+        cls: '.a5v4-drawer / .a5v4-drawer--stacked / .a5v4-drawer__slot / .is-open / .a5v4-drawer__head / .a5v4-drawer__page',
+        html: `<div class="a5v4-drawer" style="height:auto;padding:0;gap:8px">
+          <div class="a5v4-drawer__slot">
+            <div class="a5v4-drawer__head a5v5-focusable" tabindex="0"><span class="a5v-idx">01</span> 交流接触器</div>
+            <div class="a5v4-drawer__page" style="display:none">${ring('sm', true, '4/4')}<div class="a5v-meta">4 站 · 已完成</div></div>
+          </div>
+          <div class="a5v4-drawer__slot is-open" style="flex:2 1 0">
+            <div class="a5v4-drawer__head a5v5-focusable" tabindex="0"><span class="a5v-idx">03</span> 时间继电器</div>
+            <div class="a5v4-drawer__page">
+              ${ring('lg', false, '3/4')}
+              <div class="a5v-name">时间继电器</div>
+              <div class="a5v-meta">4 站 · 下一站：检测</div>
+            </div>
+          </div>
+          <div class="a5v4-drawer__slot">
+            <div class="a5v4-drawer__head a5v5-focusable" tabindex="0"><span class="a5v-idx">09</span> 综合小测验</div>
+            <div class="a5v4-drawer__page" style="display:none">${ring('sm', false, '0/1')}<div class="a5v-meta">1 站 · 测验</div></div>
+          </div>
+        </div>`,
+      },
+      {
+        name: 'v5 · 探照灯取景器（.a5v5-*）',
+        desc:
+          '9 格在**同一平面等大等距**铺开（不倾斜、不纵深），唯一结构是"你正看着哪一块"（观看关系，不是内容关系）。' +
+          '光斑走 <b>"斑外压暗层"</b>：<code>.a5v5-spot</code> 是 <code>pointer-events:none</code> 的覆盖层，' +
+          '底是 <code>radial-gradient</code>，圆心由脚本写 <code>--spot-x</code> / <code>--spot-y</code>（取运行时量到的网格矩形，不写死画布偏移）。' +
+          '**格子本身不动**，只挂/摘 <code>.a5v5-lit</code> ⇒ 这页在"减少动态效果"档下退化成本最低（<code>.a5v5-grid--static</code> 直接撤掉光斑层）。' +
+          '窄屏（<code>?view=list</code>）挂 <code>.a5v5-grid--two</code> 收成两列。',
+        cls: '.a5v5-grid / .a5v5-grid--static / .a5v5-grid--two / .a5v5-cell / .a5v5-cell__name / .a5v5-cell__meta / .a5v5-spot / .a5v5-lit',
+        html: `<div class="a5v5-grid" style="height:auto;padding:0;gap:14px;grid-template-columns:repeat(3,1fr);position:relative">
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0" style="min-height:104px">
+            <div class="a5v5-cell__name">熔断器</div><div class="a5v5-cell__meta">4 站 · 结构</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable a5v5-lit is-hit" tabindex="0" style="min-height:104px">
+            ${ring('sm', false, '3/4')}<div class="a5v5-cell__name">时间继电器</div><div class="a5v5-cell__meta">4 站 · 检测</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0" style="min-height:104px">
+            <div class="a5v5-cell__name">断路器</div><div class="a5v5-cell__meta">4 站 · 简介</div>
+          </div>
+          <div class="a5v5-spot" style="--spot-x:52%;--spot-y:50%"></div>
+        </div>`,
+      },
+      {
+        name: '五页共用：三类反馈 + 命中区 + 焦点环（.a5v-*）',
+        desc:
+          '上游 A5-R4 要求"悬停 / 选中 / 进入三类反馈明确"。为了五个方案读起来一致，三类反馈在这里**统一定义**，' +
+          '页面只挂类、不各写一套：悬停 <code>.a5v-hoverlift</code> = 微抬 2px + 描边变主色；' +
+          '选中 <code>.is-hit</code> = <code>--accent</code> 描边 + <code>--accent-weak</code> 底 + <code>--glow-accent</code>；' +
+          '进入 <code>.is-enter</code> = 一次短暂推进（由脚本挂 160ms 后摘）。' +
+          '<code>.a5v-hit</code> / <code>.a5v-iconbtn</code> 把可点元素撑到**冻结的最小命中区 44×44**。' +
+          '自定义焦点件统一挂 <code>.a5v5-focusable</code>：既有 <code>:focus-visible</code> 不会替自定义焦点画环，' +
+          '而"只在键盘模态画环"仍由外壳脚本的 <code>data-input-modality</code> 保证（鼠标点不出环）。',
+        cls: '.a5v-enterable / .a5v-hoverlift / .is-hit / .is-enter / .a5v-hit / .a5v-iconbtn / .a5v5-focusable / .a5v-actions',
+        html: `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <div class="ui-tile a5v-enterable a5v-hoverlift a5v-hit" style="width:120px;min-height:44px;align-items:center;justify-content:center">悬停</div>
+          <div class="ui-tile a5v-enterable is-hit a5v-hit" style="width:120px;min-height:44px;align-items:center;justify-content:center">选中</div>
+          <div class="ui-tile a5v-enterable is-enter a5v-hit" style="width:120px;min-height:44px;align-items:center;justify-content:center">进入</div>
+          <span class="a5v-iconbtn is-focus-ring"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+          <div class="a5v-actions"><span class="a5v-idx">01</span><span class="a5v-name">.a5v-row / .a5v-col / .a5v-name / .a5v-meta / .a5v-idx</span></div>
+        </div>`,
+      },
+      {
+        name: '五页共用：斑外压暗的令牌化（--scrim-*）',
+        desc:
+          'v5 的"斑外压暗层"不再是写死的 <code>rgba()</code>：压暗色与强度拆成三枚令牌，两套主题各给一套。' +
+          '深色用近黑蓝（<code>5, 8, 12</code>）"压暗"；亮色改用 <code>--bg-0</code> 那一族的浅灰蓝（<code>207, 216, 227</code>）' +
+          '"去色提亮"，强度也相应放低 —— 否则亮色主题下这页仍是一间暗房（实测发现的）。' +
+          '渐变色阶因此只写一次，见 <code>components.css</code> §24.6 的 <code>.a5v5-spot</code>。',
+        cls: '--scrim-rgb / --scrim-mid / --scrim-strong（tokens.css §25）',
+        html: `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <div style="width:150px;height:96px;border-radius:var(--radius-md);border:var(--hairline) solid var(--line-1);
+            background:radial-gradient(circle 60px at 50% 50%, rgba(var(--scrim-rgb),0) 0%, rgba(var(--scrim-rgb),var(--scrim-mid)) 62%, rgba(var(--scrim-rgb),var(--scrim-strong)) 100%), var(--bg-0);
+            display:flex;align-items:center;justify-content:center" class="ui-small">斑外压暗</div>
+          <div style="font-size:11px;color:var(--text-3);line-height:1.9">
+            --scrim-rgb: 压暗色（深色近黑蓝 / 亮色浅灰蓝）<br>
+            --scrim-mid: 过渡带中段 α<br>
+            --scrim-strong: 斑外最暗处 α
+          </div>
+        </div>`,
+      },
+      {
+        name: '五页共用：容器与展开说明（.a5v-stage / .a5v-details）',
+        desc:
+          '五页正文共用 <code>.a5v-stage</code>（撑满可用高度、不裁切，各方案自己管 overflow）。' +
+          '<code>.a5v-details</code> 是五页共用的"展开说明"，用**原生 <code>&lt;details&gt;</code>**：零第三方依赖、' +
+          '键盘天然可开合，箭头用 mask 的 chevron（不引 emoji、跟随 <code>currentColor</code>）。',
+        cls: '.a5v-stage / .a5v-stage__head / .a5v-stage__body / .a5v-details',
+        html: `<div class="a5v-stage" style="height:auto">
+          <div class="a5v-stage__head" style="padding:0 0 10px"><span class="ui-badge ui-badge--info">已完成 15 / 共 31</span><span class="a5v-meta">.a5v-stage__head</span></div>
+          <div class="a5v-stage__body" style="flex:none">
+            <details class="a5v-details" open><summary>本页是哪个方案、怎么操作</summary>
+              <div style="padding-bottom:8px">展开后写方案说明与暂定口径；鼠标 / 键盘各一句。</div>
+            </details>
+          </div>
+        </div>`,
+      },
+    ],
+  },
+]
+
 export const pageIndexGroups = [
   {
-    title: 'A 组 · 启动与导航（10）',
+    title: 'A 组 · 启动与导航（9）',
     pages: [
       { id: 'A1', file: 'a1-start.html', title: '欢迎 / 开始页', note: 'Start' },
       { id: 'A2', file: 'a2-login.html', title: '登录页', note: 'Login' },
       { id: 'A3', file: 'a3-loading.html', title: '加载过渡页', note: '常驻' },
       { id: 'A4', file: 'a4-quality.html', title: '画质 / 首次设置', note: 'Start' },
-      { id: 'A5', file: 'a5-menu.html', title: '菜单 / 项目列表页', note: 'Menu' },
+      // A5 菜单页**已从本索引摘除**（2026-10-16，Issue #73 / T1）：它的生成器注册与索引一起摘，
+      // 取代它的是下面「E 组（现役）」的三个手写视图。`pages/a5-menu.html` 仍保留在盘，
+      // 但它已不再被生成器重写、也不是可评审的现状页 ⇒ 不再从成果页链接过去。
+      // 依据：`docs/design/14-a5-menu-ring-contract.md` §3.1 FRZ-24/FRZ-25。
       { id: 'A6', file: 'a6-roaming.html', title: '漫游大场景页', note: 'Roaming' },
       { id: 'A7', file: 'a7-titlebar.html', title: '外壳浮卡（左上角 · 3 形态）', note: '常驻' },
       { id: 'A8', file: 'a8-dialog.html', title: '通用模态框（4 类）', note: '常驻' },
@@ -670,6 +920,32 @@ export const pageIndexGroups = [
       { id: 'D1', file: 'd1-result.html', title: '成绩结算 / 提交页', note: '11 项字段' },
       { id: 'D2', file: 'd2-question.html', title: '题目控件（各题型）', note: '5 种题型' },
       { id: 'D3', file: 'd3-feedback.html', title: '答题对错反馈', note: '含解析' },
+    ],
+  },
+  // E 组：A5 菜单页的**历史留档**（Issue #73 / T1）。
+  // 现状：A5 只保留**唯一候选 = 水平环形伪三维卡片**（a5-menu-ring / -narrow / -reduced-motion 三个视图），
+  // ② 节点散射 / ③ 六边形蜂窝 / ⑦ 档案抽屉 / ⑧ 探照灯取景器 **全部废案**，
+  // 四个废案页**保留在盘、不删除**，只作反面参照（DEC-163 / DEC-165 的 D20）；
+  // V1 是**唯一候选的前身**，机制（水平轴排开）已被 DEC-163 更正为水平圆周 ⇒ 其实现作废，
+  // 与 ②③⑦⑧ 不混为一谈。id 用 V1~V5，**不与 A 组的 A5 撞号**。
+  {
+    title: 'E 组 · A5 菜单页历史留档（5）—— 唯一候选 = 水平环形',
+    pages: [
+      { id: 'V1', file: 'a5-menu-v1-pseudo3d.html', title: '伪三维卡片滚动（旧实现）', note: '唯一候选的前身 · 机制已更正为水平圆周 ⇒ 本页实现作废，只作反面参照' },
+      { id: 'V2', file: 'a5-menu-v2-scatter.html', title: '节点散射', note: '已废弃（DEC-165 D20）· 保留在盘不删 · 上游方案 ②' },
+      { id: 'V3', file: 'a5-menu-v3-hex.html', title: '六边形蜂窝', note: '已废弃（DEC-165 D20）· 保留在盘不删 · 上游方案 ③' },
+      { id: 'V4', file: 'a5-menu-v4-drawer.html', title: '档案抽屉', note: '已废弃（DEC-165 D20）· 保留在盘不删 · 上游方案 ⑦' },
+      { id: 'V5', file: 'a5-menu-v5-spotlight.html', title: '探照灯取景器', note: '已废弃（DEC-165 D20）· 保留在盘不删 · 上游方案 ⑧' },
+    ],
+  },
+  // E 组（现役）：A5 的**唯一候选** —— 水平环形伪三维卡片，三个视图 = 同一份代码 + 一个范围类（§11.2/§11.3/§11.4）。
+  // 与上面 A 组的 A 组 id 不撞；与 E 组历史留档并列，但**语义不同**（这里是在用的东西）。
+  {
+    title: 'E 组（现役）· A5 菜单页唯一候选 = 水平环形伪三维卡片（3 个视图）',
+    pages: [
+      { id: 'R1', file: 'a5-menu-ring.html', title: '水平环（桌面主形态）', note: '唯一候选 · 9 张卡常驻 · 拖拽/惯性/吸附 + ←→↑↓ 环闭合' },
+      { id: 'R2', file: 'a5-menu-ring-narrow.html', title: '垂直环（窄屏降级形态）', note: '同一份代码 + .a5r-ring--vertical · 承轴/起伏轴对调 · 承轴不压缩' },
+      { id: 'R3', file: 'a5-menu-ring-reduced-motion.html', title: 'reduced-motion 具名豁免档', note: '同一份代码 + .a5r-ring--static · 让 §26.8 的豁免在成果页可见' },
     ],
   },
 ]

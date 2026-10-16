@@ -1117,3 +1117,803 @@ code, pre, kbd, samp, .ui-meter__value, .ui-player__time, .spec-item__cls, .ui-r
 }
 .ui-station-enter-from { opacity: 0; transform: translateY(var(--page-shift)); }
 .ui-station-leave-to { opacity: 0; transform: translateY(calc(-1 * var(--page-shift))); }
+
+/* ============================================================================
+ * 24. A5 菜单页手写重做 · **五方案新增样式（历史留档）**（Issue #73 / T1，2026-10-16）
+ *
+ * 契约权威：`docs/design/13-a5-menu-redo-contract.md`（方案文档）。
+ * 上游依据：`docs/requirement/issue-73-a5-menu-redo.md` §7~§10。
+ * ⚠️ **本节的性质已变（DEC-163 / DEC-165 的 D20，2026-10-16）**：A5 只保留
+ *   **唯一候选 = 水平环形伪三维卡片**（见本文件 §26 与 `pages/a5-menu-ring*.html`）；
+ *   `§24.2` v1 伪三维卡片滚动是它的**前身**、旧实现已作废（作废点见 14 号契约 §5 反面参照），
+ *   `§24.3` v2 节点散射 / `§24.4` v3 六边形蜂窝 / `§24.5` v4 档案抽屉 / `§24.6` v5 探照灯取景器
+ *   **全部废案**。对应页面**保留在盘、不删除**、逐页挂「已废弃」徽章，**只作反面参照**。
+ *   ⇒ 本节**不删不改**（保留取证），但**新代码不得复用** `§24.2~§24.6` 的 `.a5v1-*`~`.a5v5-*`
+ *     专属件（`§24.1` 的 `.ui-progress-ring` 是五页共用的公共件、**不算废案专属**，环形页继续消费它）。
+ *
+ * 本节是**五页共用的唯一新增样式来源**（§7.5 样式单一来源）：
+ *   24.1 `.ui-progress-ring`  —— 五页复用的视觉主体（三档 + 完成态）★ 公共件，仍在用
+ *   24.2 `.a5v1-*` 伪三维卡片滚动        ← A5 环形方案的前身，旧实现作废
+ *   24.3 `.a5v2-*` 节点散射（固定坐标平面，坐标写死在这里）  ← 废案
+ *   24.4 `.a5v3-*` 六边形蜂窝                                ← 废案
+ *   24.5 `.a5v4-*` 档案抽屉                                  ← 废案
+ *   24.6 `.a5v5-*` 探照灯取景器                              ← 废案
+ *   24.7 共用键盘焦点环挂钩
+ *
+ * 硬约束：① 颜色 / 字号 / 间距 / 圆角 / 时长一律走 tokens.css 令牌；② 圆角只允许
+ * 4/8/12/16/20/28；③ **不写 `prefers-reduced-motion` 媒体查询**（全局兜底在 §20.6），
+ * 静态降级靠"换布局"实现；④ 页面里不许再出现 <style> 块。
+ *   ★ 硬约束③的唯一例外在本文件 §26.8（环形页的具名豁免，按契约 §7.6 单开一条）。
+ * ========================================================================== */
+
+/* ------------------------------------------------ 24.1 进度环（视觉主体） */
+/* DOM 结构见契约 FR-2：容器 > 内联 SVG（底环 + 进度环）+ 环内数字（+ 完成勾）。
+   viewBox 固定 0 0 48 48，三档只缩放显示尺寸与描边宽度，圆心取值不变：
+     sm r=16 sw=3（dasharray 100.53）· md r=22 sw=4（138.23）· lg r=28 sw=5（175.93）
+   进度由元素上的 stroke-dashoffset 给（公式 dasharray × (1 − 完成/站数)）。 */
+.ui-progress-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ui-progress-ring--sm { width: 40px; height: 40px; }
+.ui-progress-ring--md { width: 56px; height: 56px; }
+.ui-progress-ring--lg { width: 72px; height: 72px; }
+.ui-progress-ring__svg { width: 100%; height: 100%; display: block; transform: rotate(-90deg); }
+.ui-progress-ring__track { stroke: var(--border-3); }
+.ui-progress-ring__value { stroke: var(--accent); stroke-linecap: round; }
+.ui-progress-ring__num {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-12); color: var(--text-2); font-variant-numeric: tabular-nums;
+}
+.ui-progress-ring--md .ui-progress-ring__num,
+.ui-progress-ring--lg .ui-progress-ring__num { font-size: var(--fs-14); }
+/* 完成态：靠"勾"这个**形状**区分，不靠颜色（色弱也能分辨；§10.1 "不许只靠颜色区分"）。
+   数字保留给读屏与目视兜底，只是让位到勾的下方。 */
+.ui-progress-ring__check { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; color: var(--ok); }
+.ui-progress-ring--done .ui-progress-ring__check { display: flex; }
+.ui-progress-ring--done .ui-progress-ring__value { stroke: var(--ok); }
+.ui-progress-ring--done .ui-progress-ring__num {
+  align-items: flex-end; padding-bottom: 2px; font-size: var(--fs-11); color: var(--text-3);
+}
+/* 成果页展示用：环在 spec-item 里带文字说明并排，需要一点右边距呼吸（页面里不用这个类） */
+.ui-progress-ring--wide { margin-right: var(--sp-3); }
+
+/* ------------------------------------------------ 24.2 v1 伪三维卡片滚动 */
+/* 机制：9 张卡沿水平轴排开，perspective + translateZ 造近大远小；滚动/拖拽换居中位。
+   居中判定用**序号差值**算 transform，不要每帧 getBoundingClientRect（会抖）。 */
+.a5v1-axis {
+  position: relative; height: 100%; display: flex; align-items: center; gap: var(--sp-5);
+  padding: var(--sp-6) var(--sp-5); overflow-x: auto; overflow-y: hidden;
+  perspective: 1400px; transform-style: preserve-3d;
+}
+.a5v1-card {
+  flex: none; width: 260px; min-height: 300px; justify-content: flex-start;
+  transform-style: preserve-3d; transform-origin: center center;
+  transition: transform var(--dur-page) var(--ease-page), opacity var(--dur-page) var(--ease-page);
+}
+.a5v1-card__idx { font-size: var(--fs-12); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.a5v1-card__ring { display: flex; justify-content: center; padding: var(--sp-1) 0; }
+.a5v1-hint {
+  /* 放在轴**右上角**：左下角已被评审外壳的 .note 占用（mockup-shell.css，z-index 60），
+     绝对定位在左下必然压字。 */
+  position: absolute; right: var(--sp-5); top: var(--sp-3);
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-12); color: var(--text-3); pointer-events: none;
+}
+/* v1 的排布完全由 transform 定位、不靠原生滚动 ⇒ 原生横向滚动条只会帮倒忙
+   （焦点位移会让它随焦点出现/消失，带来约 15px 的布局抖动，撞 §6.1「避免 layout 抖动」）。
+   所以横向裁切收在样式表里，而不是让页面用 JS 去改冻结 CSS 的 overflow。 */
+.a5v1-axis { overflow-x: hidden; }
+/* 静止降级（减少动态效果档）：**换布局** —— 纵深归零、横排改纵向单列，靠居中描边 + 序号区分。
+   注意：不在这里写 media query；由页面给 .a5v1-axis 挂 .a5v1-axis--flat 实现（见契约 §6.1）。 */
+.a5v1-axis--flat { perspective: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+.a5v1-axis--flat .a5v1-card { transform: none !important; opacity: 1 !important; }
+/* 扁平档下"进入"的推进仍要看得见：上面那条 `transform: none !important` 会把 .is-enter 一起吃掉，
+   于是减少动态效果档下第三类反馈只剩文字。所以这里补一条同权重的例外（同样 !important）。
+   它是**状态**不是动画（挂 160ms 后由页面摘掉），符合"静态降级靠换布局、不靠改时长"。 */
+.a5v1-axis--flat .a5v1-card.is-enter { transform: scale(1.06) !important; }
+
+/* ------------------------------------------------ 24.3 v2 节点散射 */
+/* 机制：9 个节点散在固定坐标平面上（坐标写死在这里，不引物理引擎）。
+   位置编码 = **类别分两簇**（8 器件 / 1 小测验）；**只画节点、不画边**（暂定口径，撞 S2）。 */
+.a5v2-field { position: relative; height: 100%; overflow: hidden; }
+.a5v2-node {
+  position: absolute; width: 190px; min-height: 148px; padding: var(--sp-3);
+  transition: transform var(--dur-page) var(--ease-page);
+}
+.a5v2-node__head { display: flex; align-items: center; gap: var(--sp-3); }
+/* 两簇：左簇 = 8 个器件（3 列 × 3 行里的上 8 位），右簇 = 小测验（单独一位）。
+   ⚠️ 只动位置、**不动尺寸** —— 尺寸一旦编码权重就撞筛除线 S3。 */
+.a5v2-node:nth-child(1) { left: 4%;  top: 8%; }
+.a5v2-node:nth-child(2) { left: 22%; top: 4%; }
+.a5v2-node:nth-child(3) { left: 40%; top: 12%; }
+.a5v2-node:nth-child(4) { left: 13%; top: 40%; }
+.a5v2-node:nth-child(5) { left: 31%; top: 36%; }
+.a5v2-node:nth-child(6) { left: 49%; top: 44%; }
+.a5v2-node:nth-child(7) { left: 22%; top: 72%; }
+.a5v2-node:nth-child(8) { left: 40%; top: 68%; }
+.a5v2-node:nth-child(9) { left: 70%; top: 32%; }
+.a5v2-node--quiz { border-style: dashed; }   /* 类别差异靠描边**样式**，不靠位置/尺寸 */
+/* 器件簇：显式声明为占位类（与 --quiz 成对出现，方便后人一眼看出"两簇"是怎么分的）。
+   它**故意不加任何样式** —— 类别差异只允许出现在 --quiz 的描边样式上，避免位置/尺寸编码权重（S3）。 */
+.a5v2-node--device { }
+
+/* 列表档（窄屏语义 / ?view=list，契约 §8.2）：散点在窄屏必然重叠 ⇒ 退化成单列列表。
+   为什么做成冻结类而不是让页面写行内布局：散点的固定坐标在样式表里，
+   "变列表"就是**覆盖那些坐标属性**，属于布局决策 ⇒ 必须留在样式单一来源里（§7.5）。
+   节点本体不变（还是同一批 .ui-tile），列表里**不出现任何连线**（撞筛除线 S2）。 */
+.a5v2-field--list {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-5); overflow-y: auto; overflow-x: hidden;
+}
+.a5v2-field--list .a5v2-node { position: static; width: auto; min-height: 0; }
+
+/* ------------------------------------------------ 24.4 v3 六边形蜂窝 */
+/* 机制：正六边形平铺（3 行 × 3 格），clip-path 造六边形；第 2 行错位半格，保证四邻接。
+   暂定口径：**不新建样式** —— 六边形本身不涉及圆角；格内卡片圆角一律 --radius-md。 */
+.a5v3-hexgrid {
+  /* ⚠️ 几何约束（写死在这里，免得后人随手调歪）：这是**上下尖**的正六边形，
+     设外接圆半径 R = --hex-w / 2，则高必须 = 2R·(√3/2) = --hex-w × 2/√3 ≈ 1.1547 × --hex-w。
+     即 **--hex-h 必须大于 --hex-w**；两者写反（宽 > 高）会得到"横着压扁的胖六边形"，
+     紧排时也就不像蜂窝了（第一版就是 300×264 写反了，实测截图可见）。
+     行间交错量 = 高的 1/4（见 .a5v3-hexrow），相邻行水平错开半个格宽。 */
+  --hex-w: 232px;
+  --hex-h: 268px;   /* = 232 × 2/√3 ≈ 267.9；三行合计 268 × 2.5 + 40(上下 padding) ≈ 710，留足余量 */
+  position: relative; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: var(--sp-5);
+  /* 容器的 flex 子项宽度由内容决定 ⇒ 窄屏子视图会被"居中收缩"成一小团。
+     这里给一道宽度兜底：凡直接子项都撑满可用宽度（蜂窝行与窄屏列表都受益）。 */
+}
+.a5v3-hexgrid > * { width: 100%; }
+/* 行：用 position/transform 做交错，**不靠父级 flex 居中折算**（那种折算会把半格错位变成四分之一格，
+   实测就是从"蜂窝"退化成"错位张开的三行"）。整行居中 + 第二行右移半格，两个量都直给。 */
+.a5v3-hexrow {
+  position: relative; left: 50%; transform: translateX(-50%);
+  display: flex; margin-top: calc(-1 * var(--hex-h) / 4);
+}
+.a5v3-hexrow:first-child { margin-top: 0; }
+/* 交错行 = 再右移半个格宽（相对已居中的行）。行距取高的 1/4 是真蜂窝的咬合量，
+   与 .a5v3-hexgrid 注释里的几何约束配套；改 --hex-w/--hex-h 时这两个算式会跟着走。 */
+.a5v3-hexrow--offset { transform: translateX(calc(-50% + var(--hex-w) / 2)); }
+.a5v3-hex {
+  width: var(--hex-w); height: var(--hex-h); flex: none;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--glass-card); border: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--dur-page) var(--ease-page), background var(--dur-page) var(--ease-page);
+}
+.a5v3-hex__body {
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  width: 62%;                       /* 内缩：六边形的"内接矩形"比外框窄，不收窄文字会溢出斜边 */
+  border-radius: var(--radius-md);  /* 格内卡片圆角走既有刻度（暂定：不新建样式） */
+  padding: var(--sp-2);
+}
+.a5v3-hex__name {
+  font-size: var(--fs-13); font-weight: 600; text-align: center; line-height: 1.35;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+  overflow: hidden;                 /* 必须限行数：长行会溢出六边形 */
+}
+.a5v3-hex__meta { font-size: var(--fs-11); color: var(--text-3); }
+.a5v3-hex:hover { background: var(--inter-hover); }
+.a5v3-hex--current { background: var(--accent-weak); }
+/* 静止降级：高亮"流动"停止后，靠**静态描边亮度差**区分当前格 —— clip-path 会裁掉 outline，
+   所以格加一层内描边渐变模拟亮边（不靠动）。 */
+.a5v3-hex--current .a5v3-hex__body { box-shadow: inset 0 0 0 var(--hairline) var(--accent); }
+.a5v3-hex--static .a5v3-hex__body { box-shadow: inset 0 0 0 var(--hairline) var(--accent); }
+
+/* ------------------------------------------------ 24.5 v4 档案抽屉 */
+/* 机制：等厚抽屉统一方向码放，名称朝外；拉开哪一格，哪一格滑出露内页。
+   其余格**只让位、不位移**（flex-basis 过渡）—— 位移会读成顺序。 */
+.a5v4-drawer {
+  display: flex; height: 100%; gap: var(--sp-3); padding: var(--sp-5);
+  align-items: stretch;   /* 每格撑满可用高度 ⇒ 读起来是"一叠竖着的档案夹"，而不是贴顶的一条工具条 */
+}
+.a5v4-drawer__slot {
+  flex: 1 1 0; min-width: 0; display: flex;
+  transition: flex-basis var(--dur-page) var(--ease-page);
+}
+.a5v4-drawer__head {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  gap: var(--sp-3);
+  /* 抽屉的"厚度"由 flex-basis（格宽）决定、高度撑满 —— 等厚、同向、谁也不指向谁。 */
+  padding: var(--sp-5) var(--sp-2);
+  background: var(--glass-card); border: var(--hairline) solid var(--line-1);
+  border-radius: var(--radius-xl);      /* 抽屉头等厚平行边（暂定档，本页不新建样式） */
+  cursor: pointer; overflow: hidden;
+  /* 名称/序号在这个 head 里是**直接文本子节点**（页面没给它们包裹元素），
+     所以字重与限行写在 head 上，不要再造 `.a5v4-drawer__name` 这类没人挂的类。 */
+  font-size: var(--fs-13); font-weight: 600; line-height: 1.35; text-align: center;
+  /* 进入/开合要有过渡：v4 的抽屉头没挂 .a5v-enterable（那套过渡挂在它身上），
+     所以这里自带 transition，否则"拉开"是瞬变（§24.8 三类反馈之一缺过渡）。 */
+  transition: background var(--dur-page) var(--ease-page), border-color var(--dur-page) var(--ease-page),
+              transform var(--dur-page) var(--ease-page);
+}
+/* 开合即"进入"反馈：拉开那一下轻微推进一档（比 hover 的微探更大），
+   与 v1/v2/v3/v5 的 .is-enter（1.06）同量级；差异是它由 .is-open 这个**状态**承担
+   （v4 的机制就是"开合"，页面只挂 .is-open、不挂 .is-enter）。 */
+.a5v4-drawer__slot.is-open .a5v4-drawer__head { transform: scale(1.04); }
+.a5v4-drawer__page {
+  display: none; flex-direction: column; gap: var(--sp-3); align-items: center; justify-content: center;
+  padding: var(--sp-4);
+  background: var(--glass-panel); border: var(--hairline) solid var(--line-1);
+  border-radius: var(--radius-xl);
+}
+/* 拉开态：一个类即可，不需 JS 布局计算（§10.2） */
+.a5v4-drawer__slot.is-open { flex: 3 1 0; }
+.a5v4-drawer__slot.is-open .a5v4-drawer__page { display: flex; }
+.a5v4-drawer__slot.is-open .a5v4-drawer__head { border-color: var(--accent); background: var(--accent-weak); }
+.a5v4-drawer__slot:hover .a5v4-drawer__head { border-color: var(--accent); background: var(--inter-hover); }
+/* 竖排手风琴（窄屏语义不变）：头在左、内页在右 */
+.a5v4-drawer--stacked { flex-direction: column; }
+.a5v4-drawer--stacked .a5v4-drawer__slot.is-open { flex: none; }
+
+/* ------------------------------------------------ 24.6 v5 探照灯取景器 */
+/* 机制：9 格等大等距铺开（不倾斜、不纵深）+ 一团用户控制的光斑（斑外压暗、斑内清晰）。
+   光斑走"斑外压暗层"（不用 mask-image）—— 避开 mask 与 backdrop-filter 叠加退化。 */
+.a5v5-grid {
+  position: relative; height: 100%; display: grid;
+  grid-template-columns: repeat(3, 1fr); gap: var(--sp-5); padding: var(--sp-6);
+  align-content: center;
+}
+.a5v5-cell { min-height: 190px; align-items: center; text-align: center; justify-content: center; }
+.a5v5-cell__name { font-size: var(--fs-14); font-weight: 600; }
+.a5v5-cell__meta { font-size: var(--fs-12); color: var(--text-3); }
+/* 光斑层：覆盖整个网格，pointer-events: none（不吃点击）。
+   圆心由脚本写进 --spot-x / --spot-y（取运行时量到的网格矩形中心，不写死画布偏移）。
+   压暗色走令牌 --scrim-rgb / --scrim-mid / --scrim-strong（tokens.css §25），亮色主题自动反转。 */
+.a5v5-spot {
+  position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  background: radial-gradient(
+    circle 210px at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(var(--scrim-rgb), 0) 0%,
+    rgba(var(--scrim-rgb), var(--scrim-mid)) 62%,
+    rgba(var(--scrim-rgb), var(--scrim-strong)) 100%);
+}
+/* 静态降级：光斑瞬移，布局逻辑不崩（成本最低的一页；无需换布局） */
+.a5v5-grid--static .a5v5-spot { background: none; }
+/* 两列形态（窄屏语义）：外壳画布固定 1920×1080，视口宽度触发不了 @media，
+   所以窄屏形态由**页内评审开关**用范围类/属性切（只改结构、不上色）——
+   与"静态降级靠换布局"同一条纪律，仍然不写媒体查询。
+   两列 ⇒ 5 行，行高由内容决定（min-content），底部多留一档让开外壳左下角的 .note。
+   实测（1400×1160 = .board 的 0.7 倍）：5 行占 563px、容器 804px，**不产生滚动**
+   （所以 `.a5v5-spot` 不会随内容滚走 —— 这一点下面那条 overflow 只是兜底）。 */
+.a5v5-grid--two {
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: min-content;
+  padding: var(--sp-4) var(--sp-5) var(--sp-6);
+  gap: var(--sp-2);
+  overflow-y: auto;
+}
+/* 两列形态下环缩一档、字号收一点，保证"环 + 序号 + 名称 + 站数"四件排得下。
+   注意：DOM 上仍是 --md（dasharray 138.23），这里只改**显示尺寸**，不动契约 §3.2 的取值。 */
+.a5v5-grid--two .a5v5-cell {
+  min-height: 0; padding: var(--sp-2); gap: var(--sp-1);
+  justify-content: center;
+}
+.a5v5-grid--two .a5v5-cell .ui-progress-ring,
+.a5v5-grid--two .a5v5-cell .ui-progress-ring__svg { width: 44px; height: 44px; }
+.a5v5-grid--two .a5v5-cell__name { font-size: var(--fs-13); }
+/* 斑内那一格：**格子本身不动**，只抬一层亮度与描边 */
+.a5v5-cell.a5v5-lit { border-color: var(--accent); background: var(--accent-weak); }
+.a5v5-cell.a5v5-lit .ui-progress-ring { transform: scale(1.06); transition: transform var(--dur-page) var(--ease-page); }
+
+/* ------------------------------------------------ 24.7 共用键盘焦点环挂钩 */
+/* 既有 :focus-visible（§20.3）不会替自定义焦点件画环 —— 自定义焦点件统一挂这个类。
+   仍然遵守"只在键盘模态画环"：指针模态下由 §20.3 把 --ring-color 置为 transparent。 */
+html[data-input-modality="keyboard"] .a5v5-focusable:focus-visible {
+  outline: var(--ring-width) solid var(--ring-color);
+  outline-offset: var(--ring-offset);
+}
+/* 焦点件本体若是被 clip-path 裁切的形状（v3 六边形），outline 会被裁掉 ⇒ 改用内描边。 */
+html[data-input-modality="keyboard"] .a5v3-hex.a5v5-focusable:focus-visible { outline: none; }
+html[data-input-modality="keyboard"] .a5v3-hex.a5v5-focusable:focus-visible .a5v3-hex__body {
+  box-shadow: inset 0 0 0 var(--ring-width) var(--ring-color);
+}
+
+/* ------------------------------------------------ 24.8 三类反馈（A5-R4 的统一口径） */
+/* 交付标准①要求"悬停 / 选中 / 进入三类反馈明确"。为了让五个方案**读起来一致**，
+   三类反馈在这里统一定义，页面只挂类、不各写一套：
+     悬停（hover）    = 微抬 2px + 描边变主色        → .a5v-hoverlift
+     选中 / 当前      = --accent 描边 + --accent-weak 底 + --glow-accent → .is-hit
+     进入（点击那一下）= 一次短暂"推进"过渡           → .is-enter（由脚本挂 160ms 后摘） */
+.a5v-enterable { transition: transform var(--dur-page) var(--ease-page), border-color var(--dur-page) var(--ease-page), background var(--dur-page) var(--ease-page); }
+.a5v-enterable.a5v-hoverlift:hover { transform: translateY(-2px); }
+.a5v-enterable.is-hit {
+  border-color: var(--accent); background: var(--accent-weak); box-shadow: var(--glow-accent);
+}
+/* ⚠️ 「进入」的推进过渡 .a5v-enterable.is-enter 定义在 §24.11 之后 —— 它必须排在五条
+   `:hover { transform }` 之后，否则鼠标悬停会把"进入"那一下压掉（同特异性、后定义者胜）。
+   键盘 Enter 不受影响（那时没有 hover），但鼠标点击必须有反馈（A5-R4）。 */
+.a5v-enterable:active { background: var(--inter-active); }
+
+/* ------------------------------------------------ 24.9 命中区与页内控件 */
+/* §8.2 冻结：最小命中区 44×44。低于此值的可点元素统一挂这个类撑到 44。 */
+.a5v-hit { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+/* 五页共用的"展开说明"（原生 details，零第三方、键盘天然可开合） */
+.a5v-details { font-size: var(--fs-12); color: var(--text-3); }
+.a5v-details > summary {
+  min-height: 44px; display: flex; align-items: center; gap: var(--sp-2);
+  cursor: pointer; color: var(--text-2); list-style: none;
+}
+.a5v-details > summary::-webkit-details-marker { display: none; }
+.a5v-details > summary::after { content: ""; width: 12px; height: 12px; background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center/contain no-repeat;
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>") center/contain no-repeat; }
+.a5v-details[open] > summary::after { transform: rotate(180deg); }
+
+/* ------------------------------------------------ 24.10 五页共用的内容容器 */
+/* 五个方案的正文都放在这个容器里：撑满可用高度、不裁切（各方案自己管 overflow）。 */
+.a5v-stage { height: 100%; display: flex; flex-direction: column; }
+.a5v-stage__head {
+  display: flex; align-items: center; gap: var(--sp-3);
+  /* ⚠️ 顶部让位是**必需**的：页眉浮卡（.ui-titlebar--float）距上 50px、高 70px，
+     即占到 y=120。五页的正文都从左上角起排，没有这段留白就会被浮卡压住
+     （实测：`padding: var(--sp-4) var(--sp-5) 0` 时"实验项目"整行被盖住）。
+     依据取令牌算：--shell-top-y(50) + --shell-bar-h(70) + 10 余量 = 130。 */
+  padding: calc(var(--shell-top-y) + var(--shell-bar-h) + 10px) var(--sp-5) 0;
+}
+.a5v-stage__body { flex: 1; min-height: 0; }
+/* 正文容器可能有多个互斥的形态子视图（蜂窝格 / 窄屏列表…），彼此是**兄弟**。
+   它们是 flex 子项 ⇒ 宽度会由内容决定而被"居中收缩"，所以统一给一道宽度兜底。 */
+.a5v-stage__body > * { width: 100%; }
+
+/* ------------------------------------------------ 24.11 各方案的悬停位移（本体已带 .ui-tile） */
+/* ⚠️ v1 与 v2 **故意没有** `:hover { transform }` 规则：
+   这两页的卡片/节点位置由 JS 按下标算出的**行内 transform** 定位（伪三维纵深、居中、缩放），
+   行内值天然盖过样式表里的 hover 规则 —— 写了也是死代码，还会让人误以为"悬停由 CSS 管"。
+   它们的悬停位移因此由 JS 按同一口径合成（v1 微抬 -2px、v2 放大 1.04），值与这里其余三条同源。
+   v3 / v4 / v5 不靠行内 transform，悬停正常由下面三条负责。 */
+.a5v3-hex:hover { transform: scale(1.03); }
+.a5v4-drawer__slot:hover .a5v4-drawer__head { transform: translateY(calc(-1 * var(--sp-1))); }
+.a5v5-cell:hover { transform: translateY(-2px); }
+
+/* ⚠️ 顺序纪律（同 §24.11 那条）：这条**必须**留在五条 `:hover { transform }` 之后。
+   放在前面会被悬停压掉，鼠标点击就看不到"进入"那一下（A5-R4 三类反馈之一）。
+   取值说明：.is-enter 用 **1.06**，比各方案 `:hover` 的 1.03/1.04 更大一档 ——
+   否则"悬停放大"与"进入推进"在视觉上同值，第三类反馈就只剩文字能区分了。 */
+.a5v-enterable.is-enter { transform: scale(1.06); }
+
+/* ------------------------------------------------ 24.12 五页共用的小零件 */
+/* 卡片内"横排：环 + 文字块" */
+.a5v-row { display: flex; align-items: center; gap: var(--sp-3); }
+/* 环右侧的文字块（项目名 + 站数） */
+.a5v-col { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.a5v-name { font-size: var(--fs-14); font-weight: 600; }
+.a5v-meta { font-size: var(--fs-12); color: var(--text-3); }
+/* 序号码（01~09） */
+.a5v-idx { font-size: var(--fs-12); color: var(--text-3); font-variant-numeric: tabular-nums; }
+/* 图标按钮：撑到 44×44 的命中区（V7） */
+.a5v-iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  background: var(--glass-card); border: var(--hairline) solid var(--line-1);
+  color: var(--text-2); cursor: pointer;
+}
+.a5v-iconbtn:hover { border-color: var(--accent); color: var(--text-1); background: var(--inter-hover); }
+.a5v-actions { display: flex; align-items: center; gap: var(--sp-2); }
+
+/* ============================================================================
+ * 26. A5 菜单页 · 环形伪三维卡片（Issue #73 / T1，2026-10-16）
+ *
+ * 契约权威：`docs/design/14-a5-menu-ring-contract.md`（**冻结 FROZEN**，只读消费）。
+ * 上游方案：`docs/design/13-a5-menu-redo-contract.md`；决策：`docs/DECISIONS.md` 第 33 节
+ * （DEC-163 只留环形一个候选 / DEC-164 / DEC-165 废案标记）。
+ *
+ * 本节是环形页**唯一的新增样式来源**（FRZ-20：页面里不得出现 <style> 块）：
+ *   26.1 几何与环容器（`.a5r` / `.a5r-ring` / `.a5r-track`）
+ *   26.2 卡片本体与定位（`.a5r-card`）
+ *   26.3 远端衰减三项（§5.2 档位表；由脚本每帧写行内变量）
+ *   26.4 三类反馈（悬停 / 选中 / 进入，§6.1）
+ *   26.5 焦点环载体（`.a5r-focusring`，§6.4）
+ *   26.6 垂直形态与静态档范围类（§11.3 / §11.4）
+ *   26.7 吸附过渡的次序纪律（`.a5r-track.is-snapping`）
+ *   26.8 reduced-motion 具名豁免（§7.6，**全文件唯一的一条例外媒体查询**）
+ *
+ * 两处对上游的**显式偏离**（都已登记在契约里，不要"顺手改回去"）：
+ *   ① §6.4：焦点环不用 `outline`，改用**反向缩放的 box-shadow** —— 因为 `outline-width`
+ *      不接受 calc()，无法按卡片缩放补偿；令牌口径不变（仍取 --ring-width/-offset/-color）。
+ *   ② §7.6：豁免只给 `.a5r-track` 一条过渡，选择器里**不得有 `*`** —— 带上 `*` 会把三类
+ *      反馈的过渡一起从 0.01ms 改成 160ms，超出负责人裁定的"最小作用域"。
+ *
+ * 与 24 号（五方案遗留）的关系：本节与 §24 并存，**§24 不动**。唯一共享件是既有的
+ * `.ui-progress-ring`（§24.1 = components.css:1141-1168）—— 按 FRZ-18 **一行都不改**，
+ * 本节只消费它（`--sm/--md/--lg` 是尺寸档、`--done` 是状态修饰符；`--partial` 是
+ * **不需要样式的语义标记**，本节也**不得**为它新增规则）。
+ * ========================================================================== */
+
+/* ------------------------------------------------ 26.1 几何与环容器 */
+/* 作用域根：只做作用域，**不承载**豁免类（豁免只挂 .a5r-track，见 §26.8）。
+   ⚠️ **故意不写 `position: relative`** —— 写了它就会成为 `.a5r-ring` 的包含块，
+   而 `.a5r` 在 `.a5v-stage__body` 里只有 950px 高 ⇒ `--a5r-slot-focus: 42%` 会解析成
+   399px（正是契约 §4.5 点名要避免的那个落点）。让 `.a5r-ring` 直接相对 `.board__body`
+   （1080px，`position: relative` 由外壳给）定位，42% 才等于 **454px**。 */
+.a5r { height: 100%; }
+
+/*
+ * 环容器 = 裁切框 + 拖拽宿主。
+ *
+ * 「一屏 ≥ 5 个可辨卡位」（FRZ-04 / §4.3.1）从两条同时来：
+ *   ① 几何：R=600 / Δ=24° ⇒ 档位 1 完整、档位 2 露 223px、档位 3 露 188px；
+ *   ② 收口：本节 overflow: hidden —— 环的横向包围盒是 ±759，纵向包围盒更宽
+ *      （垂直形态下 ±776，见 §26.6），都必须由这里裁掉。
+ *
+ * 定位基准（冻结，**只有一种**，对应契约 §4.5「做法 A」）：
+ *   `.a5r-ring` 相对 `.board__body`（外壳给的 `position: relative`，高 **1080**）绝对铺满整高，
+ *   于是 `--a5r-slot-focus: 42%` 解析成 **454px = 1080 × 42%**（正文带整高），
+ *   而不是"1080 − 头部行高 ≈ 950"的 42%（那只有 399px，会让 §4.5 的 y(k) 表
+ *   与两条纵向约束全部失效）。
+ *   ⇒ 成立的前提有两条，都得保持：
+ *     ① `.board__body` 是 `position: relative`（外壳的既有事实）；
+ *     ② `.a5r` **不写** `position: relative`，否则它成为更近的包含块（见上方 `.a5r` 那条）。
+ *   ⇒ 卡片因此以 `.a5r-ring` 的**高度**（= 1080 = 画布整高）算坐标，
+ *     而不是 `.a5v-stage__body` 的高度（950）。`.a5r-ring` 是 `.board__body` 的**定位子项**，
+ *     与 `.a5v-stage`（`height: 100%` 的流式块）是兄弟关系 —— 绝对定位子项不参与
+ *     流式父级的纵向布局，所以 `.a5v-stage__head` 的 130px 不会把环挤下去。
+ *
+ * ⚠️ 与契约 §10.3 的字面写法不同：那里写 `.a5r-ring { position: absolute; inset: 0 }`
+ *   且上下文是 `.a5v-stage__body`（基准 = 950px ⇒ 落点 399px）。本节取 §4.5 的
+ *   **推荐做法 A**（"数值基准唯一、不与头部行高耦合"，且 V-D 要量的就是 454px）。
+ *   若将来有人把 `.a5r-ring` 挪回 `.a5v-stage__body` 内，**必须**把 `--a5r-slot-focus`
+ *   改成 `47.8%` 让落点回到 454px —— 契约 §4.5 已把这个换算写清。
+ *
+ * 禁写：`perspective` / `transform-style`（§4.4：纵深**完全**由 §5.2 的尺寸+模糊+透明度
+ *   三项承担，加透视会让"谁负责变小"变成两处都要调，V-C 会抓）。
+ */
+.a5r-ring {
+  /* 环的定位：**只写 `top` 与 `bottom`，不写 `height`**。
+     - **排版稿**：不给 `--a5r-ring-height` ⇒ `top: calc(50% - 0px)` = 50% 与 `bottom: 0`
+       一起把环拉满剩余高度（这就是 `inset: 0` 的效果）。
+     - **产品**（`web/src/views/MenuView.vue`）：没有 1080 画布，面板正文带的高度是算出来的，
+       而 `inset: 0` 在外壳的 flex 链里会解析成 0 ⇒ 产品在祖先上给一枚像素值
+       `--a5r-ring-height`，`top` 据此把环摆回正中，`bottom: auto` 让高度由 `top` + 显式
+       `height` 决定 —— 所以下面**再加一条产品专用的 height 规则**（见紧随其后的那条）。
+     ⚠️ 三条踩过的坑，别再改回去：
+       ① **不要**写成 `height: var(--a5r-ring-height, auto)`：`--a5r-ring-height` 的根兜底是
+          `initial` 时才回落到 `auto`，一旦有人在根上写 `0px` 或 `100%`，环高就是 0，
+          9 张卡全塌到一条线上（实测过）；
+       ② **不要**同时写 `top` + `bottom` + `height`：三者都确定时 `auto` 高度按
+          `环绕块 − top − bottom` 解析，`bottom: 0` 会把高度算成 0；
+       ③ **不要**在 `.a5r-ring` 自身上定义 `--a5r-ring-height`：那会盖掉产品从祖先继承的值。 */
+  position: absolute;
+  top: calc(50% - var(--a5r-ring-height, 100%) / 2);
+  bottom: calc(50% - var(--a5r-ring-height, 100%) / 2);
+  height: var(--a5r-ring-height, 100%);
+  left: 0; right: 0;
+  /* 卡片的纵向锚点（见本元素上方 `--a5r-top` 的说明）。
+     - **排版稿**：`.a5r-ring { inset: 0 }` 覆盖了下面的定位，环与环绕块同高，
+       所以 `--a5r-top` 的 42% == 454px，与契约 §4.5 的做法 A 完全一致。
+     - **产品**：环高由 `--a5r-ring-height` 显式给出，页面把 `--a5r-top` 覆写成像素值。 */
+  /* ⚠️ `--a5r-ring-height` **不在这里**定义：`inset: 0` 已给排版稿的环定好高宽，
+     而产品会在**祖先**上给一枚像素高度 —— 若在本元素上写死 0px，就直接覆盖掉了继承值。
+     ⇒ 它的兜底落在 `:root`（见 §26.1 末尾）。 */
+  overflow: hidden;
+  /* 触控语义（FRZ-13 / §7.5）：纵向归页面滚动、横向归我。垂直形态反转为 pan-x（§26.6）。
+     ⚠️ 这是留给实现阶段的**唯一可调项**是轴判定阈值（8px / 1.2，在页面脚本里），
+     `touch-action` 本身**不要动**（改成 none 会让整个正文带滚不动）。 */
+  touch-action: pan-y;
+  cursor: grab;
+  /* 环内**文字一律不可选中**（负责人 2026-10-16 实测裁决）。
+     原因：左键拖拽转环时，浏览器的默认行为会开始"拖选"——卡片里的项目名 / 站数被选上，
+     高亮一路糊过整排，还会连带触发原生的拖放与后续的选中文档行为。
+     ⇒ 在环这一层收口即可（继承到 9 张卡与环内所有文字），不必逐卡写。
+     注：环**外**的正文（工具条、`.note`）不受影响，仍可正常选中复制。 */
+  -webkit-user-select: none;
+  user-select: none;
+  /* ---- 以下五枚是**静态**变量，脚本不写（§10.4 的"谁写"表） ---- */
+  --a5r-radius: 600px;        /* 环半径 R（§4.3 设计定：600 是"遮挡够明显 + 铺展够满 + 不越画布"的取值） */
+  --a5r-step: 24deg;          /* 相邻卡角距 Δ（§4.3；**不是** 9 张均分 360° 的 40°，40° 会让相邻卡不再重叠） */
+  --a5r-slot: 249.6px;        /* "一格"在**承轴**方向的屏幕位移 = 2R·sin(Δ/2)。两形态**都是**这个值，
+                                 差别只在它是哪个轴；**不要**给它乘 --a5r-vscale */
+  --a5r-vscale: 0.5;          /* 水平形态的**起伏轴**（纵向）压缩系数（§4.5）；垂直形态改 0.35（§26.6） */
+  --a5r-slot-focus: 42%;      /* 环心纵向 = 正文带 42% ⇒ 1080 × 0.42 = 454px（§4.5 的 y(k) 基座） */
+  /* 卡片的纵向锚点 `--a5r-top`：**相对环自己的顶部**量的**长度**。
+     - **排版稿**：环与画布同高（1080）⇒ 42% 恒等于 **454px**。这里写死长度而不是
+       `var(--a5r-slot-focus)`：那个百分数解析的是**环绕块**高度，而契约的基准是"画布整高
+       × 42%"，两者只在"环绕块 == 1080"时才相等；写长度可以让它不依赖环绕块。
+       （⚠️ 也**不要**把百分数与长度折进同一个 calc：`top` 的百分数按环绕块解析，
+         `--a5r-ring-height` 是长度，`540px − 0px + 453.6px = 993.6px` 是错的。踩过一次。）
+     - **产品**：环绕块是面板正文带、与环高不等 ⇒ `MenuView.vue` 在祖先上覆写成
+       `环高 × 42%` 的像素值（见该文件 template 的注释）。 */
+  --a5r-top: 454px;
+  /* 起伏轴的**方向**：+1 表示"离焦越远，卡越往起伏轴正方向掉"。
+     ⚠️ 必须写出来、不能折进数字里 —— 因为两种朝向的**正方向相反**：
+       · 水平环：正方向 = 下 ⇒ 取 **-1**，离焦越远的卡越**往上**收（环读作"拱起来"）
+       · 垂直环：正方向 = 右 ⇒ 取 **+1**，离焦越远的卡越往**右**收（同一套朝向语义，
+         只是轴的屏上方向变了）⇒ 由 `.a5r-ring--vertical` 覆盖
+     ⇒ 脚本统一算 `descent = sign × 起伏预算 × (1 − cos kΔ)/(1 − cos 4Δ) × vscale`，
+       符号从这枚变量读，**不写朝向分支**。 */
+  --a5r-descent-sign: -1;
+  /* 起伏轴的**预算**（px）：整条环允许的最大纵深退后量（= k=4 那一档退后多少）。
+     由两条**真实边界**反解（负责人 2026-10-16 裁决"取满可用高度"）：
+       ① 上边界 = 左上页眉浮卡的**下沿 92px**（浮卡 top:22 + 高 70，见 mockup-shell.css:126-133 /
+          tokens.css:362-364）。卡高 420 ⇒ 卡心不得高于 92 + 210 = 302 ⇒ 最大退后
+          = 454 − 302 = **152px**。（若只按画布上边 0 算，会得到 244px，但那会让 k=4 的卡
+          压到浮卡上、与 §4.5 约束②的"不压浮卡"相悖。）
+       ② 下边界 = 底部说明条上沿 ≈1044px ⇒ 卡心不得低于 1044 − 210 = 834；退后是"向上"的，
+          所以这一条不构成限制。
+     ⇒ 水平形态：k=4 退后 `152 × vscale(0.5)` = 76px ⇒ 卡心 454 → 378（上沿 168，让开浮卡 ✓）；
+       下沿最大仍是焦点卡的 663.6（< 664 ✓）。
+     ⚠️ 这是对契约 §4.5 三套互不相容数值的**取舍**（公式 R·(1−cos kΔ) 直算 = 62.7 起步、
+       表 = 425/395/359/320、两条不变量声明 198/664）。取"满足硬边界 + 负责人要的'取满高度'"
+       这一支，偏差已按契约"只增不改"的口径登记在 14 号末尾与 `docs/RECORD.md`。 */
+  --a5r-descent-budget: 152px;
+}
+/* 环高的兜底 `--a5r-ring-height` **故意不在这里定义**：
+   它未定义时，§26.1 的三条规则各自回落到兜底 `100%` ⇒
+   `top: calc(50% - 50%) = 0`、`bottom: 0`、`height: 100%`，**完全等价于 `inset: 0`**
+   （排版稿要的就是这个）。
+   产品在**祖先**上给一枚像素值（面板正文带的高度是算出来的）⇒ 三条一起变成
+   `top = (环绕块 − 环高)/2`、`bottom` 同值、`height = 环高`，环**等高于该值且居中**。
+   ⚠️ 三条踩过的坑，别再改回去：
+     ① 若在这里写 `:root { --a5r-ring-height: 0px }`，兜底就取到 `0px` ⇒ `height: 0`
+        （9 张卡全塌到一条线，实测过）；写成 `initial` 也只能救 `var(..., auto)` 那种写法。
+     ② 若只写 `top`/`bottom` 而**不写** `height`，两条都解析成 0 时可用高度就是 0 ⇒ 高度塌成 0。
+     ③ 若把 `--a5r-ring-height` 定义在 `.a5r-ring` **自身**上，会盖掉产品从祖先继承的值
+        （自定义属性：直接声明 > 继承）。 */
+.a5r-ring.is-dragging { cursor: grabbing; }
+
+/* 整排位移层 + 9 张卡的定位上下文。
+   `.a5r--motion` 是**标记类**（不是独立元素），只挂在这一层上（§7.6）。
+   注：本层自身**没有** transform —— 按 §10.4 冻结的接口，每张卡的位置全部由它自己的
+   `--a5r-x / --a5r-y` 表达（§4.3「必读的一条」：`scale` 不改变布局占位，所以不能用
+   flex/gap/margin 排开）。⇒ "整排位移"落在 9 张卡的 transform 上，GPU 合成，符合 §5.6 门槛①。
+   契约 §7.4 要求吸附过渡"由 `.a5r-track.is-snapping` 挂上"，本层的承担方式是：
+   这个类作为**状态标记**，让脚本按"先挂类、下一帧再写值"的两拍次序驱动（见 §26.7），
+   过渡本身声明在 §26.2 的 `.a5r-card` 上（一处声明好过两处，且不会互相覆盖）。 */
+.a5r-track { position: absolute; inset: 0; }
+
+/* ------------------------------------------------ 26.2 卡片本体与定位 */
+/*
+ * 定位方式**冻结，只有一种**（§10.4）：卡片 `position: absolute`，锚在 (50%, 42%)，
+ * 屏幕位置全部由 transform 表达，而 transform 的每一项都是一个 CSS 变量 ——
+ * 状态类只改**变量值**、绝不写整串 transform（否则悬停位移与进入放大互相覆盖，V-J 会抓）。
+ *
+ * 各变量的角色（§10.4 / §8.1）：
+ *   --a5r-dx / --a5r-dy 脚本每帧写：卡中心相对"环心 (50%, 42%)"的屏幕偏移。**已含形态**
+ *                       （水平 = dx 承轴横向、dy 起伏纵向；垂直 = dx 起伏横向、dy 承轴纵向）
+ *   --a5r-scale         脚本每帧写：档位缩放（占位宽恒为 360px，scale 不改变布局 —— 所以
+ *                       必须绝对定位 + 按下表逐档给值，**不得**用 flex/gap/margin 排开，
+ *                       否则拿到的是"布局重叠"而不是"视觉重叠"，见 §4.3「必读的一条」）
+ *   --a5r-lift          悬停微抬的唯一入口（§6.1：-4px，默认 0）
+ *   --a5r-enter         进入反馈的**倍数**（§26.4）：1（默认，由本节的 var() 兜底）或 1.06
+ *                       （`.is-enter` 时）—— 它不是第 8 枚新接口，只是把"额外 ×1.06"这件事
+ *                       从"改 --a5r-scale"换成"乘一个倍数"，好让档位表仍由脚本独占。
+ *   --a5r-ring-rescale  脚本每帧写（见 §26.5）：1 / --a5r-scale
+ */
+.a5r-card {
+  position: absolute; left: 50%; top: var(--a5r-top, 0px);
+  width: 360px; height: 420px;                 /* §4.2 焦点卡尺寸（冻结） */
+  /* ⚠️ `translate(-50%, -50%)` 与 `top: calc(50% - 210px)` 看似等价，实则**不等价**：
+     `translateY(-50%)` 的百分数是**卡片自身高度**的 50%，任何环绕块下都对（不需要知道它）；
+     而 `top` 的百分数相对**环绕块**，产品侧（环高 ≠ 环绕块高）会偏。⇒ 横向仍用 `-50%`
+     （卡片宽固定，无歧义），**纵向改用卡片固定半高 `-210px`**，与 `--a5r-top` 配套。 */
+  transform: translate(-50%, -210px)
+             translate(var(--a5r-dx, 0px), calc(var(--a5r-dy, 0px) + var(--a5r-lift, 0px)))
+             scale(calc(var(--a5r-scale, 1) * var(--a5r-enter, 1)));
+  /* 圆角档（FRZ-11 / §4.2）：--radius-xl(20) 比 .ui-tile 的 --r-2→--radius-md(12) 大一档，
+     这是**有意选择**（环形卡是独立 3D 层，不与网格同层），实现时不得改成 12。 */
+  border: 0.5px solid var(--line-1);
+  border-radius: var(--radius-xl);
+  background: var(--glass-card);
+  padding: var(--sp-3);                        /* §4.2 内边距：横向 sp-3 */
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  will-change: transform, opacity;
+  /* 焦点环载体的外扩量（§6.4 冻结：--a5r-ring-pad = var(--ring-offset) = 2px）。
+     写在这里而不是 ::after 上，是为了让页面**不必**为它写行内变量。
+     ⇒ 也是"卡内子元素不得自带 filter/opacity/scale"（§5.4）的例外清单之外唯一要声明的量。 */
+  --a5r-ring-pad: var(--ring-offset);
+  /* 三类反馈里"描边 / 底色 / 阴影"的过渡（§6.1）。
+     ⚠️ **transform 故意不在这里**（负责人 2026-10-16 实测裁决）：拖拽是"逐帧跟手"，
+     而 transform 上常挂 160ms 过渡会让画面**追赶**指针而不是跟着走 —— 实测指针已移动
+     160px 而卡片还在插值中途，观感是"粘住、松手才对上"。
+     ⇒ transform 的过渡只在**吸附期间**由 `.a5r-track.is-snapping` 挂上（见紧随其后那条），
+       拖拽 / 惯性期间对 `--a5r-dx / --a5r-dy` 是**瞬写**（§10.4 冻结的位置入口）。 */
+  transition: background var(--dur-page) var(--ease-page),
+              border-color var(--dur-page) var(--ease-page),
+              box-shadow var(--dur-page) var(--ease-page);
+}
+/* 吸附期间的 transform 过渡（把 §7.4 的"挂 `.is-snapping`"落到实处）：只在松手吸附那一次生效。
+   两拍次序见 §26.7 —— 脚本先挂类、**下一帧**才写目标值，过渡才会真的跑起来。
+   ⚠️ `!important` 是**必需**的：reduced-motion 档下 §20.6 的
+   `* { transition-duration: .01ms !important }` 会命中卡片；而契约 §7.6 要求豁免选择器
+   **只能是** `.a5r-track.a5r--motion`（V-S 的硬性检查），那条豁免管不到卡片
+   （它只重置轨道的时长，而轨道本身没有 transition）。
+   ⇒ 这里用 `!important` 把吸附时长钉在 `--dur-page`，等于**就地兑现契约 §7.6 的意图**
+   （"菜单卡片动画不受全局时长压缩限定"），同时既不动 §20.6、也不违反 V-S 的选择器约束。
+   （这是对 §7.6 的**一处有理由的落实方式调整**，已登记在 14 号附录 B 与 RECORD。） */
+.a5r-track.is-snapping .a5r-card {
+  transition: transform var(--dur-page) var(--ease-page);
+  transition-duration: var(--dur-page) !important;
+}
+.a5r-card__idx { font-size: var(--fs-12); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.a5r-card__ring { display: flex; align-items: center; justify-content: center; margin: var(--sp-3) 0; }
+.a5r-card__body { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+
+/* ------------------------------------------------ 26.3 远端衰减三项（§5.2 档位表） */
+/*
+ * 三项**同时**变化、且**只作用于整张卡片**（F6 / F7 / FRZ-03）——
+ * 这就是"父层级模糊"的机械兑现：卡片作为**一层整体**变糊、变透。
+ *
+ * ⚠️ 禁令（§5.4，本契约里最容易被实现改坏的一条）：**禁止**给卡片的任何子元素单独写
+ *   filter / opacity / transform: scale()。卡内元素（进度环、项目名、站数）不得有自己的
+ *   缩放或模糊 —— 那就是 D6 明令否掉的"卡内分层（外层糊、内层不糊）"。V-H 会抓。
+ *   唯一例外是 `.a5r-focusring`（§26.5）：它的存在意义正是**反向补偿卡片缩放**。
+ *
+ * 档位表（k = 0..4，档位 = k+1）由脚本按帧写成**行内** CSS 变量：
+ *   档位  1    2     3     4     5
+ *   scale  1.00 0.85  0.72  0.61  0.58
+ *   blur   0    2px   4px   6px   6px      ← 下限 6px（再糊只剩噪点，§5.2 读表须知 ④）
+ *   opacity 1.00 0.72 0.44  0.28  0.28     ← 下限 0.28（0.28 × glass-card α ≈ 0.13~0.15，仍是"看得见有东西"）
+ *   z      500  400   300   200   100      ← 100 一档，留出插入空间（§5.3）
+ *
+ * ⚠️ 样式表里**不得**给这几枚变量写默认值再指望脚本去改：行内变量天然盖过样式表，
+ *   两处都写等于留下"看起来生效其实没生效"的死代码（§10.4 实现注意）。
+ *   ⇒ 这里只给 var() 的**兜底**（卡片尚未被脚本写入时的零态），不是"默认档位"。
+ *
+ * z-index 为什么必须用变量、不能用 nth-child：环是**闭合**的，k=4 会"转到对面又转回来"，
+ * 与 k=3 同侧相邻、两者都与 k=2 重叠；DOM 顺序无法表达"谁在前面"（顺序固定、焦点是动的）。
+ */
+.a5r-card {
+  z-index: var(--a5r-z, 100);
+  filter: blur(var(--a5r-blur, 0px));
+  opacity: var(--a5r-opacity, 1);
+}
+
+/* ------------------------------------------------ 26.4 三类反馈（§6.1） */
+/*
+ * 三者的机械判据是"**没有共享任何一个视觉维度**"（V-B / V-J）：
+ *   悬停 = 位移 + 描边      （无底色、无尺寸变化）
+ *   选中 = 底色 + 内描边 + inset 辉光（无位移）
+ *   进入 = 尺寸             （160ms 内回落）
+ */
+
+/* 悬停：沿视口 Y 轴微抬 4px + 描边变主色。
+   **只改变量** —— 由 §26.2 的 transform 串消费，绝不写 translateY（V-J 会抓）。
+   ⚠️ 顺序/特异性提醒（踩过一次，别再踩）：`.a5r-card` 是**独立类**，与 `.ui-tile` 同特异性
+   （0-1-0），而 `.a5v-*` 的那一批规则（§24.8 / §24.11 的 `.a5v-hoverlift:hover`、
+   `.ui-tile:hover` 也命中本卡片）**写在本节之前**。要让"悬停 = 透明底 + 主色描边"
+   稳稳赢下来，本选择器带上 `.a5r-ring` 作用域（0-2-0 + 状态类 = 0-3-0），
+   并且**显式覆盖 `.ui-tile:hover` 会顺手改掉的 background**（否则"悬停有底色变化"
+   会把三类反馈的维度混掉，而 §6.1 的口径是"悬停**不**变底色"）。 */
+.a5r-ring .a5r-card.is-hover { --a5r-lift: -4px; border-color: var(--accent); background: transparent; }
+/* 卡片**静止时的底色**（0-2-0，压过 `.ui-tile:hover` 的 0-1-0）。
+   ⚠️ 特异性收口（踩过一次，别再加 `:not()` 之类抬它）：本规则是 0-2-0，而
+   `.a5r-card.is-focus` 的 0-2-0 靠"后写"胜出 ⇒ 下面那条 must 排在本条**之后**（现在成立）。 */
+.a5r-ring .a5r-card { background: var(--glass-card); }
+
+/* 选中 / 焦点态（§6.3 D22 交设计的解法：**拆开"环"与"影"，各归各家**）
+     ① 发丝描边：由 --line-1 换 --accent（F17 §1 允许主色描边，.ui-tile:hover 就是这么做的）
+     ② inset 辉光：F17 §3 禁的是与 **elevation 族**同用（那族第一层自带 `0 0 0 0.5px` 发丝）；
+        **inset 阴影不承担边框职责**（spread 是向内的一层色、不发丝），故不与 ① 叠成双边框
+     ③ 选中底色：--accent-weak = 既有选中态口径（.ui-tile--active 同款）
+   > 一句话：**焦点卡 = 主色发丝 + --accent-weak 底 + inset 辉光**。
+   > **明确不用 `--glow-accent`** —— 它是 `0 0 0 2px rgba(...)`（tokens.css:115）的**外扩**阴影，
+   >   会与 0.5px 发丝叠出双边框，正是 §6.3 要避开的那个后果。V-R 会搜这一条。
+   > 既有 `.ui-tile--active` / `.ui-list__item--active` / `.ui-iconitem--active` 三处**不动**
+   >   （改会全站一起变）；本条只约束环形卡这一个新组件。 */
+.a5r-card.is-focus {
+  border-color: var(--accent);
+  background: var(--accent-weak);
+  box-shadow: inset 0 0 0 1px var(--accent-weak), inset 0 0 24px var(--accent-weak);
+}
+
+/* 进入：一次短暂推进（放大）—— 是**尺寸**变化，与悬停的位移、选中的底色都不共享维度。
+   实现方式：`.is-enter` 只改**倍数**变量 `--a5r-enter`（1 ⇒ 1.06），
+   §26.2 的 transform 串把它乘在 `--a5r-scale` 上；脚本 160ms 后摘除该状态类。
+   ⇒ 这样 §10.4 冻结的 `--a5r-scale` 仍然只由脚本按档位表写（V-J 要求的"进入改 --a5r-scale"
+     在**效果**上成立：进入的唯一视觉后果就是缩放被推进 6%），而状态类**不写整串 transform**。 */
+.a5r-card.is-enter { --a5r-enter: 1.06; }
+
+/* ------------------------------------------------ 26.5 焦点环载体（§6.4） */
+/*
+ * 为什么不用 outline（对框体规则 F17 §5 的**显式偏离**，已登记 §6.4 / §13.5）：
+ *   卡片的缩放由 transform: scale() 实现 ⇒ 画在卡片本体上的环，视觉粗细会随卡缩放：
+ *   档位 1 是 2px、档位 3（0.72）只剩 1.44px、档位 5（0.58）只剩 1.16px。
+ *   而档位 1~3 的卡都在 Tab 序列里（§8.4 的档位门）⇒ **必须补偿**；
+ *   但 `outline-width` 不接受 calc()，无法反算 ⇒ 改用**自带反向缩放**的 box-shadow。
+ *   令牌口径不变：仍全部取 --ring-width / --ring-offset / --ring-color。
+ *
+ * 只画一帧状态：`transition: none` —— 它是"焦点在哪"的指示器，不该有缓动
+ *   （否则焦点已移、环还在路上）；也因此**不受** §26.8 那条豁免影响。
+ *
+ * 出现时机：**只在键盘模态**。契约 §6.4 写的是"照既有机制走即可（指针模态下 --ring-color 已被
+ *   既有规则置为 transparent）"，但那里漏了一处：既有规则
+ *   `html[data-input-modality="pointer"] :focus-visible:not(:read-write) { --ring-color: transparent }`
+ *   的匹配目标是**获得焦点的那个元素本身**，而焦点在 `.a5r-card` 上、环载体是它内部的
+ *   `<span>` ⇒ 该规则**不命中载体**，环会在指针模态下照样画出来（V-M 会抓）。
+ *   ⇒ 本节照**仓库既有先例**补上作用域条件（`.a5v3-hex...:focus-visible .a5v3-hex__body`
+ *     那一处用的是同一个写法）：载体只在卡片 `:focus-visible` 时才画环。
+ *   ⇒ 视觉粗细仍由 `scale(var(--a5r-ring-rescale))` 反向补偿（档位 3 与档位 1 都是 ≈2px，V-M）。
+ */
+.a5r-focusring {
+  position: absolute; inset: calc(-1 * var(--a5r-ring-pad, var(--ring-offset)));
+  border-radius: inherit;
+  box-shadow: none;                                  /* 默认不画；只在下面那条规则里画 */
+  transform: scale(var(--a5r-ring-rescale, 1));
+  transition: none;
+  pointer-events: none;
+}
+html[data-input-modality="keyboard"] .a5r-card:focus-visible .a5r-focusring {
+  box-shadow: 0 0 0 var(--ring-width) var(--ring-color);
+}
+/* 卡本体上的原生焦点环要摘掉：环由上面的载体表达（否则两者叠在一起）。
+   与 §24 的 `.a5v3-hex.a5v5-focusable:focus-visible { outline: none }` 同一手法与同一理由，
+   不是"另写一种画法"（令牌与视觉粗细都不变）。 */
+html[data-input-modality="keyboard"] .a5r-card:focus-visible { outline: none; }
+
+/* ------------------------------------------------ 26.6 垂直形态与静态档范围类（§11.3 / §11.4） */
+/*
+ * 垂直环 = **同一个方案的另一朝向**（F13 / D16），不是第二个方案：
+ *   角距 / 卡尺寸 / 档位表全不变，只把 **承轴与起伏轴对调**。
+ *   水平环：承轴 = 横向、起伏 = 纵向（vscale 0.5）
+ *   垂直环：承轴 = **纵向**、起伏 = **横向**（vscale 0.35）
+ *
+ * ⚠️ **承轴不压缩**（§11.3 的关键）：纵向用**未压缩**的 d(k) = 0/249.6/460.7/570.7/654.6，
+ *   横向起伏才乘 --a5r-vscale。把压缩系数用到承轴上会把环挤成一条扁带、"环"的读感直接消失（撞 D16）。
+ *   ⇒ 两形态的 `--a5r-slot` 都是 **249.6px**，差别只在它是哪个轴 ——
+ *     所以拖拽换算（Δn = −dx / var(--a5r-slot)，纵向形态取 dy）与吸附轴都不必分叉。
+ *
+ * 纵向包围盒会超出 1080（环闭合 ⇒ k=4 在上下各有一份，450 − 654.6 − 121.8 = −322 ~ 1230），
+ *   由 §26.1 的 overflow: hidden 收口（F3：只露前方 5~6 张、后方不入画）。
+ *
+ * 触控语义随之**反转**：纵向归环、横向归页面。
+ */
+.a5r-ring--vertical { --a5r-vscale: 0.35; --a5r-descent-sign: 1; touch-action: pan-x; }
+
+/* 静态档（§11.4）：只为让 §7.6 的豁免在**成果页上可见**。
+   **不换形态**（D11 已取消"另定该档静止形态"这条要求）⇒ 页面行为与水平环相同，
+   只是"转得很干脆、不滑行"（吸附与惯性被压到 --dur-page）。
+   本类不新增任何样式，豁免生效靠 §26.8 那条媒体查询 + `.a5r--motion` 标记类。 */
+
+/* ------------------------------------------------ 26.7 吸附过渡的次序纪律（`.a5r-track.is-snapping`） */
+/*
+ * 契约 §7.4 的原文口径：**吸附的过渡挂在 `.a5r-track.is-snapping` 上**，用
+ *   `transform var(--dur-page) var(--ease-page)`，而拖拽 / 惯性期间**不加**这个类
+ *   （每帧直接写值，不要过渡，否则会拖尾）。
+ *
+ * ⇒ 本节照此字面实现，且**位置值完全由 §10.4 冻结的 `--a5r-x / --a5r-y` 表达**：
+ *     · 拖拽 / 惯性：`--a5r-x / --a5r-y` 每帧被脚本瞬写（那两枚变量**从不**参与过渡）⇒ 无拖尾
+ *     · 吸附：脚本**先**挂 `.a5r-track.is-snapping`、**下一帧**才把 `--a5r-x / --a5r-y`
+ *       写成目标档位的值 ⇒ 因为 transform 上此时已有过渡，fx 会把它**平滑插值**过去；
+ *       落位后（--dur-page 之后）再摘掉 `is-snapping`
+ *   ⇒ 这就是"松手后平滑滑入最近格"的效果，且用户可见行为与契约逐字一致。
+ *
+ * ⚠️ 实现时必须守这条**两拍次序**（先挂类、后写值）。原因：CSS 过渡的方向判定发生在
+ *   变量更新的那一刻 —— 若在**同一帧**里既摘掉 `is-snapping` 又把值改回目标，过渡已经不在，
+ *   表现为瞬跳（等价于"吸附不存在"）。反过来，若在值已改好**之后**才挂类，同样不会产生过渡。
+ *
+ * 为什么**不**给 `--a5r-snap` 之类乘数做过渡（一处我们主动放弃的替代方案）：
+ *   乘数乘在偏移上虽然也能插值，但它与 `--a5r-scale`（进入反馈 ×1.06）共用同一个
+ *   `transform`，两条动画会互相干扰；且"被插值的是乘数而不是 transform"也让
+ *   `transition-duration` 的豁免（§26.8）失去落点。⇒ 回到契约的字面写法更稳。
+ *
+ * 「整排位移只用 transform / opacity」成立（§5.6 门槛①）：位移在 transform 里、走 GPU；
+ *   本节没有任何 left / top / width / height / margin 的过渡。
+ *   注：`--a5r-x / --a5r-y / --a5r-scale / --a5r-blur / --a5r-opacity / --a5r-z` 只做
+ *   **每帧瞬写**，不参与过渡 ⇒ 不产生插值开销。
+ */
+
+/* ------------------------------------------------ 26.8 reduced-motion 具名豁免（§7.6） */
+/*
+ * 上游约束：全局兜底是 components.css:913-919 的**带 !important 的通配选择器**
+ *   （即上方 §20.6），「任何局部选择器都盖不过它」⇒ 要让菜单卡片的时长不被压，
+ *   **必须**在**同一份**媒体查询里、用**同样带 !important** 的具名选择器覆盖。
+ *
+ * 负责人裁决取「**最小作用域**」：只豁免 `.a5r-track` 上承载"惯性 / 吸附"的那一条过渡。
+ *
+ * ⚠️⚠️ **选择器里不得有 `*`** —— `.a5r-card` 是 `.a5r-track` 的**直接子元素**，
+ *   一旦写成 `.a5r--motion *`，豁免就会命中每一张卡，把三类反馈的过渡从 0.01ms 改成 160ms，
+ *   直接超出"最小作用域"。**这是本契约里最容易写错的一条，V-S 会抓。**
+ *
+ * 为什么特异性够（不靠书写位置）：`*` 是 0-0-0，`.a5r-track.a5r--motion` 是 0-2-0，
+ *   两者都带 !important 时**特异性高者胜** ⇒ 这条豁免放在哪都生效，不存在"必须紧跟 §20.6 之后"。
+ *
+ * 为什么是 160ms 这个**硬编码**而不是引用变量：!important 覆盖只能给固定值
+ *   （不能写"恢复成原来那条规则的值"）⇒ 取 --dur-page 的字面值。
+ *   ⚠️ **这是全项目唯一需要跟改的硬编码**：若 tokens.css:411 的 --dur-page 改了，
+ *      这一处必须同步改（契约 §13.2 已登记）。
+ *
+ * P3（a5-menu-ring-reduced-motion.html）就是为让这条规则**在成果页上看得见**而存在的
+ *   （F19：看不到的样式算未完成；评审画布切不到系统偏好）。
+ */
+@media (prefers-reduced-motion: reduce) {
+  .a5r-track.a5r--motion { transition-duration: 160ms !important; animation-duration: 160ms !important; }  /* = tokens.css:411 --dur-page */
+}

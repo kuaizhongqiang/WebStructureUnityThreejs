@@ -11,7 +11,7 @@
 | 路径 | 内容 |
 |---|---|
 | `docs/requirement/raw/raw-requirement.md` | **原始需求，唯一权威来源**（只读，不得改写） |
-| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 **DEC-01 ~ DEC-158**（第一~十轮问答 + **第十一轮：结构任务步骤落点** + **第十二轮：Web⇄Unity 全量交互与免 Web 自测** + **2026-10-15 按 Issue 落地的一批 DEC-147 ~ DEC-158**，含页底图 / 应用图标 / 页面过渡 / **结构站画布透明（三相机方案已撤销，DEC-158）**），**只增不改** |
+| `docs/DECISIONS.md` | **决策记录（已定事项的唯一权威）**：现 **DEC-01 ~ DEC-166**（第一~十轮问答 + **第十一轮：结构任务步骤落点** + **第十二轮：Web⇄Unity 全量交互与免 Web 自测** + **2026-10-15 按 Issue 落地的一批 DEC-147 ~ DEC-158**，含页底图 / 应用图标 / 页面过渡 / **结构站画布透明（三相机方案已撤销，DEC-158）**；**§33 第二十轮：A5 菜单页方案收敛，DEC-163~166**），**只增不改** |
 | `docs/PLAN.md` | **执行计划（活文档）**：**只写"接下来做什么"** —— 分批（P0→P1→P2）/ 落点 / 验收标准 / 依赖顺序 |
 | `docs/TODO.md` | **待办（活文档）**：**只写"现在还剩什么"** —— 待拍板 / 待做 / 未提交。**新增待办只加这里** |
 | `docs/RECORD.md` | **记录（活文档）**：**只写"做完了什么 + 证据"** —— 批次总表 + 日期 / 提交号 / PR；**只增不改** |
@@ -20,7 +20,7 @@
 | `docs/research/01~10` | 技术调研：Unity 线、Web/Three.js 线、集成交付、既有同类工程调研、依赖方案、**规模基线（×3 预算）**、Web 工程落地、**WebGL 基线实测**、**被采纳内容数据与三维资产测绘**、**底层操控层的行为规格原文（只读档案）** |
 | `docs/design/01~12` | 设计文档：TaskType 登记表、Unity↔Web 桥协议、目录与程序集分层、数据模型、**Unity 产物与打包流水线**、**Unity 手动构建检查清单**、**框体样式规则**、**内容数据的采用与双份口径**、**启动编排与桥消息落地**、**步骤系统**（含**三种走法：一步一步 / 跳步快进 / 动画运行**）、**底层操控层（输入控制器与相机）**、**资源包与内容打包流水线（全量 Addressables）** |
 | `docs/PAGE-WORKLIST.md` | 页面工作清单（6 组 / 11 个任务页 + 通用组件）+ 里程碑 + 照什么不照什么 |
-| `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：29 页排版稿 + `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用）；`style.css` 是聚合入口 |
+| `docs/ui-mockups/` | **静态排版稿与样式唯一来源**：**盘上 37 个 .html**（成果页索引 36 个入口）+ `index.html`（样式与元件成果页）+ `tokens.css` / `components.css`（**产品只用这两份**）/ `mockup-shell.css`（仅评审用）；`style.css` 是聚合入口 |
 | `docs/model-preview/` | **模型检视页（审核用）**：把 `content/assets/three/**` 的 **8 个 GLB** 逐个挂上 Three.js，用来定**环境**（光照 / 环境贴图 / 背景 / 曝光）与**材质**（贴图接没接上、清漆、表面模式）。自带 `serve.mjs`（服务根＝仓库根，见 §4） |
 | `docs/README.md` | 文档总索引与**写作 / 维护纪律** |
 | `web/` | **Web 前端工程**：Vite 8 + TypeScript 5.9.3 + Vue 3 + 裸 three + ESLint/Prettier |
@@ -48,7 +48,7 @@
 
 | 部分 | 状态 |
 |---|---|
-| 文档与决策 | **DEC-01 ~ DEC-160** 生效；"计划 / 待办 / 记录"已分家（`PLAN.md` / `TODO.md` / `RECORD.md`；**2026-10-15 起计划与待办迁 GitHub Issues**，三个文件是指针 stub）；设计文档 **12 篇**、调研 **11 篇** |
+| 文档与决策 | **DEC-01 ~ DEC-166** 生效（最新为 §33 第二十轮的 DEC-163~166：A5 菜单页方案收敛）；"计划 / 待办 / 记录"已分家（`PLAN.md` / `TODO.md` / `RECORD.md`；**2026-10-15 起计划与待办迁 GitHub Issues**，三个文件是指针 stub）；设计文档 **12 篇**、调研 **11 篇** |
 | Web 骨架 | ✅ 已落地并验证：双端契约、会话单一真源、裸 three 封装、Unity 桥协议骨架、移动端/微信策略 |
 | Web 产品脚手架 | ✅ **Phase 1 已落地**（DEC-73/75）：外壳组件（浮卡 / 站点线 / 状态条）、**启动流程 `start → login → menu`（DEC-101，登录页只提供游客入口）**、`MenuView` / `TaskView`（登记表驱动）/ 骨架自检页；样式只走设计系统令牌；ESLint + Prettier 已进 hook 与 CI |
 | Web 验收 | ✅ `typecheck` / `lint` / `format:check` / 单测（**108 passed / 2 skipped**）/ 构建全过；**渲染冒烟**（真 Chromium：三维渲染非白屏、设计系统令牌真的加载、**站点线只画数据里有的站**（DEC-100）、**登录页真的点得通且不摆输入框**（DEC-101）、骨架自检页可达、无 console 错误）+ **Web⇄Unity 全量交互 18 条**（DEC-112：`scene:enter` 载荷 / `app:init` / 内容数据落地的提示条与信息面板 / `input:enable` 开合 / `step:changed` 进度 / 信息面板 `success` / 答题答错 `failed` → 重问 → 答对 `success` → `task:completed`） |
@@ -62,7 +62,7 @@
 | **资源包与内容打包** | ✅ **已落地**（DEC-87 / DEC-108~110 / **DEC-118 全量迁 AA**，`docs/design/12`）：**包登记表**（`Assets/Resources/Config/PackageDB_Master` + 9 条 `ContentPackages/AA_*.asset`）+ **一键打 AA 包**（菜单 `WSU3/Pack/一键打 AA 包（全部）`，9 个组 / 约 43 MB 落 `Library/com.unity.addressables/aa/<平台>/`）+ **两条链路运行期**（`AddressableManager`：内置 / AA）+ **共享材质组先于内容组装载** + **装包卸包已接进 `scene:enter`/`scene:exit`** + Addressables 设置与分组已就位。⚠️ 全局包（UI / 字体 / 相机背景）登记表为空（Unity 侧不做界面 + 背景取图入口未接）；简介 / 检测的内容 Provider 未登记（素材未到位） |
 | WebGL 基线 | ✅ 已实测：空场景 WebGL 构建 **8.40 MiB / 18 文件 / 188.9 秒**（Brotli）—— 见 `docs/research/08-webgl-baseline.md` |
 | Unity 产物接入 | ✅ 流水线已落地（DEC-79）：暂存 + 逐文件 sha256 校验 + **发布清单** + 打包内 `/unity` 路由 + 加载器（超时/重试/退出销毁） |
-| 排版稿 | 29 页静态排版稿 + 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；框体规则见 `docs/design/07-frame-style-rules.md` |
+| 排版稿 | **盘上 37 页**静态排版稿（成果页索引 **36 个入口**）+ 样式与元件成果页，深/浅两套主题；**C6「简介」的三维区已是真实画布**（内嵌模型检视页的嵌入模式 `?embed=1`，框体与右侧面板同款毛玻璃）；**E 组是 A5 菜单页的历史留档**（Issue #73）：A5 只保留**唯一候选 = 水平环形伪三维卡片**（`a5-menu-ring` 及其窄屏 / reduced-motion 两个视图），② 节点散射 / ③ 六边形蜂窝 / ⑦ 档案抽屉 / ⑧ 探照灯取景器**全部废案**——四个废案页**保留在盘、不删除**、逐页挂"已废弃"徽章，只作反面参照（DEC-163 / DEC-165 的 D20）；框体规则见 `docs/design/07-frame-style-rules.md` |
 | 模型检视页 | ✅ `docs/model-preview/`（审核用，DEC-96）：8 个 GLB **逐个实测通过** —— 三角面与材质名与 `content/asset-convert-report.json` 逐个一致、无 console 错误、切模型后显存回落基线（无泄漏）；**"环境与材质取哪一套"待负责人审阅后定**（见 `TODO.md` T-01 / T-02） |
 | **Info 页（产品侧）** | ✅ **左三维 + 右图文**（DEC-98，与排版稿 C6 同构）：三维由产品自持的 `web/src/viewer/ModelStage.ts` 承载（影棚 HDRI 当 IBL、无灯、画布透明、base/normal/mask **渲染期后加载** + mask→ORM）；**资产发布链已落地**（原 P1-5）：dev 由 vite 中间件直读 `content/assets/three`、build 拷进 `dist/assets/three/**`，发布清单记 `content.assets`。冒烟：`triangles=29673` 与转换报告逐个一致、材质解算 0 错误 |
 | **Principle 页（产品侧）** | ✅ **左视频 + 右说明**（DEC-99，与排版稿 C4 同构）：8 段讲解视频 **65.9 MB** 落 `content/assets/video/**`（**不进 git**），与三维资产同一套发布链（同一插件服务多棵树：`/assets/three/` + `/assets/video/`），视频另有 `_meta/index.json` 清单当**唯一判据**（缺了显示"未包含"，不打 404）；**数据只有一段视频时右栏"视频列表"整块不出现**（规则在 `web/src/domain/principle.ts`，有单测）；`.mp4` 的 MIME 与 `Range` 在 dev 中间件与壳的静态服务器都实现。冒烟：`readyState=4 1920x1080 81s`、列表 `rows=0`、右栏只有"原理说明"、console 0 错误；**壳里（打包产物）同组读数通过** |
@@ -131,7 +131,7 @@ node docs/model-preview/serve.mjs
 - **`5280` 那种"进到 `docs/ui-mockups` 起服务"的方式已经不够用了**：C6 的三维区是 iframe 内嵌检视页，
   它要取 `content/assets/three/**` 与 `web/node_modules/three` —— **必须从仓库根起服务**。
 - 排版稿：右上角可切「深色 / 亮色」，单页也可用 `?theme=light`；改过样式或页面生成器后跑
-  `node docs/ui-mockups/src/render.mjs` 重新生成（29 页 + 成果页）。
+  `node docs/ui-mockups/src/render.mjs` 重新生成（盘上 37 页 + 成果页）。
 - 模型检视页：左侧按器件列出 **8 个 GLB**（中文名取 `content/data/ProjectData.json`），点开即加载、可旋转；
   深链 `?model=<器件>/<名字>`（如 `?model=contactor/NewACContactor`）；**嵌入模式 `&embed=1`** 只留画布，
   页壳（列表 / 环境面板 / 读数）收起 —— 排版稿用的就是它。

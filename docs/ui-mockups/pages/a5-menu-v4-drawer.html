@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V4 档案抽屉 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
+  })();
+</script>
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
+
+      <header class="ui-titlebar ui-titlebar--float">
+        <div class="ui-titlebar__logo">仿</div>
+        <div class="ui-titlebar__names">
+          <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+          <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+        </div>
+        <div class="ui-titlebar__right">
+          <span class="ui-titlebar__crumb">目录</span>
+          <span class="ui-badge ui-badge--info">已完成 15 / 共 31</span><span class="ui-badge ui-badge--warn">已废弃</span><span class="ui-badge">游客</span>
+        </div>
+      </header>
+  <div class="board__body">
+
+      <div class="a5v-stage">
+        <div class="a5v-stage__head">
+          <div class="ui-h2">实验项目</div>
+          <span class="ui-badge">共 9 个（示例）</span>
+          <span class="a5v-meta" id="v4-status" role="status">抽屉全部合上 · 点抽屉头拉开才看得到内页</span>
+          <div class="ui-grow"></div>
+          <details class="a5v-details">
+            <summary>本页操作与降级口径</summary>
+            <div class="a5v-col">
+              <div class="a5v-meta">鼠标：悬停抽屉头微探（露出可读名称）；点击拉开到底，<b>再点收回</b>。可以同时拉开多格 —— 等厚让位，拉开越多其余格越挤（这是"只让位、不位移"的代价，不是位移）。</div>
+              <div class="a5v-meta">键盘：Tab = 格子顺序；<b>Enter 开合</b>；Escape 收回当前格。焦点环画在格子本体（抽屉头）上，且只在键盘模态出现 —— 鼠标点不出来。</div>
+              <div class="a5v-meta">视觉主体藏在<b>内页</b>里：--lg 进度环 + 站数 + 下一站 + 简介。静止态不显示 —— 这是本页与其它四页最大的差别，也是它静止时会退化成网格的原因。</div>
+              <div class="a5v-meta">窄屏：抽屉转竖排手风琴（.a5v4-drawer--stacked），语义不变。看形态不必拖窗口：URL 开关 <b>?view=list</b> 直接进竖排；<b>?view=wide</b> 在窄窗口下强制回横排；两个都不给时按浏览器窗口 ≤ 900px 自动判定。切主题时开关会跟着走（?theme=dark&amp;view=list）。</div>
+              <div class="a5v-meta">减少动态效果档：让位过渡归零，但「拉开」是状态不是动画 —— 点击仍能开合、内页仍可读（display 与 flex 的切换不受时长影响）。</div>
+            </div>
+          </details>
+        </div>
+        <div class="a5v-stage__body">
+          <div class="a5v4-drawer" id="v4-drawer">
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="01" aria-expanded="false" aria-controls="v4-page-01" aria-label="01 · 交流接触器 · 4 站">
+                <span class="a5v-idx">01</span>
+                <span class="a5v-name">交流接触器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <!-- 勾的内联尺寸：--sm 环用 14（契约 §3.1 原文），--lg 环放大到 20 以匹配 72px 环径 -->
+              <div class="a5v4-drawer__page" id="v4-page-01">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--done">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="0"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">4/4</span>
+                  <span class="ui-progress-ring__check"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：已完成</div>
+                  <div class="a5v-meta">简介：主回路通断控制的核心器件，按线圈电压与触点数选型。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="02" aria-expanded="false" aria-controls="v4-page-02" aria-label="02 · 热继电器 · 4 站">
+                <span class="a5v-idx">02</span>
+                <span class="a5v-name">热继电器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-02">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--done">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="0"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">4/4</span>
+                  <span class="ui-progress-ring__check"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：已完成</div>
+                  <div class="a5v-meta">简介：靠双金属片热效应做电动机过载保护。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="03" aria-expanded="false" aria-controls="v4-page-03" aria-label="03 · 时间继电器 · 4 站">
+                <span class="a5v-idx">03</span>
+                <span class="a5v-name">时间继电器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-03">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="43.98"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">3/4</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：检测</div>
+                  <div class="a5v-meta">简介：按设定延时接通或分断控制回路。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="04" aria-expanded="false" aria-controls="v4-page-04" aria-label="04 · 主令电器 · 4 站">
+                <span class="a5v-idx">04</span>
+                <span class="a5v-name">主令电器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-04">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="87.97"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">2/4</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：原理</div>
+                  <div class="a5v-meta">简介：按钮、行程开关等发出操作指令的器件。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="05" aria-expanded="false" aria-controls="v4-page-05" aria-label="05 · 熔断器 · 4 站">
+                <span class="a5v-idx">05</span>
+                <span class="a5v-name">熔断器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-05">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="87.97"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">2/4</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：结构</div>
+                  <div class="a5v-meta">简介：短路时熔体熔断，切断故障电流。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="06" aria-expanded="false" aria-controls="v4-page-06" aria-label="06 · 断路器 · 4 站">
+                <span class="a5v-idx">06</span>
+                <span class="a5v-name">断路器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-06">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="175.93"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">0/4</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">4 站 · 下一站：简介</div>
+                  <div class="a5v-meta">简介：可手动分合，兼做过载与短路保护。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="07" aria-expanded="false" aria-controls="v4-page-07" aria-label="07 · 速度继电器 · 3 站">
+                <span class="a5v-idx">07</span>
+                <span class="a5v-name">速度继电器</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-07">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="175.93"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">0/3</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">3 站 · 下一站：简介</div>
+                  <div class="a5v-meta">简介：按转速反转实现反接制动。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="08" aria-expanded="false" aria-controls="v4-page-08" aria-label="08 · 组合开关 · 3 站">
+                <span class="a5v-idx">08</span>
+                <span class="a5v-name">组合开关</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-08">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="175.93"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">0/3</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">3 站 · 下一站：简介</div>
+                  <div class="a5v-meta">简介：多档位旋转切换多路电路。</div>
+                </div>
+              </div>
+            </div>
+            <div class="a5v4-drawer__slot">
+              <div class="a5v4-drawer__head a5v5-focusable" tabindex="0" role="button" data-idx="09" aria-expanded="false" aria-controls="v4-page-09" aria-label="09 · 综合小测验 · 1 站">
+                <span class="a5v-idx">09</span>
+                <span class="a5v-name">综合小测验</span>
+                <div class="ui-grow"></div>
+                <span data-chev="down"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span>
+                <span data-chev="up" hidden><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg></span>
+              </div>
+              <div class="a5v4-drawer__page" id="v4-page-09">
+                <div class="ui-progress-ring ui-progress-ring--lg ui-progress-ring--partial">
+                  <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle class="ui-progress-ring__track" cx="24" cy="24" r="28" fill="none" stroke-width="5"></circle>
+                    <circle class="ui-progress-ring__value" cx="24" cy="24" r="28" fill="none" stroke-width="5" stroke-dasharray="175.93" stroke-dashoffset="175.93"></circle>
+                  </svg>
+                  <span class="ui-progress-ring__num">0/1</span>
+                </div>
+                <div class="a5v-col">
+                  <div class="a5v-meta">1 站 · 下一站：测验</div>
+                  <div class="a5v-meta">简介：9 个器件的要点混合出题。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><span class="ui-badge ui-badge--warn">已废弃</span> <span class="ui-badge ui-badge--warn">上游方案 ⑦ 档案抽屉</span> 本页<b>保留在盘、不删除</b>，只作反面参照（2026-10-16 决策 DEC-165 的 D20；A5 菜单页的唯一候选已收敛为<b>水平环形伪三维卡片</b>）。已废弃的专属布局件类：<b>.a5v4-drawer</b> / <b>.a5v4-drawer__slot</b> / <b>.a5v4-drawer__head</b> / <b>.a5v4-drawer__page</b> / <b>.a5v4-drawer--stacked</b>；共用的 .ui-progress-ring 不按废案处置。<br>V4 · <b>档案抽屉</b>（对应上游方案 ⑦）· 鼠标：悬停抽屉头微探，点击拉开到底、<b>再点收回</b> · 键盘：Tab 走格子顺序，Enter 开合，焦点环画在格子本体上 · 与其它四页差别：视觉主体（--lg 进度环 + 站数 + 下一站）<b>藏在抽屉内页里，静止态根本看不到</b>，拉开才露出 —— 所以它静止时会退化成网格 · 本页不新建样式：抽屉头圆角走既有 --radius-xl，拉开只挂 .is-open（纯 flex-basis 让位，不做 JS 布局计算）。· 窄屏（竖排手风琴）形态：?view=list 直接看（?view=wide 强制回横排）。</div>
+
+  </div>
+
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>V4 · 档案抽屉 · 归属 Menu</span>
+  <span class="a5v-actions"><a href="a5-menu-v3-hex.html">← 上一页 V3</a><a href="a5-menu-v5-spotlight.html">下一页 V5 →</a></span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
+</div>
+
+<script>
+  (function () {
+    var drawer = document.getElementById('v4-drawer');
+    if (!drawer) return;
+    var slots = Array.prototype.slice.call(drawer.querySelectorAll('.a5v4-drawer__slot'));
+    var statusEl = document.getElementById('v4-status');
+    var narrowMQ = window.matchMedia ? matchMedia('(max-width: 900px)') : null;
+    // 窄屏形态开关：页面级 ?view= 优先，matchMedia(≤900px) 兜底（两侧都在 JS 里，页面内不写宽度媒体查询）
+    var viewParam = (location.search.match(/[?&]view=(list|wide)/) || [])[1] || '';
+
+    function syncStatus() {
+      if (!statusEl) return;
+      var open = [];
+      for (var i = 0; i < slots.length; i++) {
+        if (slots[i].classList.contains('is-open')) {
+          var head = slots[i].querySelector('.a5v4-drawer__head');
+          open.push(head ? head.getAttribute('data-idx') : '');
+        }
+      }
+      statusEl.textContent = open.length
+        ? ('已拉开 ' + open.length + ' 格：' + open.join('、'))
+        : '抽屉全部合上 · 点抽屉头拉开才看得到内页';
+    }
+    function setOpen(slot, on) {
+      var head = slot.querySelector('.a5v4-drawer__head');
+      var down = head ? head.querySelector('[data-chev="down"]') : null;
+      var up = head ? head.querySelector('[data-chev="up"]') : null;
+      slot.classList.toggle('is-open', on);
+      if (head) head.setAttribute('aria-expanded', on ? 'true' : 'false');
+      if (down) down.hidden = on;
+      if (up) up.hidden = !on;
+      syncStatus();
+    }
+    function toggle(slot) { setOpen(slot, !slot.classList.contains('is-open')); }
+    function headSlot(e) {
+      var t = e.target;
+      if (!t || !t.closest) return null;
+      var head = t.closest('.a5v4-drawer__head');
+      return head ? head.closest('.a5v4-drawer__slot') : null;
+    }
+
+    // 鼠标：点抽屉头拉开／再点收回（只认抽屉头，点内页不会误收）
+    drawer.addEventListener('click', function (e) {
+      var slot = headSlot(e);
+      if (slot) toggle(slot);
+    });
+    // 键盘：Tab = 格子顺序；Enter 开合；Escape 收回当前格
+    drawer.addEventListener('keydown', function (e) {
+      var slot = headSlot(e);
+      if (!slot) return;
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(slot); }
+      else if (e.key === 'Escape') { setOpen(slot, false); }
+    });
+
+    // 窄屏：竖排手风琴（语义不变，拉开态照旧只挂 .is-open）
+    function isNarrowView() {
+      if (viewParam === 'list') return true;
+      if (viewParam === 'wide') return false;
+      return !!(narrowMQ && narrowMQ.matches);
+    }
+    function applyNarrow() {
+      drawer.classList.toggle('a5v4-drawer--stacked', isNarrowView());
+    }
+    applyNarrow();
+    // 切主题时把 ?view= 带过去，否则一点"深色"就把竖排形态丢了
+    if (viewParam) {
+      var themeLinks = document.querySelectorAll('.theme-switch a');
+      for (var n = 0; n < themeLinks.length; n++) {
+        themeLinks[n].setAttribute('href', themeLinks[n].getAttribute('href') + '&view=' + viewParam);
+      }
+    }
+    if (narrowMQ) {
+      if (narrowMQ.addEventListener) narrowMQ.addEventListener('change', applyNarrow);
+      else if (narrowMQ.addListener) narrowMQ.addListener(applyNarrow);
+    }
+
+    // 初始：全部合上（"打开"是用户动作）—— 与 HTML 里写死的 aria-expanded / 箭头方向保持一致
+    for (var i = 0; i < slots.length; i++) setOpen(slots[i], false);
+  })();
+</script>
+</body>
+</html>

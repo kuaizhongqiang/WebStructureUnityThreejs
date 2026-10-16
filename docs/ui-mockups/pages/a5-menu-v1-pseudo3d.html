@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V1 伪三维卡片滚动 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
+  })();
+</script>
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
+
+  <header class="ui-titlebar ui-titlebar--float">
+    <div class="ui-titlebar__logo">仿</div>
+    <div class="ui-titlebar__names">
+      <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+      <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+    </div>
+    <div class="ui-titlebar__right">
+      <span class="ui-titlebar__crumb">目录</span>
+      <span class="ui-badge ui-badge--info">已完成 15 / 共 31</span>
+      <span class="ui-badge">游客</span>
+    </div>
+  </header>
+
+  <div class="board__body">
+    <div class="a5v-stage">
+      <div class="a5v-stage__head">
+        <div class="ui-h2">实验项目</div>
+        <span class="ui-badge">9 个项目 · 示例数据</span>
+        <span class="a5v-meta" id="a5v1-status" role="status"></span>
+        <div class="ui-grow"></div>
+        <details class="a5v-details">
+          <summary><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg>怎么操作 / 本页口径</summary>
+          <div>鼠标：滚轮或横向拖拽换居中位；悬停微抬；点击进入。键盘：Tab 逐张遍历，←/→ 移焦点（被选中的卡自动落到居中位），Enter 进入。三类反馈：悬停＝描边变主色 + 微抬；居中＝主色描边 + accent 底 + 光晕；进入＝一次短暂推进 + 顶部回执文案。位置只编码「当前在看哪张」，不编码先后与强弱。看形态不必拖窗口：URL 开关 <b>?view=list</b> 直接进扁平形态，<b>?view=wide</b> 在窄窗口下强制回伪三维；两个都不给时按窗口 ≤900px 自动判定（切主题时开关会跟着走）。</div>
+        </details>
+        <div class="a5v-actions">
+          <button class="a5v-iconbtn" type="button" id="a5v1-prev" aria-label="上一张卡片">
+            <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+          </button>
+          <button class="a5v-iconbtn" type="button" id="a5v1-next" aria-label="下一张卡片">
+            <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(180 12 12)"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></g></svg>
+          </button>
+        </div>
+      </div>
+      <div class="a5v-stage__body">
+        <div class="a5v1-axis" id="a5v1-axis">
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--done">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="0"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">4/4</span>
+                <span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">01</span>
+              <div class="a5v-col">
+                <span class="a5v-name">交流接触器</span>
+                <span class="a5v-meta">4 站 · 下一站：已完成</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--done">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="0"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">4/4</span>
+                <span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">02</span>
+              <div class="a5v-col">
+                <span class="a5v-name">热继电器</span>
+                <span class="a5v-meta">4 站 · 下一站：已完成</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="34.56"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">3/4</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">03</span>
+              <div class="a5v-col">
+                <span class="a5v-name">时间继电器</span>
+                <span class="a5v-meta">4 站 · 下一站：检测</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="69.12"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">2/4</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">04</span>
+              <div class="a5v-col">
+                <span class="a5v-name">主令电器</span>
+                <span class="a5v-meta">4 站 · 下一站：原理</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="69.12"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">2/4</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">05</span>
+              <div class="a5v-col">
+                <span class="a5v-name">熔断器</span>
+                <span class="a5v-meta">4 站 · 下一站：结构</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">0/4</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">06</span>
+              <div class="a5v-col">
+                <span class="a5v-name">断路器</span>
+                <span class="a5v-meta">4 站 · 下一站：简介</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">0/3</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">07</span>
+              <div class="a5v-col">
+                <span class="a5v-name">速度继电器</span>
+                <span class="a5v-meta">3 站 · 下一站：简介</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">0/3</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">08</span>
+              <div class="a5v-col">
+                <span class="a5v-name">组合开关</span>
+                <span class="a5v-meta">3 站 · 下一站：简介</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="ui-tile a5v1-card a5v-enterable a5v-hoverlift a5v5-focusable" tabindex="0">
+            <div class="a5v1-card__ring">
+              <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+                <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                  <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+                </svg>
+                <span class="ui-progress-ring__num">0/1</span>
+              </div>
+            </div>
+            <div class="a5v-row">
+              <span class="a5v1-card__idx">09</span>
+              <div class="a5v-col">
+                <span class="a5v-name">综合小测验</span>
+                <span class="a5v-meta">1 站 · 下一站：测验</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="a5v1-hint">
+            <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg>
+            <span id="a5v1-hint-text">滚轮 / 拖拽换居中位 · ←/→ 移焦点 · Enter 进入</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="note">V1 · <b>伪三维卡片滚动</b>（对应上游方案 ①）· 鼠标：滚轮 / 横向拖拽换居中位，悬停微抬，点击进入 · 键盘：←/→ 移焦点（该卡自动落到居中位），Enter 进入 · <b>与其它四页差别：</b>纵深只表示「离焦点多远」，位置只表示「当前在看哪张」，都不编码先后与强弱 · 窄屏 / 静态降级（<b>?view=list</b> 直接看；<b>?view=wide</b> 在窄窗口下强制回宽屏；都不给则按窗口 ≤900px 自动判定；「减少动态效果」档同样套扁平）：纵深归零、改纵向单列（<b>.a5v1-axis--flat</b>），仍可进入项目</div>
+  </div>
+
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>V1 · 伪三维卡片滚动 · 归属 Menu</span>
+  <span><a href="a5-menu-v2-scatter.html">下一页 · V2 节点散射</a></span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
+</div>
+
+<script>
+  (function () {
+    'use strict';
+    var axis = document.getElementById('a5v1-axis');
+    if (!axis) return;
+    var cards = Array.prototype.slice.call(axis.querySelectorAll('.a5v1-card'));
+    if (!cards.length) return;
+
+    var status = document.getElementById('a5v1-status');
+    var hintText = document.getElementById('a5v1-hint-text');
+    var idxText = cards.map(function (c) {
+      var el = c.querySelector('.a5v1-card__idx');
+      return el ? el.textContent.replace(/\s+/g, '') : '';
+    });
+    var names = cards.map(function (c) {
+      var el = c.querySelector('.a5v-name');
+      return el ? el.textContent.replace(/\s+/g, '') : '';
+    });
+
+    var cur = 0, hoverIdx = -1, enterIdx = -1, enterTimer = null;
+    var flat = false, origin = 0, step = 0, wantLeft = 0;
+    var mqReduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    var mqNarrow = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+    // 形态开关（契约 §8.2 冻结三支）：?view=list → 强制扁平；?view=wide → 强制宽屏；都不给 → 回落 MQ。
+    var viewParam = (location.search.match(/[?&]view=(list|wide)/) || [])[1] || '';
+
+    // 扁平形态 = 纵深归零 + 纵向单列（挂 .a5v1-axis--flat，靠"换布局"而不是改时长）。
+    // 三支判定：view=list → true；view=wide → false；都不给才按窗口 ≤900px。
+    // 「减少动态效果」是并行的一支：命中就一律套扁平形态（与 view 参数互不冲突）。
+    // 页面里不写任何 CSS 媒体查询。
+    function wantFlat() {
+      if (mqReduce && mqReduce.matches) return true;
+      if (viewParam === 'list') return true;
+      if (viewParam === 'wide') return false;
+      return !!(mqNarrow && mqNarrow.matches);
+    }
+
+    // 只量一次：轴的起点（第 1 张卡的自然左沿）与相邻卡的步距；此后**一律用序号差值算 transform**，
+    // 不量矩形、不读 scrollLeft（契约 §6.1：不要每帧 getBoundingClientRect）。
+    function measure() {
+      origin = cards[0].offsetLeft;
+      step = cards.length > 1 ? (cards[1].offsetLeft - origin) : 0;
+      wantLeft = axis.clientWidth / 2 - cards[0].offsetWidth / 2;
+    }
+
+    function paint() {
+      // 整排平移量：让 cur 号卡落到居中位（序号差值 × 步距），只用 transform / opacity。
+      var dx = wantLeft - (origin + cur * step);
+      cards.forEach(function (card, i) {
+        card.classList.toggle('is-hit', i === cur);
+        card.setAttribute('aria-current', i === cur ? 'true' : 'false');
+        if (flat) return;                                 // 扁平档：纵深交给 CSS（--flat 下 transform: none !important）
+        var d = i - cur, ad = Math.abs(d), capped = Math.min(ad, 4);
+        var z = -capped * 150;                            // 近大远小：离焦点越远越推后
+        var s = 1 - capped * 0.055;
+        var o = ad > 4 ? 0.2 : Math.max(0.4, 1 - ad * 0.15);
+        var lift = i === hoverIdx ? ' translateY(-2px)' : '';   // 悬停微抬：§24.11 已不写 .a5v1-card:hover（行内值盖得掉），值同口径
+        var bump = i === enterIdx ? ' scale(1.06)' : '';        // 进入：一次短暂推进（同 .is-enter 的 1.06）
+        card.style.transform = 'translateX(' + Math.round(dx) + 'px) translateZ(' + z.toFixed(0) + 'px) scale(' + s.toFixed(3) + ')' + lift + bump;
+        card.style.opacity = o.toFixed(2);
+      });
+    }
+
+    function refresh() {
+      flat = wantFlat();
+      axis.classList.toggle('a5v1-axis--flat', flat);
+      if (hintText) {
+        hintText.textContent = flat
+          ? '纵向单列 · ←/→ 移焦点 · Enter 进入'
+          : '滚轮 / 拖拽换居中位 · ←/→ 移焦点 · Enter 进入';
+      }
+      if (!flat) measure();
+      paint();
+    }
+
+    // 键盘焦点跟随：先算位移再落焦点，被选中的卡一定在居中位（不会停在屏外）。
+    function focusCard(i, moveFocus) {
+      cur = Math.max(0, Math.min(cards.length - 1, i));
+      paint();
+      if (moveFocus) {
+        try { cards[cur].focus({ preventScroll: !flat }); } catch (e) { cards[cur].focus(); }
+      }
+    }
+
+    function enter(i) {
+      enterIdx = i;
+      paint();
+      cards[i].classList.add('is-enter');
+      if (status) status.textContent = '已进入 ' + idxText[i] + ' · ' + names[i];
+      window.clearTimeout(enterTimer);
+      enterTimer = window.setTimeout(function () {
+        cards[i].classList.remove('is-enter');
+        if (enterIdx === i) { enterIdx = -1; paint(); }
+      }, 160);
+    }
+
+    cards.forEach(function (card, i) {
+      card.addEventListener('focus', function () {
+        if (cur !== i) { cur = i; paint(); }
+      });
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); focusCard(cur + 1, true); }
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); focusCard(cur - 1, true); }
+        else if (e.key === 'Enter') { e.preventDefault(); enter(i); }
+      });
+      card.addEventListener('pointerenter', function () { hoverIdx = i; if (!flat) paint(); });
+      card.addEventListener('pointerleave', function () { if (hoverIdx === i) { hoverIdx = -1; if (!flat) paint(); } });
+      card.addEventListener('click', function () {
+        if (dragMoved > 6) { dragMoved = 0; return; }   // 这一下是"拖拽换焦点"，不要当成进入
+        cur = i; paint();
+        enter(i);
+      });
+    });
+
+    // 滚轮换焦点（一次滚动只走一格）
+    var wheelLock = false;
+    axis.addEventListener('wheel', function (e) {
+      if (flat) return;                                  // 扁平档交给原生纵向滚动
+      var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (!d) return;
+      e.preventDefault();
+      if (wheelLock) return;
+      wheelLock = true;
+      window.setTimeout(function () { wheelLock = false; }, 200);
+      focusCard(cur + (d > 0 ? 1 : -1), true);
+    }, { passive: false });
+
+    // 横向拖拽换焦点（不用 pointer capture：捕获会把卡片的 click 目标改到轴上）
+    var dragX = 0, dragging = false, dragMoved = 0;
+    axis.addEventListener('pointerdown', function (e) {
+      if (flat || e.button !== 0) return;
+      dragging = true; dragX = e.clientX; dragMoved = 0;
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      dragMoved = Math.max(dragMoved, Math.abs(e.clientX - dragX));
+    });
+    window.addEventListener('pointerup', function (e) {
+      if (!dragging) return;
+      dragging = false;
+      var dx = e.clientX - dragX;
+      if (Math.abs(dx) > 60) { focusCard(cur + (dx < 0 ? 1 : -1), false); dragMoved = 99; }
+    });
+    window.addEventListener('pointercancel', function () { dragging = false; });
+
+    // 横向裁切由样式表负责（components.css §24.2：.a5v1-axis 的 overflow-x 收成 hidden ——
+    // transform 定位的排布不需要原生滚动条，且焦点位移会让滚动条反复出现/消失带来布局抖动）。
+    // 页面只负责一件事：把浏览器的"聚焦即滚入视野"造成的程序化滚动归零，免得把排布带偏。
+    axis.addEventListener('scroll', function () {
+      if (axis.scrollLeft !== 0) axis.scrollLeft = 0;
+    }, { passive: true });
+
+    var prevBtn = document.getElementById('a5v1-prev');
+    var nextBtn = document.getElementById('a5v1-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { focusCard(cur - 1, true); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { focusCard(cur + 1, true); });
+
+    if (mqReduce) {
+      if (mqReduce.addEventListener) mqReduce.addEventListener('change', refresh);
+      else if (mqReduce.addListener) mqReduce.addListener(refresh);
+    }
+    if (mqNarrow) {
+      if (mqNarrow.addEventListener) mqNarrow.addEventListener('change', refresh);
+      else if (mqNarrow.addListener) mqNarrow.addListener(refresh);
+    }
+
+    // 切主题时把 ?view= 带过去（list 与 wide 都要带），否则点一下「深色」就把形态丢了
+    if (viewParam) {
+      var themeLinks = document.querySelectorAll('.theme-switch a');
+      for (var ti = 0; ti < themeLinks.length; ti++) {
+        themeLinks[ti].setAttribute('href', themeLinks[ti].getAttribute('href') + '&view=' + viewParam);
+      }
+    }
+
+    window.addEventListener('resize', refresh);
+    window.addEventListener('load', refresh);
+
+    refresh();
+    focusCard(0, false);
+  })();
+</script>
+</body>
+</html>
