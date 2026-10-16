@@ -91,7 +91,7 @@
 | 1.67 | **Web 主题同步到 Unity + 结构站三维区背景口径定案**（2026-10-16，DEC-159 / DEC-160，Issue #69 / #65） | ① **契约**：新桥消息 `ui:set-theme`（Web→Unity 组末尾追加，载荷 `{ theme: "dark" \| "light" }`），三处同批，桥消息总数 27 条；取值两侧各留镜像常量（`bridge-payloads.ts` 的 `BridgeTheme` ←→ 新增 `Contracts/ThemeKind.cs` —— 放 Contracts 是因为消费端 `CameraBg` 在 Core，Core 不能引用 Web 层）。② **Web**：`UnitySession.setTheme()` 幂等 + **握手前只记不发、握手后补发**（Unity 侧材质默认深色板，亮色页面不补发会看到反色）；触发点用现成 `theme` ref，`TaskView.vue` watch + 挂载补一次，`shell/theme.ts` 零改动；单测 +3。③ **Unity**：`WebBridgeBehaviour.Dispatch` 新 case → `EventBus<ThemeChangedEvent>` → `CameraBg.ApplyTheme()` 换 `sharedMaterial` 并同步自身缓存的 `material`；认不出的主题 / 缺材质**只告警**、保持原材质；EditMode +1。④ **材质**：新增 `Assets/Materials/Background/CamBgGradientLight.mat`（中心 `#f8fafc` / 边缘 `#cfd8e3`，取页面亮色令牌 `--bg-2` / `--bg-0`），两枚材质走 **prefab 序列化引用**。⑤ **背景口径（DEC-160）**：三维区背景 = 相机子物体 `BgPlate`（内置 Quad，local `z = 10`，不透明 unlit 径向渐变板）；"距离 10"的依据为 **Play 实测** —— 取景由**器件预制体自带的 Cinemachine vcam** 决定（8 个结构件预制体同为 local `(0, 1.08, -4.66)`，priority 10），相机到模型 ≈ **4.78**，模型沿视线 4.46 / 5.20 ⇒ 板子在模型**后面**约 5 个单位，不挡模型（截图核对）。⑥ **顺带更正**：`docs/design/11` §5 的"未检出 `CinemachineBrain`"改为实测结论（预制体按 GUID 存脚本，按文本搜字样必然 0 命中）；`README` §3 修正 DEC 范围与设计文档篇数两处漂移。**范围外**：主题切换**入口**（产品现状 `toggleTheme()` 无调用方）；本次不新增样式令牌/组件类，故 `docs/ui-mockups/index.html` 无需变动。**仍开放**：#65 第 2 问（页面是否给视口铺底色）与第 3 问（与 #59 交付态的关系），已写进 DEC-160 的"仍开放" | **PR #70**（squash 进 main `579e376`）；CI 两门禁 pass（**契约与资产 11s / Web 构建与渲染冒烟 2m2s**）；本地 hook 五道全过；`check-contracts` 27 条三方一致；Unity **EditMode 79/79**；**Play 实测**：`切换前=CamBgGradient` → 收到 `light` → `CamBgGradientLight`，再收未知主题 `high-contrast` ⇒ 材质不变且 Console 只有一条告警；web `lint` / `format:check` / `typecheck` / vitest **135 passed** / `build` 全过；Plastic **cs:31 → cs:32**（同批 20 项，注释中文正常）；Issue #69 / #65 随本次关闭 |
 | 1.68 | **Issue 批量收口：D-13 关闭 + D-20 / D-21 两条"不做"**（2026-10-16，DEC-161 / DEC-162，Issue #34 / #35 / #36） | ① **#34（D-13 结构任务初始化）关闭**：复核后三项其实**都在位** —— **相机就位**由**器件预制体自带的 Cinemachine vcam** 决定（8 个预制体同为 local `(0, 1.08, -4.66)`，priority 10，Play 实测相机世界位姿 = vcam 位姿）；**交互闸门** `InputGate` 在位且**已接线**（`TaskFlowManager` 订阅 `input:enable` / `runtime:resume` 设闸门，`InteractiveManager` / `InteractiveObjBase.CanInteract` / `StepManager.Update` / `InputControllerBase` 四处消费）；**高亮初始化**走 `StructureObj.Awake → HighlightInit()`（profile `Highlight`）+ `view:focus → InteractiveManager.OnViewFocus → SetHighlight`。Play 旁证：`[Structure] contactor_structure_model 已实例化并开始执行步骤（共 12 步）`、`已上报部件清单：10 条（scene:parts）`；**真产物上逐条判归 #37**。② **#35（D-20 相机背景板取图入口）关闭：不做**（DEC-161）—— 结构站背景已改**程序化径向渐变板**（DEC-160），双纹理口径无消费方；搬运产物原样留存、`LoadBgTextures()` 保持桩；`design/12` §9 的"背景包"从此**不欠**。③ **#36（D-21 操控层实机验收）关闭：本期不做**（DEC-162）—— **D-19 那半已有结论**（Play 实测 Brain 在位生效、场景内那台 vcam 来自器件预制体；DEC-142 的"未检出"据此更正，原因是预制体按 GUID 存脚本），**D-21 本体未做**（实测场景内 `FocusRotationControl` / `InputControllerBase` 实例数**均为 0**）。④ **#40 保留（不关）**：d StepManager 挂场景**已闭合**（口径改为器件预制体自带步骤子树）、e 成绩体系**未做**（`StepManager.cs:723` `float score = 0f`）、c 连线手感**部分**（`LineConnectBoard` 只把已配对两端画线、线跟随端点，**没有**临时线跟随 / 吸附容差 / 错误提示：`Core/Steps` 搜 `吸附\|容差\|snap\|Tolerance` 0 命中）、f 动画手感复核**未做**。⑤ 文档更正：`design/12` §9 第 1 / 6 条（"背景包遗留"→"有意不做"；"三项未接"→"已闭合"）、`design/11` §5 第 2 条（"没接"→"拍板不做"） | **PR #72**（纯文档）；Issue **#34 / #35 / #36 关闭**（各附核对结论与证据）、**#40 保留**（附复核评论）。备注：本次提交期间工作区里有另一会话在飞的 #60 改动（`web/vite.config.ts` 等），本地 hook 两度被其文件挂住（typecheck、prettier），等其修好后按正常门禁提交，未夹带进本批 |
 | 1.69 | **dev / 暂存链补齐产物指纹 `treeSha256`：重建后不再复用旧 `.data`**（2026-10-16，Issue #60） | 负责人报的现象（2026-10-15 实测）：「重新构建 Unity → 重新暂存 → 重启 dev 服务后，浏览器**仍可能跑上一版场景**，要靠清站点数据（IndexedDB）才拿到新包」。**机制（逐段读代码确认）**：`webGLDataCaching = 1` ⇒ Unity 按 **`.data` 的 URL** 把包存进 IndexedDB；加载器 `resolveUrls()` 本来就会拼 `?v=<指纹前 12 位>`，但 `unity-stage.mjs` 写 `unity/builds/manifest.json` 时**没有** `treeSha256` 字段（只有逐文件 `sha256` + `fileCount`/`totalBytes`/`stagedAt`），dev 中间件只是如实转述 ⇒ 指纹拿不到 ⇒ URL 不变 ⇒ 命中旧缓存（`design/06` §3② 那条坑在 dev 链上没被规避）。**落点 = Issue 里的方案 A（暂存脚本补写），并把"算法只有一份"落成模块**：① 新增 `tools/pipeline/lib/tree-hash.mjs` 的 `treeSha256(dir, files, readFileImpl?)`（路径排序 + `update(相对路径)` + `update(单文件 sha256)`，与 `pack.mjs` 的 `treeHash` **逐位一致**）+ `node --test` 单测 9 项（确定性 / 改一字节即变 / 增删文件即变 / 入参顺序无关 / 路径参与身份 / 与 pack 口径同值）；② `unity-stage.mjs` 每个 build 条目写 `treeSha256`（字段上写明"这是 `?v=` 的唯一来源"），摘要多打一行指纹；③ 新增 `web/src/unity/release-manifest.ts`：暂存清单 → 发布清单的合成（`normalizeBuilds` 两代 `taskTypes` 兼容口径）+ **指纹新鲜度判定**（`isTreeFingerprintFresh`：文件数 / 总字节 / 逐文件字节与哈希，**绝不为此重算整树**）+ 兜底复算（`resolveTreeFingerprints`：新鲜 ⇒ 零重算复用清单值，不新鲜/缺失 ⇒ 按同一算法现算）；哈希原语与文件系统都由调用方注入，**产品源码目录不依赖任何 `node:*`**；④ `vite.config.ts` 的 dev 中间件接线：注入 `node:fs`/`node:crypto`，加**廉价签名缓存**（清单 `mtimeMs` + 声明字段 + 产物目录的**路径 + 大小 + mtime** 签名 ⇒ 重新暂存必复核、绕过暂存脚本换产物也必复核，代价约 80 次 `stat`/8ms），指纹缺失时**不静默**（留 warn）；④b **按负责人 2026-10-16 指示把"等长改写"这条堵死**：产物只由**受控流程**产生（Unity 编辑器菜单/构建脚本、`unity-stage.mjs` 先删目录再整份拷回），每次都会重写文件 ⇒ **mtime 必变**，所以签名并入 mtime 后，"内容变了但大小没变、又没重新暂存"也能被发现；签名只决定"要不要复核"，**真判据仍是逐文件哈希**（内容逐字节相同 ⇒ 照旧复用旧指纹，不白换 URL）；签名算法抽成 `release-manifest.ts` 的 `devTreeSignature(files, filePath, fs, createHash)`（可单测），`FingerprintFs` 增加可选 `mtimeMs`；⑤ 桩构建补一次真实 `.data` 请求并把实际 URL 记进 `window.__WSU3_STUB_DATA_URL__`（否则"页面到底发了哪条请求"只能靠人看 Network 面板）；⑥ 新增 `web/tools/verify-unity-fingerprint.mjs`（`npm run verify:fingerprint`，根目录有转发脚本）作为机器可读验收探针；⑦ 文档同批：`design/05` 新增 **§3.5「产物指纹从哪来（三条链必须同值）」**、`design/06` §3② 补 dev/暂存链口径、`README` §3/§4、`unity/builds/README.md`、`docs/TODO.md` 举例；⑧ 工具侧 `node:test` 进合并门禁（根 `package.json` 的 `test:tools` + `gate.yml` 一步 + 本地 hook 第 5 步，hook 由 5 步扩为 6 步）**范围外**：真 Unity 侧产物未重出（`unity/builds/main` 仍是既有那份 37 文件 / 86.6 MB，只是重新暂存了一次把指纹写进清单）；Unity 侧脚本/场景未动 ⇒ **不走 Plastic 渠道** | **验收三条逐条有证据（均不需要清站点数据）**：① 重暂存后真产物清单 `treeSha256 = 64131cad419e80c3d8d46b8ef66a96092d729cb0336bb28e6f29fc813e6bdde2`，与 `pack.mjs` 自己打印的 `64131cad419e…` **逐位相同**（暂存链 / 发布链同值）；② **真浏览器**探针 `npm run verify:fingerprint` **10/10 PASS**：`/unity/main/Build/stub-main.data?v=665b35cac60d`（= dev 合成清单里的指纹前 12 位）；③ 重暂存一版**内容不同**的包后刷新 ⇒ URL 换成 `?v=ac83230b904d`（两版 URL 不同 ⇒ IndexedDB 按新 URL 落新条目）；④ **同尺寸变体**（`make-stub-unity.mjs --variant` 写定长标记 ⇒ 逐文件字节 / 总字节完全相同、只有内容不同）⇒ 指纹与 `?v=` **都必须换**（`4d1a0d8723fa → 32df0234feae`）；⑤ 只把整棵树的 **mtime 统一拨到过去**（内容逐字节相同）⇒ 复核后**仍报同一指纹、`.data` URL 不变**（既不误报"内容变了"，也不白下载 86 MB）。另：同一份产物重跑暂存指纹不变、改一字节后变（`f1b7ba091d1d…`）；`node tools/pipeline/unity-verify.mjs` 通过；工具侧 **9/9**、web **vitest 168 passed（12 files）**、`typecheck` / `lint` / `format:check` / `build` / `npm run smoke`（全量冒烟，含 Unity 站交互与过渡）全过；仓库四道门禁（契约 27 条 / 内容数据双份 / 大文件 / 壳耦合）通过 | **PR #76**（分支 `fix/unity-stage-tree-sha256`：实现提交 `a442dde` + **签名补强提交 `8894291`**；本记录行的提交见该分支 git log）；**CI 两门禁 pass（契约与资产门禁 10~12s / Web 构建与渲染冒烟 1m27s~1m40s，多次运行均 pass，含带本记录行的那次）**；本地 pre-commit **六道全过**（含新加的工具侧单测）；Issue #60 随 PR 关闭。⚠️ **过程记录**：本 PR 文档链上有一次自伤（用 GitHub 文件接口做定点替换，实际是整文件覆盖，`docs/RECORD.md` 一度被写成 11 字节），随即用本地完好副本 force-push 覆盖恢复；**恢复判据 = 本地与远端 blob 哈希一致 + `git diff origin/main HEAD -- docs/RECORD.md` 只有 `+1` 行（无内容丢失）**，教训与细节见 PR #76 的评论 |
-| 1.70 | **A5 菜单页方案收敛落地：唯一候选 = 水平环形伪三维卡片（三视图 + 产品对齐）**（2026-10-16，DEC-163 ~ DEC-166，Issue #73 / T1；提交号与 PR 号见本批 PR（交付阶段回填）） | ① **方案收敛**：五个候选（①伪三维卡片滚动 / ②节点散射 / ③六边形蜂窝 / ⑦档案抽屉 / ⑧探照灯取景器）收敛为**唯一候选 = 水平环形伪三维卡片**，②③⑦⑧ 四个废案页**保留在盘不删**、逐页挂「已废弃」徽章 + `.note` 处置说明（**未借用 `.todo-mark`**，那是"待重做"语义）；② **样式**：`components.css` 新增 **§26**（`.a5r-*` 全套，**纯新增**，既有 37 页类名与取值一个未动 —— FRZ-18 实测 **0 删除行**）+ **§24** 五案历史留档（段注写明"不删不改、新代码不得复用 `.a5v1-*`~`.a5v5-*`"，仅 `.ui-progress-ring` 是五页共用件、环形页继续消费）+ **§25** 探照灯压暗层令牌（`.a5v5-spot` 的斑外压暗，走 `--scrim-rgb` / `--scrim-mid` / `--scrim-strong`）；`tokens.css` 同批补 `--dur-page: 160ms`（`:411`）与三枚 scrim 令牌（深/浅两套；§26.8 的 `160ms` `!important` 字面值就是它的镜像）；③ **三个手写页 + 五个手写页登记**：`a5-menu-ring.html`（桌面水平环）/ `-narrow.html`（窄屏垂直环）/ `-reduced-motion.html`（豁免档），`render.mjs` 的 `handWrittenPages` 登记 **V1~V5**（含四个废案）；④ **契约**：`design/13` 重写为**方案文档**（唯一候选 v1 = 水平环形伪三维卡片、②③⑦⑧ 列入"已否决方向·勿再提"、参数以保留追溯为准），新增 `design/14`（几何 / 档位表 / 交互 / 键盘 / DOM 与类名 / §12 验收判据 / 逐页骨架）并**只增不改**追加**附 B**（三处实现偏差登记：§4.5 三套数值互不相容、§4.3 表 `k=4` 算错、§10.4 变量名与新增项）、**附 C**（负责人真机反馈后的四处调整）、**附 D**（手感定稿 + 开场旋转），**正文条款一字未动**；`DECISIONS.md` §33 落 **DEC-163**（只留一个候选 + 废案处置）/ **DEC-164**（reduced-motion 时长豁免）/ **DEC-165**（第三批细节口径 D13~D22）/ **DEC-166**（目录 = 并列展示 + 筛除线，长期规则）；⑤ **成果页（生成物，禁手改）**：新增「**十三、A5 环形菜单**（唯一候选）」节（`src/spec-ring.mjs` → `styleSpecSectionsRound4`）+ **E 组「历史留档」（5 个入口）与「现役」（3 个视图）**分列，round3 节标题改「A5 菜单页**历史留档**」；`src/pages-ab.mjs` 摘除 A5 现状页（15 → 14 条）、`src/style-spec.mjs` 索引同步摘除；⑥ **产品对齐**：`web/src/views/MenuView.vue` 网格换环，**同一套 `.a5r-*`**（产品 import 的 `tokens.css` + `components.css` 与排版稿同一份）；两条有意差异（形态只跟随系统偏好、无页内开关；环高由祖先给 `--a5r-ring-height`、锚点 `--a5r-top`）已在 §26.1 与 `MenuView.vue` 注释写明。**如实登记**：§2.4 的**触控真机与性能读数两项未测**，§2.5 的三条已知落差（A5 工具条产品侧不加 / reduced-motion 豁免的实际可见行为 / `.a5r-ring` 定位用语与 §10.3 字面不同）与「改这个文件前先读」清单，处置留负责人；§5.5 另附两条**交付阶段口径澄清** | `§12 判据 20/20`（脚本 `.tmp-a5-verify/audit-v12.mjs` / 读数 `v12-audit.json`）；三页 `errors=0`、焦点卡中心 **cy=454 / cx=960**、卡尺寸 360×420、9 张卡常驻 DOM、**无滚动条**；静止态档位表**逐条等于契约 §5.2/§5.3**（`scale 1/.85/.72/.61/.58` · `blur 0/2/4/6/6px` · `opacity 1/.72/.44/.28/.28` · `z 500/400/300/200/100`）与承轴露出宽度（P1/P3 `360/217/178.5/104.9/20.7`；P2 承轴纵向 `420/212.5/174.6/101.6/19.8`）；**开场落位环序 1**（转约 1 圈 / 1900ms / ease-out，不挂 `.is-snapping`、减少动态效果档跳过、用户一碰即中止）；**拖拽连续**（8px 细步长扫过整个环 ⇒ **>100px 的单步位移 0 次**）且方向 = 契约 §7.2 的 `−dx`（拖左 ⇒ 环序递增）；键盘环闭合 `[3,2,1,0,8]`、↑/↓ = `7/8`；产品侧 `vue-tsc` / `eslint` / **177 测试** / `vite build` **全过**；生成器**逐字节可复现**；成果页索引 **0 死链**（`check-index-links.mjs`）。**issue 处置见 §6.2**（#73 可关闭、#74 / #75 / #31 / #30 保持 open），**提交号与 PR 号见本批 PR（交付阶段回填）** |
+| 1.70 | **A5 菜单页方案收敛落地：唯一候选 = 水平环形伪三维卡片（三视图 + 产品对齐）**（2026-10-16，DEC-163 ~ DEC-166，Issue #73 / T1；提交 ① 75703c6 / ② b9a4765 / ③ e666c60 / ④ 0aed752（四条为**改写后**的 sha；产品侧原提交 14509da 已从本批历史移除、留痕 tag `a5-web-ring-wip`，见 §5.8）；PR #95（分支 ship/a5-menu-ring）） | ① **方案收敛**：五个候选（①伪三维卡片滚动 / ②节点散射 / ③六边形蜂窝 / ⑦档案抽屉 / ⑧探照灯取景器）收敛为**唯一候选 = 水平环形伪三维卡片**，②③⑦⑧ 四个废案页**保留在盘不删**、逐页挂「已废弃」徽章 + `.note` 处置说明（**未借用 `.todo-mark`**，那是"待重做"语义）；② **样式**：`components.css` 新增 **§26**（`.a5r-*` 全套，**纯新增**，既有 37 页类名与取值一个未动 —— FRZ-18 实测 **0 删除行**）+ **§24** 五案历史留档（段注写明"不删不改、新代码不得复用 `.a5v1-*`~`.a5v5-*`"，仅 `.ui-progress-ring` 是五页共用件、环形页继续消费）+ **§25** 探照灯压暗层令牌（`.a5v5-spot` 的斑外压暗，走 `--scrim-rgb` / `--scrim-mid` / `--scrim-strong`）；`tokens.css` 同批补 `--dur-page: 160ms`（`:411`）与三枚 scrim 令牌（深/浅两套；§26.8 的 `160ms` `!important` 字面值就是它的镜像）；③ **三个手写页 + 五个手写页登记**：`a5-menu-ring.html`（桌面水平环）/ `-narrow.html`（窄屏垂直环）/ `-reduced-motion.html`（豁免档），`render.mjs` 的 `handWrittenPages` 登记 **V1~V5**（含四个废案）；④ **契约**：`design/13` 重写为**方案文档**（唯一候选 v1 = 水平环形伪三维卡片、②③⑦⑧ 列入"已否决方向·勿再提"、参数以保留追溯为准），新增 `design/14`（几何 / 档位表 / 交互 / 键盘 / DOM 与类名 / §12 验收判据 / 逐页骨架）并**只增不改**追加**附 B**（三处实现偏差登记：§4.5 三套数值互不相容、§4.3 表 `k=4` 算错、§10.4 变量名与新增项）、**附 C**（负责人真机反馈后的四处调整）、**附 D**（手感定稿 + 开场旋转），**正文条款一字未动**；`DECISIONS.md` §33 落 **DEC-163**（只留一个候选 + 废案处置）/ **DEC-164**（reduced-motion 时长豁免）/ **DEC-165**（第三批细节口径 D13~D22）/ **DEC-166**（目录 = 并列展示 + 筛除线，长期规则）；⑤ **成果页（生成物，禁手改）**：新增「**十三、A5 环形菜单**（唯一候选）」节（`src/spec-ring.mjs` → `styleSpecSectionsRound4`）+ **E 组「历史留档」（5 个入口）与「现役」（3 个视图）**分列，round3 节标题改「A5 菜单页**历史留档**」；`src/pages-ab.mjs` 摘除 A5 现状页（15 → 14 条）、`src/style-spec.mjs` 索引同步摘除；⑥ **产品对齐**：`web/src/views/MenuView.vue` 网格换环，**同一套 `.a5r-*`**（产品 import 的 `tokens.css` + `components.css` 与排版稿同一份）；两条有意差异（形态只跟随系统偏好、无页内开关；环高由祖先给 `--a5r-ring-height`、锚点 `--a5r-top`）已在 §26.1 与 `MenuView.vue` 注释写明。**如实登记**：§2.4 的**触控真机与性能读数两项未测**，§2.5 的三条已知落差（A5 工具条产品侧不加 / reduced-motion 豁免的实际可见行为 / `.a5r-ring` 定位用语与 §10.3 字面不同）与「改这个文件前先读」清单，处置留负责人；§5.5 另附两条**交付阶段口径澄清** | `§12 判据 20/20`（脚本 `.tmp-a5-verify/audit-v12.mjs` / 读数 `v12-audit.json`）；三页 `errors=0`、焦点卡中心 **cy=454 / cx=960**、卡尺寸 360×420、9 张卡常驻 DOM、**无滚动条**；静止态档位表**逐条等于契约 §5.2/§5.3**（`scale 1/.85/.72/.61/.58` · `blur 0/2/4/6/6px` · `opacity 1/.72/.44/.28/.28` · `z 500/400/300/200/100`）与承轴露出宽度（P1/P3 `360/217/178.5/104.9/20.7`；P2 承轴纵向 `420/212.5/174.6/101.6/19.8`）；**开场落位环序 1**（转约 1 圈 / 1900ms / ease-out，不挂 `.is-snapping`、减少动态效果档跳过、用户一碰即中止）；**拖拽连续**（8px 细步长扫过整个环 ⇒ **>100px 的单步位移 0 次**）且方向 = 契约 §7.2 的 `−dx`（拖左 ⇒ 环序递增）；键盘环闭合 `[3,2,1,0,8]`、↑/↓ = `7/8`；产品侧 `vue-tsc` / `eslint` / **177 测试** / `vite build` **全过**；生成器**逐字节可复现**；成果页索引 **0 死链**（`check-index-links.mjs`）。**issue 处置见 §6.2**（#73 可关闭、#74 / #75 / #31 / #30 保持 open），**提交 ① 75703c6 / ② b9a4765 / ③ e666c60 / ④ 0aed752（四条为**改写后**的 sha；产品侧原提交 14509da 已从本批历史移除、留痕 tag `a5-web-ring-wip`，见 §5.8）；PR #95（分支 ship/a5-menu-ring）**；**交付阶段收口**：本行的提交号与 PR 号已按交付阶段回填，回填口径与另两处更正见 **§5.5 / §5.6**（残留字样数量更正、`design/13` 指代更正、`DECISIONS.md` §33 标题范围更正） |
 > **契约 §13.3 说的「出数即伪造」到此结束：数由实现阶段实测补齐。** 本节（含 §2 的三条结论、§3 的 20/20、§4 的未测声明）就是那一句的兑现：
 > 设计阶段（`design/14` §13.3）明确"本阶段无浏览器可测，出数等于伪造"；现在有了真 Chromium 的读数，逐个补在这里，并**如实标出仍没测的那两项**。
 
@@ -306,6 +306,116 @@
 - **以本条为准**：附 C-4 已把豁免**真正落到** `.a5r-card` 上（加 `transition-duration: var(--dur-page) !important`）⇒ **吸附 160ms 不再被 §20.6 的全局兜底 `*{transition-duration:.01ms!important}` 压掉**，即**该豁免现在是生效的**（落地口径：只改落点、不动 §20.6 与 V-S 的具名选择器 `.a5r-track.a5r--motion`，故 `§12 V-S` 仍 20/20 通过）。
 - **如实写明（不夸大）**：**本条为文档口径更正，交付阶段未再在真浏览器 / 真机复测该档手感** —— 没有为该条重跑 `prefers-reduced-motion` 档的观感读数。**RECORD §2.4 的「未测两项」（触控真机 / 性能数值）仍然成立**，本条不构成对它们的补充，也不改变 §5.3 定稿实测表的适用范围。
 
+**C-3 残留字样的数量更正：「五方案 0 处」这句话只在字面口径上成立**
+
+- **不改上文**：§4 末段那句「成果页 `index.html` **0 处** ✓」**原样保留**，本节只在它旁边说清检索词口径 —— 那句子说的是**当时的检索词**。
+- **前半句成立（按当时那个检索词）**：「**五方案**」这个词在成果页 `index.html` 与 `components.css` 里确实 **0 处**（`components.css:1122` 的 §24 段注按裁决改写成「五方案新增样式（历史留档）」，保留了"五方案"这一历史叙述词）。
+- **但「五个方案」这一措辞仍留 4 处**（复核者实测）：
+  - `docs/ui-mockups/index.html:1220` —— **生成物**（禁手改），来源是生成器 `src/style-spec.mjs:817`；文字是 §24 历史留档那一节的说明：为了五个方案读起来一致，三类反馈在这里统一定义；
+  - `docs/ui-mockups/components.css:1412 / 1443 / 1516` —— 三条注释（`:1412` 三类反馈/五方案一致、`:1443` 五个方案的正文都放在这个容器里、`:1516` 与 24 号（五方案遗留）的关系）。
+- **本轮不动它们，理由写清**：DEC-163 ④ 要收的是**指向五方案的悬空引用**（成果页那一节 / E 组 / 页数口径），`index.html:1220` 与那三条 CSS 注释**不在该清单里** —— 它们描述的是 **§24 历史留档自身**的内容，属历史叙述。另外，`index.html` 是**生成物**，改一个字都要改生成器并重跑 `render.mjs` ⇒ 那是**新一批实现改动**，不该塞进交付阶段。
+- **收口（以本条为准）**：涉及"五方案残留"的准确说法是 —— **「五方案 = 0 处；五个方案 = 4 处（1 生成物 + 3 注释），按裁决保留」**。
+
+---
+
+### 5.6 交付阶段的两条口径更正（2026-10-16）
+
+> 性质：**只做口径更正，不改上文任何一个字**，也不改动任何决定与读数。两条都是"标题 / 指代写窄了"，**准确说法以本条为准**。
+
+**（1）§4「未动」那一格的指代有歧义**
+
+- **上文原样**：§4 末行写「`design/13`、`design/07`、`requirement/issue-73` —— 只读文档，一个字未改」。
+- **歧义在哪**：这句把三者并列成"一个字未改"，但**本轮 `design/13` 实际是被重写覆盖**的（DEC-163 自述"重写覆盖为方案文档"；见 §1 的 1.70 行 ④ 与 §6.1 的补齐行）。**且它在 git 里没有更早的基线可比对**（该文件是本轮新入 git：`+464`），所以"未改"与"重写"两种读法都说得通 —— 这正是需要说清的地方。
+- **准确说法**：本轮**未改**的是 **`design/07`** 与 **`requirement/issue-73`**（复核：`design/07` 与开工基线 `551b852` **逐字节相同**，`requirement/issue-73` 同）；**`design/13` 是本轮重写**（作为新文件入 git，`+464` 行），不是"未改"。
+
+**（2）`DECISIONS.md` §33 的小节标题范围漏了 DEC-166**
+
+- **上文原样**：`docs/DECISIONS.md` 的小节标题写「`## 33 第二十轮（2026-10-16）：A5 菜单页方案收敛（DEC-163 ~ DEC-165）`」，但该节表格内**含 DEC-166**（"目录 = 并列展示 + 筛除线"的长期规则）⇒ 标题范围漏了 166。
+- **已在本批一并更正**：标题括号内容改为 **`（DEC-163 ~ DEC-166）`**（**只改这一行的括号内容**，该节正文与表格一个字不动）。
+- **收口**：上面两条都是**标题 / 指代的口径更正**，**不涉及任何决定或读数的改变**。
+
+---
+
+### 5.7 CI 门禁读数（交付阶段实测 · 2026-10-16）
+
+> 性质：**只记事实，不修饰上文**。本条与 §5.5 / §5.6 一样是"追加说明"，不删改任何一个字。
+
+**门禁结果（PR #95）**：**「契约与资产门禁」pass（11s）**；**「Web 构建与渲染冒烟」fail（2m17s）** —— 失败三条断言原文：
+
+```
+启动流程：登录之后目录照常加载内容数据 — tiles=0
+菜单页：项目卡片 ≥ 9 个 — count=0
+坏链接之后目录仍然是完整的 — count=0
+```
+
+紧随其后的点击步骤**超时**，报错原文两段：
+
+```
+2 × waiting for element to be visible, enabled and stable / - element is not stable
+```
+
+```
+<span class="ui-tile__desc">4 站 · 下一站：简介</span> from <article ... aria-label="第 4 / 共 9 · 主令电器 · 4 站">...</article> subtree intercepts pointer events
+```
+
+**归属（两条，分工不同，都未在本批提交）**：
+
+1. **`web/tools/render-smoke.mjs` 的选择器已过时** —— 它仍按旧的网格类查目录卡片（`.ui-tile-grid .ui-tile`），而环形菜单页里该选择器**命中 0**（卡片上只有 `.ui-tile.a5r-card`，**没有 `.ui-tile-grid` 祖先**）⇒ 上面三条断言全部读成 0 而红。**属另一条工作线**，其修法（换成 `.a5r-card`）**在工作区里已有未提交改动**。
+2. **紧接的点击断言在环形页上不成立** —— 脚本第 981 行点 `.a5r-card.is-focus` 仍超时。原因是 **`MenuView.vue` 的开场旋转（`SPIN_MS = 1900`，只跳过 `prefers-reduced-motion`）在脚本点击时还没停**：环还在动（`element is not stable`），焦点卡还被邻卡压着（邻卡 `subtree intercepts pointer events`）—— 脚本那一步**既没有等开场段、也没有把 `reducedMotion` 设成 `reduce`**。**属产品侧环形实现 + 冒烟适配的收尾**。
+
+**归属的边界（写给复核者）**：失败**不是**排版稿 / 生成物 / 契约的问题 —— 那三条（`§12 判据 20/20`、生成物逐字节可复现、成果页索引 0 死链）本机与 CI 都过；红的这条是**产品侧环形菜单与既有渲染冒烟脚本的适配尚未收口**。
+
+**本机复现读数（真 Chromium，1920×1080）**：把选择器换成工作区那份未提交的 `.a5r-card` 后，前三条转为 PASS —— 实测 `tiles=9` / `count=9` / 9 条真实项目名全部命中；**随后点击步骤仍超时**，报错就是上面两段（`element is not stable` 与邻卡 `subtree intercepts pointer events`）。
+
+**与 §6.2 的关系（明写，不修饰上文）**：§6.2 说 #73「可关闭」的依据是**排版稿侧验收 + 产品侧四项检查**（`vue-tsc` / `eslint` / **177 测试** / `vite build`），**不含渲染冒烟**。**渲染冒烟这条门禁目前是红的**；它的处置（分两批提交 / 等另一条工作线修完 / 单开 PR）**由负责人定**，**本条只记事实、不给处置**。
+
+> **收口**：本轮交付的**排版稿部分不受此影响**；**产品侧环形的合入判据以渲染冒烟转绿为准**。
+
+---
+
+### 5.8 处置：产品侧撤回，改走产品 PR（拆两批 · 2026-10-16）
+
+> 性质：**只增不改** —— 上文（含 §5.7）一个字不动，处置与口径的**最终说法以本条为准**。
+
+**1. 裁决与依据**
+
+- **依据**：§5.7 记的 **Web 构建与渲染冒烟门禁红（两条原因）** ⇒ 负责人 2026-10-16 裁决采用 **"拆两批"**。
+- **本批的性质**：**PR #95 只交排版稿这条线**。
+- **#73 的关闭依据随之收窄为**：**排版稿侧交付 + 契约 / 生成物 / 文档证据** —— `§12 判据 20/20`、生成物逐字节可复现、成果页索引 0 死链、三页 `cy=454` / `errors=0` / 无滚动条、静止态档位表逐条等于契约、开场落位环序 1、拖拽连续。
+- **不再把产品侧四项检查**（`vue-tsc` / `eslint` / **177 测试** / `vite build`）**算作本批的合入证据** —— 那四项**仍然做过了**（读数见 §2.5 / §5.3，未变），只是**随产品批走**。
+- **撤回留痕**：产品侧那条提交在本地打了 tag 留痕 —— **被撤回提交 `14509da`，留痕 tag `a5-web-ring-wip`**（用于将来开产品 PR 时取回那段改动；该提交仍可由 tag 解析）。
+- **改写后的提交替换关系（改写完成于 2026-10-16 交付阶段，与本节同批）**：原列表的 **③ `14509da`（产品侧，含 `web/src/views/MenuView.vue`）已从本批历史移除**；原 ④ `683f592`（decisions+readme）与 ⑤ `a402336`（record）**因改写而换了 sha** ⇒ 现为 ④ **`e666c60`**、⑤ **`0aed752`**；**①② 未变**（`75703c6` / `b9a4765`）。改写后 `git log --oneline main..HEAD` 共 **4 条**（契约 / 排版稿 / 文档·decisions / 文档·record），**不含产品侧那一条**。（改写中途曾取过一版 sha `33e351f` / `f812f4c`：那一版把 `MenuView.vue` 误并进了文档提交，已重做并作废 —— 如别处引用过这两个 sha，一律按本行更正。）
+
+**2. 本批范围（＝ PR #95 的内容，逐项列出）**
+
+| 类别 | 内容 |
+|---|---|
+| 契约 | `docs/design/13-a5-menu-redo-contract.md`（本轮重写为方案文档）· `docs/design/14-a5-menu-ring-contract.md`（附 B / C / D）· `docs/requirement/issue-73-a5-menu-redo.md` |
+| 排版稿 | **三视图**（`a5-menu-ring.html` / `-narrow.html` / `-reduced-motion.html`）+ **五个历史方案页**（`a5-menu-v1-pseudo3d.html` 及四个废案页） |
+| 样式 | `docs/ui-mockups/components.css` **§24 / §25 / §26** · `docs/ui-mockups/tokens.css` |
+| 生成器 | `docs/ui-mockups/src/spec-ring.mjs` · `render.mjs` · `style-spec.mjs` · `pages-ab.mjs` |
+| 成果页 | `docs/ui-mockups/index.html`（生成物） |
+| 文档 | `README.md` · `docs/README.md` · `docs/DECISIONS.md` §33 · `docs/RECORD.md`（本文） |
+
+**范围判据**：`git diff --name-only main..HEAD` **不含任何 `web/**`** —— 采用拆两批后，上一节 §5.7 记的那条"红的门禁"**在本批内不再出现**（本批不含 `web/**`，渲染冒烟脚本的检材里没有环形菜单页）。
+
+> **口径与时序（如实记）**：上面这句说的是**产品侧撤回提交生效之后**的范围。**写本条时该撤回已由 committer 在同一支分支上完成改写** ⇒ 现 `git diff --name-only main..HEAD` 只剩 **4 条**提交；**改写前**的那一刻该列表里**仍有 `web/src/views/MenuView.vue` 一项**（改写前后的提交替换关系见本节 1）。**以撤回生效后的范围为准**；§5.7 记的门禁读数出自**改写前的那次运行**，改写后应重跑一次才能说"本批的渲染冒烟转绿"。
+>
+> **改写后的实测补充（2026-10-16，写本节时复核）**：`git log --oneline main..HEAD` = **4 条**（契约 / 排版稿 / 文档·decisions / 文档·record）；`git diff --name-only main..HEAD` = **22 项，全部落在 `README.md` 与 `docs/**`，不含任何 `web/**`** ✓；`git show --name-only e666c60` = `README.md` / `docs/DECISIONS.md` / `docs/README.md`（**不含 `MenuView.vue`**）；`git diff main -- web/src/views/MenuView.vue` = **空** ⇒ 产品侧改动在本批内已完全退出，只余留痕 tag。**上面"范围判据"的条件已满足。**（改写过程留痕：中途曾取过 `33e351f` / `f812f4c` 一版，把 `MenuView.vue` 误并进文档提交，已重做作废；凡引用该两 sha 之处一律以本行更正。）
+
+**3. 产品批的前置条件（两条）**
+
+1. **冒烟选择器收口**：`web/tools/render-smoke.mjs` 的 `.ui-tile-grid .ui-tile` → **`.a5r-card`**（属**另一条工作线**，工作区已有未提交修法）。
+2. **开场旋转的点击时序收口**：脚本那一步**既没等开场段、也没把 `reducedMotion` 设成 `reduce`**，而 `MenuView.vue` 的 `SPIN_MS = 1900` 只跳过 `prefers-reduced-motion`（见 §5.7）。
+
+**产品批还要带上 `web/src/styles/product.css` 的那一节**（修**面板高度链的静默塌陷**：环形菜单里 `.a5r-ring` / `.a5r-track` / 9 张卡全是 `position: absolute` ⇒ 面板唯一在流子项是一层高度 0 的空包裹 ⇒ 面板塌到只剩 46px 头部、`--a5r-ring-height` 跟着是 0px、9 张卡被 `overflow: hidden` 整块裁掉）。依据是**工作区那一节注释的自述**（`.app-main__body > .ui-panel { height: 100% }` / `.ui-panel--ring > .ui-panel__body { flex: 1; min-height: 0; overflow: hidden; padding: 0 }` / `.a5r-stage-body { height: 100% }`），**该节未在本批提交、也未在本批验证**。
+
+**4. 收口**
+
+- §5.7 记的"**红的门禁**"**在本批内不再出现**（本批不含 `web/**`）；
+- **产品批的合入判据仍是"渲染冒烟转绿"**；
+- **上文（含 §5.7）一个字不改，以本条为准**。
+
 ---
 
 ## 6 交付状态与 issue 交接（2026-10-16）
@@ -320,7 +430,12 @@
 | 生成器 | `src/pages-ab.mjs`（摘除 A5 现状页）· `src/style-spec.mjs`（索引摘除 A5、E 组改「历史留档」+「现役」） |
 | 产品 | `web/src/views/MenuView.vue`（网格换环，同一套 `.a5r-*`） |
 | 废案标记 | 四个废案页（②③⑦⑧）逐页挂「已废弃」徽章 + `.note` 处置说明（保留在盘不删） |
+| 令牌 | `docs/ui-mockups/tokens.css`（**+19**）—— §25 探照灯压暗层令牌（`--scrim-rgb` / `--scrim-mid` / `--scrim-strong`，深浅两套）与 `--dur-page: 160ms`（`:411`，§26.8 的 `160ms` `!important` 字面值就取自它） |
+| 手写页 V1 | `pages/a5-menu-v1-pseudo3d.html`（**+440**）—— V1 = 唯一候选的**前身**（伪三维卡片滚动），旧实现已作废、页保留在盘 |
+| 方案文档 | `docs/design/13-a5-menu-redo-contract.md`（**+464**）—— 本轮**重写**为方案文档（唯一候选 v1 + 已否决方向清单 + 参数追溯）；**不是"未改"**，见 §5.6(1) |
+| 需求条目 | `docs/requirement/issue-73-a5-menu-redo.md`（**+499**）—— Issue #73 需求条目化 |
 | 文档 | `docs/RECORD.md`（本文）· `design/14` 附 B/C/D（只增不改）· `docs/README.md` · 根 `README.md` · `docs/DECISIONS.md`（DEC-166） |
+| — | **指代更正（§5.8）**：上面"产品"那一行的 `MenuView.vue` **已随本批撤回、不在本批** —— 改走**产品批**（前置条件与留痕见 §5.8） |
 
 ### 6.2 issue 交接（**必须做**）
 
@@ -331,6 +446,7 @@
 | **#75** | T3 · 考核页 C7 | ❌ **保持 open** —— 同上 | 同上 |
 | **#31**（父） | 页面重做（#73 / #74 / #75） | ❌ **保持 open** —— 三个子 issue 只完成了 #73 | `GET /issues/31/sub_issues` = 3 |
 | **#30**（父） | D-04 / D-05 逐页重核（#77~#94 共 18 条） | ❌ **保持 open** —— 与本轮无关 | 见 `ISSUE-SWEEP-2026-10-16.md` |
+| — | **指代更正（§5.8）**：#73 的关闭依据**以 §5.8(1) 的收窄口径为准** —— 产品侧四项检查（`vue-tsc` / `eslint` / 177 测试 / `vite build`）**随产品批走，不再算作本批的合入证据** |
 
 **关闭 #73 时建议附的证据链**（便于复核者不用翻仓库）：
 1. 三个排版稿页路径 + 成果页新节「十三、A5 环形菜单」；
