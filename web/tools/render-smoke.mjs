@@ -754,10 +754,28 @@ try {
   )
 
   // ---------- 6. 骨架自检页（原两个演示页的合并版）----------
+  /**
+   * ⚠️ 这里必须**等这个视图自己挂上**，不能只等 `load` 再固定等 500ms：`/#/debug` 是**懒加载路由**
+   * （`DebugView` 是独立 chunk），`waitUntil: 'load'` 只保证 document 与初始 chunk 就绪，
+   * 之后还要下载并执行 DebugView 的 chunk 才会渲出正文。
+   *
+   * 实测（`gate` run `38872469073`，2026-10-16）：**两次连跑都红在同一条断言**，而失败点距上一条
+   * 断言恰好 **0.5s**（就是原来那个固定等待）⇒ CI runner 上 500ms 不够（本机够、所以本地看不出来）。
+   * 该 run 全程无 404、无 JS 异常，且同一 job 后续断言（含目录页 `count=9`）全 PASS。
+   *
+   * ⚠️ 判据**不能**用 `.app-task` 这类"两屏共用"的选择器：换页过渡期间**两屏共存**，
+   * `.app-task` 会命中**上一屏**（实测：改成等 `.app-task` 后，断言拿到 `body.innerText`
+   * 只剩 `仿`/外壳标题栏 —— 命中早了、比等 500ms 还糟）。⇒ 只等 DebugView **独有**的
+   * 那行面板头「真源读数（session store）」（`DebugView.vue:81`，别的视图没有这串字）。
+   */
   await page.goto(`${base}/#/debug`, { waitUntil: 'load' })
-  await page.waitForTimeout(500)
+  await page.waitForSelector('.ui-panel__head:has-text("真源读数")', { timeout: 10_000 })
   const debugText = await page.evaluate(() => document.body.innerText)
-  check(debugText.includes('真源读数') || debugText.includes('骨架自检'), '骨架自检页（/#/debug）可访问')
+  check(
+    debugText.includes('真源读数') || debugText.includes('骨架自检'),
+    '骨架自检页（/#/debug）可访问',
+    debugText.slice(0, 200),
+  )
 
   // ---------- 7. 内容层：真的吃到了被采纳的数据 ----------
   await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
