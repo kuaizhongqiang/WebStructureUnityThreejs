@@ -8,7 +8,7 @@
  *   - B2 站点线导航（替代页签栏）
  *   - B4 右上按钮组（替代角落 fab）
  *   - B5 提示改浮窗
- *   - A5 菜单页待重做（见 TODO.md T1，本文件仍为旧版并带 TODO 标记）
+ *   - A5 菜单页已重做完毕：生成器注册已摘除，改为手写页 a5-menu-ring*.html（见本文件 A5 处的说明）
  */
 import { icon } from './icons.mjs'
 import { route, tipsFloat, topRight, company } from './parts.mjs'
@@ -162,44 +162,16 @@ export const pagesAB = [
       </div>`,
   },
 
-  // ------------------------------------------------------------------ A5（待重做）
-  {
-    id: 'A5',
-    file: 'a5-menu.html',
-    title: '菜单 / 项目列表页',
-    state: 'Menu',
-    crumb: '目录',
-    body: `
-      <div class="todo-mark">待重做（TODO.md T1 · 手写动感版）</div>
-      <div style="padding:22px 32px;height:100%;display:flex;flex-direction:column;gap:16px">
-        <div class="ui-row">
-          <div class="ui-h2">实验项目</div>
-          <span class="ui-badge">共 17 个（示例）</span>
-          <div class="ui-grow"></div>
-          <input class="ui-input" style="width:280px" placeholder="搜索项目名称 / 关键词">
-          <select class="ui-select" style="width:170px"><option>全部</option><option>未开始</option><option>已完成</option></select>
-          <button class="ui-btn ui-btn--sm">去漫游</button>
-          <button class="ui-btn ui-btn--sm">我的成绩</button>
-        </div>
-        <div class="ui-tile-grid" style="grid-template-columns:repeat(5,1fr);overflow:auto;flex:1">
-${Array.from({ length: 10 })
-  .map(
-    (_, i) => `          <div class="ui-tile${i === 2 ? ' ui-tile--active' : ''}">
-            <div class="ui-tile__thumb"></div>
-            <div class="ui-tile__name">${String(i + 1).padStart(2, '0')} · 项目名称</div>
-            <div class="ui-tile__desc">任务进度 3 / 11 · ${i < 3 ? '<span class="ui-badge ui-badge--ok">已完成</span>' : '<span class="ui-badge">未开始</span>'}</div>
-          </div>`,
-  )
-  .join('\n')}
-        </div>
-        <div class="ui-alert ui-alert--warn">
-          <span class="ui-alert__icon">${icon('triangle-alert', 14)}</span>
-          <span>本页为第一轮遗留样式，已列入重做（审核意见：太丑、要更动感、需手写）。<b>请只评审其它页面</b>。</span>
-        </div>
-      </div>
-      <div class="note">A5 · <b>菜单页（待重做）</b> · 保留旧样式仅为占位，不作为评审对象</div>`,
-    statusbar: false,
-  },
+  // ------------------------------------------------------ A5 见下方"已摘除"说明
+  // A5 菜单页的生成器注册**已于 2026-10-16 摘除**（Issue #73 / T1；契约 FRZ-24：
+  // 「先写新页、定稿时一起摘」）。原条目在这里产出 pages/a5-menu.html（第一轮遗留样式 +
+  // `.todo-mark` 待重做标记）。取代它的是三个**手写**页（不归本生成器，见 render.mjs 的说明）：
+  //   pages/a5-menu-ring.html                  ← 唯一候选（水平环形伪三维卡片，桌面主形态）
+  //   pages/a5-menu-ring-narrow.html           ← 同一方案的窄屏垂直环形态
+  //   pages/a5-menu-ring-reduced-motion.html   ← reduced-motion 具名豁免档（components.css §26.8）
+  // 依据：`docs/design/14-a5-menu-ring-contract.md` §3.1 FRZ-24/FRZ-25、§11；
+  //       `docs/DECISIONS.md` §33 DEC-163（只留环形一个候选）/ DEC-165（废案只标记不删）。
+  // ⚠️ `pages/a5-menu.html` **文件仍保留在盘**：本轮只摘生成器注册与成果页索引，**不删文件**。
 
   // ------------------------------------------------- A6 漫游（Unity，暂不细化）
   {

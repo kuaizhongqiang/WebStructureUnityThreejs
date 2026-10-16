@@ -13,7 +13,8 @@ import { fileURLToPath } from 'node:url'
 import { pagesAB } from './pages-ab.mjs'
 import { pagesC } from './pages-c.mjs'
 import { pagesD } from './pages-d.mjs'
-import { styleSpecSections, styleSpecSectionsRound2, pageIndexGroups } from './style-spec.mjs'
+import { styleSpecSections, styleSpecSectionsRound2, styleSpecSectionsRound3, pageIndexGroups } from './style-spec.mjs'
+import { styleSpecSectionsRound4 } from './spec-ring.mjs'
 import { icon, ICON_VERSION } from './icons.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -139,9 +140,33 @@ ${statusbar === false ? '' : STATUSBAR(statusbar, statusRight)}
 
 mkdirSync(pagesDir, { recursive: true })
 
-const allPages = [...pagesAB, ...pagesC, ...pagesD]
+/** 生成器负责产出的页面。 */
+const generatedPages = [...pagesAB, ...pagesC, ...pagesD]
 
-for (const spec of allPages) {
+/**
+ * E 组 · A5 菜单页**历史留档**（Issue #73 / T1，2026-10-16）—— **手写页，不在此生成**。
+ *
+ * 为什么不放进本生成器：这几页是 A5 的**手写重做页**（A5-R2「必须手写」），
+ * 各有自己的机制脚本，不共享 `page()` 那套骨架模板；`pageIndexGroups` 里注册它们只是**编索引**。
+ * 这里单列一份，是为了让"页面总数"这个口径包含它们（否则成果页会写少 5 页）。
+ * 现状（DEC-163 / DEC-165 的 D20）：A5 只保留**唯一候选 = 水平环形伪三维卡片**
+ * （a5-menu-ring / -narrow / -reduced-motion，由另一工作项单独登记）；
+ * ② 节点散射 / ③ 六边形蜂窝 / ⑦ 档案抽屉 / ⑧ 探照灯取景器**全部废案**，
+ * 四个废案页**保留在盘、不删除**、只作反面参照；V1 是唯一候选的**前身**，
+ * 机制已由"水平轴排开"更正为"水平圆周排开" ⇒ 它的实现作废，与 ②③⑦⑧ 不混为一谈。
+ * 复核依据：`docs/design/14-a5-menu-ring-contract.md` §3.1 FRZ-10 / §13.1；`docs/DECISIONS.md` §33。
+ */
+const handWrittenPages = [
+  { id: 'V1', file: 'a5-menu-v1-pseudo3d.html' },
+  { id: 'V2', file: 'a5-menu-v2-scatter.html' },
+  { id: 'V3', file: 'a5-menu-v3-hex.html' },
+  { id: 'V4', file: 'a5-menu-v4-drawer.html' },
+  { id: 'V5', file: 'a5-menu-v5-spotlight.html' },
+]
+
+const allPages = [...generatedPages, ...handWrittenPages]
+
+for (const spec of generatedPages) {
   writeFileSync(resolve(pagesDir, spec.file), page(spec), 'utf8')
 }
 
@@ -288,7 +313,7 @@ ${GLASS_TOKENS.map(([name, value]) => token({ name, value })).join('')}
     </div>
   </div>
 
-${[...styleSpecSections, ...styleSpecSectionsRound2]
+${[...styleSpecSections, ...styleSpecSectionsRound2, ...styleSpecSectionsRound3, ...styleSpecSectionsRound4]
   .map(
     (section) => `
   <div class="spec-section-title">${section.title}</div>

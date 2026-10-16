@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V5 探照灯取景器 — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
+  })();
+</script>
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
+  <header class="ui-titlebar ui-titlebar--float">
+    <div class="ui-titlebar__logo">仿</div>
+    <div class="ui-titlebar__names">
+      <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+      <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+    </div>
+    <div class="ui-titlebar__right">
+      <span class="ui-titlebar__crumb">目录</span>
+      <span class="ui-badge ui-badge--info">已完成 15 / 共 31</span><span class="ui-badge ui-badge--warn">已废弃</span><span class="ui-badge">游客</span>
+    </div>
+  </header>
+  <div class="board__body">
+
+    <!-- 顶部让位由样式表负责：.a5v-stage__head 自带
+         calc(--shell-top-y + --shell-bar-h + 10px) = 130px 让开左上浮卡（components.css §24.10）。
+         页面里**不写**顶部留白 —— 否则会与它叠加。 -->
+    <div class="a5v-stage">
+      <div class="a5v-stage__head">
+        <span class="ui-badge" id="a5v5-spot-status">光斑：01 交流接触器</span>
+        <span class="ui-badge" id="a5v5-enter-status">尚未进入项目</span>
+        <div class="ui-grow"></div>
+        <details class="a5v-details">
+          <summary><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg>怎么操作 / 本页口径</summary>
+          <div>鼠标：移动即移动光斑（无需精确悬停），点击进入光斑中心那一格；触控：点哪块亮哪块。键盘：Tab 走格位，方向键按 3×3 索引移光斑（上 = idx-3、下 = idx+3、左 = idx-1、右 = idx+1，不跨行），Enter 进入。口径：9 格等大等距、格子本身不动，唯一结构是"你正看着哪一块"（观看关系，不是内容关系）；光斑移动目前是瞬移，明暗过渡待定。看形态不必拖窗口：URL 开关 <b>?view=list</b> 直接看窄屏两列；<b>?view=wide</b> 在窄窗口下强制回三列；两个都不给时按浏览器窗口 ≤ 900px 自动判定。切主题时开关会跟着走（?theme=dark&amp;view=list）。</div>
+        </details>
+        <span class="a5v-actions">
+          <button class="ui-btn ui-btn--ghost a5v-hit" type="button" id="a5v5-cols" aria-pressed="false">两列形态</button>
+          <button class="ui-btn ui-btn--ghost a5v-hit" type="button" id="a5v5-static" aria-pressed="false">静态降级</button>
+        </span>
+      </div>
+      <div class="a5v-stage__body">
+        <!-- 9 格等大等距铺开（不倾斜、不纵深）+ 一团用户控制的光斑（斑外压暗层：radial-gradient，
+             不走遮罩裁切那条路 —— 见契约 §6.5）。
+             格子本身不动：只挂/摘 .a5v5-lit。数据与分母见契约 §4（合计 31，已完成 15）。 -->
+        <div class="a5v5-grid" id="a5v5-grid">
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--done">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="0"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">4/4</span>
+              <span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+            </div>
+            <span class="a5v-idx">01</span>
+            <div class="a5v5-cell__name">交流接触器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：已完成</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--done">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="0"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">4/4</span>
+              <span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>
+            </div>
+            <span class="a5v-idx">02</span>
+            <div class="a5v5-cell__name">热继电器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：已完成</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="34.56"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">3/4</span>
+            </div>
+            <span class="a5v-idx">03</span>
+            <div class="a5v5-cell__name">时间继电器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：检测</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="69.12"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">2/4</span>
+            </div>
+            <span class="a5v-idx">04</span>
+            <div class="a5v5-cell__name">主令电器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：原理</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="69.12"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">2/4</span>
+            </div>
+            <span class="a5v-idx">05</span>
+            <div class="a5v5-cell__name">熔断器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：结构</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">0/4</span>
+            </div>
+            <span class="a5v-idx">06</span>
+            <div class="a5v5-cell__name">断路器</div>
+            <div class="a5v5-cell__meta">4 站 · 下一站：简介</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">0/3</span>
+            </div>
+            <span class="a5v-idx">07</span>
+            <div class="a5v5-cell__name">速度继电器</div>
+            <div class="a5v5-cell__meta">3 站 · 下一站：简介</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">0/3</span>
+            </div>
+            <span class="a5v-idx">08</span>
+            <div class="a5v5-cell__name">组合开关</div>
+            <div class="a5v5-cell__meta">3 站 · 下一站：简介</div>
+          </div>
+          <div class="ui-tile a5v5-cell a5v-enterable a5v5-focusable" tabindex="0">
+            <div class="ui-progress-ring ui-progress-ring--md ui-progress-ring--partial">
+              <svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">
+                <circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>
+                <circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="138.23" stroke-dashoffset="138.23"></circle>
+              </svg>
+              <span class="ui-progress-ring__num">0/1</span>
+            </div>
+            <span class="a5v-idx">09</span>
+            <div class="a5v5-cell__name">综合小测验</div>
+            <div class="a5v5-cell__meta">1 站 · 下一站：测验</div>
+          </div>
+          <!-- 光斑层：pointer-events: none 的覆盖层，斑外压暗（不走遮罩裁切）。
+               圆心由下面的脚本写 --spot-x / --spot-y（取运行时量到的网格矩形）。 -->
+          <div class="a5v5-spot" id="a5v5-spot" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note"><span class="ui-badge ui-badge--warn">已废弃</span> <span class="ui-badge ui-badge--warn">上游方案 ⑧ 探照灯取景器</span> 本页<b>保留在盘、不删除</b>，只作反面参照（2026-10-16 决策 DEC-165 的 D20；A5 菜单页的唯一候选已收敛为<b>水平环形伪三维卡片</b>）。已废弃的专属布局件类：<b>.a5v5-grid</b> / <b>.a5v5-cell</b> / <b>.a5v5-cell__name</b> / <b>.a5v5-cell__meta</b> / <b>.a5v5-spot</b> / <b>.a5v5-grid--static</b> / <b>.a5v5-grid--two</b> / <b>.a5v5-lit</b>；共用的 .ui-progress-ring 不按废案处置。<br>V5 · <b>探照灯取景器</b>（对应上游方案 ⑧）· 鼠标：移动即移动光斑、点击进入光斑中心那格 · 键盘：方向键按 3×3 索引移光斑、Enter 进入（五页里唯一"键盘比鼠标顺手"的）<br>与其它四页差别：<b>格子本身不动</b>，唯一动的是"你正看着哪一块"（观看关系，不是内容关系）；页首两个开关是评审用 —— <b>两列形态</b>（窄屏退化，走 .a5v5-grid--two）/ <b>静态降级</b>（斑外压暗去掉）· <b>光斑移动目前是瞬移</b>：明暗过渡待定，本轮不做 · 窄屏（两列）形态：?view=list 直接看（?view=wide 强制回三列）。</div>
+
+  </div>
+
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>V5 · 探照灯取景器 · 归属 Menu</span>
+  <span><a href="a5-menu-v4-drawer.html">上一页：V4 档案抽屉</a> · <a href="a5-menu-v1-pseudo3d.html">下一页：V1 伪三维卡片滚动</a></span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
+</div>
+
+<script>
+  /* V5 · 探照灯取景器（源方案 ⑧）—— 契约 §6.5（FR-5）。
+     光斑几何一律**运行时量**（getBoundingClientRect）：圆心写成光斑层内的百分比，
+     百分比相对网格盒子解析 ⇒ 缩放（--board-scale）与"两列形态"下都不会错位；
+     不写死 1920×1080 的画布偏移换算。 */
+  (function () {
+    var grid = document.getElementById('a5v5-grid');
+    var spot = document.getElementById('a5v5-spot');
+    var spotStatus = document.getElementById('a5v5-spot-status');
+    var enterStatus = document.getElementById('a5v5-enter-status');
+    var colsBtn = document.getElementById('a5v5-cols');
+    var staticBtn = document.getElementById('a5v5-static');
+    if (!grid || !spot) return;
+    var cells = Array.prototype.slice.call(grid.querySelectorAll('.a5v5-cell'));
+    if (cells.length !== 9) return;
+
+    var COLS = 3;      // 契约 §6.5：方向键按 3×3 索引算（与视觉列数无关）
+    var center = 0;    // "光斑中心那一格"的索引 0..8
+    var twoCol = false;
+    var manualView = false;   // 页内开关按过就以人的选择为准（URL / 窗口不再抢）
+    var narrowMQ = window.matchMedia ? matchMedia('(max-width: 900px)') : null;
+    // 窄屏形态开关：页面级 ?view= 优先，matchMedia(≤900px) 兜底（两侧都在 JS 里，页面内不写宽度媒体查询）
+    var viewParam = (location.search.match(/[?&]view=(list|wide)/) || [])[1] || '';
+
+    // 进入过渡的时长取令牌 --dur-page（页面里不写死毫秒）
+    var dur = 160;
+    try {
+      var raw = getComputedStyle(document.documentElement).getPropertyValue('--dur-page');
+      var n = parseFloat(raw);
+      if (n > 0) dur = raw.indexOf('ms') >= 0 ? n : n * 1000;
+    } catch (e) { /* 取不到就用契约里的 160ms */ }
+
+    function label(i) {
+      var el = cells[i].querySelector('.a5v5-cell__name');
+      return ('0' + (i + 1)).slice(-2) + ' ' + (el ? el.textContent.replace(/\s+/g, '') : '');
+    }
+    // 画布坐标 → 光斑层内的百分比
+    function toPct(x, y) {
+      var r = grid.getBoundingClientRect();
+      if (!r.width || !r.height) return null;
+      return [(x - r.left) / r.width * 100, (y - r.top) / r.height * 100];
+    }
+    function writeSpot(p) {
+      if (!p) return;
+      spot.style.setProperty('--spot-x', p[0].toFixed(2) + '%');
+      spot.style.setProperty('--spot-y', p[1].toFixed(2) + '%');
+    }
+    // 圆心 = 该格**量出来的**矩形中心（不是算出来的画布偏移）
+    function spotOnCell(i) {
+      var r = grid.getBoundingClientRect();
+      var c = cells[i].getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      writeSpot([
+        (c.left + c.width / 2 - r.left) / r.width * 100,
+        (c.top + c.height / 2 - r.top) / r.height * 100
+      ]);
+    }
+    // 点落在哪一格；落在格缝里则取最近一格的格心
+    function indexAt(x, y) {
+      var i, c, best = center, bd = Infinity;
+      for (i = 0; i < cells.length; i++) {
+        c = cells[i].getBoundingClientRect();
+        if (x >= c.left && x <= c.right && y >= c.top && y <= c.bottom) return i;
+      }
+      for (i = 0; i < cells.length; i++) {
+        c = cells[i].getBoundingClientRect();
+        var dx = x - (c.left + c.width / 2), dy = y - (c.top + c.height / 2);
+        var d = dx * dx + dy * dy;
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best;
+    }
+    // 格子本身不动：只挂/摘 .a5v5-lit；被照亮那格同时保持 .is-hit
+    function setCenter(i) {
+      if (i < 0) i = 0;
+      if (i > cells.length - 1) i = cells.length - 1;
+      if (i === center && cells[i].classList.contains('a5v5-lit')) return;  // 鼠标每动一下不必重写整格
+      center = i;
+      for (var k = 0; k < cells.length; k++) {
+        cells[k].classList.toggle('a5v5-lit', k === i);
+        cells[k].classList.toggle('is-hit', k === i);
+      }
+      if (spotStatus) spotStatus.textContent = '光斑：' + label(i);
+    }
+    // 进入 = 一次短暂推进过渡（时长取令牌），并留下可核对的文字凭据
+    function enter(i) {
+      var el = cells[i];
+      if (!el) return;
+      el.classList.add('is-enter');
+      setTimeout(function () { el.classList.remove('is-enter'); }, dur);
+      if (enterStatus) enterStatus.textContent = '已进入：' + label(i);
+    }
+    function focusCell(i) {
+      if (document.activeElement === cells[i]) return;
+      try { cells[i].focus({ preventScroll: true }); } catch (e) { cells[i].focus(); }
+    }
+
+    /* ---- 鼠标 / 触控 ----
+       鼠标：移动即移动光斑（无需精确悬停），点击进入光斑中心那一格。
+       触控：不跟随滑动，改成"点哪块亮哪块"（pointerdown 落点决定光斑与中心格）。 */
+    grid.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      writeSpot(toPct(e.clientX, e.clientY));
+      setCenter(indexAt(e.clientX, e.clientY));
+    });
+    grid.addEventListener('pointerdown', function (e) {
+      writeSpot(toPct(e.clientX, e.clientY));
+      setCenter(indexAt(e.clientX, e.clientY));
+    });
+    grid.addEventListener('click', function () { enter(center); });
+
+    /* ---- 键盘：方向键按 3×3 索引移光斑（二维邻接：上 = idx-3 / 下 = idx+3 /
+       左 = idx-1 且不跨行 / 右 = idx+1 且不跨行）；Enter 进入光斑中心那格。 ---- */
+    document.addEventListener('keydown', function (e) {
+      var el = document.activeElement;
+      if (el && el.tagName === 'BUTTON') return;          // 页首开关不抢键
+      var at = cells.indexOf(el);
+      var key = e.key || '';
+      if (key.indexOf('Arrow') === 0) {
+        var base = at >= 0 ? at : center;
+        var row = Math.floor(base / COLS), col = base % COLS, next = base;
+        if (key === 'ArrowUp' && row > 0) next = base - COLS;
+        else if (key === 'ArrowDown' && row < COLS - 1) next = base + COLS;
+        else if (key === 'ArrowLeft' && col > 0) next = base - 1;
+        else if (key === 'ArrowRight' && col < COLS - 1) next = base + 1;
+        if (next !== base) { setCenter(next); spotOnCell(next); focusCell(next); }
+        else if (at < 0) { spotOnCell(center); }
+        e.preventDefault();
+        return;
+      }
+      if (key === 'Enter' || key === ' ') {
+        if (at >= 0) { enter(at); e.preventDefault(); }
+        else if (!el || el === document.body) { enter(center); e.preventDefault(); }
+      }
+    });
+
+    /* ---- 焦点跟随：Tab 走到哪一格，光斑跟到哪一格。
+       只有**键盘模态**才挪光斑 —— 鼠标点击也会给格子焦点，那时该听指针的，不该被抢。 ---- */
+    cells.forEach(function (c, i) {
+      c.addEventListener('focus', function () {
+        setCenter(i);
+        if (document.documentElement.getAttribute('data-input-modality') === 'keyboard') spotOnCell(i);
+      });
+    });
+
+    /* ---- 形态与评审开关（契约 §8.2：只挂 components.css 已定义的类；页面不写内联样式、不写媒体查询） ----
+       · 两列形态：v5 的窄屏退化 = 网格两列（.a5v5-grid--two）。形态由 URL 口径 ?view=list|wide 决定，
+         不给参数时按窗口 ≤ 900px 自动判定；页内按钮是排版稿看形态用的手动覆盖（产品里不该有）。
+       · 静态降级：给 .a5v5-grid 挂 .a5v5-grid--static（斑外压暗去掉，布局不崩）。 */
+    function isNarrowView() {
+      if (viewParam === 'list') return true;
+      if (viewParam === 'wide') return false;
+      return !!(narrowMQ && narrowMQ.matches);
+    }
+    function applyView() {
+      if (!manualView) twoCol = isNarrowView();
+      grid.classList.toggle('a5v5-grid--two', twoCol);
+      if (colsBtn) colsBtn.setAttribute('aria-pressed', twoCol ? 'true' : 'false');
+      requestAnimationFrame(function () { spotOnCell(center); });
+    }
+    if (colsBtn) colsBtn.addEventListener('click', function () {
+      manualView = true;                       // 手动覆盖：之后 URL / 窗口不再抢形态
+      twoCol = !twoCol;
+      applyView();
+    });
+    if (narrowMQ) {
+      if (narrowMQ.addEventListener) narrowMQ.addEventListener('change', applyView);
+      else if (narrowMQ.addListener) narrowMQ.addListener(applyView);
+    }
+    // 切主题时把 ?view= 带过去，否则一点"深色"就把两列形态丢了
+    if (viewParam) {
+      var themeLinks = document.querySelectorAll('.theme-switch a');
+      for (var ti = 0; ti < themeLinks.length; ti++) {
+        themeLinks[ti].setAttribute('href', themeLinks[ti].getAttribute('href') + '&view=' + viewParam);
+      }
+    }
+    if (staticBtn) staticBtn.addEventListener('click', function () {
+      var on = grid.classList.toggle('a5v5-grid--static');
+      staticBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    addEventListener('resize', function () { spotOnCell(center); });
+
+    setCenter(0);
+    spotOnCell(0);
+    applyView();   // ?view= / 窗口宽度决定初始形态（两列 or 三列）
+  })();
+</script>
+</body>
+</html>

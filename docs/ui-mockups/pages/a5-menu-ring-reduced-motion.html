@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P3 菜单页 · 减少动态效果档（同一方案 · 不换形态） — 页面排版稿</title>
+<link rel="stylesheet" href="../style.css">
+<script>
+  (function () {
+    try {
+      var m = location.search.match(/theme=(light|dark)/);
+      var t = m ? m[1] : localStorage.getItem('wsu3.theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* file:// 下取不到也没关系 */ }
+    // 输入模态：鼠标不画焦点环，键盘导航才画（规则见 docs/design/07-frame-style-rules.md §5）。
+    var set = function (m) { document.documentElement.setAttribute('data-input-modality', m); };
+    set('pointer');
+    addEventListener('pointerdown', function () { set('pointer'); }, true);
+    addEventListener('keydown', function (e) {
+      if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) set('keyboard');
+    }, true);
+  })();
+</script>
+</head>
+<body>
+<div class="board-wrap"><div class="board">
+  <div class="board__bg"></div>
+  <header class="ui-titlebar ui-titlebar--float">
+    <div class="ui-titlebar__logo">仿</div>
+    <div class="ui-titlebar__names">
+      <div class="ui-titlebar__cn">虚拟仿真教学平台</div>
+      <div class="ui-titlebar__en">Virtual Simulation Teaching Platform</div>
+    </div>
+    <div class="ui-titlebar__right">
+      <span class="ui-titlebar__crumb">目录</span>
+      <span class="ui-badge ui-badge--info">已完成 15 / 共 31</span><span class="ui-badge">游客</span>
+    </div>
+  </header>
+  <div class="board__body">
+
+    <!-- ============================================================================
+         P3 · 减少动态效果档（契约 docs/design/14-a5-menu-ring-contract.md §11.4）
+         **与 P1（a5-menu-ring.html）是同一份代码**：外壳 / 内联脚本 / 9 条数据 / 三类反馈 /
+           键盘路径 / 并列语义全部相同，差异只有一处**范围类** —— 默认带
+           `.a5r-ring--static`（同一个开关机制的第三个档；P2 的第二个档是 `.a5r-ring--vertical`）。
+         ⚠️ **该档不换形态**（D11 已取消"另定静止形态"这条要求）⇒ 页面行为与 P1 相同：
+           仍可拖、仍可 ←/→ 移焦点、仍可进入；变的只是"吸附与惯性"的**过渡时长口径**。
+         ⚠️ `.a5r-ring--static` 在 components.css 里**没有任何规则**（§26.6 明文：本类不新增样式）
+           ⇒ 它是"评审档位标记"，让 §7.6 的**具名豁免**这件事在成果页上可见（F19）。
+           本页**不依赖系统偏好、不写媒体查询**（评审画布切不到系统设置）——开关只挂/摘这个类。
+         豁免的时长对照（豁免前 vs 豁免后，由注释 + 类名承担，不要求可视化动画）：
+           · 豁免前：`.a5r-card` 的 transform / background / border-color / box-shadow 过渡
+             = var(--dur-page) = 160ms ⇒ 吸附"平滑滑入"、三类反馈有缓动。
+           · 豁免后（系统开「减少动态效果」）：全局兜底 `* { transition-duration: .01ms !important }`
+             把**卡片**的过渡压到 0.01ms（瞬切）；§7.6 的具名豁免
+             `.a5r-track.a5r--motion { transition-duration: 160ms !important }` 只命中位移层，
+             把它的时长恢复到 160ms。
+           · ⚠️ **契约内在不一致（已定案，如实照抄、不自行改契约）**：§7.6 要求豁免选择器**只能是**
+             `.a5r-track.a5r--motion`（不含 `*`，V-S 会抓）；但按 §4.5 做法 A 的定位模型，
+             **吸附过渡声明在 `.a5r-card` 上**（`.a5r-track` 自身没有 transition，见 §26.2/§26.7）
+             ⇒ 全局兜底会命中卡片 ⇒ **该档下吸附实际是瞬时的（0.01ms），豁免规则存在但不改变
+             用户可见行为**。实现按契约字面选择器落地（保住 V-S），差异登记在页内说明与实现记录，
+             **不改契约、不改 components.css**。
+         实测口径（量自本页）：正常偏好下位移层 transition-duration = 0s（本层没声明过渡）、
+           卡片 = 0.16s × 4 项；系统「减少动态效果」下位移层 = **0.16s（豁免生效）**、
+           卡片 = **1e-05s（0.01ms，被全局兜底压掉）** —— 这就是"最小作用域"的机械证据。
+         几何基准（§4.5 做法 A，与 P1 同一处）：`.a5r-ring` 相对 `.board__body`（1080 高）铺满整高，
+           所以 `--a5r-slot-focus: 42%` = 454px。⚠️ `.a5r` 上**不能**写 position: relative。
+         并列语义（F14 / D18）：环的 ←→ 邻接 = **观看顺序**，不是内容顺序 ⇒
+           本页不画弧线箭头、不写「下一个项目」这类文案。
+         ============================================================================ -->
+    <div class="a5r">
+      <!-- ⚠️ .a5r-ring 是 .board__body 的定位子项（与 .a5v-stage 平级），不是它的孩子。
+           理由见 components.css §26.1 的定位基准注释。**默认带静态档范围类**（§11.4）。 -->
+      <div class="a5r-ring a5r-ring--static" id="a5r-ring">
+        <div class="a5r-track a5r--motion" id="a5r-track"></div>
+      </div>
+
+      <div class="a5v-stage">
+        <div class="a5v-stage__head">
+          <div class="ui-h2">实验项目</div>
+          <span class="ui-badge ui-badge--info">9 个项目 · 示例数据</span>
+          <span class="a5r-status" id="a5r-status" role="status"></span>
+          <div class="ui-grow"></div>
+          <details class="a5v-details">
+            <summary><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><path d="M12 17h.01" /></svg>怎么操作 / 本页口径</summary>
+            <div>鼠标：按住卡片左右拖拽转环（拖过 8px 才算拖拽，小于 6px 仍算点击）；甩一下会滑行、停手自动吸附到最近一格；鼠标移到任意卡片上，滑行会立即停下（防误触）。键盘：<b>←/→ 或 ↑/↓ 移一格（环闭合：第 9 张再按 → 回到第 1 张）</b>，<b>Enter 进入</b>当前焦点卡；空格 / Home / End 有意不做（环没有"首尾"）。三类反馈：<b>悬停</b> = 沿视口竖起 4px + 描边变主色（不变底色、不变大小）；<b>选中</b> = 主色发丝 + 主色弱底 + 内辉光（不位移）；<b>进入</b> = 一次短暂放大推进（160ms 内回落）。<br><b>本页是哪个档</b>：与 P1 同一份代码、<b>不换形态</b> —— 环仍可拖、仍可 ←/→ 移焦点、仍可进入；范围类是 <code>.a5r-ring--static</code>，<b>它本身不新增任何样式</b>，只是把「吸附 / 惯性的过渡时长」这件事做成可见的评审档位（上方开关切回默认档即可对照；<b>不写媒体查询、不依赖系统偏好</b>，因为评审画布改不了系统设置）。窄屏垂直环见 a5-menu-ring-narrow.html。<br><b>豁免前 vs 豁免后（时长对照）</b>：① <b>豁免前</b>（系统未开"减少动态效果"）= <code>.a5r-card</code> 的 transform / background / border-color / box-shadow 过渡走 <code>--dur-page</code> <b>160ms</b> ⇒ 吸附是"平滑滑入"，三类反馈有缓动。② <b>豁免后</b>（系统开"减少动态效果"）= 全局兜底 <code>* { transition-duration: .01ms !important }</code> 先把所有过渡压到 <b>0.01ms</b>，再由具名豁免 <code>.a5r-track.a5r--motion { transition-duration: 160ms !important }</code> 把**位移层**这一条恢复成 <b>160ms</b>。<br><b>如实登记一处契约内在不一致</b>：§7.6 规定豁免选择器<b>只能是</b> <code>.a5r-track.a5r--motion</code>（不得含 <code>*</code>）；但按 §4.5 做法 A 的定位模型，吸附过渡是声明在 <code>.a5r-card</code> 上的（<code>.a5r-track</code> 自身没有 transition），而全局兜底会命中卡片 ⇒ <b>该档下吸附实际是瞬时的（0.01ms），豁免规则存在、但不改变用户可见行为</b>。本轮按契约字面选择器落地（保住 V-S），差异如实登记在页内说明与实现记录里，<b>不自行改契约、不改 components.css</b>。<br>口径：<b>位置只表示当前在看哪一张，不表示先后与强弱</b>；环的左右邻接是"观看顺序"，不是内容依赖。进度环的分母取<b>该项目自己的启用站数</b>（不是全局 33），合计 31。</div>
+          </details>
+          <!-- 档位开关（§11.4）：与 P2 同一套机制 —— 页头右侧、与既有 .a5v-details 相邻，
+               切的是 `.a5r-ring` 上的范围类 `.a5r-ring--static`。用既有 .ui-badge + .ui-btn--sm
+               + .a5v-hit（44×44 命中区），**不新增样式**（页面里不得出现内联样式块，FRZ-20）。
+               该档在本页是"可见的"：徽标写出当前档、按钮的 aria-pressed 承载状态、
+               .a5r-status 活区播报 —— 时长本身由注释 + 类名承担（不要求可视化动画）。 -->
+          <span class="a5r-viewswitch ui-row">
+            <span class="ui-badge" id="a5r-tier">当前档：减少动态效果（豁免）</span>
+            <button class="ui-btn ui-btn--sm a5v-hit" type="button" id="a5r-static" aria-pressed="true">减少动态效果档</button>
+          </span>
+        </div>
+        <div class="a5v-stage__body"></div>
+      </div>
+
+      <!-- 工具条（F11 / D15「先保留」；产品侧本轮**不加**，见契约 §13.4 的已知落差）。
+           本容器 position: fixed 让它在 flex 高度算完之后再参与布局 ⇒
+           压在头部行上，且**不占用** .a5v-stage__body 的高度（否则环心会被顶下 76px，
+           破坏 §4.5 的 454px 基准）。P3 与 P1 逐字相同。 -->
+      <div class="ui-row a5r-toolbar" style="position:fixed;left:32px;right:32px;top:158px">
+        <span class="ui-badge">共 9 个（示例数据）</span>
+        <div class="ui-grow"></div>
+        <input class="ui-input" style="width:280px" placeholder="搜索项目名称 / 关键词">
+        <select class="ui-select" style="width:170px"><option>全部</option><option>未开始</option><option>已完成</option></select>
+        <button class="ui-btn ui-btn--sm">去漫游</button>
+        <button class="ui-btn ui-btn--sm">我的成绩</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div class="board-nav">
+  <a href="../index.html">← 样式清单 / 页面索引</a>
+  <span>P3 · 菜单页 · 减少动态效果档（同一方案 · 不换形态） · 归属 A5</span>
+  <span class="theme-switch"><a href="?theme=dark">深色</a><a href="?theme=light">亮色</a></span>
+</div>
+
+<script>
+  (function () {
+    'use strict';
+
+    /* ==========================================================================
+       数据：契约 §9.3 的 9 条示例数据（**逐字照抄，不得自创**）。与 P1 完全一致。
+       name 取 MenuData.json 的 displayName；stops 取该项目自己的启用站数；
+       done 是示例进度；next 按 §9.2 从「呈现顺序」推出；doneClass = 已完成===站数。
+       呈现顺序（§9.1）：简介 → 结构 → 原理 → 检测 → 目的 → 仪器 → 连接 → 仿真 → 测验 → 考核。
+       加总校验：stops 4×6+3×2+1 = 31；done 4+4+3+2+2 = 15 ⇒ 页眉「已完成 15 / 共 31」。
+       ========================================================================== */
+    var PROJECTS = [
+      { id: 'clip_contactor',         name: '接触器',     stops: 4, done: 4, next: '简介' },
+      { id: 'clip_thermalRelay',      name: '热继电器',   stops: 4, done: 4, next: '简介' },
+      { id: 'clip_timeRelay',         name: '时间继电器', stops: 4, done: 3, next: '结构' },
+      { id: 'clip_masterAppliance',   name: '主令电器',   stops: 4, done: 2, next: '原理' },
+      { id: 'clip_fuse',              name: '熔断器',     stops: 4, done: 2, next: '结构' },
+      { id: 'clip_breaker',           name: '断路器',     stops: 4, done: 0, next: '简介' },
+      { id: 'clip_speedRelay',        name: '速度继电器', stops: 3, done: 0, next: '简介' },
+      { id: 'clip_combinationSwitch', name: '组合开关',   stops: 3, done: 0, next: '简介' },
+      { id: 'clip_quiz',              name: '小测验',     stops: 1, done: 0, next: '测验' }
+    ];
+
+    /* 档位表（契约 §5.2，**冻结**）：档位 = k+1。前 4 项三项同时变化（F6），
+       且只作用于整张卡片（F7）；下限 = scale .58 / blur 6px / opacity .28。
+       **本档（减少动态效果）不换形态 ⇒ 这张表与 P1 逐条相同**（§11.4 / D11）。 */
+    var TIERS = [
+      { scale: 1.00, blur: 0,   opacity: 1.00, z: 500, tab: true  },
+      { scale: 0.85, blur: 2,   opacity: 0.72, z: 400, tab: true  },
+      { scale: 0.72, blur: 4,   opacity: 0.44, z: 300, tab: true  },
+      { scale: 0.61, blur: 6,   opacity: 0.28, z: 200, tab: false },
+      { scale: 0.58, blur: 6,   opacity: 0.28, z: 100, tab: false }
+    ];
+
+    /* 环上各档的**承轴**位移 d(k) = R·sin(kΔ)（契约 §4.3 冻结的公式）：
+       k = 0..4 ⇒ 0 / 249.6 / 460.7 / 570.7 / 654.6（= 契约 §4.3 表里的 d(k)）。
+       ⚠️ 逐对间距**不是**常数（249.6 / 211.1 / 110.0 / 83.9）⇒ 定位必须按 k 逐档算，
+          **不能**用「档号 × --a5r-slot」当通用换算（§4.3「必读的一条」）。
+       ⇒ 这里**按公式现算**而不是抄一张常量表：契约 §4.3 的表与 §4.5 的 y(k) 表都是
+          R=600 / Δ=24° 的代数值，用公式算能保证两张表同源、也免得抄错。
+          （r=600、sin72°=0.95106 ⇒ 570.7 ✓、sin96°=0.99452 ⇒ 596.7，而契约表写 654.6 —— 见下注） */
+    /* 注：契约 §4.3 表的 k=4 给 654.6，与 R·sin(4·24°)=596.7 不符；本实现按**公式**取值
+       （596.7）。该差异只影响档位 5 那一对卡"露出多少"，不影响任何不变量：
+       横向包围盒 = R·sin96° + 360·0.58/2 = 596.7 + 104.4 = 701.1 < 960（画布半宽）✓。
+       偏差已登记在 RECORD，未回改只读契约。本档不换形态，这一处推导与 P1 同源。 */
+
+    var N = PROJECTS.length;            /* = 9，由 F15 固定，不写成变量 */
+
+    /* 承轴 / 起伏轴：两种朝向共用同一份代码，只查一张表选哪根轴（§11.3）。
+       · 水平环：承轴 = 横向（dx）、起伏 = 纵向（dy）
+       · 垂直环：承轴 = 纵向（dy）、起伏 = 横向（dx）
+       ⇒ 本脚本**不含**任何朝向分支；`.a5r-ring--vertical` 只改样式表里的压缩系数
+         （--a5r-vscale 0.5→0.35）与起伏轴的正方向（--a5r-descent-sign -1→+1），见 §26.6。
+          ⚠️ P3（本页）**不换形态**（§11.4 / D11）⇒ 永远走 h 这一行，
+             `.a5r-ring--static` 与朝向、与几何**无关**（它只标记"豁免档"）。 */
+    var AXES = {
+      h: { slot: 'dx', descent: 'dy' },
+      v: { slot: 'dy', descent: 'dx' }
+    };
+
+    var round2 = function (n) { return Math.round(n * 100) / 100; };
+    /* 环闭合（FRZ-06）：**必须** ((x%N)+N)%N，**不是** clamp（旧 v1 页夹紧到首尾是作废实现）。 */
+    var wrap = function (x) { return ((x % N) + N) % N; };
+
+    var ring = document.getElementById('a5r-ring');
+    var track = document.getElementById('a5r-track');
+    var statusEl = document.getElementById('a5r-status');
+
+    /* 环的浮点位置（契约 §7.1 状态机的唯一状态量）：整数 = 停稳，小数 = 拖拽 / 惯性中。
+       初始焦点 = 环序 1（接触器）在前方正中。声明在这里而不是文件末尾 —— 下面的
+       render() / pointerDown() 都会先于"装配"那一段执行到它，函数内引用外部变量
+       必须已经完成初始化。 */
+    var focusFloat = 0;
+
+    /* ---------------------------------------------------------------- DOM */
+    var cards = PROJECTS.map(function (p, i) {
+      var tier = TIERS[i === 0 ? 0 : 1];
+      var el = document.createElement('article');
+      el.className = 'ui-tile a5r-card';
+      el.setAttribute('tabindex', '0');
+      el.setAttribute('aria-current', 'false');
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', '第 ' + (i + 1) + ' / 共 ' + N + ' · ' + p.name + ' · ' + p.stops + ' 站 · 下一站：' + p.next);
+      /* 进度环：既有 .ui-progress-ring（FRZ-18 —— 那一链一行都不改，这里只消费）。
+         dasharray 138.23 = 2π×22（--md 档）；dashoffset = 138.23 × (1 − 已完成/站数)。 */
+      var dash = 138.23;
+      var off = (dash * (1 - p.done / p.stops)).toFixed(2);
+      var isDone = p.done === p.stops;
+      el.innerHTML =
+        '<span class="a5r-card__idx">' + (i + 1 < 10 ? '0' : '') + (i + 1) + '</span>' +
+        '<div class="a5r-card__ring">' +
+          '<div class="ui-progress-ring ui-progress-ring--md' + (isDone ? ' ui-progress-ring--done' : ' ui-progress-ring--partial') + '">' +
+            '<svg class="ui-progress-ring__svg" viewBox="0 0 48 48" aria-hidden="true">' +
+              '<circle class="ui-progress-ring__track" cx="24" cy="24" r="22" fill="none" stroke-width="4"></circle>' +
+              '<circle class="ui-progress-ring__value" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-dasharray="' + dash + '" stroke-dashoffset="' + off + '"></circle>' +
+            '</svg>' +
+            '<span class="ui-progress-ring__num">' + p.done + '/' + p.stops + '</span>' +
+            '<span class="ui-progress-ring__check"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="a5r-card__body">' +
+          '<span class="ui-tile__name">' + p.name + '</span>' +
+          '<span class="ui-tile__desc">' + p.stops + ' 站 · 下一站：' + p.next + '</span>' +
+        '</div>' +
+        /* 焦点环载体（§10.5 方案 B：卡内 <span>，二选一；P1/P2 也保留这一行） */
+        '<span class="a5r-focusring" aria-hidden="true"></span>';
+      track.appendChild(el);
+      return el;
+    });
+
+    /* ------------------------------------------------------- 每帧状态写入 */
+    /* 契约 §10.4 冻结的 7 枚行内变量 + 悬停入口 --a5r-lift。
+       ⚠️ 样式表里**不写**这些变量的默认档位（§10.4 实现注意：行内变量天然盖过样式表，
+          两处都写会留下"看起来生效其实没生效"的死代码）⇒ 这里**首次渲染前**必须全部写一遍。 */
+    function writeCardVars(el, dx, dy, off) {
+      var s = el.style;
+      var kd = Math.abs(off);
+      var k = Math.min(4, Math.round(kd));
+      var tier = TIERS[k];
+      s.setProperty('--a5r-scale', tier.scale);
+      s.setProperty('--a5r-blur', tier.blur + 'px');
+      s.setProperty('--a5r-opacity', tier.opacity);
+      /* z 的连续序化：以契约 §5.3 的档位值为基座，加一个"只在本档内部生效"的单调修正。
+         · kd 是整数时修正为 0 ⇒ 精确等于契约值 500 / 400 / 300 / 200 / 100；
+         · 最大偏差 45 < 相邻档位间距 100 ⇒ 不会翻掉档位先后；
+         · 修正随 kd 单调 ⇒ 跨档时相邻两张只交换一次（旧实现一帧有 8 张换层 = "闪一下"）。 */
+      var z = tier.z - 90 * (kd - k);
+      s.setProperty('--a5r-z', Math.round(z));
+      s.setProperty('--a5r-dx', round2(dx) + 'px');
+      s.setProperty('--a5r-dy', round2(dy) + 'px');
+      /* 焦点环反缩放（契约 §6.4）：让环的视觉粗细在各档一致 */
+      s.setProperty('--a5r-ring-rescale', round2(1 / tier.scale));
+    }
+
+    /* 环的**连续**旋转量（单位 = 格）：已停稳的格数 − 本次拖拽累计位移折算的格数。
+       拖动期间它随指针连续变化；静止时它就等于 focusFloat。 */
+    /* 拖拽灵敏度：屏幕位移 → 环转过多少格的比例。
+       ⚠️ 负责人 2026-10-16 裁决 **0.2**（原 1.0"太灵敏"）。
+       拖动 / 惯性 / 松手结算**三处共用**同一枚常量 —— 只调拖动不调惯性，
+       会让"甩一下"仍然飞很远，手感不一致。 */
+    var DRAG_GAIN = 0.2;
+
+    function rotOf() { return focusFloat + (dragging ? (-DRAG_GAIN * travelPx) / slotOf() : 0); }
+    function slotOf() {
+      return parseFloat(getComputedStyle(ring).getPropertyValue('--a5r-slot')) || 249.6;
+    }
+
+    function render() {
+      var orientation = ring.classList.contains('a5r-ring--vertical') ? 'v' : 'h';
+      var axes = AXES[orientation];
+      var rs = getComputedStyle(ring);
+      var R = parseFloat(rs.getPropertyValue('--a5r-radius')) || 600;
+      var delta = (parseFloat(rs.getPropertyValue('--a5r-step')) || 24) * Math.PI / 180;
+      var vscale = parseFloat(rs.getPropertyValue('--a5r-vscale')) || 0.5;
+      var dsign = parseFloat(rs.getPropertyValue('--a5r-descent-sign')) || -1;
+      var budget = parseFloat(rs.getPropertyValue('--a5r-descent-budget')) || 152;
+      /* 起伏轴的归一化形状：k=0 为 0、k=4 为 1（`1 − cos` 在两端都是 0/1）。 */
+      var shapeMax = 1 - Math.cos(4 * delta);
+      var i, off, k, kd, tier, el, d, sign, slotPx, descentPx, dx, dy;
+      var rot = rotOf();           /* 连续旋转量（格）—— 位置用它，**不取整** */
+      for (i = 0; i < N; i++) {
+        /* 每张卡的角度 = 环序 − 连续旋转量（**不取整**）⇒ 整排刚体旋转 */
+        off = wrap(i - rot);
+        if (off > N / 2) off -= N;
+        /* off 归一到 [-N/2, N/2)。把 |off| 夹到 4.5 以内：
+           ⚠️ 环形是**闭合**的，最远的一对（|off| = 4 与 |off| = 5）在几何上指向**同一个位置**
+           （d(4)=d(5)=596.7）。若不夹，|off| 从 4 走到 5 时位置会按"下一档"外推、然后突然回绕，
+           实测单步跳 **816px**（就是"闪动"）。夹到 4.5 后：
+             |off| = 4 → 4.5 走完最后一小段，然后 |off| 变号（5 → −4），位置**连续**接上。
+           注：sin 在 90° 附近趋于平缓，所以夹与不夹在 4~4.5 段的差异极小。 */
+        /* off 归一到 (-N/2, N/2]：这只是把"环序差"折到最短路径上（**不是**位置折叠）。
+           位置另外在极值处截断，见下面 d 的算法。 */
+        if (off > N / 2) off -= N;
+        if (off <= -N / 2) off += N;
+        /* off ∈ [-4, 4]（focusFloat 恒为整数 + 拖拽期间的小数）⇒ k ∈ [0, 4]，
+           N=9 时 k 的最大值 = floor(9/2) = 4，查表必命中，无需另加 clamp。 */
+        /* ⚠️ 这里有两个"k"，**不要合成一个**（负责人 2026-10-16 实测裁决）：
+             · kd（小数）= 位置用 —— 卡片圆心必须在 d(k) 表上**连续插值**，
+               否则位置只在跨档那一帧跳一次（实测：指针每走 25px，卡片位移 10 步里有 8 步是 0，
+               然后一帧跳 −244px）⇒ 观感是"卡片没动、只是文字变了"，完全不像"用鼠标拖着卡片走"。
+             · k（整数）= 档位用 —— scale / blur / opacity / z 是 5 档**离散**定义，
+               按契约 §5.1 的 `k = Math.round(off)` 取整；取整后的 k 处两种算法**完全相等**，
+               所以静止态的读数与契约 §5.2 的档位表仍然逐条一致。
+           ⇒ 位置连续、档位离散：拖起来是"环在手里转"，停下来仍是设计定的那 5 档。 */
+        kd = Math.abs(off);                 /* 连续（≥0；位置处会截断到 N/2）*/
+        k = Math.min(4, Math.round(kd));     /* 离散：只用于"档位/可及性"这类语义 */
+        tier = TIERS[k];
+        el = cards[i];
+        sign = off < 0 ? -1 : 1;
+        /* 承轴（沿环）：用**未压缩**的 d(k) = R·sin(kΔ)，带符号（§4.3 的逐对间距不是常数，
+           所以必须按 k 逐档算；不能用"档号 × --a5r-slot"当通用换算）。
+           ⚠️ §11.3 的关键：**承轴不受压缩** —— 把压缩系数用到承轴上会把环挤成扁带。 */
+        /* 位置按**连续角度**算：pos = R·sin(|off|·Δ)。
+           ⚠️ 关键（负责人 2026-10-16 第二次实测裁决）：契约 §4.3 的 d(k) = R·sin(kΔ) **本身就是
+           一个连续函数**，表里的 0 / 244.0 / 445.9 / 570.6 / 596.7 只是它在整数 k 上的取值
+           ⇒ 把小数 off 直接代进去即可：整数处**逐位相等**（静止态读数不变），
+             而拖动时卡片随指针**连续**移动。
+           曾试过"在相邻两档之间线性插值"（切弦）：那会让跟手比掉到 0.37~0.8 —— 因为插值的
+           斜率是**弦**的斜率、不是 sin 的切线，指针每步只兑现不到一半的位移，观感"卡不住手"。
+           现在位置函数与档位表对齐到同一个连续函数 R·sin(off·Δ)，跟手比 = cos(off·Δ)
+           （环心附近 =1 严格跟手；越到两侧越小，这与"环上越远的点横向投影变化越慢"的几何一致）。 */
+        /* ⚠️ 位置在极值处**截断**（kd 上限 = N/2 = 4.5），**不要**把 off 折叠：
+           d(·)=R·sin(kΔ) 在 |off|=4.5 取到极值、之后回落 ⇒ 折叠会让两侧位置相同，
+           卡片只能"瞬移"到另一侧（实测 816px）。截断后卡片**停在最外圈**，
+           off 继续走会自然变号 ⇒ 平滑换到另一侧。 */
+        var dEmax = R * Math.sin((N / 2) * delta);
+        d = R * Math.sin(Math.min(kd, N / 2) * delta);
+        slotPx = d * sign;
+        /* 起伏轴（纵深）：环是三维圆周，离焦 k 档的卡在纵深上退后 (1 − cos kΔ) 的比例。
+           幅度由**硬约束**反解（见 components.css §26.1 的 --a5r-descent-budget），
+           再乘 --a5r-vscale（§4.5 的纵向压缩）与方向符号（§26.1 的 --a5r-descent-sign；
+           本档不换形态 ⇒ 恒为 -1，即"离焦越远的卡越往上收"）。
+           ⚠️ 契约 §4.5 给了三种互不相容的说法：①公式 `454 + 210·scale − 300·cos kΔ`
+              （= 124.8/152/247/333）②表 425/395/359/320 ③两条不变量声明"上沿最小 198、
+              下沿最大 664"。②③互相矛盾（对称圆弧满足不了 664，见 §26.1 的推导），
+              ①按 R=600 直算会把卡顶出画布。⇒ 取"满足硬约束"的这一支，偏差登记在 RECORD。 */
+        descentPx = dsign * budget * ((1 - Math.cos(kd * delta)) / shapeMax) * vscale;
+        dx = axes.slot === 'dx' ? slotPx : descentPx;
+        dy = axes.descent === 'dy' ? descentPx : slotPx;
+        writeCardVars(el, dx, dy, off);
+        /* 状态类：只挂/摘，**不写**整串 transform（§10.4 三硬约束③ / V-J） */
+        el.classList.toggle('is-focus', k === 0);
+        el.setAttribute('aria-current', k === 0 ? 'true' : 'false');
+        /* Tab 序列的「档位门」（§8.4）：只有档位 1~3（k ≤ 2，即 --a5r-scale ≥ 0.72）进序列。
+           档位 4/5 仍可鼠标点击（§4.6 命中区 209×244 达标），只是不进键盘 Tab 序。 */
+        el.setAttribute('tabindex', tier.tab ? '0' : '-1');
+      }
+      var cur = wrap(Math.round(rot));
+      statusEl.textContent = '第 ' + (cur + 1) + ' / 共 ' + N + ' · ' + PROJECTS[cur].name;
+    }
+
+    /* ------------------------------------------------------------ 吸附 */
+    /* 契约 §7.4：吸附 = transform 过渡（160ms / --ease-page），由 `.a5r-track.is-snapping` 挂上；
+       拖拽 / 惯性期间**不加**该类（每帧直接写值，否则拖尾）。
+       ⚠️ **两拍次序，必须守**（components.css §26.7）：先在**本帧**把浮点位置定到目标格，
+          下一帧（无 rAF、故仍是同一个样式批）再写值并摘类 ——
+          但真正让"先挂类"成立的是：**在写入目标值之前**类已经生效。
+          做法：目标值先算好 → 挂类 → **下一帧**才写值 → 过渡结束再摘类。
+          若在同一帧里既摘类又写值，过渡已不在 ⇒ 表现为瞬跳（等价于"吸附不存在"）。
+       ⚠️ 本页（减少动态效果档）**不改这里的行为**：时长由样式表决定 ——
+          豁免前是 `.a5r-card` 的 160ms；豁免后（系统偏好）它被全局兜底压到 0.01ms，
+          而 §7.6 的具名豁免只落在 `.a5r-track.a5r--motion` 上（见文件头注释的"内在不一致"）。 */
+    var snapTimer = null;
+    function snapTo(target) {
+      focusFloat = target;
+      if (snapTimer) { clearTimeout(snapTimer); snapTimer = null; }
+      track.classList.add('is-snapping');
+      /* 下一帧才写值：让浏览器先在"有过渡"的状态下确认一次样式，再接收新值。 */
+      requestAnimationFrame(function () {
+        render();
+        var dur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur-page')) || 160;
+        snapTimer = setTimeout(function () {
+          track.classList.remove('is-snapping');
+          snapTimer = null;
+        }, dur + 20);
+      });
+    }
+
+    /* ------------------------------------------------------- 指针 / 触控 */
+    var dragging = false, axisLocked = null, pid = null;
+    /* 本次拖拽**累计已换算成格数的位移**（见 pointerMove）。
+       为什么要它：每帧都用 `Math.round(focusFloat)` 当基准会把"不足半格的位移"丢掉，
+       而一旦跨过半格又会把基准整体 +1 ⇒ 环被反复重排、正中那张卡被换掉、9 张卡位置突变。
+       ⇒ 改为累计"从上一次取基准之后真正兑现了多少格"，基准只在**跨格时**才推进一次。 */
+    /* ── 刚体环的旋转状态（单位 = "格"，连续）──────────────────────────────
+       rotDeg 是**唯一**的环位置量：拖动 / 惯性 / 键盘都只改它。
+       每张卡的角度 = 环序 − rotDeg，**不取整** ⇒ 9 张卡作为一个整体连续转过中心，
+       文字与卡片是同一个 DOM 节点 ⇒ 文字随卡走，不会"内容在变、卡片不动"。
+       取整只用在两处：① 档位查表（scale/blur/opacity/z）；② 焦点环序（决定 aria/播报）。
+       ⚠️ 位置**不能**用 `i − Math.round(rotDeg)`：那样每跨一格整排就被重排一次（实测指针
+       每走 30px、9 张卡的位置就会整体突变一次），观感就是"卡片没动、文字在跳"。 */
+    var travelPx = 0;
+    var downX = 0, downY = 0, moved = 0, suppressClick = false;
+    var samples = [];            /* 最近 100ms 的 (t, x, y) */
+    var raf = null, inertiaStart = 0;
+
+    function now() { return performance.now(); }
+
+    function pointerDown(e) {
+      if (pid !== null) return;             /* 只认第一个 pointerId（§7.5 多指忽略） */
+      pid = e.pointerId;
+      dragging = false; axisLocked = null;
+      downX = e.clientX; downY = e.clientY; moved = 0;
+      suppressClick = false;
+      samples = [{ t: now(), x: e.clientX, y: e.clientY }];
+      stopInertia();
+      /* 悬停 / 按下即暂停惯性（D14 / F10）：一碰就停，且保证不停在非整数格上。
+         ⚠️ 这里**直接归整**、**不走 snapTo**（负责人 2026-10-16 实测裁决）：
+         snapTo 会挂 `.a5r-track.is-snapping`，而那个类会让卡片带上 160ms 的 transform 过渡 ——
+         按住之后马上要逐帧跟手拖拽，挂着过渡就不是"跟手"而是"追赶"
+         （实测：指针已走 160px，画面还在插值中途，观感像粘住、松手才对上）。
+         吸附过渡只在**松手后**那一次要，见 components.css §26.7 的两拍次序。 */
+      focusFloat = Math.round(focusFloat);
+      travelPx = 0;   /* 新一次拖拽：累计位移清零 */
+      window.addEventListener('pointermove', pointerMove, { passive: false });
+      window.addEventListener('pointerup', pointerUp);
+      window.addEventListener('pointercancel', pointerUp);
+    }
+
+    function pointerMove(e) {
+      if (e.pointerId !== pid) return;
+      var dx = e.clientX - downX, dy = e.clientY - downY;
+      var adx = Math.abs(dx), ady = Math.abs(dy);
+      /* 轴判定（§7.5，**冻结**：|承轴| > |起伏轴| × 1.2 且 > 8px 才算拖拽）。
+         ⚠️ 这里的"哪根轴算承轴"必须**查 AXES 表**，不能写死横向 —— 写死的话
+          垂直形态（承轴 = 纵向）两种手势都会失效：纵向被判成"交给页面滚动"而放弃、
+          横向进了 DRAGGING 但 travel 取 dy = 0 ⇒ 环根本转不动（FRZ-05 的四条路径缺一条）。
+          两个**阈值**（1.2 / 8px）一字不动，两种朝向共用；本档不换形态 ⇒ 走横向。 */
+      var axesA = AXES[ring.classList.contains('a5r-ring--vertical') ? 'v' : 'h'];
+      var along = axesA.slot === 'dx' ? adx : ady;      /* 承轴上的位移 */
+      var across = axesA.slot === 'dx' ? ady : adx;     /* 起伏轴上的位移 */
+      if (!axisLocked) {
+        if (along > across * 1.2 && along > 8) { axisLocked = 'along'; dragging = true; ring.classList.add('is-dragging'); }
+        else if (across > along * 1.2 && across > 8) { axisLocked = 'across'; dragging = false; }
+        else return;
+      }
+      if (axisLocked === 'across') return;   /* 起伏轴上的手势归页面滚动 */
+      /* 进入 DRAGGING 后阻止已起势的滚动被带走（§7.5） */
+      if (e.cancelable) e.preventDefault();
+      /* 承轴位移：水平形态取 dx（横向），垂直形态取 dy（纵向）—— 由 AXES 表选，不写朝向分支
+         （两形态的 --a5r-slot 都是 249.6px，差别只在它是哪个轴）。 */
+      var axes = AXES[ring.classList.contains('a5r-ring--vertical') ? 'v' : 'h'];
+      var travel = axes.slot === 'dx' ? dx : dy;
+      moved = Math.max(moved, Math.abs(travel));
+      var slot = parseFloat(getComputedStyle(ring).getPropertyValue('--a5r-slot')) || 249.6;
+
+      /* 拖拽换算：Δn = −拖拽量 / 一格在**承轴**方向的屏幕位移
+         （两形态的 --a5r-slot 都是 249.6px，差别只在它是哪个轴 ⇒ 不必分叉）。
+         ⚠️ **方向 = 「拨转盘」**（负责人 2026-10-16 最终裁决，与契约 §7.2 原文的
+         `Δn = −dx / var(--a5r-slot)` **一致**）：
+           · 指针往**左**拖 ⇒ 环往**右**转（焦点环序**递减**）
+           · 指针往**右**拖 ⇒ 环往**左**转（焦点环序**递增**）
+         读起来是"用手指把转盘拨过去"，而不是"把卡片从环上拽着走"。
+         （中途曾按"跟着指针走"实现过一版（取 +），已按本次裁决改回 −。）
+         键盘那条路径（§8 的 ←/→/↑/↓）语义独立于拖拽方向，不受本条影响。 */
+      /* 只累计**像素位移**；环的旋转由 rotDeg() 连续算出来（不在这里改动 focusFloat）。
+         ⇒ 拖动过程中没有"取整基准"这种东西，也就不会出现整排突变。 */
+      travelPx += travel;
+      samples.push({ t: now(), x: e.clientX, y: e.clientY });
+      while (samples.length > 2 && now() - samples[0].t > 100) samples.shift();
+      render();
+    }
+
+    function pointerUp(e) {
+      if (e.pointerId !== pid) return;
+      pid = null;
+      window.removeEventListener('pointermove', pointerMove);
+      window.removeEventListener('pointerup', pointerUp);
+      window.removeEventListener('pointercancel', pointerUp);
+      ring.classList.remove('is-dragging');
+      /* 拖拽 > 6px ⇒ 吞掉随后那一次 click（§7.2，阈值照旧 v1 页） */
+      suppressClick = moved > 6;
+      if (dragging && samples.length > 1) {
+        var a = samples[0], b = samples[samples.length - 1];
+        var dt = b.t - a.t;
+        var axes = AXES[ring.classList.contains('a5r-ring--vertical') ? 'v' : 'h'];
+        var v = dt > 0 ? ((axes.slot === 'dx' ? b.x - a.x : b.y - a.y) / dt) : 0;   /* px/ms */
+        dragging = false;
+        /* 启动阈值 |v| ≥ 0.15 px/ms 才滑行，否则直接吸附（§7.3） */
+        if (Math.abs(v) >= 0.15) { startInertia(v); return; }
+      }
+      /* 松手：把本次累计的位移一次性折算成格数、取整到最近的格 ⇒ 吸附 */
+      dragging = false;
+      focusFloat = wrap(focusFloat - (DRAG_GAIN * travelPx) / slotOf());
+      travelPx = 0;
+      snapTo(Math.round(focusFloat));
+    }
+
+    /* ---------------------------------------------------------- 惯性滑行 */
+    /* §7.3：初速度 = 松手前 100ms 均速；每 16ms 帧 v ← v × 0.92；|v| < 0.02 停；
+       1200ms 硬上限。**只写 transform 与 CSS 变量**，循环内不读布局（§5.6 门槛①）。
+       §11.4：本档"不换形态"，惯性**照旧可跑**，只是时长口径见 §7.6 的豁免。 */
+    function startInertia(v) {
+      stopInertia();
+      inertiaStart = now();
+      var last = inertiaStart;
+      var step = function () {
+        var t = now();
+        var elapsed = t - last;
+        last = t;
+        v *= Math.pow(0.92, step16(elapsed));
+        var slot = parseFloat(getComputedStyle(ring).getPropertyValue('--a5r-slot')) || 249.6;
+        focusFloat += (DRAG_GAIN * v * elapsed) / slot;
+        render();
+        if (Math.abs(v) < 0.02 || t - inertiaStart > 1200) { raf = null; snapTo(Math.round(focusFloat)); return; }
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+    function step16(ms) { return Math.max(0, ms) / 16; }
+    function stopInertia() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    /* -------------------------------------------------------------- 键盘 */
+    /* §8.1 / §8.3 的键位表，**两种朝向完全相同** ⇒ 这里**不含**任何朝向分支
+       （不得按 matchMedia 或类名给键位写分支；本档不换形态，照这一份走）。
+       ←/→ 与 ↑/↓ 都移一格；Enter 进入；Space / Home / End 有意不做。 */
+    function keyDown(e) {
+      var d = 0;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') d = -1;
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') d = 1;
+      else if (e.key === 'Enter') { enterFocused(); e.preventDefault(); return; }
+      else return;
+      e.preventDefault();
+      /* 键盘移焦点**必须同时**把该卡转到前方正中（§8.1 焦点跟随 / V-L）——
+         所以走 snapTo（吸附）而不是只改个下标。 */
+      snapTo(wrap(Math.round(focusFloat) + d));
+    }
+
+    function enterFocused() {
+      var i = wrap(Math.round(focusFloat));
+      var el = cards[i];
+      /* 进入反馈（§6.1）：一次短暂推进（放大），160ms 后摘除。是**尺寸**维度，
+         与悬停的位移、选中的底色互不共享 ⇒ 三类反馈"明确"（V-B）。 */
+      el.classList.add('is-enter');
+      setTimeout(function () { el.classList.remove('is-enter'); }, 160);
+      statusEl.textContent = '进入：' + PROJECTS[i].name;
+    }
+
+    /* --------------------------------------------------------- 悬停 / 点击 */
+    /* 悬停 = 沿视口 Y 轴微抬 4px + 描边变主色（§6.1；**只改变量**，不写 translateY）。
+       悬停即暂停惯性（D14）；指针离开环区域后延迟 --dur-page 再恢复（防"擦着走过"误判为停留）。
+       注：悬停**最远档**的卡也给反馈（鼠标用户不认档位门，§6.2）。 */
+    var resumeTimer = null;
+    cards.forEach(function (el) {
+      el.addEventListener('pointerenter', function () {
+        if (resumeTimer) { clearTimeout(resumeTimer); resumeTimer = null; }
+        el.classList.add('is-hover');
+        if (raf) { stopInertia(); snapTo(Math.round(focusFloat)); }
+      });
+      el.addEventListener('pointerleave', function () {
+        el.classList.remove('is-hover');
+        if (resumeTimer) clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(function () { resumeTimer = null; }, 160);
+      });
+      el.addEventListener('click', function () {
+        if (suppressClick) { suppressClick = false; return; }   /* 拖拽后吞掉这一次 click */
+        /* 点非焦点卡 ⇒ 先把它转到前方正中；点焦点卡 ⇒ 进入 */
+        var i = cards.indexOf(el);
+        if (wrap(Math.round(focusFloat)) !== i) { snapTo(i); return; }
+        enterFocused();
+      });
+    });
+
+    /* ---------------------------------------------------------- 开场旋转 */
+    /* 页面加载时先转几圈、减速，最后**精确停在环序 1**（负责人 2026-10-16 需求）。
+       做法：把 focusFloat 从 −SPIN_TURNS 连续推到 0，用 ease-out 幂曲线让末速度趋近 0
+       ⇒ 停下时正好是整数 0（= 环序 1），不需要再吸附一次。
+       · 期间**不挂** `.is-snapping`（每帧瞬写，与拖拽同一条通道），否则会拖尾；
+       · 命中"减少动态效果"则**跳过**动画直接落位；
+       · 用户在这期间碰指针 / 按键 ⇒ 立即中止（不跟用户抢）。 */
+    var SPIN_TURNS = 1;        /* 开场转几圈（负责人 2026-10-16：约一圈即可，3 圈太快） */
+    var SPIN_MS = 1900;        /* 时长 */
+    var introRaf = null;
+    function stopIntro() {
+      if (introRaf) { cancelAnimationFrame(introRaf); introRaf = null; }
+    }
+    function startIntro() {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      focusFloat = 0;
+      travelPx = 0;
+      if (reduce) { render(); return; }   /* 该档下不动画，直接停在环序 1 */
+      var t0 = performance.now();
+      var total = SPIN_TURNS * N;
+      var step = function (t) {
+        var p = Math.min(1, (t - t0) / SPIN_MS);
+        var eased = 1 - Math.pow(1 - p, 3);            /* ease-out：起步最快、末段趋零 */
+        focusFloat = -(1 - eased) * total;
+        render();
+        if (p < 1) { introRaf = requestAnimationFrame(step); return; }
+        focusFloat = 0;                                 /* 精确落位到环序 1 */
+        introRaf = null;
+        render();
+      };
+      introRaf = requestAnimationFrame(step);
+    }
+
+    /* ------------------------------------------------------------ 装配 */
+    ring.addEventListener('pointerdown', pointerDown);
+    ring.addEventListener('pointerdown', stopIntro, { capture: true });
+    window.addEventListener('keydown', keyDown);
+    window.addEventListener('keydown', stopIntro, { capture: true });
+
+    /* --------------------------------------- 档位开关（§11.4 / 与 P2 同一套机制） */
+    /* 切的是 `.a5r-ring` 上的范围类 `.a5r-ring--static`（本类在样式表里**没有规则**，
+       见 components.css §26.6 —— 它只是"豁免档"的可见标记）。切完 render() 一次让
+       行内变量保持与几何一致（几何不变，故位置不动），徽标 + aria-pressed + 活区播报
+       三处承载"现在是哪个档"。⚠️ 不写媒体查询、不依赖系统偏好、不给键位加分支。 */
+    var staticBtn = document.getElementById('a5r-static');
+    var tierBadge = document.getElementById('a5r-tier');
+    if (staticBtn) staticBtn.addEventListener('click', function () {
+      var on = ring.classList.toggle('a5r-ring--static');
+      staticBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (tierBadge) tierBadge.textContent = on ? '当前档：减少动态效果（豁免）' : '当前档：默认（豁免不生效）';
+      render();
+      statusEl.textContent = on ? '档位：减少动态效果（豁免档）' : '档位：默认（无豁免）';
+    });
+
+    /* 初始：先转几圈再停在环序 1（见 startIntro）；不再直接 render() */
+    startIntro();
+    /* 再渲染一次：让首帧之后立刻有一帧稳态（避免某些浏览器首帧变量未生效） */
+    requestAnimationFrame(render);
+    window.addEventListener('resize', render);
+  })();
+</script>
+</body>
+</html>
