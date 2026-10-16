@@ -19,9 +19,11 @@ import { afterAll, describe, expect, it } from 'vitest'
 // @ts-expect-error 该文件是 JS（无类型声明），形状由下一行的断言约定
 import { treeSha256 as canonicalTreeSha256 } from '../../../tools/pipeline/lib/tree-hash.mjs'
 import {
+  devTreeSignature,
   isTreeFingerprintFresh,
   normalizeBuilds,
   resolveTreeFingerprints,
+  type FileStat,
   type FingerprintFs,
   type HashFactory,
   type StagedBuild,
@@ -42,11 +44,15 @@ const KEY = 'main'
  * 与真实暂存根的形状一致（产物挂在 `<暂存根>/<key>/**`）——
  * 少了 `<key>` 这一段，假 fs 会静默查不到内容（一切哈希成空串），测出来的结论全是假的。
  */
-function fakeFs(trees: Record<string, Record<string, string>>, withBytes = true) {
-  const calls = { listFiles: 0, sha256: 0, bytes: 0 }
+function fakeFs(trees: Record<string, Record<string, string>>, withBytes = true, withMtime = true) {
+  const calls = { listFiles: 0, sha256: 0, bytes: 0, mtimeMs: 0 }
   const content: Record<string, string> = {}
+  const mtimes: Record<string, number> = {}
   for (const [key, files] of Object.entries(trees)) {
-    for (const [path, text] of Object.entries(files)) content[`${DIR}/${key}/${path}`] = text
+    for (const [path, text] of Object.entries(files)) {
+      content[`${DIR}/${key}/${path}`] = text
+      mtimes[`${DIR}/${key}/${path}`] = 1_000_000
+    }
   }
   const sha256Of = (text: string): string => createHash('sha256').update(text).digest('hex')
   const fs: FingerprintFs = {
@@ -70,8 +76,16 @@ function fakeFs(trees: Record<string, Record<string, string>>, withBytes = true)
           },
         }
       : {}),
+    ...(withMtime
+      ? {
+          async mtimeMs(file: string) {
+            calls.mtimeMs += 1
+            return mtimes[file] ?? 0
+          },
+        }
+      : {}),
   }
-  return { fs, calls }
+  return { fs, calls, content, mtimes }
 }
 
 /** 只有一个构建目录时的简写。 */
@@ -265,6 +279,117 @@ describe('isTreeFingerprintFresh：廉价比对（不重算整棵树）', () => 
     expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, stagedBuild(SAMPLE), fs)).toBe(true)
     const changed = fakeFs(oneTree({ ...SAMPLE, 'Build/main.wasm': 'WASM-2' }), false)
     expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, stagedBuild(SAMPLE), changed.fs)).toBe(false)
+  })
+})
+
+describe('同大小 / 仅 mtime 变：把"签名验证"最容易漏的那条锁住', () => {
+  /** 两份内容**等长**的产物：与 `make-stub-unity.mjs --variant` 造的"同尺寸变体"同形。 */
+  const A = { 'index.html': '<html>aa</html>', 'Build/main.data': 'AAAA', 'Build/main.wasm': 'WWWW' }
+  const B = { 'index.html': '<html>bb</html>', 'Build/main.data': 'BBBB', 'Build/main.wasm': 'WWWW' }
+
+  it('前提：A 与 B 逐文件字节、总字节完全相同，只有内容不同', () => {
+    expect(totalBytesOf(A)).toBe(totalBytesOf(B))
+    expect(filesOf(A).map((file) => file.bytes)).toEqual(filesOf(B).map((file) => file.bytes))
+  })
+
+  it('大小相同、内容不同 ⇒ 判**不新鲜**（只按大小判"没变"会漏掉这一条）', async () => {
+    const { fs } = fakeFs(oneTree(B))
+    expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, stagedBuild(A), fs)).toBe(false)
+  })
+
+  it('大小相同、内容不同 ⇒ 指纹必变（"换了包就换 URL"在等长改写上也成立）', async () => {
+    const before = fakeFs(oneTree(A), true, false)
+    const after = fakeFs(oneTree(B), true, false)
+    const build = stagedBuild(A)
+    const first = await resolveTreeFingerprints(DIR, [build], before.fs, createHash)
+    const second = await resolveTreeFingerprints(DIR, [build], after.fs, createHash)
+    expect(second[KEY]!.treeSha256).not.toBe(first[KEY]!.treeSha256)
+    expect(second[KEY]!.totalBytes).toBe(first[KEY]!.totalBytes)
+    expect(second[KEY]!.treeSha256).toBe(canonicalTreeHash(B))
+  })
+
+  it('内容逐字节相同、mtime 变了 ⇒ 仍然**新鲜**（mtime 只触发复核，不参与"内容是否相同"的判定）', async () => {
+    const { fs, mtimes } = fakeFs(oneTree(SAMPLE))
+    const build = stagedBuild(SAMPLE)
+    for (const file of Object.keys(mtimes)) mtimes[file] = 2_000_000
+    expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, build, fs)).toBe(true)
+    const resolved = await resolveTreeFingerprints(DIR, [build], fs, createHash)
+    expect(resolved[KEY]!.treeSha256).toBe(build.treeSha256 as string)
+  })
+
+  it('注入的 fs 缺 bytes / mtimeMs：行为退回旧口径，不误判"不新鲜"', async () => {
+    const noBytes = fakeFs(oneTree(SAMPLE), false, false)
+    expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, stagedBuild(SAMPLE), noBytes.fs)).toBe(true)
+    const withMtime = fakeFs(oneTree(SAMPLE), true, true)
+    expect(await isTreeFingerprintFresh(`${DIR}/${KEY}`, stagedBuild(SAMPLE), withMtime.fs)).toBe(true)
+  })
+})
+
+describe('devTreeSignature：廉价签名必须看得见"等长改写"（Issue #60 的缓存键判据）', () => {
+  /** 用 memfs 风格的小假件：`相对路径 → { bytes, mtimeMs }`，可直接改写以模拟"文件被写过"。 */
+  function statFs(entries: Record<string, FileStat>) {
+    const calls = { stat: 0 }
+    return {
+      calls,
+      fs: {
+        async stat(file: string) {
+          calls.stat += 1
+          const entry = entries[file]
+          if (!entry) throw new Error(`ENOENT: ${file}`)
+          return entry
+        },
+      },
+    }
+  }
+  const path = (relative: string): string => `${DIR}/${KEY}/${relative}`
+  const files = ['Build/main.data', 'Build/main.wasm', 'index.html']
+
+  it('同一份读数 ⇒ 同一签名（确定性；入参顺序无关）', async () => {
+    const { fs } = statFs({
+      [path('Build/main.data')]: { bytes: 4, mtimeMs: 1000 },
+      [path('Build/main.wasm')]: { bytes: 4, mtimeMs: 1000 },
+      [path('index.html')]: { bytes: 10, mtimeMs: 1000 },
+    })
+    const a = await devTreeSignature(files, path, fs, createHash)
+    const b = await devTreeSignature([...files].reverse(), path, fs, createHash)
+    expect(a).toBe(b)
+    expect(a).toMatch(/^[0-9a-f]{64}$/)
+  })
+
+  it('**大小不变、只 mtime 变 ⇒ 签名必须变**（等长改写就是靠这一条被发现）', async () => {
+    const base = {
+      [path('Build/main.data')]: { bytes: 4, mtimeMs: 1000 },
+      [path('Build/main.wasm')]: { bytes: 4, mtimeMs: 1000 },
+      [path('index.html')]: { bytes: 10, mtimeMs: 1000 },
+    }
+    const before = statFs(base)
+    const after = statFs({ ...base, [path('Build/main.data')]: { bytes: 4, mtimeMs: 2000 } })
+    expect(await devTreeSignature(files, path, after.fs, createHash)).not.toBe(
+      await devTreeSignature(files, path, before.fs, createHash),
+    )
+  })
+
+  it('大小变 / 文件数变 ⇒ 签名也变（原有判据不许退化）', async () => {
+    const base = {
+      [path('Build/main.data')]: { bytes: 4, mtimeMs: 1000 },
+      [path('Build/main.wasm')]: { bytes: 4, mtimeMs: 1000 },
+      [path('index.html')]: { bytes: 10, mtimeMs: 1000 },
+    }
+    const original = await devTreeSignature(files, path, statFs(base).fs, createHash)
+    const bigger = await devTreeSignature(
+      files,
+      path,
+      statFs({ ...base, [path('Build/main.data')]: { bytes: 5, mtimeMs: 1000 } }).fs,
+      createHash,
+    )
+    const fewer = await devTreeSignature(files.slice(1), path, statFs(base).fs, createHash)
+    expect(bigger).not.toBe(original)
+    expect(fewer).not.toBe(original)
+  })
+
+  it('读不到元数据（文件被删）⇒ 返回 unreadable（不编造读数）', async () => {
+    const { fs } = statFs({})
+    expect(await devTreeSignature(files, path, fs, createHash)).toBe('unreadable')
   })
 })
 

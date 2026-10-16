@@ -50,8 +50,11 @@
 指纹的来源与三条链的口径见 `05-unity-packaging-pipeline.md` §3.5：**暂存链也已经带上它**
 （`unity-stage.mjs` 起写进 `unity/builds/manifest.json`），所以 dev / 暂存这条路同样不会踩；
 你只要重跑一次 `unity-stage.mjs`，界面刷新后 URL 里的 `?v=` 就换了，**不需要清 IndexedDB**。
-反过来：若你手工往 `unity/builds/<key>/` 里塞/换了文件却没有重跑暂存脚本，dev 侧会按"新鲜度"
-复核后现算一个反映当前目录的指纹（不会沿用旧值），所以也不必靠清站点数据。
+反过来：若你手工往 `unity/builds/<key>/` 里塞/换了文件却没有重跑暂存脚本，dev 侧也能发现 ——
+它每次请求都先按**文件路径 + 大小 + mtime** 算一个廉价签名，签名一变就逐文件复核内容，
+有差异才现算一个反映当前目录的指纹（不会沿用旧值）。所以**连"大小没变的等长改写"也不会漏**，
+不必靠清站点数据；反过来"重新暂存同一份产物"只会多复核一次、不会白换 URL。
+判定细节与为何 mtime 可依赖（产物只由受控流程重写）：见 `05-unity-packaging-pipeline.md` §3.5。
 排查时若怀疑是缓存：开发者工具 → Application → Storage → 清掉 IndexedDB 与 Cache Storage 再看。
 
 ### ③ Addressables 内容跑到了构建目录之外（用了才会遇到）

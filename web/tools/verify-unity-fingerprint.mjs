@@ -17,7 +17,7 @@
  * 退出码：0 = 两条判据都成立；1 = 有判据不成立（打印读数，不掩盖）。
  */
 import { spawnSync } from 'node:child_process'
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readdir, readFile, rm, utimes } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -53,17 +53,22 @@ function runNode(script, argv) {
 }
 
 /**
- * 造一版桩构建并暂存，返回这一版清单里的 `treeSha256`（= 页面应当拼进 URL 的来源）。
+ * 造一版桩构建并暂存，返回这一版清单里的 `treeSha256`（= 页面应当拼进 URL 的来源）与逐文件大小表。
  *
- * `variant` 会写进桩源码的一个注释里：真"重建"产出的包内容就是不同的，
- * 所以第二版必须与第一版**真的不一样** —— 否则测的还是同一份产物。
- * （本探针第一版就踩过这个坑：先改再生成，改动被生成器覆盖，两版指纹相同，判据 ③ 白测。）
+ * `variant` 通过 `--variant` 写进桩产物，且是**定长**的：换变体 ⇒ 内容不同、**总字节与每个文件大小完全相同**。
+ * 这样"判据 ③"验的就是真"重建出了新包"，而"判据 ④"专门验那条最刁的路径：**大小没变、内容变了**。
  */
 async function stageStub(variant) {
-  runNode('tools/pipeline/make-stub-unity.mjs', ['--key', key, '--task-types', taskTypes, '--out', stubSrc])
-  const loader = join(stubSrc, 'Build', `stub-${key}.loader.js`)
-  const content = await readFile(loader, 'utf8')
-  await writeFile(loader, `${content}\n// fingerprint probe variant: ${variant}\n`)
+  runNode('tools/pipeline/make-stub-unity.mjs', [
+    '--key',
+    key,
+    '--task-types',
+    taskTypes,
+    '--variant',
+    variant,
+    '--out',
+    stubSrc,
+  ])
   runNode('tools/pipeline/unity-stage.mjs', [
     '--from',
     stubSrc,
@@ -74,10 +79,20 @@ async function stageStub(variant) {
     '--stage-root',
     stubBuilds,
   ])
-  const manifest = JSON.parse(await readFile(join(stubBuilds, 'manifest.json'), 'utf8'))
-  const build = (manifest.builds ?? []).find((item) => item.key === key)
+  const build = await readStagedBuild()
   if (!build?.treeSha256) throw new Error(`暂存清单里没有 treeSha256（${key}）：${JSON.stringify(build)}`)
-  return build.treeSha256
+  return {
+    treeSha256: build.treeSha256,
+    fileCount: build.fileCount,
+    totalBytes: build.totalBytes,
+    sizes: new Map((build.files ?? []).map((file) => [file.path, file.bytes])),
+  }
+}
+
+/** 读当前暂存清单里的那一个构建项（用于"两版产物逐文件大小是否相同"的比对）。 */
+async function readStagedBuild() {
+  const manifest = JSON.parse(await readFile(join(stubBuilds, 'manifest.json'), 'utf8'))
+  return (manifest.builds ?? []).find((item) => item.key === key)
 }
 
 /**
@@ -99,6 +114,22 @@ async function observe(page, base) {
   const dataUrl = await page.evaluate(() => window.__WSU3_STUB_DATA_URL__ ?? null)
 
   return { manifestTreeSha256: build.treeSha256, dataUrl }
+}
+
+/** 把整棵暂存树的 mtime 统一设到一个**过去**的时刻（让"mtime 触发复核"这条判据可复现）。 */
+async function touchStagedTree(when) {
+  for (const file of await walkAll(join(stubBuilds, key))) await utimes(file, when, when)
+}
+
+/** 递归列出目录下所有文件（绝对路径）。 */
+async function walkAll(dir) {
+  const out = []
+  for (const entry of await readdir(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name)
+    if (entry.isDirectory()) out.push(...(await walkAll(full)))
+    else if (entry.isFile()) out.push(full)
+  }
+  return out
 }
 
 let server
@@ -123,26 +154,29 @@ try {
   // —— 判据 ①：dev 合成清单里报的指纹 = 暂存脚本算出来的指纹（前半段 = Issue #60 验收 ①）
   const firstSeen = await observe(page, base)
   check(
-    firstSeen.manifestTreeSha256 === first,
+    firstSeen.manifestTreeSha256 === first.treeSha256,
     'dev 合成清单里的 treeSha256 与暂存清单一致',
-    `manifest=${firstSeen.manifestTreeSha256?.slice(0, 12) ?? '（缺失）'} stage=${first.slice(0, 12)}`,
+    `manifest=${firstSeen.manifestTreeSha256?.slice(0, 12) ?? '（缺失）'} stage=${first.treeSha256.slice(0, 12)}`,
   )
 
   // —— 判据 ②：页面实际请求的 `.data` URL 带 ?v=<指纹前 12 位>（Issue #60 验收 ②）
-  const firstExpected = `?v=${first.slice(0, 12)}`
   check(
-    Boolean(firstSeen.dataUrl) && firstSeen.dataUrl.includes(firstExpected),
+    Boolean(firstSeen.dataUrl) && firstSeen.dataUrl.includes(`?v=${first.treeSha256.slice(0, 12)}`),
     '.data 请求带 ?v=<treeSha256 前 12 位>',
     firstSeen.dataUrl ?? '（桩 loader 没记下 .data URL：页面可能没挂载成功）',
   )
 
   // —— 判据 ③：重暂存一份内容不同的包后刷新，URL 自己换掉（Issue #60 验收 ③，全程不清站点数据）
-  const second = await stageStub('v2-重建后的新包')
-  check(second !== first, '内容改了 ⇒ 指纹变了', `${first.slice(0, 12)} → ${second.slice(0, 12)}`)
+  const second = await stageStub('v2-rebuilt')
+  check(
+    second.treeSha256 !== first.treeSha256,
+    '内容改了 ⇒ 指纹变了',
+    `${first.treeSha256.slice(0, 12)} → ${second.treeSha256.slice(0, 12)}`,
+  )
 
   const secondSeen = await observe(page, base)
   check(
-    Boolean(secondSeen.dataUrl) && secondSeen.dataUrl.includes(`?v=${second.slice(0, 12)}`),
+    Boolean(secondSeen.dataUrl) && secondSeen.dataUrl.includes(`?v=${second.treeSha256.slice(0, 12)}`),
     '重暂存后刷新的 .data URL 换成了新指纹',
     secondSeen.dataUrl ?? '（桩 loader 没记下 .data URL）',
   )
@@ -150,6 +184,47 @@ try {
     secondSeen.dataUrl !== firstSeen.dataUrl,
     '两版产物的 .data URL 不同（"不清站点数据也拿到新包"的判据）',
     `${firstSeen.dataUrl} → ${secondSeen.dataUrl}`,
+  )
+
+  // —— 判据 ④：**同样大小、只有内容变**（v3 与 v2 逐文件字节相同，只有定长变体标记不同）——
+  //    这是"签名验证"最容易漏的一条：只按大小判"没变"就会继续发旧指纹、命中旧缓存。
+  const third = await stageStub('v3-same-size')
+  const sizeShapeSame =
+    third.fileCount === second.fileCount &&
+    third.totalBytes === second.totalBytes &&
+    [...third.sizes].every(([path, bytes]) => second.sizes.get(path) === bytes)
+  check(
+    sizeShapeSame,
+    '两版产物的文件集合 / 逐文件字节 / 总字节完全相同（否则判据 ④ 没测到点子上）',
+    `files=${third.fileCount} bytes=${third.totalBytes}`,
+  )
+  check(
+    third.treeSha256 !== second.treeSha256,
+    '**大小相同、内容不同 ⇒ 指纹也必须变**',
+    `${second.treeSha256.slice(0, 12)} → ${third.treeSha256.slice(0, 12)}`,
+  )
+
+  const thirdSeen = await observe(page, base)
+  check(
+    Boolean(thirdSeen.dataUrl) && thirdSeen.dataUrl.includes(`?v=${third.treeSha256.slice(0, 12)}`),
+    '同大小改内容后，.data URL 的 ?v= 也换掉了',
+    thirdSeen.dataUrl ?? '（桩 loader 没记下 .data URL）',
+  )
+
+  // —— 判据 ⑤：**内容没变、只有 mtime 变**（把整棵树的 mtime 统一拨到一个过去时刻）——
+  //    这里反而要求"指纹不许变"：mtime 只是廉价失效触发器，它触发的是**内容复核**，
+  //    复核结论必须是"内容逐字节相同 ⇒ 复用旧指纹"（否则每次重新暂存都会白换一次 URL）。
+  await touchStagedTree(new Date('2001-01-01T00:00:00Z'))
+  const fourthSeen = await observe(page, base)
+  check(
+    fourthSeen.manifestTreeSha256 === third.treeSha256,
+    '仅 mtime 变（内容逐字节相同）⇒ dev 复核后仍报同一指纹（不误报"内容变了"）',
+    `manifest=${fourthSeen.manifestTreeSha256?.slice(0, 12) ?? '（缺失）'} 期望=${third.treeSha256.slice(0, 12)}`,
+  )
+  check(
+    fourthSeen.dataUrl === thirdSeen.dataUrl,
+    '仅 mtime 变 ⇒ .data URL 不变（不白换缓存键、不白下载 86 MB）',
+    `${thirdSeen.dataUrl} → ${fourthSeen.dataUrl}`,
   )
 } finally {
   await browser?.close().catch(() => {})

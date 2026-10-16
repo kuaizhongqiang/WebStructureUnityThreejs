@@ -7,11 +7,14 @@ import { createHash } from 'node:crypto'
 import { defineConfig, type Plugin } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import {
+  devTreeSignature,
   normalizeBuilds,
   resolveTreeFingerprints,
   type BuildFingerprint,
+  type FileStat,
   type FingerprintFs,
   type HashFactory,
+  type StatFs,
   type StagedBuild,
 } from './src/unity/release-manifest'
 
@@ -312,11 +315,21 @@ async function walkRelative(dir: string): Promise<string[]> {
 }
 
 /**
- * dev：列暂存目录用的文件系统实现（真实 `node:fs`，注入给 `resolveTreeFingerprints`）。
+ * dev：读产物目录的**元数据**（大小 + 修改时间），注入给两处用：
+ *   · `FingerprintFs.bytes` / `.mtimeMs`（内容复核时量大小）；
+ *   · `devTreeSignature` 的 `StatFs`（廉价签名时看"有没有被写过"）。
  *
- * 三个动作都直接落在磁盘上：`listFiles` 递归列相对路径（`/` 分隔，与流水线口径一致），
- * `sha256` 读整个文件算内容哈希，`bytes` 取文件大小（省掉"为了拿大小再读一遍"）。
+ * 一次 `stat` 同时给两个读数，所以这里是唯一的元数据入口，不另开第二条路径。
+ * mtime **只作失效触发器**用（构建与暂存都整份重写产物 ⇒ 必然可见），
+ * "内容到底变没变"始终由 `isTreeFingerprintFresh` 逐文件哈希判定。
  */
+const readFileStat = async (file: string): Promise<FileStat> => {
+  const info = await stat(file)
+  return { bytes: info.size, mtimeMs: info.mtimeMs }
+}
+
+const devStatFs: StatFs = { stat: readFileStat }
+
 const devFingerprintFs: FingerprintFs = {
   listFiles: walkRelative,
   async sha256(file) {
@@ -325,32 +338,16 @@ const devFingerprintFs: FingerprintFs = {
       .digest('hex')
   },
   async bytes(file) {
-    return (await stat(file)).size
+    return (await readFileStat(file)).bytes ?? 0
+  },
+  async mtimeMs(file) {
+    return (await readFileStat(file)).mtimeMs ?? 0
   },
 }
 
-/**
- * 暂存目录内容的**廉价摘要**：只 `stat` 文件大小（**不读内容**），对"路径 + 大小"排序后哈希。
- *
- * 为什么不能只用清单的声明值：产物可能是**没走暂存脚本**换进去的（手工拷、别的脚本搬），
- * 那时清单没变，只认声明值就会一直给旧指纹 —— 那正是 Issue #60 的病灶。
- * 一次 walk 约 80 次 `stat`（37 个文件量级，几毫秒），比读 86 MB 便宜四个数量级。
- *
- * ⚠️ 它**不是内容哈希**：改了内容而大小不变的编辑识别不出来（那要读内容，就回到了重算）。
- * 这类编辑的正式入口是重新暂存（会重写清单 ⇒ 签名必变）。
- */
+/** 一个构建的**廉价签名**：清单 mtime + 声明字段 + 产物目录元数据签名（路径 + 大小 + mtime）。 */
 async function devTreeDigest(dir: string): Promise<string> {
-  const hash = createHash('sha256')
-  try {
-    for (const file of await walkRelative(dir)) {
-      const size = (await stat(join(dir, file))).size
-      hash.update(`${file}:${size}\n`)
-    }
-  } catch {
-    // 目录不在 / 读到一半消失：不编造摘要，交给现算路径去报"读不动"
-    return 'unreadable'
-  }
-  return hash.digest('hex')
+  return devTreeSignature(await walkRelative(dir), (relative) => join(dir, relative), devStatFs, createHash)
 }
 
 /**
@@ -358,14 +355,15 @@ async function devTreeDigest(dir: string): Promise<string> {
  *
  * WHY 要缓存：dev 每次刷新页面都会请求 `/release-manifest.json`，而新鲜度校验要读一遍
  * 86 MB 的产物（逐文件哈希）。所以用**便宜的签名**先判断"这一轮还要不要重新校验"：
- * 暂存清单的 `mtimeMs` + 该构建声明的 `fileCount`/`totalBytes` + 暂存目录的 `stat` 摘要。
+ * 暂存清单的 `mtimeMs` + 该构建声明的 `fileCount`/`totalBytes` + 产物目录的元数据签名
+ * （路径 + 大小 + **mtime**，见 `devTreeSignature`）。
  *
- * 失效判据覆盖两个现实路径：
- *   · **重新暂存同一个 key** ⇒ 重写 `manifest.json` ⇒ mtime 变 ⇒ 必重算（主场景）；
- *   · **绕过暂存脚本换产物**（手工拷贝等）⇒ 目录里文件的大小/数量变 ⇒ 摘要变 ⇒ 必重算。
- *
- * ⚠️ 仍有的边界：**改了内容而大小不变、又没重新暂存**时签名不变，继续给旧指纹 ——
- * 认这一条是为了不每次请求读 86 MB；这类编辑的正式入口是重新暂存。
+ * 失效判据覆盖三条路径，**包括"等长改写"**：
+ *   · **重新暂存同一个 key** ⇒ 重写 `manifest.json` ⇒ mtime 变 ⇒ 必复核（主场景）；
+ *   · **绕过暂存脚本换产物**（手工拷 / 别的脚本搬）⇒ 文件数量或大小变 ⇒ 签名变 ⇒ 必复核；
+ *   · **内容变了但大小没变、又没重新暂存** ⇒ **mtime 变** ⇒ 签名变 ⇒ 必复核
+ *     —— 这一条以前是空档，只按大小看会继续发旧指纹（Issue #60 的病灶就是这么来的）。
+ *     复核本身是逐文件哈希，所以"文件被写过但内容其实没变"只会多花一次 86 MB，不会被误报。
  */
 const fingerprintCache = new Map<string, { signature: string; fingerprint: BuildFingerprint }>()
 

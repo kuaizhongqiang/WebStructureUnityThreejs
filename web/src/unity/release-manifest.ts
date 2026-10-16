@@ -83,12 +83,68 @@ export interface FingerprintFs {
   sha256(file: string): Promise<string>
   /** 单文件字节数：省掉"为拿大小再读一遍文件"。拿不到时退回用清单里记的字节数 */
   bytes?(file: string): Promise<number>
+  /**
+   * 单文件修改时间（毫秒）。**只作"廉价失效触发器"用**，不参与"内容是否相同"的判定：
+   * 产物目录里的文件每次都由构建脚本 / 暂存脚本重写 ⇒ mtime 必变；
+   * 反过来"mtime 变了但内容没变"（重新暂存同一份产物）只是多复核一次，不会误报不新鲜。
+   */
+  mtimeMs?(file: string): Promise<number>
 }
 
 /** 哈希原语工厂（与 `node:crypto` 的 `createHash` 同形，方便注入与单测）。 */
 export type HashFactory = (algorithm: 'sha256') => {
   update(data: string): unknown
   digest(enc: 'hex'): string
+}
+
+/** dev 侧的 `stat` 读数（只读元数据，读不到就是 `null`）。 */
+export interface FileStat {
+  bytes: number | null
+  mtimeMs: number | null
+}
+
+/** dev 侧"读元数据"的入口（真实实现由 `vite.config.ts` 传 `node:fs` 的 `stat`）。 */
+export interface StatFs {
+  stat(file: string): Promise<FileStat>
+}
+
+/**
+ * 暂存目录的**廉价签名**：只读元数据（路径 + 大小 + mtime），**不读文件内容**。
+ *
+ * 它只回答一个问题："**这一轮还需要重新做内容复核吗**" —— 变了就复核，没变就直接复用上次的指纹。
+ * 所以它必须能看见"产物被写入过"，而**只按大小是看不见**的（重写后恰好同大小就会漏）。
+ *
+ * 为什么 mtime 可以依赖（而不是靠猜）：
+ *   · Unity 构建与 `unity-stage.mjs` 都会**整份重写**产物（暂存是先删目录再拷），
+ *     每次写入 mtime 必变 —— 这是"受控流程"给出的可依赖信号；
+ *   · 浏览器的一次请求与这些写入在时间上不可能落在同一拍，所以等长改写也不会被吞掉；
+ *   · 反过来"重新暂存同一份产物"只会让 mtime 变、内容没变 ⇒ 只是多复核一次，
+ *     复核的结论（逐文件哈希相同）会照旧复用旧指纹，**不会误报成"内容变了"**
+ *     —— 真判据始终是 `isTreeFingerprintFresh`，mtime 只是触发器。
+ *
+ * 代价：一次 walk 约 80 次 `stat`（37 个文件量级，几毫秒），比读 86 MB 便宜四个数量级。
+ *
+ * @param files 目录内相对路径（`/` 分隔；内部会排序，入参顺序不影响结果）
+ * @param filePath 相对路径 → 交给 `fs.stat` 的路径（由调用方拼，避免本模块依赖 `node:path`）
+ */
+export async function devTreeSignature(
+  files: readonly string[],
+  filePath: (relative: string) => string,
+  fs: StatFs,
+  createHashImpl: HashFactory,
+): Promise<string> {
+  const hash = createHashImpl('sha256')
+  for (const file of [...files].sort()) {
+    let stat: FileStat
+    try {
+      stat = await fs.stat(filePath(file))
+    } catch {
+      // 读到一半消失：不编造读数，把"不可读"也变成一个会变的签名（下一轮必复核）
+      return 'unreadable'
+    }
+    hash.update(`${file}:${stat.bytes ?? '-'}:${stat.mtimeMs ?? '-'}\n`)
+  }
+  return hash.digest('hex')
 }
 
 /** 一次现算得到的产物指纹。 */

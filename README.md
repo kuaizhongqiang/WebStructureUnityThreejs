@@ -90,8 +90,10 @@ npm run build         # 类型检查 + 生产构建 → dist/
 > **dev 服务器现在也服务 Unity 产物**（DEC-114）：`/unity/<key>/**` 与合成出来的 `/release-manifest.json`
 > 从 `unity/builds/` 读（暂存根可用 `WSU3_UNITY_DEV_ROOT` 改道）。所以**不必先打包**就能在浏览器里
 > 人工联调 Unity 类任务；一个构建都没暂存时它会如实报 `unity.included = false`（页面显示"产物未就位"）。
-> 合成出来的清单里带上**当前暂存内容的 `treeSha256`**（暂存清单里的值新鲜就直接用，不新鲜就现算），
-> 加载器据此给 `.data` 拼 `?v=` —— 重建 + 重暂存 + 刷新就能换包，**不需要清站点数据**（Issue #60）。
+> 合成出来的清单里带上**当前暂存内容的 `treeSha256`**：dev 每请求先按「路径 + 大小 + mtime」算廉价签名，
+> 签名变了才逐文件复核内容；内容一致就复用清单里的值，有差异才现算。
+> 加载器据此给 `.data` 拼 `?v=` —— 重建 + 重暂存 + 刷新就能换包，**不需要清站点数据**；
+> 连"大小没变的等长改写"也不会漏（口径见 [`docs/design/05`](./docs/design/05-unity-packaging-pipeline.md) §3.5，Issue #60）。
 >
 > **Unity 侧的自测开关**（DEC-113）：`0_Setup` 的根物体 `TestSwitch` 上有 `StartupTestSwitch` ——
 > Inspector 里把 `testEnabled` 勾上并填 `taskType` / `projectClip`，或者在 WebGL 产物地址后面加
@@ -212,6 +214,8 @@ node tools/pipeline/pack.mjs
 - 发布清单 `web/dist/release-manifest.json` 会随包发布，写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与服务端约定。
 - `treeSha256` 是**整棵产物的内容指纹**，暂存清单与发布清单**共用同一个口径**（`tools/pipeline/lib/tree-hash.mjs`）；
   加载器用它给 `.data` 拼 `?v=`，否则 Unity 的数据缓存会按老 URL 命中旧包（口径见 `docs/design/05` §3.5）。
+- 产物**变了就一定换 URL**（含"大小没变的等长改写"）：dev 侧每请求按「路径 + 大小 + mtime」算廉价签名，
+  变了才逐文件复核内容；真浏览器判据跑 `npm run verify:fingerprint`（自备桩构建，不动 `unity/builds/`）。
 - **Unity 缺席不影响 Web 侧打包，但界面上会明确写"Unity 产物未包含"**（Unity 类任务不再假装能进）。
 - `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
 
