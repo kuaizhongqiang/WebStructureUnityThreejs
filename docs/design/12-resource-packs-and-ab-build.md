@@ -329,7 +329,7 @@ scene:exit
 ## 9 明确没做 / 未闭合
 
 1. **全局包一个都没登记**：Unity 侧不做界面（DEC-80）⇒ 没有 UI 包与字体包；
-   相机背景板的取图入口还没接（`../TODO.md` D-20）⇒ 没有背景包。抽象与流程已就位，登记表留空是**如实**状态。
+   相机背景板的取图入口**经负责人拍板不做**（**DEC-161**，2026-10-16）⇒ **不欠**背景包。抽象与流程已就位，登记表留空是**如实**状态。
 2. **简介 / 检测的内容 Provider 未登记**：对应素材目录本工程还没有。
 3. **`ServerData/` 这套"内容跑到构建目录之外"的老路径本工程不会出现**：AA 走默认 profile；
    `tools/pipeline/unity-stage.mjs` 的 `--extra` 在本工程用不上（留着不影响）。
@@ -337,7 +337,7 @@ scene:exit
    12 MB 反射 cubemap 被卷进共享材质组的依赖里 —— 预算核算见 `../TODO.md` D-10。
 5. **步骤数据已落地**（DEC-111）：8 个结构件预制体自带步骤子树（由 `StructureStepGenerator` 从只读来源工程生成、
    幂等可重跑），且已按新预制体重打为 AA 内容包。
-6. **结构件的相机 / 交互闸门 / 高亮初始化未接**（`../TODO.md` D-13）：比"实例化"更靠后的那一段。
+6. ~~**结构件的相机 / 交互闸门 / 高亮初始化未接**（`../TODO.md` D-13）~~ **已闭合**（2026-10-16 复核，Issue #34 关闭）：① **相机就位**——结构件预制体**自带 Cinemachine vcam**（8 个预制体同为 local `(0, 1.08, -4.66)`，priority 10），`CinemachineBrain` 生效后主相机跟着它走（Play 实测），不需要代码去"摆相机"（DEC-160）；② **交互闸门**——`InputGate` 一套在位且**已接线**：`TaskFlowManager` 订阅 `input:enable` / `runtime:resume` 设闸门，`InteractiveManager` / `InteractiveObjBase` / `StepManager` / `InputControllerBase` 都消费它；③ **高亮**——`StructureObj.Awake → HighlightInit()`（profile `Highlight`，`Resources.Load`）+ `view:focus → SetHighlight`（`InteractiveManager.OnViewFocus`）。**仍归 #37 的是"在真产物上逐条判"**，不是"接线"。
 7. **材质绑定的自愈是"事后补救"而非"根治"**：根因是"材质接管"换了 GUID 导致 FBX 内部绑定悬空（§4.4）。
    根治要改成**不替换** FBX 自动抽出的材质（只改它的 shader 与属性、保住 GUID）—— 那是一次导入链重做，未做。
 8. **动画运行模式没有 Web 侧切换入口**（DEC-121）：现在只能由脚本 / Inspector 改 `StepManager.RunMode`；

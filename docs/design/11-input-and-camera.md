@@ -60,7 +60,7 @@ Unity 侧的**三维操控层**：三维世界里的"怎么动"—— 第一人�
 1. **没进场景**：`1_Content` 里没有角色实例；`MainCameraRig` 也没被实例化。
    ⚠️ **本条 2026-10-16 更正一处**（Play 实测）：`Resources/MainCamera.prefab` 上那枚 MonoBehaviour 的字段是 `m_DefaultBlend` / `m_CameraCutEvent` / `m_UpdateMethod` —— **就是 `CinemachineBrain`**（早期按文本搜 `CinemachineBrain` 字样命中 0 次，是因为预制体按 GUID 存脚本、搜不到字样，DEC-142 的"未检出"据此更正）。实测场景里**确有一台 vcam**（`Virtual Camera`，priority 10），它由**器件预制体自带**（8 个结构件预制体的那台位置逐字符相同：local `(0, 1.08, -4.66)`），Brain 生效后主相机跟着它走 ⇒ **结构站的实际取景是"器件预制体说了算"**（相机到模型约 4.78 单位）。
    但**操控层三个控制器仍没进场景**（实测 `FocusRotationControl` / `InputControllerBase` 实例数均为 0）⇒ 缩放与视角控制**依旧不生效**（缺的是"控制器接线"，不再是 brain）。
-2. **相机背景的取图入口没接**：本工程的资源包链路（P2-6）未落地，`CameraBg` 暂时不加载背景图（材质保持默认颜色，不做静默降级）。
+2. **相机背景的取图入口：经拍板不做**（2026-10-16，**DEC-161**，Issue #35 关闭）—— 结构站三维区背景已改为**程序化径向渐变板**（DEC-160），双纹理那套口径没有消费方，因此不再接取图入口；`CameraBg.LoadBgTextures()` 保持桩的形态（启动告警一次、不做静默降级），搬运进来的 `CamBg.mat` / `CamBgUnlitShader.shadergraph` 原样留存。
 3. **角色材质缺失是继承来的**：角色 `Capsule` 的材质引用在**来源工程里就是断的**（清单 `unresolved` 里那条 guid），搬过来仍是空材质。
 4. **没有任何实机验收**：三条控制器、瞬移、聚焦环绕都**没跑过**（没接线就跑不了）。
 
