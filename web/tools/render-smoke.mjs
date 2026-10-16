@@ -63,20 +63,86 @@ function check(ok, label, detail = '') {
 }
 
 /**
- * 目录页（A5 环形菜单）**开场旋转**的时长 + 余量。
+ * 打开目录页（A5 环形菜单）后**等环真的停稳**，返回一份静止态快照
+ * （`{ count, names, text }`）。
  *
- * 产品 `MenuView.vue` 的 `SPIN_MS = 1900`：进目录后环先转一圈再精确停在环序 1
- * （负责人 2026-10-16 需求）。旋转期间 `applyRing()` 每帧改 `--a5r-dx / --a5r-dy`，
- * 而卡片的屏幕位置**全部**由这两枚变量表达 ⇒ 每张卡都在动。
- *
- * 为什么冒烟必须等它：Playwright 的点击要"元素在两次取样之间不动"。
- * 不断言这一条的话会踩两种表现（同一根因）：
- *   ① 旋转期间点 `.a5r-card.is-focus` ⇒ `element is not stable`，一直重试到超时；
- *   ② 侥幸稳定下来时 `.is-focus` 还在换卡 ⇒ 点到的是别人（或复检撞上运动中的环）。
+ * 为什么必须等：产品 `MenuView.vue` 的 `SPIN_MS = 1900` —— 进目录后环先转一圈再精确停在
+ * 环序 1（负责人 2026-10-16 需求）。旋转期间 `applyRing()` 每帧改 `--a5r-dx / --a5r-dy`，
+ * 而卡片的屏幕位置**全部**由这两枚变量表达 ⇒ 每张卡都在动、`.is-focus` 也逐帧换人。
+ * 实测到的机制（Issue #80 的产品批，日志见 `docs/RECORD.md` §5.10）：
+ *   ① 旋转期间点 `.a5r-card.is-focus` ⇒ `element is not stable` **反复重试**（实测
+ *      54 × 500ms ≈ 27s 之后才转成"稳定"）。**不能指望"它自己会停"**：点击自身的
+ *      `pointerdown` 会调 `stopIntro()` 把环**冻在非整数格路上**，而 `snapTo()` 只在
+ *      `pointerup` 里 `Math.round` ⇒ 冻住的位置不会再吸附；同一时刻 hover 也**不**中止旋转
+ *      ⇒ 两个条件可能一直不满足，重试到 30s 超时。
+ *   ② 侥幸稳定下来时 `.is-focus` 还在换卡 ⇒ 点到的是别人。
  * 还要注意 `MenuView.vue` 的**点击语义**（`onCardClick`）：点非焦点卡只把它转到前方正中、
  * **不进项目** —— 只有点当前焦点卡才等价于"点一张项目卡进项目"。
+ *
+ * ⚠️ 判据**不是**"等一个固定时长"（`SPIN_MS` 的手抄副本会静默漂）：真正的判据是
+ * 「`.is-focus` 那张卡的 rect 在连续 rAF 里不变」—— 产品改动画时长、CI runner 跑得慢，
+ * 这里都自动跟随。逐帧取全部 9 张（不只焦点卡）是为了顺带抓住"环在动但焦点卡恰好没动"
+ * 的窗口。**只读、不改**页面状态：`getBoundingClientRect()` 读的是**屏幕**坐标，
+ * 改视口会让后续断言拿到另一套坐标。
  */
-const MENU_INTRO_MS = 2200
+async function waitForMenuSettled(page, { timeout = 15_000 } = {}) {
+  return page.evaluate(
+    ({ timeout }) =>
+      new Promise((resolve, reject) => {
+        const snapshot = () => {
+          const cards = [...document.querySelectorAll('.a5r-card')]
+          return {
+            count: cards.length,
+            names: cards.map((el) => el.querySelector('.ui-tile__name')?.textContent?.trim() ?? ''),
+            text: document.body.innerText,
+          }
+        }
+        const start = performance.now()
+        let stable = 0
+        let last = ''
+        const tick = () => {
+          /**
+           * ⚠️ 卡片是**异步**来的（路由懒加载 + 内容数据 `ensureCatalog()`），而本函数在
+           * `page.goto()` 之后**立刻**被调用 ⇒ 第一帧大概率一张都没有。这里必须**重试到出现**，
+           * 不能一帧判死（实测踩过：直接抛"目录页没有 .a5r-card"）。
+           */
+          const cards = [...document.querySelectorAll('.a5r-card')]
+          if (cards.length === 0) {
+            if (performance.now() - start > timeout) {
+              reject(new Error(`目录页一直没有 .a5r-card（${timeout}ms 内环形菜单没渲染出来）`))
+              return
+            }
+            requestAnimationFrame(tick)
+            return
+          }
+          let focusIdx = -1
+          const boxes = cards.map((el) => {
+            if (el.classList.contains('is-focus')) focusIdx = cards.indexOf(el)
+            const r = el.getBoundingClientRect()
+            return [Math.round(r.x * 10), Math.round(r.y * 10)]
+          })
+          const now = `${focusIdx}|${JSON.stringify(boxes)}`
+          stable = now === last ? stable + 1 : 1
+          last = now
+          /**
+           * 连续两帧（含焦点卡在内）9 张卡的 rect **完全一致** ⇒ 环停了。
+           * 与 `.is-focus` 的身份一起比，顺带覆盖"位置恰好没动、但焦点换人了"那一档。
+           */
+          if (stable >= 2) {
+            resolve(snapshot())
+            return
+          }
+          if (performance.now() - start > timeout) {
+            reject(new Error(`目录页环没有停稳（${timeout}ms 内焦点卡 rect 仍在变）`))
+            return
+          }
+          requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      }),
+    { timeout },
+  )
+}
 
 /** 过渡类名（页面级 / 站间级，见 `docs/ui-mockups/components.css` §22 与 DEC-157）。 */
 const TRANSITION_SELECTOR =
@@ -630,12 +696,11 @@ try {
 
   await page.click('button.ui-btn--primary') // 「以游客身份进入」
   await settle(page)
-  await page.waitForTimeout(MENU_INTRO_MS) // 目录要等内容层（文案/卡片）到位 + 环形开场旋转收尾（见 MENU_INTRO_MS）
-  const menuAfterLogin = await page.evaluate(() => ({
-    hash: location.hash,
-    tiles: document.querySelectorAll('.a5r-card').length,
-    text: document.body.innerText,
-  }))
+  const menuSettled = await waitForMenuSettled(page) // 等目录的内容层与环形开场旋转都收尾
+  const menuAfterLogin = await page.evaluate(
+    (tiles) => ({ hash: location.hash, tiles, text: document.body.innerText }),
+    menuSettled.count,
+  )
   check(
     menuAfterLogin.hash === '#/menu',
     '启动流程：游客进入 → 项目目录（login → menu）',
@@ -696,15 +761,7 @@ try {
 
   // ---------- 7. 内容层：真的吃到了被采纳的数据 ----------
   await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
-  await page.waitForTimeout(MENU_INTRO_MS)
-  const menu = await page.evaluate(() => {
-    const tiles = [...document.querySelectorAll('.a5r-card')]
-    return {
-      count: tiles.length,
-      names: tiles.map((el) => el.querySelector('.ui-tile__name')?.textContent?.trim() ?? ''),
-      text: document.body.innerText,
-    }
-  })
+  const menu = await waitForMenuSettled(page) // 等开场旋转停稳（判据见该函数）
   check(menu.count >= 9, '菜单页：项目卡片 ≥ 9 个（来自 content/data/MenuData.json）', `count=${menu.count}`)
   check(
     menu.names.some((name) => name.includes('接触器')) && menu.names.some((name) => name.includes('小测验')),
@@ -917,8 +974,7 @@ try {
   check(stale.includes('找不到项目'), '坏链接：状态条明说“找不到项目”并退到兜底内容（不静默）')
 
   await page.goto(`${base}/#/menu`, { waitUntil: 'load' })
-  await page.waitForTimeout(MENU_INTRO_MS)
-  const menuAfter = await page.evaluate(() => document.querySelectorAll('.a5r-card').length)
+  const menuAfter = (await waitForMenuSettled(page)).count // 等开场旋转停稳再数
   check(menuAfter >= 9, '坏链接之后目录仍然是完整的（一次坏链接不能污染全局状态）', `count=${menuAfter}`)
 
   // ---------- 8. 页面过渡（Issue #57）：路由级 / 站间级，以及"常驻画布不许跟着淡" ----------
