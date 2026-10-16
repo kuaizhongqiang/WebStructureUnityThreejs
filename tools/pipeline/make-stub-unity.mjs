@@ -11,33 +11,57 @@
  * 用法：node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9
  *       （生成到 NewStructureUnity/Builds/stub-main，再按 design/05 用 unity-stage 暂存）
  *       node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --stage   # 直接暂存
+ *       node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --variant b
+ *         # `--variant` 写一个**定长**标记进产物：换变体 ⇒ **内容不同、总字节与每个文件大小完全相同**。
+ *         # 用来复现"改了内容但大小不变"那条路径（Issue #60 的签名验证就卡在这上面）。
  *
  * 默认承载 4,5,8,9（电路连接 / 仿真实验 / 结构 / 检测）—— DEC-81：一个构建承载全部 Unity 类任务。
  */
-import { mkdir, writeFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { mkdir, writeFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)))
+const repoRoot = resolve(fileURLToPath(new URL("../..", import.meta.url)));
 
 /** Unity 类任务的 TaskType 序号（与契约一致：4 电路连接 / 5 仿真实验 / 8 结构 / 9 检测）。 */
-const DEFAULT_TASK_TYPES = '4,5,8,9'
+const DEFAULT_TASK_TYPES = "4,5,8,9";
 
-const args = { key: 'main', taskTypes: DEFAULT_TASK_TYPES, stage: false, out: '' }
-const argv = process.argv.slice(2)
+const args = {
+  key: "main",
+  taskTypes: DEFAULT_TASK_TYPES,
+  stage: false,
+  out: "",
+  variant: "",
+};
+const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i += 1) {
-  if (argv[i] === '--key') args.key = argv[++i]
-  else if (argv[i] === '--task-types') args.taskTypes = argv[++i]
-  else if (argv[i] === '--task-type') {
+  if (argv[i] === "--key") args.key = argv[++i];
+  else if (argv[i] === "--task-types") args.taskTypes = argv[++i];
+  else if (argv[i] === "--task-type") {
     // 已废弃（DEC-81）：保留是为不打断肌肉记忆，会转成 --task-types 单值
-    console.warn('[stub] ⚠️ --task-type 已废弃，请改用 --task-types 4,5,8,9')
-    args.taskTypes = argv[++i]
-  } else if (argv[i] === '--out') args.out = argv[++i]
-  else if (argv[i] === '--stage') args.stage = true
+    console.warn("[stub] ⚠️ --task-type 已废弃，请改用 --task-types 4,5,8,9");
+    args.taskTypes = argv[++i];
+  } else if (argv[i] === "--out") args.out = argv[++i];
+  else if (argv[i] === "--stage") args.stage = true;
+  else if (argv[i] === "--variant") args.variant = String(argv[++i] ?? "");
 }
 
-const outDir = resolve(repoRoot, args.out || join('NewStructureUnity', 'Builds', `stub-${args.key}`))
-const buildName = `stub-${args.key}`
+const outDir = resolve(
+  repoRoot,
+  args.out || join("NewStructureUnity", "Builds", `stub-${args.key}`),
+);
+const buildName = `stub-${args.key}`;
+
+/**
+ * `--variant` 的定长标记（**只有内容不同、总字节与每个文件大小完全相同**）。
+ *
+ * 为什么非要"定长"：Issue #60 的签名验证曾经只认"大小"，于是"改了内容但大小不变"的产物
+ * 会被误判成"没变"、继续发旧指纹 ⇒ 浏览器按旧 URL 命中 IndexedDB 旧包。
+ * 要能**复现**那个情形，就得造出"同尺寸、不同内容"的两份桩：变体文本先归一化到固定宽度再填充，
+ * 于是无论传什么变体，loader 的字节数都一样、整棵树的字节数也一样。
+ */
+const VARIANT_WIDTH = 24;
+const variantMark = `/* stub-variant: ${(args.variant || "default").replace(/\s+/g, "_").slice(0, VARIANT_WIDTH).padEnd(VARIANT_WIDTH, "_")} */`;
 
 /**
  * 桩 loader：与官方 `createUnityInstance(canvas, config, onProgress)` 同形。
@@ -46,6 +70,11 @@ const buildName = `stub-${args.key}`
  *   ② 上报进度（DEC-12：加载必须有进度）；
  *   ③ 调桥的 onReady 完成握手（DEC-07：版本不匹配要报错）；
  *   ④ 提供 SendMessage / Quit（DEC-12：退出必须显式销毁）。
+ *
+ * ⑤ 真去请求一次 `config.dataUrl`（=`<base><prefix>.data?v=<指纹>`）并把**实际用的 URL**
+ *    记在 `window.__WSU3_STUB_DATA_URL__` 上：真 Unity 的 dataCaching 就是按这个 URL 建缓存条目的
+ *    （url + 一个字节范围做 key），所以"URL 有没有跟着产物指纹换"这件事**只能在真浏览器里**验
+ *    （Issue #60 的验收口径）。桩本身不做缓存，只保证这条请求真的发生过。
  *
  * 另外内置一份**可选的协议仿真**（`__wsu3StubProtocol`）：默认**关**，桩就是一画布加一次握手；
  * 显式打开（`window.__WSU3_STUB_PROTOCOL__ = true` 或 URL 带 `?wsu3_stub=protocol`）后，
@@ -65,6 +94,7 @@ const buildName = `stub-${args.key}`
  * "内容数据 → 面板文案"这一段；可用 `window.__WSU3_STUB_UI_REF__` 等覆盖。
  */
 const loader = `// 桩 loader（由 tools/pipeline/make-stub-unity.mjs 生成，不是真 Unity 产物）
+${variantMark}
 function __wsu3StubEmulationEnabled() {
   if (window.__WSU3_STUB_PROTOCOL__ === true) return true
   return /(^|[?&])wsu3_stub=protocol(&|$)/.test(String(window.location.search || ''))
@@ -198,6 +228,18 @@ var createUnityInstance = function (canvas, config, onProgress) {
           ctx.fillText('build: ' + config.dataUrl, 20, 68)
         }
         var emulator = __wsu3StubProtocol(config)
+        // ⑤ 真拉一次 .data（官方 loader 的 startup 也会这么做），并把实际 URL 记下来：
+        //    指纹有没有拼进 v 查询串、换了包 URL 有没有变，都靠它来断言（Issue #60）。
+        //    注意：本行以上都处在**生成出来的 JS 文本**里 —— 注释里不许出现反引号，
+        //    那会提前闭合本文件的外层模板字符串（本文件今天就是这么坏过一次）。
+        try {
+          if (config.dataUrl) {
+            window.__WSU3_STUB_DATA_URL__ = config.dataUrl
+            fetch(config.dataUrl).catch(function () {})
+          }
+        } catch (error) {
+          console.error('[stub unity] .data 请求失败：', error)
+        }
         var instance = {
           SendMessage: function (object, method, payload) {
             window.__WSU3_STUB_CALLS__ = (window.__WSU3_STUB_CALLS__ || [])
@@ -227,11 +269,11 @@ var createUnityInstance = function (canvas, config, onProgress) {
   })
 }
 window.createUnityInstance = createUnityInstance
-`
+`;
 
 const framework = `// 桩 framework（占位；真产物是被压缩的 WebAssembly 运行时胶水）
 window.__WSU3_STUB_FRAMEWORK__ = true
-`
+`;
 
 const indexHtml = `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -240,46 +282,53 @@ const indexHtml = `<!DOCTYPE html>
     <p>桩构建：真 Unity 产物由 Unity 编辑器构建后替换本目录（见 docs/design/05）。</p>
   </body>
 </html>
-`
+`;
 
 async function main() {
-  const buildDir = join(outDir, 'Build')
-  await mkdir(buildDir, { recursive: true })
+  const buildDir = join(outDir, "Build");
+  await mkdir(buildDir, { recursive: true });
 
-  await writeFile(join(outDir, 'index.html'), indexHtml, 'utf8')
-  await writeFile(join(buildDir, `${buildName}.loader.js`), loader, 'utf8')
-  await writeFile(join(buildDir, `${buildName}.framework.js`), framework, 'utf8')
+  await writeFile(join(outDir, "index.html"), indexHtml, "utf8");
+  await writeFile(join(buildDir, `${buildName}.loader.js`), loader, "utf8");
+  await writeFile(
+    join(buildDir, `${buildName}.framework.js`),
+    framework,
+    "utf8",
+  );
   // 最小合法 wasm 模块（8 字节魔数+版本）：让"MIME 必须是 application/wasm"这条也能被验到
-  await writeFile(join(buildDir, `${buildName}.wasm`), Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]))
+  await writeFile(
+    join(buildDir, `${buildName}.wasm`),
+    Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]),
+  );
   await writeFile(
     join(buildDir, `${buildName}.data`),
-    Buffer.from(`stub data for ${args.key}\n`, 'utf8'),
-  )
+    Buffer.from(`stub data for ${args.key}\n`, "utf8"),
+  );
 
-  console.log(`已生成桩构建：${outDir}`)
-  console.log(`  loader：Build/${buildName}.loader.js`)
+  console.log(`已生成桩构建：${outDir}`);
+  console.log(`  loader：Build/${buildName}.loader.js`);
 
   if (args.stage) {
-    const { spawnSync } = await import('node:child_process')
+    const { spawnSync } = await import("node:child_process");
     const result = spawnSync(
       process.execPath,
       [
-        join(repoRoot, 'tools', 'pipeline', 'unity-stage.mjs'),
-        '--from',
+        join(repoRoot, "tools", "pipeline", "unity-stage.mjs"),
+        "--from",
         outDir,
-        '--key',
+        "--key",
         args.key,
-        '--task-types',
+        "--task-types",
         args.taskTypes,
       ],
-      { stdio: 'inherit' },
-    )
-    if (result.status !== 0) process.exitCode = result.status ?? 1
+      { stdio: "inherit" },
+    );
+    if (result.status !== 0) process.exitCode = result.status ?? 1;
   } else {
     console.log(
       `下一步：node tools/pipeline/unity-stage.mjs --from ${outDir} --key ${args.key} --task-types ${args.taskTypes}`,
-    )
+    );
   }
 }
 
-await main()
+await main();

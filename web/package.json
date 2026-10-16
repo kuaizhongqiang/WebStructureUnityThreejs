@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "smoke": "node tools/render-smoke.mjs",
+    "verify:fingerprint": "node tools/verify-unity-fingerprint.mjs",
     "icon": "node tools/make-app-icon.mjs"
   },
   "dependencies": {

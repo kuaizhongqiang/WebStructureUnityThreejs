@@ -16,7 +16,7 @@
  * 行为：
  *   ① 校验源目录**形状正确**（缺 wasm/data 之类直接失败，不搬半份进去）；
  *   ② 复制到 `unity/builds/<key>/`（同名先清空，避免上一版残留文件骗过校验）；
- *   ③ 逐文件算 sha256 + 字节数，写入 `unity/builds/manifest.json`。
+ *   ③ 逐文件算 sha256 + 字节数，再加上**整棵树的指纹 `treeSha256`**，写入 `unity/builds/manifest.json`。
  *
  * 纪律：`unity/builds/` **不进 git**（DEC-57）；本脚本不碰 Unity 工程、不调编辑器。
  */
@@ -25,6 +25,7 @@ import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promi
 import { existsSync } from 'node:fs'
 import { basename, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { treeSha256 } from './lib/tree-hash.mjs'
 
 const repoRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)))
 const DEFAULT_STAGE_ROOT = join(repoRoot, 'unity', 'builds')
@@ -246,6 +247,22 @@ async function main() {
     files: staged,
     fileCount: staged.length,
     totalBytes,
+    /**
+     * **整棵暂存树的内容指纹**（不是"这次暂存这个动作"的指纹）。
+     *
+     * 为什么必须有：Unity 的 `webGLDataCaching = 1` 会按 `.data` 的 **URL** 把包存进 IndexedDB，
+     * 加载器（`web/src/unity/UnityLoader.ts` 的 `resolveUrls()`）就是拿这个字段拼 `?v=` 的
+     * （docs/design/06 §3②）。字段缺失 ⇒ URL 不变 ⇒ 重建 + 重暂存之后浏览器**仍然跑上一版场景**，
+     * 只能靠"清站点数据"救 —— 2026-10-15 实测踩到（Issue #60）。
+     *
+     * 口径与 `tools/pipeline/pack.mjs` 写进发布清单的 `unity.builds[].treeSha256` **完全一致**
+     * （同一个 `lib/tree-hash.mjs`）：暂存链与发布链必须报同一个值，否则两边各自"以为换包了"。
+     * 确定性也要求如此 —— 同一份产物重跑一次暂存，指纹不该变；内容改一个字节，就一定要变。
+     */
+    treeSha256: await treeSha256(
+      target,
+      staged.map((f) => f.path),
+    ),
     stagedAt: new Date().toISOString(),
   }
   manifest.builds = [...manifest.builds.filter((build) => build.key !== key), entry].sort((a, b) =>
@@ -263,6 +280,7 @@ async function main() {
   )
   console.log(`  暂存：  unity/builds/${key}（${staged.length} 个文件，${mb} MB）`)
   console.log(`  loader：${entry.loader ?? '（未识别，需人工确认）'}`)
+  console.log(`  指纹：  ${entry.treeSha256.slice(0, 12)}…（treeSha256，dev 与打包两侧共用，换了它就是换了包）`)
   console.log(`  协议桥：${entry.bridge ? '已声明实现（壳冒烟将要求握手成功）' : '未声明（壳冒烟只验"画面挂上"，日志会写明未握手）'}`)
   console.log(`  清单：  unity/builds/manifest.json（共 ${manifest.builds.length} 个构建）`)
   console.log('\n提醒：unity/builds/ 不进 git（DEC-57）；打包用 node tools/pipeline/pack.mjs。')

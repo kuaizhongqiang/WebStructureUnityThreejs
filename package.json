@@ -1,0 +1,10 @@
+{
+  "name": "wsu3",
+  "private": true,
+  "version": "0.0.0",
+  "description": "仓库根的脚本入口（工具侧 tools/ 的单测 + web 侧脚本的转发入口）。Web 侧本身是独立的一套，见 web/package.json。",
+  "scripts": {
+    "test:tools": "node --test \"tools/pipeline/lib/*.test.mjs\"",
+    "verify:fingerprint": "npm --prefix web run verify:fingerprint"
+  }
+}

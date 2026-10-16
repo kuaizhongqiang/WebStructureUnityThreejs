@@ -26,6 +26,8 @@ jobs:
         run: node tools/check-shell-coupling.mjs
       - name: Unity 清单校验（没有暂存产物时明确报告"未包含"，不失败）
         run: node tools/pipeline/unity-verify.mjs
+      - name: 工具侧单测（Unity 产物目录指纹 treeSha256）
+        run: npm run test:tools
 
   web:
     name: Web 构建与渲染冒烟
