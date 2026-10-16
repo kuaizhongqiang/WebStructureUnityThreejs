@@ -36,6 +36,8 @@ namespace WSU3.Tests.EditMode
         private ViewFocusRequestEvent _viewFocus;
         private int _inputEnableCount;
         private InputEnableEvent _inputEnable;
+        private int _themeCount;
+        private ThemeChangedEvent _theme;
         private int _resumeCount;
         private int _pingCount;
         private DebugPingEvent _ping;
@@ -57,6 +59,8 @@ namespace WSU3.Tests.EditMode
             _viewFocus = null;
             _inputEnableCount = 0;
             _inputEnable = null;
+            _themeCount = 0;
+            _theme = null;
             _resumeCount = 0;
             _pingCount = 0;
             _ping = null;
@@ -70,6 +74,7 @@ namespace WSU3.Tests.EditMode
             EventBus<SceneExitRequestEvent>.Subscribe(OnSceneExit);
             EventBus<ViewFocusRequestEvent>.Subscribe(OnViewFocus);
             EventBus<InputEnableEvent>.Subscribe(OnInputEnable);
+            EventBus<ThemeChangedEvent>.Subscribe(OnTheme);
             EventBus<RuntimeResumeEvent>.Subscribe(OnResume);
             EventBus<DebugPingEvent>.Subscribe(OnPing);
 
@@ -104,6 +109,7 @@ namespace WSU3.Tests.EditMode
             EventBus<SceneExitRequestEvent>.Unsubscribe(OnSceneExit);
             EventBus<ViewFocusRequestEvent>.Unsubscribe(OnViewFocus);
             EventBus<InputEnableEvent>.Unsubscribe(OnInputEnable);
+            EventBus<ThemeChangedEvent>.Unsubscribe(OnTheme);
             EventBus<RuntimeResumeEvent>.Unsubscribe(OnResume);
             EventBus<DebugPingEvent>.Unsubscribe(OnPing);
             WebChannel.Sent -= OnSent;
@@ -177,6 +183,16 @@ namespace WSU3.Tests.EditMode
 
             Assert.AreEqual(1, _inputEnableCount);
             Assert.IsFalse(_inputEnable.Enabled);
+        }
+
+        [Test]
+        public void UiSetTheme_CarriesTheThemeName()
+        {
+            _bridge.OnWebMessage(Envelope(BridgeMessageType.UiSetTheme, "{\"theme\":\"" + ThemeKind.Light + "\"}"));
+
+            Assert.AreEqual(1, _themeCount);
+            Assert.AreEqual(ThemeKind.Light, _theme.Theme);
+            Assert.AreEqual(0, _sent.Count, "入站消息不该顺带回消息");
         }
 
         [Test]
@@ -367,6 +383,12 @@ namespace WSU3.Tests.EditMode
         {
             _inputEnableCount++;
             _inputEnable = e;
+        }
+
+        private void OnTheme(ThemeChangedEvent e)
+        {
+            _themeCount++;
+            _theme = e;
         }
 
         private void OnResume(RuntimeResumeEvent e)

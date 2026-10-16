@@ -18,6 +18,7 @@ Unity 侧的**三维操控层**：三维世界里的"怎么动"—— 第一人�
 | 角色预制体 | `Assets/Prefabs/Characters/FirstPersonController.prefab` | 角色 + 3 个组件 + 自己的虚拟相机（Cinemachine） |
 | 相机 rig | `Assets/Prefabs/Camera/MainCameraRig.prefab` | 含 `CinemachineBrain` + URP 相机数据 + 背景板 `bg` |
 | 背景板材质与 Shader | `Assets/Model/Public/Materials/CamBg.mat`、`Assets/Shaders/Models/CamBgUnlitShader.shadergraph` | 随 rig 的 GUID 闭包一起搬入 |
+| 结构站背景板（**用的不是上面那份 rig**） | `Assets/Resources/MainCamera.prefab` 的子物体 `BgPlate`（内置 Quad + `CameraBg`，local z = 10） | 结构站用的是精简相机（DEC-158 后只剩一台）；板子随主题换材质，见 §4 的 `CameraBg` 行与 DEC-159 / DEC-160 |
 | 行为规格原文 | `docs/research/10-input-controller-specs/**` | 来源工程 14 份 `.md` 原文照录，**只作对照** |
 | 搬运 / 移植脚本 | `tools/pipeline/import-input-controller.mjs`、`tools/pipeline/port-input-controller.mjs` | 可重跑、幂等 |
 | 清单 | `content/asset-input-controller-report.json` | 来源 / 目标 / 字节 / sha256 / 状态 + 未解析引用 |
@@ -48,7 +49,7 @@ Unity 侧的**三维操控层**：三维世界里的"怎么动"—— 第一人�
 | `FirstPersonController` | 第一人称：`CharacterController` 移动 / 跳跃 / 重力 + 俯仰夹取 + 瞬移（`Transport`） | `PlayerInput`、`StarterAssetsInputs`、自己的虚拟相机 |
 | `ThirdPersonController` | 第三人称：同样的移动 + 环绕跟随 | 同上 |
 | `FocusRotationControl` | 聚焦环绕：右键拖拽绕目标环绕带惯性、平滑换目标、双击复位 | 虚拟相机 + 目标 `Transform` |
-| `CameraBg` | 相机背景板：按 FOV / 宽高比缩放平面 + 双纹理淡入切换 | `CamBg.mat` 的 `_Texture_1/_Texture_2/_TexOrColor/_CutTex` |
+| `CameraBg` | 相机背景板：按 FOV / 宽高比缩放平面 + 双纹理淡入切换 + **按主题换材质**（订阅 `ui:set-theme` 落地的事件，见下） | 背景图：`CamBg.mat` 的 `_Texture_1/_Texture_2/_TexOrColor/_CutTex`；主题材质两枚**序列化引用**：`Assets/Materials/Background/CamBgGradient.mat`（深色）/ `CamBgGradientLight.mat`（亮色），shader `WSU3/Background/CamBgGradientUnlit` |
 | `StarterAssetsInputs` | 输入缓存（`move/look/jump/sprint`） | `#if ENABLE_INPUT_SYSTEM` 分支 |
 | `BasicRigidBodyPush` | 角色撞到刚体时按层与强度施加水平冲量 | `CharacterController.OnControllerColliderHit` |
 
@@ -56,9 +57,9 @@ Unity 侧的**三维操控层**：三维世界里的"怎么动"—— 第一人�
 
 ⚠️ 还没进任何场景与流程，验收也没做。四处未闭合（`../TODO.md` 有对应条目）：
 
-1. **没进场景**：`1_Content` 里没有角色实例、没有虚拟相机；`MainCameraRig` 也没被实例化。
-   本工程主相机仍是 `Resources/MainCamera`（精简相机，**没有 `CinemachineBrain`**）。
-   没有 brain ⇒ 取不到"活动虚拟相机" ⇒ 缩放与视角控制**不生效**。
+1. **没进场景**：`1_Content` 里没有角色实例；`MainCameraRig` 也没被实例化。
+   ⚠️ **本条 2026-10-16 更正一处**（Play 实测）：`Resources/MainCamera.prefab` 上那枚 MonoBehaviour 的字段是 `m_DefaultBlend` / `m_CameraCutEvent` / `m_UpdateMethod` —— **就是 `CinemachineBrain`**（早期按文本搜 `CinemachineBrain` 字样命中 0 次，是因为预制体按 GUID 存脚本、搜不到字样，DEC-142 的"未检出"据此更正）。实测场景里**确有一台 vcam**（`Virtual Camera`，priority 10），它由**器件预制体自带**（8 个结构件预制体的那台位置逐字符相同：local `(0, 1.08, -4.66)`），Brain 生效后主相机跟着它走 ⇒ **结构站的实际取景是"器件预制体说了算"**（相机到模型约 4.78 单位）。
+   但**操控层三个控制器仍没进场景**（实测 `FocusRotationControl` / `InputControllerBase` 实例数均为 0）⇒ 缩放与视角控制**依旧不生效**（缺的是"控制器接线"，不再是 brain）。
 2. **相机背景的取图入口没接**：本工程的资源包链路（P2-6）未落地，`CameraBg` 暂时不加载背景图（材质保持默认颜色，不做静默降级）。
 3. **角色材质缺失是继承来的**：角色 `Capsule` 的材质引用在**来源工程里就是断的**（清单 `unresolved` 里那条 guid），搬过来仍是空材质。
 4. **没有任何实机验收**：三条控制器、瞬移、聚焦环绕都**没跑过**（没接线就跑不了）。

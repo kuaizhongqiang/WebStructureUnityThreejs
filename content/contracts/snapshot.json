@@ -74,7 +74,8 @@
       "input:enable",
       "runtime:resume",
       "debug:ping",
-      "ui:result"
+      "ui:result",
+      "ui:set-theme"
     ],
     "fromUnity": [
       "unity:ready",

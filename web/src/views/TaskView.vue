@@ -35,6 +35,7 @@ import { buildPartTree } from '@/domain/part-tree'
 import { showsPlaylist, videoNameAt, videoSectionsOf } from '@/domain/principle'
 import { StepPanelQueue } from '@/domain/step-panels'
 import { tipsOf, uiOf } from '@/domain/step-content'
+import { theme } from '@/shell/theme'
 import { useSessionStore } from '@/stores/session'
 import { useProgressStore } from '@/stores/progress'
 import { useContentStore } from '@/stores/content'
@@ -568,6 +569,10 @@ async function mountUnityView(): Promise<void> {
     })
     refreshBridgeState()
 
+    // 当前主题：会话刚建好时补一次。Unity 侧背景板材质的默认值是**深色板**，
+    // 亮色页面靠这一条纠正（`setTheme` 幂等，和下面的 watch 不会重复发）。
+    unitySession.setTheme(theme.value)
+
     // 挂靠：把常驻画布搬进本页视口容器（已就绪时这一步只是 DOM 搬挂，瞬间完成）
     attachHost(unityContainer.value)
     unityKey.value = build.key
@@ -621,6 +626,9 @@ function syncUnity(): void {
 watch([taskType, () => runtime.unityState], () => void nextTick(syncUnity))
 // 进任务：项目 / 任务 / 挂载状态任一变化都重新对齐（幂等，重复调用只发一次 `scene:enter`）
 watch([taskType, projectId, unityPhase, () => content.project?.id], () => enterCurrentTask())
+// 主题：页面切深色 / 亮色时同步给 Unity（背景板材质跟着换）。会话不在时什么都不做 ——
+// 下次挂载时 `mountUnityView` 会把当前值补一次。
+watch(theme, (next) => unitySession?.setTheme(next))
 // 原理页"进入即完成"（DEC-136）：进入 Principle 站就记完成，不等视频看完（不设分数）
 watch(
   taskType,

@@ -26,6 +26,7 @@ export const BRIDGE_MESSAGES_FROM_WEB = [
   'runtime:resume', // 恢复运行（容器重新可见）
   'debug:ping', // 连通性自检
   'ui:result', // 教学面板回执（ui:request 的结果；步骤条件靠它继续）
+  'ui:set-theme', // 主题（深色 / 亮色）—— Unity 侧按它换主相机背景板材质
 ] as const
 
 /** Unity → Web。顺序是契约顺序。 */

@@ -5,7 +5,8 @@
  *   · `app:init` 漏发 ⇒ Unity 拿不到语言 / 画质 / 协议版本，但画面看起来正常；
  *   · `scene:enter` 在握手前发出 / 握手后没补发 ⇒ 点了任务"画面没反应"；
  *   · 重复补发 ⇒ Unity 侧反复"先退旧的再进新的"，画面反复重装；
- *   · `input:enable{false}` 没补发 ⇒ 模态面板关闭后三维输入仍是关的（"点不动"）。
+ *   · `input:enable{false}` 没补发 ⇒ 模态面板关闭后三维输入仍是关的（"点不动"）；
+ *   · `ui:set-theme` 没补发 ⇒ 亮色页面看到的是深色背景板（Unity 侧材质默认值是深色）。
  * 用一个假桥把 `post` 出来的东西逐条钉住，就不必靠人肉联调去发现它们。
  */
 import { describe, expect, it, vi } from 'vitest'
@@ -205,6 +206,36 @@ describe('UnitySession：input:enable', () => {
     session.setInputEnabled(true)
     expect(bridge.types('input:enable')).toBe(2)
     expect(bridge.payload('input:enable')).toEqual({ enabled: true })
+  })
+})
+
+describe('UnitySession：ui:set-theme', () => {
+  it('握手前表态主题：不发，握手后补发（Unity 侧材质默认是深色板，亮色页面靠它纠正）', () => {
+    const { bridge, session } = setup()
+    session.setTheme('light')
+    expect(bridge.types('ui:set-theme')).toBe(0)
+
+    bridge.emit('unity:ready', { version: BRIDGE_PROTOCOL_VERSION })
+    expect(bridge.payload('ui:set-theme')).toEqual({ theme: 'light' })
+  })
+
+  it('同值不重发，变化才发', () => {
+    const { bridge, session } = setup()
+    bridge.emit('unity:ready', { version: BRIDGE_PROTOCOL_VERSION })
+
+    session.setTheme('dark')
+    session.setTheme('dark')
+    expect(bridge.types('ui:set-theme')).toBe(1)
+
+    session.setTheme('light')
+    expect(bridge.types('ui:set-theme')).toBe(2)
+    expect(bridge.payload('ui:set-theme')).toEqual({ theme: 'light' })
+  })
+
+  it('页面没表过态时握手不补发（不替页面猜主题）', () => {
+    const { bridge } = setup()
+    bridge.emit('unity:ready', { version: BRIDGE_PROTOCOL_VERSION })
+    expect(bridge.types('ui:set-theme')).toBe(0)
   })
 })
 

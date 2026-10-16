@@ -16,7 +16,7 @@
 import type { TaskType } from '@/contracts'
 
 // ---------------------------------------------------------------------------
-// 枚举：面板种类与回执结果（契约字符串，不是序号）
+// 枚举：面板种类 / 回执结果 / 主题（契约字符串，不是序号）
 // ---------------------------------------------------------------------------
 
 /** `ui:request` / `ui:result` 的面板种类。 */
@@ -39,6 +39,19 @@ export const UiResultKind = {
   Unavailable: 'unavailable',
 } as const
 export type UiResultKind = (typeof UiResultKind)[keyof typeof UiResultKind]
+
+/**
+ * `ui:set-theme` 的主题取值。
+ *
+ * 与 `shell/theme.ts` 的 `ShellTheme` 是同一组字面量（那边是主题真源，这边是**线上**取值）——
+ * 故意不互相 import：契约层是最底层，反向依赖 shell 会把依赖方向弄反。
+ * C# 侧的镜像常量在 `NewStructureUnity/Assets/Scripts/Contracts/ThemeKind.cs`。
+ */
+export const BridgeTheme = {
+  Dark: 'dark',
+  Light: 'light',
+} as const
+export type BridgeTheme = (typeof BridgeTheme)[keyof typeof BridgeTheme]
 
 /** `ui:request` 里 `body` 的展示用字段（**不含答案** —— 判定留在界面层）。 */
 export interface UiRequestBody {
@@ -78,6 +91,17 @@ export interface UiResultPayload {
 
 export interface DebugPingPayload {
   at: number
+}
+
+/**
+ * `ui:set-theme`：**主题**（`dark` / `light`）。
+ *
+ * 取值与 `shell/theme.ts` 的 `ShellTheme` 同域，但这里**故意不 import 它** ——
+ * 契约层是最底层，反向依赖 shell 会让"谁能用谁"反过来。两侧都是同一组字面量，改名时一起改。
+ * C# 侧的镜像常量在 `NewStructureUnity/Assets/Scripts/Contracts/ThemeKind.cs`。
+ */
+export interface UiSetThemePayload {
+  theme: BridgeTheme
 }
 
 // ---------------------------------------------------------------------------

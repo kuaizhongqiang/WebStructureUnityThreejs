@@ -30,6 +30,7 @@
 Web 侧：mount Unity 容器
    └─ createUnityInstance()  ──Unity 启动──▶  bridge.onReady("1")     ← 版本握手
    └─ app:init {locale, qualityProfile}  ─▶
+   └─ ui:set-theme {theme}  ─▶                    ← 页面已表过态时补发一次（DEC-159）
    └─ scene:enter {taskType, contentId, payload}  ─▶
                                     ◀─ unity:progress {0..1} * N
                                     ◀─ scene:ready {taskType}
@@ -61,6 +62,7 @@ Web 侧：mount Unity 容器
 | `runtime:resume` | `null` | 容器重新可见后告知 Unity 恢复（隐藏期间渲染循环仍在，交互与更新提前返回） |
 | `debug:ping` | `{ at: number }` | 连通性自检；Unity 回 `debug:pong` |
 | `ui:result` | `{ kind: "tips" \| "ui" \| "question", result: "success" \| "failed" \| "unavailable", detail?: string }` | **教学面板的回执**（与 `ui:request` 成对，DEC-91）。`kind` 必须与请求一致；**面板弹不出来也必须回一条 `unavailable`**，而且**一个请求只回一条**。Unity 侧的等待默认**不限时**（尊重"学生要想很久"），不回就等于把这一步挂住（需要兜底时按条件配 `timeoutSeconds`，见 `docs/design/10` §5） |
+| `ui:set-theme` | `{ theme: "dark" \| "light" }` | **主题**（DEC-159）：页面在深色 / 亮色之间切换时下发，Unity 侧按它换主相机背景板材质（`CameraBg`）。取值与页面主题真源同域，C# 侧镜像常量在 `Contracts/ThemeKind.cs`。**与页面同域但不同步不算错**：Unity 侧材质的默认值是**深色板**，所以页面是亮色时必须在**握手后补发一次**（时序见 §2），否则亮色用户进来看到的会是与页面相反的深色背景。认不出的取值 ⇒ Unity 只告警、保持原材质（不把背景换空） |
 
 ### 3.2 生命周期与结果（Unity → Web）
 

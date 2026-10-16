@@ -27,6 +27,7 @@ import { BRIDGE_PROTOCOL_VERSION, TASK_TYPES, type BridgeMessageFromUnity, TaskT
 import {
   UiPanelKind,
   UiResultKind,
+  type BridgeTheme,
   type PartEntry,
   type PartHover,
   type StepPanelRequest,
@@ -156,6 +157,13 @@ export class UnitySession {
   private enterDispatched = false
   /** 页面期望的输入开关（模态面板开着时为 false）—— 握手后按它补发 `input:enable`。 */
   private inputEnabled = true
+  /**
+   * 页面当前的主题（`dark` / `light`）—— 握手后按它补发 `ui:set-theme`。
+   *
+   * 为什么要记一位：Unity 侧背景板材质的**默认值就是深色板**，而 Unity 启动时并不知道页面主题 ——
+   * 亮色页面若不补发，进结构站看到的会是与页面相反的深色背景。
+   */
+  private theme: BridgeTheme | null = null
   private pingSentAt: number | null = null
 
   constructor(bridge: UnityBridge, options: UnitySessionOptions = {}) {
@@ -254,6 +262,19 @@ export class UnitySession {
   }
 
   /**
+   * 同步主题（`ui:set-theme`）：页面在深色 / 亮色之间切换时调它。
+   *
+   * 与 `setInputEnabled` 同一条纪律：**握手之前只记状态、不发消息**。这里不是为了"Unity 还没订阅"
+   * （背景板是在 `Awake` 里订阅的，早于握手也不会丢），而是为了"页面比 Unity 先动"这个常态 ——
+   * 主题可能在 Unity 挂载之前就切了，甚至就在挂载之前读出来。同一个主题重复调用不重发。
+   */
+  setTheme(theme: BridgeTheme): void {
+    if (this.theme === theme) return
+    this.theme = theme
+    if (this.state.handshake) this.post('ui:set-theme', { theme })
+  }
+
+  /**
    * 回执一条面板（`ui:result`）。
    *
    * ⚠️ **调用方负责"只回一条"**（用 `domain/step-panels.ts` 的 `StepPanelQueue.answer`）：
@@ -338,6 +359,9 @@ export class UnitySession {
 
     // ③ 补发输入开关（只在"期望关着"时才需要 —— 默认就是开着的）
     if (!this.inputEnabled) this.post('input:enable', { enabled: false })
+
+    // ④ 补发主题（只要页面已经表过态就发；Unity 侧的材质默认是深色板，亮色页面不补发就等于反色）
+    if (this.theme !== null) this.post('ui:set-theme', { theme: this.theme })
   }
 
   private sendSceneEnter(): void {
