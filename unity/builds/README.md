@@ -44,6 +44,9 @@ node tools/pipeline/unity-verify.mjs
 node tools/pipeline/pack.mjs
 ```
 
-`unity-stage.mjs` 会写 `manifest.json`（逐文件 sha256 + 字节数）；`unity-verify.mjs` 在打包前重算比对，
+`unity-stage.mjs` 会写 `manifest.json`（逐文件 sha256 + 字节数 + **整树指纹 `treeSha256`**）；
+那个指纹就是加载器给 `.data` 拼 `?v=` 的来源 —— 没有它，重建后浏览器会按老 URL 命中 IndexedDB 里的旧包
+（表现是"构建成功了，画面还是上一版"）。口径与三条链的关系见 `docs/design/05` §3.5。
+`unity-verify.mjs` 在打包前重算比对，
 **Unity 产物被截断/改坏会在打包前就被拦住**，不会拖到浏览器里表现为白屏。
 细则见 `docs/design/05-unity-packaging-pipeline.md`。

@@ -83,12 +83,15 @@ npm run lint          # ESLint（DEC-52）
 npm run format        # Prettier 写入（format:check 用于门禁）
 npm test              # vitest（契约快照测试）
 npm run smoke         # 真浏览器冒烟（三维渲染 / 设计系统加载 / 站点线按数据画站 / 内容层 / Web⇄Unity 全量交互）
+npm run verify:fingerprint  # 真浏览器验"页面请求的 .data URL 跟着产物指纹换"（Issue #60 的验收口径，自备桩构建）
 npm run build         # 类型检查 + 生产构建 → dist/
 ```
 
 > **dev 服务器现在也服务 Unity 产物**（DEC-114）：`/unity/<key>/**` 与合成出来的 `/release-manifest.json`
 > 从 `unity/builds/` 读（暂存根可用 `WSU3_UNITY_DEV_ROOT` 改道）。所以**不必先打包**就能在浏览器里
 > 人工联调 Unity 类任务；一个构建都没暂存时它会如实报 `unity.included = false`（页面显示"产物未就位"）。
+> 合成出来的清单里带上**当前暂存内容的 `treeSha256`**（暂存清单里的值新鲜就直接用，不新鲜就现算），
+> 加载器据此给 `.data` 拼 `?v=` —— 重建 + 重暂存 + 刷新就能换包，**不需要清站点数据**（Issue #60）。
 >
 > **Unity 侧的自测开关**（DEC-113）：`0_Setup` 的根物体 `TestSwitch` 上有 `StartupTestSwitch` ——
 > Inspector 里把 `testEnabled` 勾上并填 `taskType` / `projectClip`，或者在 WebGL 产物地址后面加
@@ -105,7 +108,7 @@ web/src/
   shell/        bridge.ts（唯一的壳接触面）· theme.ts
   stores/       session（真源，DEC-08）· progress（本机单 JSON，DEC-54）· content（内容层）· runtime（发布清单）
   styles/       index.css（只 import @ds 的 tokens+components）· product.css（流式布局与断点）
-  unity/        UnityBridge（信封/握手）· UnitySession（时序与状态，DEC-112）· UnityLoader（挂载与销毁）
+  unity/        UnityBridge（信封/握手）· UnitySession（时序与状态，DEC-112）· UnityLoader（挂载与销毁）· release-manifest（暂存清单 → 发布清单合成与指纹）
   contracts/ viewer/ platform/   —— 契约（含桥载荷形状 bridge-payloads.ts）/ 裸 three / 设备策略
 ```
 
@@ -199,7 +202,7 @@ npm run dist                  # 打包 → release/WSU3-Shell-<version>-portable
 
 ```bash
 # ① Unity 编辑器里构建（菜单 WSU3/Build/WebGL Baseline，构建前必须关编辑器）
-# ② 暂存 + 校验（产物进 unity/builds/，不进 git；逐文件 sha256 写进清单）
+# ② 暂存 + 校验（产物进 unity/builds/，不进 git；逐文件 sha256 + 整树指纹 treeSha256 写进清单）
 node tools/pipeline/unity-stage.mjs --from NewStructureUnity/Builds/webgl --key main --task-types 4,5,8,9
 # ③ 一键打包（校验 → web build → 发布清单 release-manifest.json → exe）
 node tools/pipeline/pack.mjs
@@ -207,6 +210,8 @@ node tools/pipeline/pack.mjs
 
 - 没有真 Unity 时也能验流水线：`node tools/pipeline/make-stub-unity.mjs --key main --task-types 4,5,8,9 --stage`。
 - 发布清单 `web/dist/release-manifest.json` 会随包发布，写明本次包含的 Web / 内容 / Unity（含 `treeSha256`）与服务端约定。
+- `treeSha256` 是**整棵产物的内容指纹**，暂存清单与发布清单**共用同一个口径**（`tools/pipeline/lib/tree-hash.mjs`）；
+  加载器用它给 `.data` 拼 `?v=`，否则 Unity 的数据缓存会按老 URL 命中旧包（口径见 `docs/design/05` §3.5）。
 - **Unity 缺席不影响 Web 侧打包，但界面上会明确写"Unity 产物未包含"**（Unity 类任务不再假装能进）。
 - `pack.mjs --out <目录>` 可换输出目录（上一次的 exe 还在运行时会锁住 `release/`）。
 

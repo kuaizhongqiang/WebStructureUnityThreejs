@@ -8,19 +8,22 @@ set -e
 root=$(git rev-parse --show-toplevel)
 cd "$root"
 
-echo "[gate] 1/5 大文件与忽略规则"
+echo "[gate] 1/6 大文件与忽略规则"
 node tools/check-large-files.mjs
 
-echo "[gate] 2/5 业务代码零 import electron（DEC-20）"
+echo "[gate] 2/6 业务代码零 import electron（DEC-20）"
 node tools/check-shell-coupling.mjs
 
-echo "[gate] 3/5 双端契约一致性（TS <-> 快照 <-> C#，含桥消息类型）"
+echo "[gate] 3/6 双端契约一致性（TS <-> 快照 <-> C#，含桥消息类型）"
 node tools/check-contracts.mjs
 
-echo "[gate] 4/5 内容数据双份一致性（Web 与 Unity 两份同名数据）"
+echo "[gate] 4/6 内容数据双份一致性（Web 与 Unity 两份同名数据）"
 node tools/check-content-data.mjs
 
-echo "[gate] 5/5 Web 侧类型检查、代码规范与单测"
+echo "[gate] 5/6 工具侧单测（Unity 产物目录指纹 treeSha256）"
+npm run test:tools --silent
+
+echo "[gate] 6/6 Web 侧类型检查、代码规范与单测"
 if [ -d web/node_modules ]; then
   cd web
   npm run typecheck

@@ -2,9 +2,18 @@ import { fileURLToPath, URL } from 'node:url'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { extname, join, relative, resolve, sep } from 'node:path'
+import { createHash } from 'node:crypto'
 // `vitest/config` re-exports vite's defineConfig with the `test` field typed.
 import { defineConfig, type Plugin } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import {
+  normalizeBuilds,
+  resolveTreeFingerprints,
+  type BuildFingerprint,
+  type FingerprintFs,
+  type HashFactory,
+  type StagedBuild,
+} from './src/unity/release-manifest'
 
 /**
  * **不进 git 的大资产**的发布链（DEC-98 / 原 P1-5；2026-10-14 扩到原理视频）。
@@ -277,10 +286,145 @@ const UNITY_DEV_ROOT = process.env.WSU3_UNITY_DEV_ROOT
   : join(REPO_ROOT, 'unity', 'builds')
 
 /**
+ * 哈希原语：`node:crypto` 的 `createHash`。
+ *
+ * 这里有一个断言：`HashFactory` 只声明本模块用到的那两个动作（`update`/`digest('hex')`），
+ * 比 `node:crypto` 的真实类型窄，所以需要显式收窄 —— 这是**有意的接口最小化**，
+ * 不是为了绕过类型检查（另一侧的 `FingerprintFs` 同理）。
+ */
+const hashFactory = createHash as unknown as HashFactory
+
+/**
+ * 递归列目录 → 相对路径（`/` 分隔，按名字排序）。
+ * `FingerprintFs.listFiles` 与缓存签名共用它，避免两处各写一份 walk 而口径漂开。
+ */
+async function walkRelative(dir: string): Promise<string[]> {
+  const out: string[] = []
+  const walk = async (current: string): Promise<void> => {
+    for (const entry of await readdir(current, { withFileTypes: true })) {
+      const full = join(current, entry.name)
+      if (entry.isDirectory()) await walk(full)
+      else if (entry.isFile()) out.push(relative(dir, full).split(sep).join('/'))
+    }
+  }
+  if (existsSync(dir)) await walk(dir)
+  return out.sort()
+}
+
+/**
+ * dev：列暂存目录用的文件系统实现（真实 `node:fs`，注入给 `resolveTreeFingerprints`）。
+ *
+ * 三个动作都直接落在磁盘上：`listFiles` 递归列相对路径（`/` 分隔，与流水线口径一致），
+ * `sha256` 读整个文件算内容哈希，`bytes` 取文件大小（省掉"为了拿大小再读一遍"）。
+ */
+const devFingerprintFs: FingerprintFs = {
+  listFiles: walkRelative,
+  async sha256(file) {
+    return createHash('sha256')
+      .update(await readFile(file))
+      .digest('hex')
+  },
+  async bytes(file) {
+    return (await stat(file)).size
+  },
+}
+
+/**
+ * 暂存目录内容的**廉价摘要**：只 `stat` 文件大小（**不读内容**），对"路径 + 大小"排序后哈希。
+ *
+ * 为什么不能只用清单的声明值：产物可能是**没走暂存脚本**换进去的（手工拷、别的脚本搬），
+ * 那时清单没变，只认声明值就会一直给旧指纹 —— 那正是 Issue #60 的病灶。
+ * 一次 walk 约 80 次 `stat`（37 个文件量级，几毫秒），比读 86 MB 便宜四个数量级。
+ *
+ * ⚠️ 它**不是内容哈希**：改了内容而大小不变的编辑识别不出来（那要读内容，就回到了重算）。
+ * 这类编辑的正式入口是重新暂存（会重写清单 ⇒ 签名必变）。
+ */
+async function devTreeDigest(dir: string): Promise<string> {
+  const hash = createHash('sha256')
+  try {
+    for (const file of await walkRelative(dir)) {
+      const size = (await stat(join(dir, file))).size
+      hash.update(`${file}:${size}\n`)
+    }
+  } catch {
+    // 目录不在 / 读到一半消失：不编造摘要，交给现算路径去报"读不动"
+    return 'unreadable'
+  }
+  return hash.digest('hex')
+}
+
+/**
+ * 指纹缓存：构建名 → `{ signature, fingerprint }`。
+ *
+ * WHY 要缓存：dev 每次刷新页面都会请求 `/release-manifest.json`，而新鲜度校验要读一遍
+ * 86 MB 的产物（逐文件哈希）。所以用**便宜的签名**先判断"这一轮还要不要重新校验"：
+ * 暂存清单的 `mtimeMs` + 该构建声明的 `fileCount`/`totalBytes` + 暂存目录的 `stat` 摘要。
+ *
+ * 失效判据覆盖两个现实路径：
+ *   · **重新暂存同一个 key** ⇒ 重写 `manifest.json` ⇒ mtime 变 ⇒ 必重算（主场景）；
+ *   · **绕过暂存脚本换产物**（手工拷贝等）⇒ 目录里文件的大小/数量变 ⇒ 摘要变 ⇒ 必重算。
+ *
+ * ⚠️ 仍有的边界：**改了内容而大小不变、又没重新暂存**时签名不变，继续给旧指纹 ——
+ * 认这一条是为了不每次请求读 86 MB；这类编辑的正式入口是重新暂存。
+ */
+const fingerprintCache = new Map<string, { signature: string; fingerprint: BuildFingerprint }>()
+
+/** 一个构建在本轮请求里的廉价签名：清单 mtime + 声明字段 + 目录 stat 摘要。 */
+async function devFingerprintSignature(
+  key: string,
+  mtimeMs: number,
+  builds: readonly StagedBuild[],
+): Promise<string> {
+  const build = builds.find((item) => item && typeof item === 'object' && (item as StagedBuild).key === key)
+  const declared = `${String(build?.fileCount)}:${String(build?.totalBytes)}`
+  // 与 `resolveTreeFingerprints` 同用 `join`：Windows 上别把反斜杠根目录和 `/` 拼成混合分隔符
+  const digest = await devTreeDigest(join(UNITY_DEV_ROOT, key))
+  return `${mtimeMs}:${declared}:${digest}`
+}
+
+/** 先取缓存；缓存没命中（或签名变了）的构建才交给 `resolveTreeFingerprints` 现算。 */
+async function resolveDevFingerprints(
+  builds: readonly StagedBuild[],
+  signatureOf: (key: string) => Promise<string>,
+): Promise<Record<string, BuildFingerprint>> {
+  const fingerprints: Record<string, BuildFingerprint> = {}
+  const pending: StagedBuild[] = []
+  for (const build of builds) {
+    if (!build || typeof build !== 'object') continue
+    const key = (build as StagedBuild).key
+    if (typeof key !== 'string' || key === '') continue
+    const cached = fingerprintCache.get(key)
+    const signature = await signatureOf(key)
+    if (cached && cached.signature === signature) fingerprints[key] = cached.fingerprint
+    else pending.push(build)
+  }
+  if (pending.length === 0) return fingerprints
+
+  // 第 4 个参数是哈希原语：`release-manifest.ts` 不依赖 `node:*`（产品源码目录要保持浏览器可解析），
+  // 所以由这里把 `node:crypto` 的 `createHash` 注入进去，与流水线同一个原语。
+  const computed = await resolveTreeFingerprints(UNITY_DEV_ROOT, pending, devFingerprintFs, hashFactory)
+  for (const build of pending) {
+    const key = (build as StagedBuild).key as string
+    const fingerprint = computed[key]
+    if (!fingerprint) continue
+    fingerprints[key] = fingerprint
+    fingerprintCache.set(key, { signature: await signatureOf(key), fingerprint })
+  }
+  return fingerprints
+}
+
+/**
  * 按 `unity/builds/manifest.json` 合成一份 dev 用的发布清单。
  *
  * 只做**如实转述**：暂存了几个构建就报几个；一个都没有就 `unity.included=false` 并写明原因。
  * 绝不"假设有" —— DEC-79 的口径是缺席必须明说，dev 里放宽这条只会让人在打包后才发现问题。
+ *
+ * ★ 为什么这里要费劲补 `treeSha256`（Issue #60）：页面拿它给资源 URL 拼 `?v=`，
+ *   而 Unity 的 `webGLDataCaching` 是**按 `.data` 的 URL** 往 IndexedDB 里存的 ——
+ *   指纹不变 ⇒ URL 不变 ⇒ 重新构建并重新暂存之后，浏览器仍然命中旧缓存，
+ *   表现为"明明换了包，画面还是上一版"，只能靠清站点数据救。
+ *   所以指纹**必须反映暂存目录的当前内容**：清单里的值新鲜就复用（零重算），
+ *   旧脚本没写 / 事后被手工改过就现算一次（`release-manifest.ts` 里的两条路径）。
  */
 async function readDevReleaseManifest(): Promise<string> {
   let unity: { included: boolean; builds: unknown[]; reason: string } = {
@@ -291,27 +435,28 @@ async function readDevReleaseManifest(): Promise<string> {
   const stagedPath = join(UNITY_DEV_ROOT, 'manifest.json')
   if (existsSync(stagedPath)) {
     try {
+      // 先记 mtime（缓存签名的依据），再读内容：读与记之间不插入其它读盘动作
+      const stagedMtimeMs = (await stat(stagedPath)).mtimeMs
       const staged = JSON.parse(await readFile(stagedPath, 'utf8')) as {
-        builds?: Array<Record<string, unknown>>
+        builds?: StagedBuild[]
       }
+      const stagedBuilds = Array.isArray(staged.builds) ? staged.builds : []
+      // 指纹：新鲜就复用清单里的值（86 MB 不重算），不新鲜/缺失才现算 —— 见本函数上方说明
+      const fingerprints = await resolveDevFingerprints(stagedBuilds, (key) =>
+        devFingerprintSignature(key, stagedMtimeMs, stagedBuilds),
+      )
       // 形状与 `tools/pipeline/pack.mjs` 写进 `release-manifest.json` 的 `unity.builds[]` 一致，
       // 页面读到的就是同一份东西（`web/src/stores/runtime.ts` 的 `UnityBuildEntry`）。
-      const builds = (staged.builds ?? []).map((build) => ({
-        key: build.key,
-        // DEC-81：一个构建承载多个 TaskType；旧清单的单值 taskType 仍兼容
-        taskTypes: Array.isArray(build.taskTypes)
-          ? build.taskTypes
-          : build.taskType != null
-            ? [build.taskType]
-            : [],
-        entry: build.entry,
-        loader: build.loader,
-        bridge: Boolean(build.bridge),
-        fileCount: build.fileCount,
-        totalBytes: build.totalBytes,
-        stagedAt: build.stagedAt,
-        treeSha256: build.treeSha256,
-      }))
+      const builds = normalizeBuilds(staged, fingerprints)
+      // 指纹缺失不静默：这是 Issue #60 那类"换了包仍跑旧场景"的直接症状，必须留痕
+      for (const build of builds) {
+        if (!build.treeSha256) {
+          console.warn(
+            `[unity] 构建 ${build.key} 没有 treeSha256：页面无法给资源 URL 加版本串，` +
+              '重新构建后浏览器可能命中旧的数据缓存（先重新暂存一次）。',
+          )
+        }
+      }
       unity = {
         included: builds.length > 0,
         builds,

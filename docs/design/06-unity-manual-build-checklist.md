@@ -47,6 +47,11 @@
 `webGLDataCaching = 1` 时，浏览器按 **URL** 缓存 `.data`。同名重建 → 命中旧缓存 → 你看到上一版的场景。
 我们的加载器已经把产物指纹（`release-manifest.json` 里的 `treeSha256`）拼成 `?v=` 交给服务器，
 所以走流水线时**不会**踩这个坑。
+指纹的来源与三条链的口径见 `05-unity-packaging-pipeline.md` §3.5：**暂存链也已经带上它**
+（`unity-stage.mjs` 起写进 `unity/builds/manifest.json`），所以 dev / 暂存这条路同样不会踩；
+你只要重跑一次 `unity-stage.mjs`，界面刷新后 URL 里的 `?v=` 就换了，**不需要清 IndexedDB**。
+反过来：若你手工往 `unity/builds/<key>/` 里塞/换了文件却没有重跑暂存脚本，dev 侧会按"新鲜度"
+复核后现算一个反映当前目录的指纹（不会沿用旧值），所以也不必靠清站点数据。
 排查时若怀疑是缓存：开发者工具 → Application → Storage → 清掉 IndexedDB 与 Cache Storage 再看。
 
 ### ③ Addressables 内容跑到了构建目录之外（用了才会遇到）

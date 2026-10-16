@@ -19,7 +19,7 @@
         ▼
 ② 暂存 + 校验（仓库内，不进 git）                             unity/builds/<key>/
         │  node tools/pipeline/unity-stage.mjs --from … --key main --task-types 4,5,8,9
-        │  → 逐文件 sha256 + 字节数 → unity/builds/manifest.json
+        │  → 逐文件 sha256 + 字节数 + treeSha256（整树指纹）→ unity/builds/manifest.json
         ▼
 ③ 打包（一条命令，含清单）                                    electron/release/*.exe
            node tools/pipeline/pack.mjs
@@ -43,7 +43,7 @@
 |---|---|---|
 | `NewStructureUnity/Builds/<name>/` | Unity 编辑器的构建输出（人手动产生） | **否** |
 | `unity/builds/<key>/` | **暂存区**：流水线搬进来的 Unity 产物，`<key>` 是**构建名**（DEC-81 后建议固定为 `main`，不再是任务键） | **否** |
-| `unity/builds/manifest.json` | Unity 清单：每个构建的关键文件、字节数、`sha256`、时间 | 否 |
+| `unity/builds/manifest.json` | Unity 清单：每个构建的关键文件、字节数、逐文件 `sha256`、**整树指纹 `treeSha256`**、时间 | 否 |
 | `web/dist/release-manifest.json` | **发布清单**：这次包里到底有什么（Web / 内容 / Unity / 服务端约定） | 否（随产物） |
 
 ### 3.2 构建名与 TaskType（DEC-81，**已实现**）
@@ -88,6 +88,34 @@ StreamingAssets/**             ← 可选（TMP 字体等，必须经 UnityWebRe
 | COOP/COEP | **默认关**。仅当构建启用了多线程（`SharedArrayBuffer`）才需要；壳里用 `WSU3_COOP_COEP=1` 打开（DEC-13 口径：先测再开） |
 
 `release-manifest.json` 的 `serving` 段把上面这张表**写进产物**，部署方照抄即可。
+
+### 3.5 产物指纹 `treeSha256` 从哪来（**三条链必须是同一个值**）
+
+**为什么必须有**：Unity 的 `webGLDataCaching = 1` 会按 `.data` 的 **URL** 把包存进 IndexedDB。
+加载器（`web/src/unity/UnityLoader.ts` 的 `resolveUrls()`）拿 `treeSha256` 的前 12 位拼 `?v=`，
+URL 变了才会去取新包。**指纹缺失或没变 ⇒ URL 不变 ⇒ 重建 + 重暂存之后浏览器仍然跑上一版场景**，
+现场表现是"构建明明成功了，画面还是旧的"，只能靠清站点数据救（症状与排查见 `06` §3②）。
+
+| 链 | 谁计算 | 落在哪 |
+|---|---|---|
+| 暂存链（dev / 打包共用） | `tools/pipeline/unity-stage.mjs` 调 `lib/tree-hash.mjs` | `unity/builds/manifest.json` 的每项 `treeSha256` |
+| 发布链 | `tools/pipeline/pack.mjs` | `web/dist/release-manifest.json` 的 `unity.builds[].treeSha256` |
+| dev 链 | `web/vite.config.ts` 合成发布清单时，见下 | dev 的 `/release-manifest.json` |
+
+**算法只有一份**（`tools/pipeline/lib/tree-hash.mjs`）：对树内文件按路径字典序排序后，
+逐个把"相对路径 + 该文件内容的 sha256"喂进同一个哈希，取 `digest('hex')`。
+`web/src/unity/release-manifest.ts` 里那份现算实现与它逐位一致 —— 三处任何一处自己另写一份，
+就会出现"同一份产物两个指纹"，而指纹的唯一用途恰恰是判断"是不是同一份"。
+
+**dev 链的兜底口径**（`web/src/unity/release-manifest.ts`，2026-10-15 由 Issue #60 落地）：
+合成发布清单时**先判断暂存清单里那个指纹还新不新鲜**（逐文件比对大小与 sha256）——
+新鲜就直接复用（dev 每次刷新页面都会请求 `/release-manifest.json`，86 MB 的产物不能每次重算）；
+不新鲜（字段缺失、或有人手工往 `unity/builds/<key>/` 里塞过文件而没重跑 `unity-stage.mjs`）
+就按同一算法现算覆盖。所以 dev 侧**永远**给出一个反映当前暂存目录内容的指纹，
+与"清不清站点数据"无关。
+
+> 口径变更的代价：改 `lib/tree-hash.mjs` 的算法 = 已发布包与新产物的指纹不再可比，
+> 属破坏性变更，要同批改三处调用方并在这里写明。
 
 ## 4 命令
 

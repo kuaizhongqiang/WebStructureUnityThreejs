@@ -47,6 +47,11 @@ const buildName = `stub-${args.key}`
  *   ③ 调桥的 onReady 完成握手（DEC-07：版本不匹配要报错）；
  *   ④ 提供 SendMessage / Quit（DEC-12：退出必须显式销毁）。
  *
+ * ⑤ 真去请求一次 `config.dataUrl`（=`<base><prefix>.data?v=<指纹>`）并把**实际用的 URL**
+ *    记在 `window.__WSU3_STUB_DATA_URL__` 上：真 Unity 的 dataCaching 就是按这个 URL 建缓存条目的
+ *    （url + 一个字节范围做 key），所以"URL 有没有跟着产物指纹换"这件事**只能在真浏览器里**验
+ *    （Issue #60 的验收口径）。桩本身不做缓存，只保证这条请求真的发生过。
+ *
  * 另外内置一份**可选的协议仿真**（`__wsu3StubProtocol`）：默认**关**，桩就是一画布加一次握手；
  * 显式打开（`window.__WSU3_STUB_PROTOCOL__ = true` 或 URL 带 `?wsu3_stub=protocol`）后，
  * 它会按契约回消息 —— 于是"Web 侧到底有没有把 `app:init` / `scene:enter` 发对、
@@ -198,6 +203,18 @@ var createUnityInstance = function (canvas, config, onProgress) {
           ctx.fillText('build: ' + config.dataUrl, 20, 68)
         }
         var emulator = __wsu3StubProtocol(config)
+        // ⑤ 真拉一次 .data（官方 loader 的 startup 也会这么做），并把实际 URL 记下来：
+        //    指纹有没有拼进 v 查询串、换了包 URL 有没有变，都靠它来断言（Issue #60）。
+        //    注意：本行以上都处在**生成出来的 JS 文本**里 —— 注释里不许出现反引号，
+        //    那会提前闭合本文件的外层模板字符串（本文件今天就是这么坏过一次）。
+        try {
+          if (config.dataUrl) {
+            window.__WSU3_STUB_DATA_URL__ = config.dataUrl
+            fetch(config.dataUrl).catch(function () {})
+          }
+        } catch (error) {
+          console.error('[stub unity] .data 请求失败：', error)
+        }
         var instance = {
           SendMessage: function (object, method, payload) {
             window.__WSU3_STUB_CALLS__ = (window.__WSU3_STUB_CALLS__ || [])
