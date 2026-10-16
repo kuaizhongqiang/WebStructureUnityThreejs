@@ -356,6 +356,45 @@
   }
 }
 
+/* ------------------------------------------------ 目录页（A5）：整页环舞台
+ *
+ * ⚠️ 这一节是**修一个静默塌陷**用的（环形菜单上产品后目录页整页空白，Issue #73 回归）。
+ *
+ * 为什么别的页面不需要它：`.app-task` / `.app-split` 都自带 `height: 100%`，
+ * 面板的高度由**正常流内容**（网格、文章、视口）撑出来。而环形菜单里
+ * `.a5r-ring` / `.a5r-track` / 9 张卡**全部是 `position: absolute`** ——
+ * 面板唯一的在流子项是一层空包裹 `.a5r-stage-body`（高度 0）
+ * ⇒ 块级盒子的 `height: auto` 只由在流内容决定 ⇒ **面板塌到只剩 46px 头部**，
+ * 面板正文 0、舞台 0、`--a5r-ring-height` 也跟着是 0px（0 是合法长度，var() 不会回退）
+ * ⇒ `.a5r-ring { height: 0; overflow: hidden }` 把 9 张卡**整块裁掉**。
+ * 实测（1920×1080，修复前）：`.ui-panel` 48 / `.ui-panel__body` 0 / `.a5r-ring` 0 / 可见卡 0。
+ *
+ * ⇒ 把高度**显式**接成一条链：面板 100% → 正文 flex 占满剩余 → 舞台 100% 占满正文。
+ * 链上每一环都是"确定高度"，`MenuView.vue` 的 `measure()` 才能把真实高度写进
+ * `--a5r-ring-height`（见 §26.1：那枚变量没有样式表兜底，靠祖先给像素值）。
+ * ⚠️ 两个写错会让链白接的坑：
+ *    ① `.ui-panel__body` 是**块级**盒（设计系统只给它 padding / overflow），
+ *       给舞台写 `flex: 1` 是**空转**（flex 属性只在 flex 容器里生效）⇒ 舞台得用 `height: 100%`，
+ *       它拿的才是正文的确定高度（实测：写 `flex: 1` 时舞台仍是 0）。
+ *    ② `min-height: 0` 不能省：flex 子项默认 `min-height: auto` 会跟着内容走，
+ *       正文带就不再收缩，同一个塌陷换一种写法而已。
+ */
+.app-main__body > .ui-panel {
+  height: 100%;
+}
+/* 正文带：占满头部行（46px）与 0.5px 分隔线之外的全部高度；裁剪归 `.a5r-ring`（它自己 overflow: hidden）。 */
+.ui-panel--ring > .ui-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+/* 舞台：面板正文里唯一的在流子项，内容（环 / 轨道 / 9 张卡）全是绝对定位、撑不出高度 ⇒
+   必须自己吃满父级的确定高度。这是 `ringHeight` 与 `--a5r-top` 的取值来源。 */
+.a5r-stage-body {
+  height: 100%;
+}
+
 /* 状态条（复用设计系统的 .ui-statusbar 结构，这里只补产品侧的定位） */
 .app-statusbar .ui-statusbar {
   height: 100%;

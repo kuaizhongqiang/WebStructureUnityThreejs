@@ -437,6 +437,87 @@
 
 ---
 
+### 5.10 产品批：A5 环形菜单入 `main` —— 三项前置条件的实测收口（2026-10-16）
+
+> 性质：同 §5.5~§5.9 —— **只增不改**，上文一个字不动。
+> 起因：§5.8 把产品侧拆出本批（`PR #95` 只交排版稿），**本批 = 那个产品批**：把 §5.8「3. 产品批的前置条件」的三条**同时**收口。
+
+**1. 范围与落点（3 个 web 文件，其余一件未动）**
+
+| 文件 | 改动 | 来源 |
+|---|---|---|
+| `web/src/views/MenuView.vue` | 环形版（`+680 / −45`） | tag **`a5-web-ring-wip` → `14509da`** 里的那一版；落地后 `git hash-object` = **`b846fbf290584993ea425005adbc9548e3a7e346`**，与 tag 内 blob **逐字节相同** |
+| `web/src/styles/product.css` | **+39**（「目录页（A5）」一节：面板高度链） | 工作区既有未提交改动（§5.8 第 3 条要求"产品批还要带上它"） |
+| `web/tools/render-smoke.mjs` | 4 处 `.ui-tile-grid .ui-tile` → `.a5r-card`（其中 8b 那一步是 `.a5r-card.is-focus`）；新增 `waitForMenuSettled()` 并在 3 处目录页改用它（**不再**用固定等待） | 同上（工作区既有未提交改动 + 本批补上的时序修；固定等待那版在独立复核后换掉，见本节 3-b） |
+
+**2. 冒烟：从"红"到"全绿"**
+
+| 项 | 读数 |
+|---|---|
+| **修前（工作区那份不完整修法）** | 仅 **1 条**失败：`render-smoke.mjs:981` 点 `.a5r-card.is-focus` ⇒ 日志两种表现**同源**：① `element is not stable`（重试约 27s）；② 稳定后 `<span class="ui-tile__desc">…</span> from <article …aria-label="第 4 / 共 9 · 主令电器…"> subtree intercepts pointer events` |
+| **修后** | **`npm run smoke` 全绿（85 条 PASS，exit 0）**，含此前红的那条「过渡：路由级切换播了页面过渡（ui-page-*）」（读到 `ui-page-leave-from … ui-page-enter-to`） |
+| **产品侧菜单断言（修后）** | `tiles=9`（登录后）/ `count=9`（内容层）/ `count=9`（坏链接之后）；真实项目名 `接触器 / 热继电器 / 时间继电器 / 主令电器 / 熔断器 / 断路器 / 速度继电器 / 组合开关 / 小测验` |
+
+**3. 根因：不是"邻卡遮挡"，是开场旋转还在跑（附 E 的 E-2 / E-3）**
+
+- 冒烟那一步的新语义（`onCardClick`）：**点非焦点卡只把它转到前方正中、不进项目**；只有点当前焦点卡才 `enter()`。⇒ 脚本必须等开场旋转收尾、`.a5r-card.is-focus` 不再漂移。
+- **"邻卡遮挡"实测不成立**：真 Chromium 对焦点卡的**中心 / 左 25% / 左 10% / 左 2px / 右 90% / 上 25%** 六点做 `document.elementFromPoint` ⇒ **六点全部命中 `is-focus` 那张**（`ownerCard=0`）。相邻卡虽横向重叠 **88px**（焦点卡 `(460,366,360×420)` / 邻卡 `(731,392,306×357)`），但 `.a5r-card` 的 `z-index` 是 `500 / 400 / 300 / …`（§5.2 / §26.3），焦点卡恒在最上层。
+- **取"等"不取"跳过动画"**：`reducedMotion: 'reduce'`（跳过开场）与正常播完的最终态**逐字段相同** —— 焦点卡 rect 都是 `(460, 366, 360, 420)`、可见卡都是 9、`--a5r-ring-height` 都是 `618px` ⇒ 开场旋转**只影响那 1900ms、不改变落位**。给整条脚本开 reduced-motion 会把后面 `ui-page-* / ui-station-*` 的过渡断言一起压成瞬时（**扩大作用域**），故只在目录页那 3 处等。
+
+**3-b. 机制修正（独立复核提出、本批采纳）**：上面"等开场段"的**判据**改过一版。
+
+- 初版用固定等待 `MENU_INTRO_MS = 2200`（= `SPIN_MS 1900` + 300ms 余量）。独立复核指出这是**手抄副本、余量只有 300ms、且没有任何绑定** ⇒ `SPIN_MS` 一旦调大就会**静默等不够**。**该意见成立，本批采纳**：改成 `waitForMenuSettled()` —— 用 `requestAnimationFrame` 逐帧采样**全部 9 张 `.a5r-card` 的 rect + `.is-focus` 落在第几张**，连续两帧完全一致才返回；15s 内没停稳就**明确报错**（而不是悄悄点错卡）。判据直接是"环不动"，与 `SPIN_MS` 解耦。
+- 同一份复核还纠正了根因**理由的写法**（结论不变）：旋转期间点 `.is-focus` 会 `element is not stable`、**反复重试**（本批实测日志 `54 × retrying click action / waiting 500ms` ≈ 27s 之后才转成"稳定"）——**不是**"它自己会停、晚 2s 就成功"。更锋利的机制在于：点击自身的 `pointerdown` 会调 `stopIntro()`（`MenuView.vue:341`）把环**冻在非整数格路上**，而 `snapTo()` 只在 `pointerup` 里 `Math.round`（`:514-519`）⇒ 冻住的位置**不会再吸附**；同一时刻 hover（`:524-531`）也**不**中止旋转 ⇒ 两个条件可能一直不满足，重试到 30s 超时。另有 `SPIN_MS` 手抄副本的漂移风险与"本地 pre-commit 不跑 `build` / `smoke`"两条也一并记下（见本节 7）。
+
+**4. `product.css` 的高度链：**实测**修好了静默塌陷（§5.8 那条"未在本批验证"的自述，本批已验）
+
+| `.ui-panel` | `.ui-panel__body` | `.a5r-stage-body` | `.a5r-ring` | `--a5r-ring-height` | 可见卡 |
+|---|---|---|---|---|---|
+| **664** | **618** | **618** | **618** | **618px** | **9** |
+
+> 链断掉时的表现（§5.8 记的自述，机制已核）：环 / 轨道 / 9 张卡全是 `position: absolute` ⇒ 面板唯一在流子项高度 0 ⇒ 面板塌到 46px 头部、`--a5r-ring-height` 算成 `0px`（**0 是合法长度，`var()` 不回退**）⇒ `.a5r-ring { height: 0; overflow: hidden }` 把 9 张卡整块裁掉：**页面空白但 DOM 在、单测过、typecheck 过**。
+> 另一处**实现选择**（与 §5.8 引用的工作区注释不同、以本行为准）：第 3 环用 `.a5r-stage-body { height: 100% }`，**不是** `flex: 1` —— `.ui-panel__body` 是**块级**盒（设计系统只给它 padding / overflow），`flex` 属性在里面**空转**，必须用 `height: 100%` 吃父级的确定高度。
+
+**5. 本地门禁读数（全过）**
+
+| 道 | 命令 | 读数 |
+|---|---|---|
+| 1 | `node tools/check-large-files.mjs` | 通过 |
+| 2 | `node tools/check-shell-coupling.mjs` | 61 个文件零 `import electron`（DEC-20） |
+| 3 | `node tools/check-contracts.mjs` | 枚举 4 组 / 桥消息 27 条逐值一致 |
+| 4 | `node tools/check-content-data.mjs` | 7 份内容数据结构与类型一致 |
+| 5 | `npm run test:tools` | 9 passed / 0 fail |
+| 6 | `web`：`typecheck` / `lint` / `format:check` / `test` / `build` | 全过；**vitest 12 files / 177 passed**；`vite build` 过（`MenuView-*.js` 10.82 kB gzip 4.76 kB） |
+
+**6. 一处实现语义的补记（不是偏差）**：`docs/design/14-a5-menu-ring-contract.md` 新增**附 E**（只增不改）—— E-1 点击口径 **与排版稿 P1 逐条同源**（`pages/a5-menu-ring.html:523-529` 的 `snapTo(i)` / `enterFocused()`，产品 `onCardClick` 同形，**零偏差**；正文 §7 的状态机表只是**没写**"点击"这一维）；E-2 重叠区命中赢家；E-3 "重装开场不换最终态"；E-4 产品侧面板高度链**不吃** `inset: 0`（正文 §10.3 的写法只适用于排版稿的 1080 画布）。**正文条款一字未动。**
+
+**7. 范围复核与未纳入本批的东西**
+
+| 项 | 处置 |
+|---|---|
+| 本批入 `main` | **3 个 `web/**` + 文档**（`docs/RECORD.md` 本文 · `docs/DECISIONS.md` §34 · `docs/design/14` 附 E） |
+| Unity 那条工作线（`NewStructureUnity/Assets/**` 数十项 M / ??，含 `link.xml` 删除与 `(name_conflict)` 文件） | **一件未碰，原样留在工作区** |
+| 评审脚手架 `.tmp-a5-verify/` · `.tmp-w4-build/` · `.tmp-a5-fix/` | 保留在工作区、未提交（`docs/RECORD.md` §6.3 的引用因此不悬空） |
+| `ISSUE-SWEEP-2026-10-16.md` · `docs/requirement/issue-74-75-quiz-exam-redo.md` | 未跟踪、未提交，归属留给各自的负责人 |
+| `%TEMP%\a5-web-ring-wip-backup\` 5 份 `format-patch` | 保留（tag `a5-web-ring-wip` 同时保留，供追溯） |
+| `GIT_SEQUENCE_EDITOR` 环境变量 | 本会话已核**不存在**（`unset`） |
+
+**8. 独立复核（另起一个只读复核员，本批提交后做的）**
+
+复核窗口内的**实测核查**结论：`MenuView.vue` 的 blob 与 tag 内 blob 相等（并用 `git cat-file -s` = `34413` = 工作区字节数**反证** `.gitattributes` 的 `* text=auto eol=lf` + `core.autocrlf=true` 没有改写任何字节；无 U+FEFF、CR=0）；`product.css` 那条 hunk **恰 3 条选择器**、`--numstat` = `39 / 0`；`render-smoke.mjs` 里 `.ui-tile-grid` **残留 0 处**、第 4 处换的是 `.a5r-card.is-focus`（"4 处全换成 `.a5r-card`"严格说只有 3/4 成立）；门禁口径 = CI **2 job（8 步 + 10 步）**、hook **6 道**、**共同覆盖 9 条**、**仅 hook 覆盖 0 条**。
+
+| 复核提的问题 | 本批处置 |
+|---|---|
+| 固定等待是 `SPIN_MS` 的手抄副本、余量 300ms、无绑定 ⇒ 会静默漂 | **采纳**：换成 `waitForMenuSettled()`（帧级判据 + 超时明确报错），见 3-b |
+| "旋转期间点必然超时"的理由不准（更锋利的是 `pointerdown → stopIntro` 冻在非整数格） | **采纳**：理由按实测日志与源码更正，见 3-b |
+| 本地 pre-commit **不跑** `build` / `smoke`（而本批改的正是 `render-smoke.mjs`），且 `web/node_modules` 缺失时第 6 道整段跳过 ⇒ 只看"本地全过"对冒烟零验证 | **如实记**：本批的冒烟证据来自**本地真跑**（`npm run smoke`，见本节 2）与 **CI 的 `web` job**（10 步含 `npm run build` + `npx playwright install` + `npm run smoke`）；**不把本地 hook 当成冒烟的证据** |
+| 提交 6 个文件"多于三项前置"（含 3 份文档） | **如实记**：仓库既有交付纪律要求"每批带记录"（§5.5~§5.9 同例），三份 docs 均为 `+N / −0` 的**只增不改**；范围复核已核**零** Unity / 零未跟踪文件混入 |
+| tag 不是 `main` 的祖先（`14509da` 是旁支快照，含 README / DECISIONS / RECORD 差异，`HEAD..tag` 3 个提交） | **如实记**：本批不是 cherry-pick `14509da`，而是**只取**该 tag 的 `MenuView.vue` blob（其余 4 个文件未取），所以 tag 里那几份文档的旧版本**不会**回流 `main` |
+
+复核**未做**（如实记）：没有跑 `npm run smoke`，也没有复现"修复前面板塌到 46px"——那两条的独立证据在本节 2 / 4。
+
+---
+
 ## 6 交付状态与 issue 交接（2026-10-16）
 
 ### 6.1 本轮交付物
